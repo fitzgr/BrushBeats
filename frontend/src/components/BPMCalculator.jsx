@@ -52,11 +52,15 @@ function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhas
       <div className="bpm-pill" data-loading={loading}>
         <span className="label">Search BPM</span>
         <strong>{bpmData?.searchBpm ?? bpmData?.musicBpm ?? "--"}</strong>
-        <span className="sub">Raw BPM: {bpmData?.rawBpm ?? "--"} (x2 boost)</span>
+        <span className="sub">
+          Switch teeth every {bpmData?.secondsPerTooth ?? "--"}s, 4 beats per tooth
+        </span>
       </div>
 
       <p className="headline">
-        {bpmData ? `You're brushing at ${Math.round(bpmData.searchBpm ?? bpmData.musicBpm)} BPM.` : "Adjust teeth counts to calculate BPM."}
+        {bpmData
+          ? `${bpmData.totalTeeth} teeth across 2 minutes gives ${Math.round(bpmData.searchBpm ?? bpmData.musicBpm)} BPM.`
+          : "Adjust teeth counts to calculate BPM."}
       </p>
 
       <div className="session-actions">
