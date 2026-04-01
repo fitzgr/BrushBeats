@@ -5,12 +5,15 @@ function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhas
     return `${minutes}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const totalBrushingTime = 4 * (values?.sectionSeconds || 30); // 4 sections
+  const totalTimeLabel = formatTime(totalBrushingTime);
+
   const buttonLabel =
     brushingPhase === "running"
       ? `Brushing... ${formatTime(timer.remaining)}`
       : brushingPhase === "complete"
-          ? "Brush Again (2:00)"
-          : "Start Brushing (2:00)";
+          ? `Brush Again (${totalTimeLabel})`
+          : `Start Brushing (${totalTimeLabel})`;
 
   return (
     <section className="card calculator">
@@ -51,6 +54,7 @@ function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhas
             <option value={15}>15 seconds (recommended)</option>
             <option value={30}>30 seconds</option>
           </select>
+          <small>Controls how long you spend on each of the 4 mouth sections (front/back x top/bottom).</small>
         </label>
       </div>
 

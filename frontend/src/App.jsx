@@ -161,8 +161,9 @@ function App() {
       return;
     }
 
+    const totalSeconds = 4 * values.sectionSeconds; // 4 sections: front-top, back-top, front-bottom, back-bottom
     setBrushingStartPlaybackSeconds(playbackSeconds);
-    setTimer({ running: true, remaining: 120 });
+    setTimer({ running: true, remaining: totalSeconds });
     setBrushingPhase("running");
     setError("");
   }
@@ -180,7 +181,7 @@ function App() {
   }
 
   async function handleSongEnded() {
-    if (!songs.length) {
+    if (!songs.length || brushingPhase !== "running") {
       return;
     }
 
