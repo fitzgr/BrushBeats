@@ -1,7 +1,13 @@
 function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhase, onStartTimer, onRestartTimer }) {
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+  };
+
   const buttonLabel =
     brushingPhase === "running"
-      ? `Brushing... ${timer.remaining}s`
+      ? `Brushing... ${formatTime(timer.remaining)}`
       : brushingPhase === "complete"
           ? "Brush Again (2:00)"
           : "Start Brushing (2:00)";

@@ -179,8 +179,8 @@ function BrushingGuide({ timer, brushingPhase, values, selectedBpm, playbackSeco
             );
           })}
 
-          <text x="180" y="200" textAnchor="middle" className="map-score">{Math.round(progress)}</text>
-          <text x="180" y="228" textAnchor="middle" className="map-score-label">Brushing Score</text>
+          <text x="180" y="200" textAnchor="middle" className="map-score">{Math.round(progress)}%</text>
+          <text x="180" y="228" textAnchor="middle" className="map-score-label">Completeness</text>
         </svg>
       </div>
 
