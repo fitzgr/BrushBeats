@@ -365,24 +365,24 @@ select {
 }
 
 .tooth-svg .tooth-body {
-  fill: #f4f9ff;
-  stroke: #c7d9ea;
+  fill: #e8d5b7;
+  stroke: #c4a885;
   stroke-width: 1.2;
 }
 
 .tooth-svg .tooth-groove {
   fill: none;
-  stroke: rgba(111, 138, 170, 0.55);
+  stroke: rgba(180, 160, 130, 0.55);
   stroke-width: 0.9;
 }
 
 .tooth-svg.done .tooth-body {
-  fill: #9fc2ff;
-  stroke: #6d9def;
+  fill: #fffdf8;
+  stroke: #d4c4b0;
 }
 
 .tooth-svg.done .tooth-groove {
-  stroke: rgba(55, 91, 153, 0.62);
+  stroke: rgba(150, 140, 130, 0.4);
 }
 
 .tooth-svg.active .tooth-body {

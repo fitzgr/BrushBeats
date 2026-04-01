@@ -5,7 +5,7 @@ function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhas
     return `${minutes}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const totalBrushingTime = 4 * (values?.sectionSeconds || 30); // 4 sections
+  const totalBrushingTime = 120; // 4 sections × 30 seconds (ADA recommended)
   const totalTimeLabel = formatTime(totalBrushingTime);
 
   const buttonLabel =
@@ -45,17 +45,6 @@ function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhas
           />
         </label>
 
-        <label>
-          Seconds Per Section
-          <select
-            value={values.sectionSeconds}
-            onChange={(event) => onChange("sectionSeconds", Number(event.target.value))}
-          >
-            <option value={15}>15 seconds (recommended)</option>
-            <option value={30}>30 seconds</option>
-          </select>
-          <small>Controls how long you spend on each of the 4 mouth sections (front/back x top/bottom).</small>
-        </label>
       </div>
 
       <p className="form-note">These sliders represent your actual number of teeth, not brushing speed.</p>

@@ -22,8 +22,8 @@ function createArcPoints({ count, cx, cy, rx, ry, startDeg, endDeg }) {
 }
 
 function BrushingGuide({ timer, brushingPhase, values, selectedBpm, playbackSeconds, brushingStartPlaybackSeconds }) {
-  const sectionSeconds = values?.sectionSeconds || 30;
-  const totalSeconds = 4 * sectionSeconds; // 4 sections: front-top, back-top, front-bottom, back-bottom
+  const sectionSeconds = 30;
+  const totalSeconds = 120;
   const topTeeth = Number(values?.top || 16);
   const bottomTeeth = Number(values?.bottom || 16);
   const sections = [

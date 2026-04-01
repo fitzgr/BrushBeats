@@ -161,7 +161,7 @@ function App() {
       return;
     }
 
-    const totalSeconds = 4 * values.sectionSeconds; // 4 sections: front-top, back-top, front-bottom, back-bottom
+    const totalSeconds = 120; // 4 sections × 30 seconds (ADA recommended brushing time)
     setBrushingStartPlaybackSeconds(playbackSeconds);
     setTimer({ running: true, remaining: totalSeconds });
     setBrushingPhase("running");
