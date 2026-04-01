@@ -7,7 +7,7 @@ import { getBpm, getSongs, getYoutubeVideo } from "./api/client";
 import "./App.css";
 
 function App() {
-  const [values, setValues] = useState({ top: 16, bottom: 16, sectionSeconds: 15 });
+  const [values, setValues] = useState({ top: 16, bottom: 16, sectionSeconds: 30 });
   const [bpmData, setBpmData] = useState(null);
   const [songs, setSongs] = useState([]);
   const [selectedSong, setSelectedSong] = useState(null);
@@ -22,12 +22,33 @@ function App() {
   const [autoplayToken, setAutoplayToken] = useState(0);
   const [isSongPoolExhausted, setIsSongPoolExhausted] = useState(false);
   const [loading, setLoading] = useState({ bpm: false, songs: false, player: false });
+  const [backendStatus, setBackendStatus] = useState("");
   const [error, setError] = useState("");
   const seenSongsByQueryRef = useRef(new Map());
 
   function toSongKey(song) {
     return `${(song?.title || "").trim().toLowerCase()}::${(song?.artist || "").trim().toLowerCase()}`;
   }
+
+  useEffect(() => {
+    if (!loading.bpm && !loading.songs && !loading.player) {
+      setBackendStatus("");
+      return;
+    }
+
+    const infoTimer = window.setTimeout(() => {
+      setBackendStatus("Waking up the free backend. The first request can take 10-30 seconds, so please hang on.");
+    }, 1800);
+
+    const detailTimer = window.setTimeout(() => {
+      setBackendStatus("Still connecting to the free backend. Your request is still in progress and should finish once the service wakes up.");
+    }, 7000);
+
+    return () => {
+      window.clearTimeout(infoTimer);
+      window.clearTimeout(detailTimer);
+    };
+  }, [loading.bpm, loading.songs, loading.player]);
 
   useEffect(() => {
     let cancelled = false;
@@ -223,6 +244,7 @@ function App() {
         <p className={`state-chip ${brushingPhase}`}>Status: {phaseLabel}</p>
       </header>
 
+      {backendStatus && !error && <p className="info-banner">{backendStatus}</p>}
       {error && <p className="error-banner">{error}</p>}
 
       <section className="layout-grid">

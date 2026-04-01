@@ -1,7 +1,22 @@
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:4000";
+const REQUEST_TIMEOUT_MS = 35000;
 
 async function request(path) {
-  const response = await fetch(`${API_BASE}${path}`);
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE}${path}`, { signal: controller.signal });
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw new Error("The free backend is still waking up. Please wait a few seconds and try again.");
+    }
+
+    throw new Error("Could not reach the backend. If the free service is cold-starting, please wait a few seconds and retry.");
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
 
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));

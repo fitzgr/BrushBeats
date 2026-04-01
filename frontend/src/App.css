@@ -83,6 +83,15 @@
   color: var(--danger);
 }
 
+.info-banner {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: #fff2dc;
+  border: 1px solid rgba(202, 95, 22, 0.28);
+  color: #7f4f1d;
+}
+
 .layout-grid {
   display: grid;
   gap: 1rem;
