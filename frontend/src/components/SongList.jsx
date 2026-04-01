@@ -1,4 +1,4 @@
-function SongList({ songs, loading, tolerance, keyword, onToleranceChange, onKeywordChange, onSelectSong, onRegenerate }) {
+function SongList({ songs, exhausted, loading, tolerance, keyword, onToleranceChange, onKeywordChange, onSelectSong, onRegenerate }) {
   return (
     <section className="card songs">
       <h2>Song Discovery</h2>
@@ -34,6 +34,9 @@ function SongList({ songs, loading, tolerance, keyword, onToleranceChange, onKey
 
       {loading && <p>Loading songs...</p>}
       {!loading && songs.length === 0 && <p>No songs found at this BPM range yet.</p>}
+      {!loading && exhausted && (
+        <p>You've already seen all songs in this current pool. Change keyword/tolerance or regenerate again for a fresh pool.</p>
+      )}
 
       <ul className="song-list">
         {songs.map((song, index) => (
