@@ -364,31 +364,40 @@ select {
   stroke-width: 1.5;
 }
 
-.tooth-svg .tooth-body {
-  fill: #e8d5b7;
+.tooth-svg .tooth-body-base {
+  fill: #d9bf97;
+}
+
+.tooth-svg .tooth-face {
+  transition: fill 220ms ease, opacity 220ms ease;
+}
+
+.tooth-svg .front-face {
+  fill: #ead6b4;
+}
+
+.tooth-svg .back-face {
+  fill: #d4b286;
+}
+
+.tooth-svg .tooth-face.clean {
+  fill: #fffdf8;
+}
+
+.tooth-svg .tooth-face.active-surface {
+  fill: #fff4df;
+}
+
+.tooth-svg .tooth-outline {
+  fill: none;
   stroke: #c4a885;
   stroke-width: 1.2;
 }
 
 .tooth-svg .tooth-groove {
   fill: none;
-  stroke: rgba(180, 160, 130, 0.55);
+  stroke: rgba(150, 130, 105, 0.55);
   stroke-width: 0.9;
-}
-
-.tooth-svg.done .tooth-body {
-  fill: #fffdf8;
-  stroke: #d4c4b0;
-}
-
-.tooth-svg.done .tooth-groove {
-  stroke: rgba(150, 140, 130, 0.4);
-}
-
-.tooth-svg.active .tooth-body {
-  fill: #d8e8ff;
-  stroke: #4d84e3;
-  stroke-width: 1.6;
 }
 
 .tooth-indicator {

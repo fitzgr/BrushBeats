@@ -21,6 +21,16 @@ function createArcPoints({ count, cx, cy, rx, ry, startDeg, endDeg }) {
   });
 }
 
+const TOOTH_PATH = "M0 -10 C7 -10 10 -6 10 -1 C10 4 7 8 3 10 C1 11 -1 11 -3 10 C-7 8 -10 4 -10 -1 C-10 -6 -7 -10 0 -10 Z";
+
+function isPastActiveTooth(mapIndex, activeMapIndex, direction) {
+  if (activeMapIndex < 0) {
+    return false;
+  }
+
+  return direction === "rtl" ? mapIndex > activeMapIndex : mapIndex < activeMapIndex;
+}
+
 function BrushingGuide({ timer, brushingPhase, values, selectedBpm, playbackSeconds, brushingStartPlaybackSeconds }) {
   const sectionSeconds = 30;
   const totalSeconds = 120;
@@ -84,34 +94,41 @@ function BrushingGuide({ timer, brushingPhase, values, selectedBpm, playbackSeco
 
   function getToothState(jaw, mapIndex) {
     if (brushingPhase === "complete") {
-      return { active: false, done: true };
+      return { frontDone: true, backDone: true, activeSurface: null };
     }
+
+    const state = {
+      frontDone: false,
+      backDone: false,
+      activeSurface: null
+    };
 
     if (!timer.running || !activeSection) {
-      return { active: false, done: false };
+      return state;
     }
 
-    if (activeSection.jaw !== jaw) {
-      if (jaw === "top" && activeSectionIndex >= 2) {
-        return { active: false, done: true };
+    const frontSectionIndex = jaw === "top" ? 0 : 2;
+    const backSectionIndex = jaw === "top" ? 1 : 3;
+
+    if (activeSectionIndex > frontSectionIndex) {
+      state.frontDone = true;
+    } else if (activeSectionIndex === frontSectionIndex && activeSection.jaw === jaw && isFrontSurface) {
+      state.frontDone = isPastActiveTooth(mapIndex, activeMapIndex, activeSection.direction);
+      if (mapIndex === activeMapIndex) {
+        state.activeSurface = "front";
       }
+    }
 
-      if (jaw === "bottom" && activeSectionIndex >= 3) {
-        return { active: false, done: true };
+    if (activeSectionIndex > backSectionIndex) {
+      state.backDone = true;
+    } else if (activeSectionIndex === backSectionIndex && activeSection.jaw === jaw && !isFrontSurface) {
+      state.backDone = isPastActiveTooth(mapIndex, activeMapIndex, activeSection.direction);
+      if (mapIndex === activeMapIndex) {
+        state.activeSurface = "back";
       }
-
-      return { active: false, done: false };
     }
 
-    if (mapIndex === activeMapIndex) {
-      return { active: true, done: false };
-    }
-
-    if (activeSection.direction === "ltr") {
-      return { active: false, done: mapIndex < activeMapIndex };
-    }
-
-    return { active: false, done: mapIndex > activeMapIndex };
+    return state;
   }
 
   return (
@@ -130,17 +147,37 @@ function BrushingGuide({ timer, brushingPhase, values, selectedBpm, playbackSeco
           {topPoints.map((point) => {
             const state = getToothState("top", point.index);
             const indicatorY = isFrontSurface ? 11 : -11;
+            const toothId = `top-${point.index + 1}`;
             return (
               <g
-                key={`top-${point.index + 1}`}
+                key={toothId}
                 transform={`translate(${point.x} ${point.y}) rotate(${point.angleDeg - 90})`}
-                className={`tooth-svg${state.done ? " done" : ""}${state.active ? " active" : ""}`}
+                className="tooth-svg"
               >
-                <path className="tooth-body" d="M0 -10 C7 -10 10 -6 10 -1 C10 4 7 8 3 10 C1 11 -1 11 -3 10 C-7 8 -10 4 -10 -1 C-10 -6 -7 -10 0 -10 Z" />
+                <defs>
+                  <clipPath id={`${toothId}-back-surface`}>
+                    <rect x="-12" y="-12" width="24" height="12" />
+                  </clipPath>
+                  <clipPath id={`${toothId}-front-surface`}>
+                    <rect x="-12" y="0" width="24" height="13" />
+                  </clipPath>
+                </defs>
+                <path className="tooth-body-base" d={TOOTH_PATH} />
+                <path
+                  className={`tooth-face back-face${state.backDone ? " clean" : ""}${state.activeSurface === "back" ? " active-surface" : ""}`}
+                  d={TOOTH_PATH}
+                  clipPath={`url(#${toothId}-back-surface)`}
+                />
+                <path
+                  className={`tooth-face front-face${state.frontDone ? " clean" : ""}${state.activeSurface === "front" ? " active-surface" : ""}`}
+                  d={TOOTH_PATH}
+                  clipPath={`url(#${toothId}-front-surface)`}
+                />
+                <path className="tooth-outline" d={TOOTH_PATH} />
                 <ellipse className="tooth-groove" cx="0" cy="0" rx="4.2" ry="2.5" />
                 <path className="tooth-groove" d="M-2 -3 C-1 -1 -1 1 -2 3" />
                 <path className="tooth-groove" d="M2 -3 C1 -1 1 1 2 3" />
-                {state.active && (
+                {state.activeSurface && (
                   <circle
                     cx="0"
                     cy={indicatorY}
@@ -156,17 +193,37 @@ function BrushingGuide({ timer, brushingPhase, values, selectedBpm, playbackSeco
           {bottomPoints.map((point) => {
             const state = getToothState("bottom", point.index);
             const indicatorY = isFrontSurface ? 11 : -11;
+            const toothId = `bottom-${point.index + 1}`;
             return (
               <g
-                key={`bottom-${point.index + 1}`}
+                key={toothId}
                 transform={`translate(${point.x} ${point.y}) rotate(${point.angleDeg - 90})`}
-                className={`tooth-svg${state.done ? " done" : ""}${state.active ? " active" : ""}`}
+                className="tooth-svg"
               >
-                <path className="tooth-body" d="M0 -10 C7 -10 10 -6 10 -1 C10 4 7 8 3 10 C1 11 -1 11 -3 10 C-7 8 -10 4 -10 -1 C-10 -6 -7 -10 0 -10 Z" />
+                <defs>
+                  <clipPath id={`${toothId}-back-surface`}>
+                    <rect x="-12" y="-12" width="24" height="12" />
+                  </clipPath>
+                  <clipPath id={`${toothId}-front-surface`}>
+                    <rect x="-12" y="0" width="24" height="13" />
+                  </clipPath>
+                </defs>
+                <path className="tooth-body-base" d={TOOTH_PATH} />
+                <path
+                  className={`tooth-face back-face${state.backDone ? " clean" : ""}${state.activeSurface === "back" ? " active-surface" : ""}`}
+                  d={TOOTH_PATH}
+                  clipPath={`url(#${toothId}-back-surface)`}
+                />
+                <path
+                  className={`tooth-face front-face${state.frontDone ? " clean" : ""}${state.activeSurface === "front" ? " active-surface" : ""}`}
+                  d={TOOTH_PATH}
+                  clipPath={`url(#${toothId}-front-surface)`}
+                />
+                <path className="tooth-outline" d={TOOTH_PATH} />
                 <ellipse className="tooth-groove" cx="0" cy="0" rx="4.2" ry="2.5" />
                 <path className="tooth-groove" d="M-2 -3 C-1 -1 -1 1 -2 3" />
                 <path className="tooth-groove" d="M2 -3 C1 -1 1 1 2 3" />
-                {state.active && (
+                {state.activeSurface && (
                   <circle
                     cx="0"
                     cy={indicatorY}
