@@ -32,6 +32,7 @@ function App() {
   const [backendStatus, setBackendStatus] = useState("");
   const [error, setError] = useState("");
   const [analyticsConsent, setAnalyticsConsentState] = useState(() => getAnalyticsConsentStatus());
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const seenSongsByQueryRef = useRef(new Map());
   const lastPlaybackTickRef = useRef(null);
   const analyticsAvailable = useMemo(() => analyticsEnabled(), []);
@@ -51,6 +52,14 @@ function App() {
   function handleDeclineAnalytics() {
     const nextStatus = setAnalyticsConsent(false);
     setAnalyticsConsentState(nextStatus);
+  }
+
+  function openPrivacyModal() {
+    setShowPrivacyModal(true);
+  }
+
+  function closePrivacyModal() {
+    setShowPrivacyModal(false);
   }
 
   function toSongKey(song) {
@@ -313,6 +322,9 @@ function App() {
         <section className="consent-banner" role="region" aria-label="Privacy controls">
           <p>
             Help improve BrushBeats by sharing anonymous usage analytics. We never send typed text or personal data.
+            <button type="button" className="privacy-link" onClick={openPrivacyModal}>
+              Privacy Policy
+            </button>
           </p>
           <div className="consent-actions">
             <button type="button" className="action-btn" onClick={handleAcceptAnalytics}>
@@ -387,6 +399,9 @@ function App() {
         {analyticsAvailable && (
           <div className="privacy-controls">
             <span>Analytics: {analyticsConsent === "granted" ? "On" : "Off"}</span>
+            <button type="button" className="privacy-toggle" onClick={openPrivacyModal}>
+              Privacy Policy
+            </button>
             {analyticsConsent === "granted" ? (
               <button type="button" className="privacy-toggle" onClick={handleDeclineAnalytics}>
                 Turn Off
@@ -404,6 +419,37 @@ function App() {
           </p>
         )}
       </footer>
+
+      {showPrivacyModal && (
+        <div className="privacy-modal-overlay" role="presentation" onClick={closePrivacyModal}>
+          <section
+            className="privacy-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label="BrushBeats privacy policy"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h2>Privacy Policy</h2>
+            <p>
+              BrushBeats uses Google Analytics 4 only when you opt in. We collect anonymous usage events to improve the app,
+              such as BPM calculations, song selections, brushing starts, resets, completions, and auto-queue transitions.
+            </p>
+            <p>
+              We do not send typed form text, email addresses, names, passwords, or payment information. Ad-related storage and
+              personalization are disabled.
+            </p>
+            <p>
+              Your analytics choice is stored on this device and you can change it at any time using the Analytics controls in
+              the footer.
+            </p>
+            <div className="privacy-modal-actions">
+              <button type="button" className="action-btn secondary" onClick={closePrivacyModal}>
+                Close
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </main>
   );
 }
