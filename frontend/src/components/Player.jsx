@@ -149,12 +149,39 @@ function Player({ selectedSong, playerData, loading, brushingPhase, autoplayToke
         <p className="player-status">Brushing timer is running independently. Video playback remains under YouTube controls.</p>
       )}
 
-      {playerData?.embedUrl && (
+      {selectedSong && (
         <>
           <h3>
             {selectedSong.title} - {selectedSong.artist}
           </h3>
-          <div ref={hostRef} className="player-frame" aria-label={`${selectedSong.title} by ${selectedSong.artist}`} />
+          <div style={{ position: "relative" }}>
+            <div
+              ref={hostRef}
+              className="player-frame"
+              aria-label={`${selectedSong.title} by ${selectedSong.artist}`}
+              style={{ opacity: playerData?.embedUrl ? 1 : 0.4, minHeight: "200px" }}
+            />
+            {loading && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "rgba(255, 249, 239, 0.8)",
+                  borderRadius: "8px",
+                  fontSize: "0.9rem",
+                  color: "#666"
+                }}
+              >
+                Loading new video...
+              </div>
+            )}
+          </div>
         </>
       )}
     </section>

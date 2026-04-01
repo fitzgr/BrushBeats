@@ -131,8 +131,10 @@ function App() {
 
   async function handleSelectSongWithOptions(song, options = { autoplay: false }) {
     setSelectedSong(song);
-    setPlayerData(null);
-    setLoading((prev) => ({ ...prev, player: true }));
+    // Keep old playerData visible while loading new video
+    if (!loading.player) {
+      setLoading((prev) => ({ ...prev, player: true }));
+    }
 
     try {
       const video = await getYoutubeVideo({ title: song.title, artist: song.artist });
@@ -146,6 +148,7 @@ function App() {
       return video;
     } catch (err) {
       setError(err.message);
+      setPlayerData(null);
       return null;
     } finally {
       setLoading((prev) => ({ ...prev, player: false }));
