@@ -17,6 +17,9 @@ function App() {
   const [songRefreshSeed, setSongRefreshSeed] = useState(0);
   const [timer, setTimer] = useState({ running: false, remaining: 120 });
   const [brushingPhase, setBrushingPhase] = useState("idle");
+  const [playbackSeconds, setPlaybackSeconds] = useState(0);
+  const [brushingStartPlaybackSeconds, setBrushingStartPlaybackSeconds] = useState(0);
+  const [autoplayToken, setAutoplayToken] = useState(0);
   const [loading, setLoading] = useState({ bpm: false, songs: false, player: false });
   const [error, setError] = useState("");
 
@@ -105,6 +108,10 @@ function App() {
   }, [timer.running, brushingPhase]);
 
   async function handleSelectSong(song) {
+    return handleSelectSongWithOptions(song, { autoplay: false });
+  }
+
+  async function handleSelectSongWithOptions(song, options = { autoplay: false }) {
     setSelectedSong(song);
     setPlayerData(null);
     setLoading((prev) => ({ ...prev, player: true }));
@@ -112,6 +119,11 @@ function App() {
     try {
       const video = await getYoutubeVideo({ title: song.title, artist: song.artist });
       setPlayerData(video);
+
+      if (options.autoplay && video?.embedUrl) {
+        setAutoplayToken((prev) => prev + 1);
+      }
+
       setError("");
       return video;
     } catch (err) {
@@ -128,6 +140,7 @@ function App() {
       return;
     }
 
+    setBrushingStartPlaybackSeconds(playbackSeconds);
     setTimer({ running: true, remaining: 120 });
     setBrushingPhase("running");
     setError("");
@@ -143,6 +156,20 @@ function App() {
 
   function regenerateSongs() {
     setSongRefreshSeed((prev) => prev + 1);
+  }
+
+  async function handleSongEnded() {
+    if (!songs.length) {
+      return;
+    }
+
+    const pool = songs.filter((song) => song.title !== selectedSong?.title || song.artist !== selectedSong?.artist);
+    const candidates = pool.length > 0 ? pool : songs;
+    const nextSong = candidates[Math.floor(Math.random() * candidates.length)];
+
+    if (nextSong) {
+      await handleSelectSongWithOptions(nextSong, { autoplay: true });
+    }
   }
 
   const subtitle = useMemo(() => {
@@ -204,9 +231,19 @@ function App() {
           playerData={playerData}
           loading={loading.player}
           brushingPhase={brushingPhase}
+          autoplayToken={autoplayToken}
+          onPlaybackTick={setPlaybackSeconds}
+          onSongEnded={handleSongEnded}
         />
 
-        <BrushingGuide timer={timer} brushingPhase={brushingPhase} values={values} />
+        <BrushingGuide
+          timer={timer}
+          brushingPhase={brushingPhase}
+          values={values}
+          selectedBpm={Number(selectedSong?.bpm || bpmData?.searchBpm || 120)}
+          playbackSeconds={playbackSeconds}
+          brushingStartPlaybackSeconds={brushingStartPlaybackSeconds}
+        />
       </section>
 
       {brushingPhase === "complete" && (

@@ -17,11 +17,37 @@ function parseVideoId(playerData) {
   }
 }
 
-function Player({ selectedSong, playerData, loading, brushingPhase }) {
+function Player({ selectedSong, playerData, loading, brushingPhase, autoplayToken, onPlaybackTick, onSongEnded }) {
   const hostRef = useRef(null);
   const playerRef = useRef(null);
+  const tickTimerRef = useRef(null);
+  const onPlaybackTickRef = useRef(onPlaybackTick);
+  const onSongEndedRef = useRef(onSongEnded);
   const [apiReady, setApiReady] = useState(Boolean(window.YT?.Player));
   const videoId = useMemo(() => parseVideoId(playerData), [playerData]);
+
+  useEffect(() => {
+    onPlaybackTickRef.current = onPlaybackTick;
+  }, [onPlaybackTick]);
+
+  useEffect(() => {
+    onSongEndedRef.current = onSongEnded;
+  }, [onSongEnded]);
+
+  function stopTickTimer() {
+    if (tickTimerRef.current) {
+      window.clearInterval(tickTimerRef.current);
+      tickTimerRef.current = null;
+    }
+  }
+
+  function startTickTimer() {
+    stopTickTimer();
+    tickTimerRef.current = window.setInterval(() => {
+      const seconds = playerRef.current?.getCurrentTime?.() ?? 0;
+      onPlaybackTickRef.current?.(seconds);
+    }, 250);
+  }
 
   useEffect(() => {
     if (window.YT?.Player) {
@@ -69,17 +95,42 @@ function Player({ selectedSong, playerData, loading, brushingPhase }) {
         modestbranding: 1
       },
       events: {
-        onReady: () => {}
+        onReady: () => {
+          onPlaybackTickRef.current?.(playerRef.current?.getCurrentTime?.() ?? 0);
+        },
+        onStateChange: (event) => {
+          if (event.data === window.YT?.PlayerState?.PLAYING) {
+            startTickTimer();
+          }
+
+          if (event.data === window.YT?.PlayerState?.PAUSED || event.data === window.YT?.PlayerState?.BUFFERING) {
+            stopTickTimer();
+          }
+
+          if (event.data === window.YT?.PlayerState?.ENDED) {
+            stopTickTimer();
+            onSongEndedRef.current?.();
+          }
+        }
       }
     });
 
     return () => {
+      stopTickTimer();
       if (playerRef.current) {
         playerRef.current.destroy();
         playerRef.current = null;
       }
     };
   }, [apiReady, videoId]);
+
+  useEffect(() => {
+    if (!autoplayToken || !playerRef.current) {
+      return;
+    }
+
+    playerRef.current.playVideo?.();
+  }, [autoplayToken]);
 
   return (
     <section className="card player">

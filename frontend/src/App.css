@@ -328,32 +328,79 @@ select {
   display: block;
 }
 
+.map-legend {
+  margin-top: 0.65rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  font-size: 0.82rem;
+  color: #4f5e62;
+}
+
+.map-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.legend-dot.front {
+  background: #ea7f33;
+}
+
+.legend-dot.back {
+  background: #39b5ff;
+}
+
 .mouth-outline {
   fill: none;
   stroke: rgba(199, 220, 255, 0.25);
   stroke-width: 1.5;
 }
 
-.tooth-svg path {
-  fill: #f6fbff;
+.tooth-svg .tooth-body {
+  fill: #f4f9ff;
   stroke: #c7d9ea;
   stroke-width: 1.2;
 }
 
-.tooth-svg.done path {
+.tooth-svg .tooth-groove {
+  fill: none;
+  stroke: rgba(111, 138, 170, 0.55);
+  stroke-width: 0.9;
+}
+
+.tooth-svg.done .tooth-body {
   fill: #9fc2ff;
   stroke: #6d9def;
 }
 
-.tooth-svg.active path {
+.tooth-svg.done .tooth-groove {
+  stroke: rgba(55, 91, 153, 0.62);
+}
+
+.tooth-svg.active .tooth-body {
   fill: #d8e8ff;
   stroke: #4d84e3;
   stroke-width: 1.6;
 }
 
 .tooth-indicator {
-  fill: #ea7f33;
   animation: bounce-tooth 650ms ease-in-out infinite;
+}
+
+.tooth-indicator.front {
+  fill: #ea7f33;
+}
+
+.tooth-indicator.back {
+  fill: #39b5ff;
 }
 
 .map-score {

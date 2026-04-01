@@ -15,12 +15,13 @@ function createArcPoints({ count, cx, cy, rx, ry, startDeg, endDeg }) {
     return {
       index,
       x: cx + rx * Math.cos(angle),
-      y: cy + ry * Math.sin(angle)
+      y: cy + ry * Math.sin(angle),
+      angleDeg
     };
   });
 }
 
-function BrushingGuide({ timer, brushingPhase, values }) {
+function BrushingGuide({ timer, brushingPhase, values, selectedBpm, playbackSeconds, brushingStartPlaybackSeconds }) {
   const totalSeconds = 120;
   const sectionSeconds = 30;
   const topTeeth = Number(values?.top || 16);
@@ -36,10 +37,18 @@ function BrushingGuide({ timer, brushingPhase, values }) {
   const activeSectionIndex = timer.running ? Math.min(3, Math.floor(elapsed / sectionSeconds)) : -1;
   const sectionElapsed = timer.running && activeSectionIndex >= 0 ? elapsed - activeSectionIndex * sectionSeconds : 0;
   const activeSection = activeSectionIndex >= 0 ? sections[activeSectionIndex] : null;
-  const secondsPerActiveTooth = activeSection ? sectionSeconds / activeSection.teeth : 0;
+  const isFrontSurface = Boolean(activeSection?.key.includes("front"));
+  const safeBpm = Math.max(40, Math.min(240, Number(selectedBpm) || 120));
+  const beatDurationMs = 60000 / safeBpm;
+  const beatsPerSecond = safeBpm / 60;
+  const sectionRelativePlayback = timer.running
+    ? Math.max(0, playbackSeconds - brushingStartPlaybackSeconds - activeSectionIndex * sectionSeconds)
+    : 0;
+  const beatsInSection = sectionRelativePlayback * beatsPerSecond;
+  const beatsPerTooth = activeSection ? (sectionSeconds * beatsPerSecond) / activeSection.teeth : 1;
   const movementIndex =
     timer.running && activeSection
-      ? Math.min(activeSection.teeth - 1, Math.floor(sectionElapsed / Math.max(0.25, secondsPerActiveTooth)))
+      ? Math.min(activeSection.teeth - 1, Math.floor(beatsInSection / Math.max(0.5, beatsPerTooth)))
       : -1;
   const activeMapIndex =
     movementIndex >= 0 && activeSection
@@ -47,7 +56,10 @@ function BrushingGuide({ timer, brushingPhase, values }) {
         ? activeSection.teeth - 1 - movementIndex
         : movementIndex
       : -1;
-  const nextMoveSeconds = timer.running && activeSection ? Math.max(1, Math.ceil(secondsPerActiveTooth - (sectionElapsed % secondsPerActiveTooth))) : null;
+  const nextMoveSeconds =
+    timer.running && activeSection
+      ? Math.max(1, Math.ceil((((movementIndex + 1) * beatsPerTooth - beatsInSection) / beatsPerSecond)))
+      : null;
   const nextSectionSeconds = timer.running ? Math.max(1, sectionSeconds - Math.floor(sectionElapsed)) : null;
 
   const topPoints = createArcPoints({
@@ -117,20 +129,52 @@ function BrushingGuide({ timer, brushingPhase, values }) {
 
           {topPoints.map((point) => {
             const state = getToothState("top", point.index);
+            const indicatorY = isFrontSurface ? 11 : -11;
             return (
-              <g key={`top-${point.index + 1}`} transform={`translate(${point.x} ${point.y})`} className={`tooth-svg${state.done ? " done" : ""}${state.active ? " active" : ""}`}>
-                <path d="M0 -12 C7 -12 10 -7 10 -1 C10 5 7 8 5 11 C3 13 2 14 0 14 C-2 14 -3 13 -5 11 C-7 8 -10 5 -10 -1 C-10 -7 -7 -12 0 -12 Z" />
-                {state.active && <circle cx="0" cy="-17" r="4" className="tooth-indicator" />}
+              <g
+                key={`top-${point.index + 1}`}
+                transform={`translate(${point.x} ${point.y}) rotate(${point.angleDeg - 90})`}
+                className={`tooth-svg${state.done ? " done" : ""}${state.active ? " active" : ""}`}
+              >
+                <path className="tooth-body" d="M0 -10 C7 -10 10 -6 10 -1 C10 4 7 8 3 10 C1 11 -1 11 -3 10 C-7 8 -10 4 -10 -1 C-10 -6 -7 -10 0 -10 Z" />
+                <ellipse className="tooth-groove" cx="0" cy="0" rx="4.2" ry="2.5" />
+                <path className="tooth-groove" d="M-2 -3 C-1 -1 -1 1 -2 3" />
+                <path className="tooth-groove" d="M2 -3 C1 -1 1 1 2 3" />
+                {state.active && (
+                  <circle
+                    cx="0"
+                    cy={indicatorY}
+                    r="4"
+                    className={`tooth-indicator ${isFrontSurface ? "front" : "back"}`}
+                    style={{ animationDuration: `${beatDurationMs}ms` }}
+                  />
+                )}
               </g>
             );
           })}
 
           {bottomPoints.map((point) => {
             const state = getToothState("bottom", point.index);
+            const indicatorY = isFrontSurface ? 11 : -11;
             return (
-              <g key={`bottom-${point.index + 1}`} transform={`translate(${point.x} ${point.y})`} className={`tooth-svg${state.done ? " done" : ""}${state.active ? " active" : ""}`}>
-                <path d="M0 -12 C7 -12 10 -7 10 -1 C10 5 7 8 5 11 C3 13 2 14 0 14 C-2 14 -3 13 -5 11 C-7 8 -10 5 -10 -1 C-10 -7 -7 -12 0 -12 Z" />
-                {state.active && <circle cx="0" cy="-17" r="4" className="tooth-indicator" />}
+              <g
+                key={`bottom-${point.index + 1}`}
+                transform={`translate(${point.x} ${point.y}) rotate(${point.angleDeg - 90})`}
+                className={`tooth-svg${state.done ? " done" : ""}${state.active ? " active" : ""}`}
+              >
+                <path className="tooth-body" d="M0 -10 C7 -10 10 -6 10 -1 C10 4 7 8 3 10 C1 11 -1 11 -3 10 C-7 8 -10 4 -10 -1 C-10 -6 -7 -10 0 -10 Z" />
+                <ellipse className="tooth-groove" cx="0" cy="0" rx="4.2" ry="2.5" />
+                <path className="tooth-groove" d="M-2 -3 C-1 -1 -1 1 -2 3" />
+                <path className="tooth-groove" d="M2 -3 C1 -1 1 1 2 3" />
+                {state.active && (
+                  <circle
+                    cx="0"
+                    cy={indicatorY}
+                    r="4"
+                    className={`tooth-indicator ${isFrontSurface ? "front" : "back"}`}
+                    style={{ animationDuration: `${beatDurationMs}ms` }}
+                  />
+                )}
               </g>
             );
           })}
@@ -140,9 +184,14 @@ function BrushingGuide({ timer, brushingPhase, values }) {
         </svg>
       </div>
 
+      <div className="map-legend" aria-label="Brush guide legend">
+        <span><em className="legend-dot front" />Front tooth face</span>
+        <span><em className="legend-dot back" />Back tooth face</span>
+      </div>
+
       {brushingPhase === "running" && (
         <p className="guide-callout">
-          Brush {activeSection?.label} now ({activeSection?.direction === "rtl" ? "right to left" : "left to right"}), tooth {movementIndex + 1} of {activeSection?.teeth}. Move in {nextMoveSeconds}s. Switch section in {nextSectionSeconds}s.
+          Brush {activeSection?.label} now ({activeSection?.direction === "rtl" ? "right to left" : "left to right"}), tooth {movementIndex + 1} of {activeSection?.teeth}. Dot pulse follows ~{Math.round(safeBpm)} BPM. Move in {nextMoveSeconds}s. Switch section in {nextSectionSeconds}s.
         </p>
       )}
       {!timer.running && brushingPhase !== "complete" && <p className="guide-callout">Press Start Brushing to begin live tooth guidance.</p>}

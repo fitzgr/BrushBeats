@@ -39,7 +39,7 @@ router.get("/", async (req, res, next) => {
       return res.json({ ...cached, cached: true });
     }
 
-    const result = await fetchSongsByBpm({ bpm, tolerance, keyword });
+    const result = await fetchSongsByBpm({ bpm, tolerance, keyword, seed });
     const shuffled = {
       ...result,
       songs: seededShuffle(result.songs || [], seed)

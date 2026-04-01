@@ -12,8 +12,78 @@ const seedSongs = [
   { title: "Roar", artist: "Katy Perry", bpm: 90 },
   { title: "Happy", artist: "Pharrell Williams", bpm: 160 },
   { title: "As It Was", artist: "Harry Styles", bpm: 174 },
-  { title: "Treasure", artist: "Bruno Mars", bpm: 116 }
+  { title: "Treasure", artist: "Bruno Mars", bpm: 116 },
+  { title: "Dog Days Are Over", artist: "Florence + The Machine", bpm: 150 },
+  { title: "Banquet", artist: "Bloc Party", bpm: 150 },
+  { title: "Come On Eileen", artist: "Dexys Midnight Runners", bpm: 108 },
+  { title: "Take On Me", artist: "a-ha", bpm: 169 },
+  { title: "Mr. Brightside", artist: "The Killers", bpm: 148 },
+  { title: "Dancing With Myself", artist: "Billy Idol", bpm: 176 },
+  { title: "Naive", artist: "The Kooks", bpm: 104 },
+  { title: "Midnight City", artist: "M83", bpm: 105 },
+  { title: "1901", artist: "Phoenix", bpm: 150 },
+  { title: "Juice", artist: "Lizzo", bpm: 120 },
+  { title: "Electric Feel", artist: "MGMT", bpm: 98 },
+  { title: "Shut Up and Dance", artist: "WALK THE MOON", bpm: 128 },
+  { title: "Adventure of a Lifetime", artist: "Coldplay", bpm: 112 },
+  { title: "Feel It Still", artist: "Portugal. The Man", bpm: 79 },
+  { title: "Young Folks", artist: "Peter Bjorn and John", bpm: 138 },
+  { title: "Dreams", artist: "Fleetwood Mac", bpm: 120 },
+  { title: "September", artist: "Earth, Wind & Fire", bpm: 126 },
+  { title: "Blue Monday", artist: "New Order", bpm: 130 },
+  { title: "Go Your Own Way", artist: "Fleetwood Mac", bpm: 136 }
 ];
+
+function uniqueSongsByTitleArtist(songs) {
+  const map = new Map();
+
+  for (const song of songs || []) {
+    const key = `${(song.title || "").toLowerCase()}::${(song.artist || "").toLowerCase()}`;
+    if (!map.has(key)) {
+      map.set(key, song);
+    }
+  }
+
+  return [...map.values()];
+}
+
+function diversifyArtists(songs, limit = 25) {
+  const byArtist = new Map();
+
+  for (const song of songs) {
+    const artist = (song.artist || "").toLowerCase();
+
+    if (!byArtist.has(artist)) {
+      byArtist.set(artist, []);
+    }
+
+    byArtist.get(artist).push(song);
+  }
+
+  const artistQueues = [...byArtist.values()];
+  const output = [];
+
+  while (output.length < limit) {
+    let added = false;
+
+    for (const queue of artistQueues) {
+      if (queue.length > 0) {
+        output.push(queue.shift());
+        added = true;
+      }
+
+      if (output.length >= limit) {
+        break;
+      }
+    }
+
+    if (!added) {
+      break;
+    }
+  }
+
+  return output;
+}
 
 function normalizeSongs(payload) {
   const entries = payload?.songs || payload?.data || payload?.results || [];
@@ -75,6 +145,10 @@ async function fetchSongsByBpm({ bpm, tolerance = 5, keyword = "", limit = 25 })
 
     let songs = normalizeSongs(response.data);
 
+    // Broaden and diversify when external API returns repetitive artist clusters.
+    const fallbackPool = fallbackSongs(targetBpm, Math.min(25, safeTolerance + 8), keyword);
+    songs = uniqueSongsByTitleArtist([...songs, ...fallbackPool]);
+
     if (songs.length === 0) {
       songs = fallbackSongs(targetBpm, safeTolerance, keyword);
       return { source: "fallback", songs };
@@ -82,7 +156,9 @@ async function fetchSongsByBpm({ bpm, tolerance = 5, keyword = "", limit = 25 })
 
     songs = songs
       .filter((song) => Math.abs(song.bpm - targetBpm) <= safeTolerance)
-      .slice(0, limit);
+      .slice(0, 100);
+
+    songs = diversifyArtists(songs, limit);
 
     return {
       source: "getsongbpm",
