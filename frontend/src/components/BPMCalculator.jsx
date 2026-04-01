@@ -69,7 +69,7 @@ function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhas
         </button>
 
         <button type="button" className="action-btn secondary" onClick={onRestartTimer}>
-          Restart Brushing
+          Reset Timer
         </button>
       </div>
 

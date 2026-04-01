@@ -227,7 +227,13 @@ function App() {
   }
 
   function restartBrushing() {
-    startBrushing();
+    const totalSeconds = 120;
+    setBrushingMusicElapsedSeconds(0);
+    lastPlaybackTickRef.current = playbackSeconds;
+    setTimer({ running: false, remaining: totalSeconds });
+    setBrushingPhase("idle");
+    trackEvent("brushing_reset", { song_title: selectedSong?.title, song_artist: selectedSong?.artist });
+    setError("");
   }
 
   function updateValue(key, value) {
