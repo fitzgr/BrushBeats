@@ -459,6 +459,22 @@ select {
   font-weight: 800;
 }
 
+.version-info {
+  font-size: 0.8rem;
+  color: var(--ink);
+  opacity: 0.6;
+  margin-top: 0.4rem;
+}
+
+.version-info code {
+  font-family: "Courier New", monospace;
+  font-size: 0.85em;
+  padding: 0.2rem 0.4rem;
+  background: rgba(16, 33, 37, 0.06);
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
 @keyframes rise {
   from {
     opacity: 0;

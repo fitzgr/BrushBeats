@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import BPMCalculator from "./components/BPMCalculator";
 import SongList from "./components/SongList";
 import Player from "./components/Player";
@@ -20,8 +20,14 @@ function App() {
   const [playbackSeconds, setPlaybackSeconds] = useState(0);
   const [brushingStartPlaybackSeconds, setBrushingStartPlaybackSeconds] = useState(0);
   const [autoplayToken, setAutoplayToken] = useState(0);
+  const [isSongPoolExhausted, setIsSongPoolExhausted] = useState(false);
   const [loading, setLoading] = useState({ bpm: false, songs: false, player: false });
   const [error, setError] = useState("");
+  const seenSongsByQueryRef = useRef(new Map());
+
+  function toSongKey(song) {
+    return `${(song?.title || "").trim().toLowerCase()}::${(song?.artist || "").trim().toLowerCase()}`;
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -63,15 +69,27 @@ function App() {
       try {
         setLoading((prev) => ({ ...prev, songs: true }));
         const result = await getSongs({ bpm: bpmData.searchBpm, tolerance, keyword, seed: songRefreshSeed });
+        const queryKey = `${Math.round(bpmData.searchBpm)}:${tolerance}:${keyword.trim().toLowerCase()}`;
+        const seenForQuery = seenSongsByQueryRef.current.get(queryKey) || new Set();
+        const fetchedSongs = result.songs || [];
+        const unseenSongs = fetchedSongs.filter((song) => !seenForQuery.has(toSongKey(song)));
+
+        for (const song of unseenSongs) {
+          seenForQuery.add(toSongKey(song));
+        }
+
+        seenSongsByQueryRef.current.set(queryKey, seenForQuery);
 
         if (!cancelled) {
-          setSongs(result.songs || []);
+          setSongs(unseenSongs);
+          setIsSongPoolExhausted(fetchedSongs.length > 0 && unseenSongs.length === 0);
           setError("");
         }
       } catch (err) {
         if (!cancelled) {
           setError(err.message);
           setSongs([]);
+          setIsSongPoolExhausted(false);
         }
       } finally {
         if (!cancelled) {
@@ -217,6 +235,7 @@ function App() {
 
         <SongList
           songs={songs}
+          exhausted={isSongPoolExhausted}
           loading={loading.songs}
           tolerance={tolerance}
           keyword={keyword}
@@ -259,6 +278,11 @@ function App() {
             GetSongBPM
           </a>
         </p>
+        {import.meta.env.VITE_GIT_SHA && (
+          <p className="version-info">
+            <code>v{import.meta.env.VITE_GIT_SHA.substring(0, 7)}</code>
+          </p>
+        )}
       </footer>
     </main>
   );
