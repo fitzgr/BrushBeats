@@ -18,13 +18,14 @@ function App() {
   const [timer, setTimer] = useState({ running: false, remaining: 120 });
   const [brushingPhase, setBrushingPhase] = useState("idle");
   const [playbackSeconds, setPlaybackSeconds] = useState(0);
-  const [brushingStartPlaybackSeconds, setBrushingStartPlaybackSeconds] = useState(0);
+  const [brushingMusicElapsedSeconds, setBrushingMusicElapsedSeconds] = useState(0);
   const [autoplayToken, setAutoplayToken] = useState(0);
   const [isSongPoolExhausted, setIsSongPoolExhausted] = useState(false);
   const [loading, setLoading] = useState({ bpm: false, songs: false, player: false });
   const [backendStatus, setBackendStatus] = useState("");
   const [error, setError] = useState("");
   const seenSongsByQueryRef = useRef(new Map());
+  const lastPlaybackTickRef = useRef(null);
 
   function toSongKey(song) {
     return `${(song?.title || "").trim().toLowerCase()}::${(song?.artist || "").trim().toLowerCase()}`;
@@ -131,20 +132,46 @@ function App() {
       return;
     }
 
-    const interval = window.setInterval(() => {
-      setTimer((prev) => {
-        if (prev.remaining <= 1) {
-          window.clearInterval(interval);
-          setBrushingPhase("complete");
-          return { running: false, remaining: 0 };
-        }
+    const remaining = Math.max(0, 120 - Math.floor(brushingMusicElapsedSeconds));
 
-        return { ...prev, remaining: prev.remaining - 1 };
-      });
-    }, 1000);
+    setTimer((prev) => {
+      const nextRunning = remaining > 0;
+      if (prev.remaining === remaining && prev.running === nextRunning) {
+        return prev;
+      }
 
-    return () => window.clearInterval(interval);
-  }, [timer.running, brushingPhase]);
+      return { running: nextRunning, remaining };
+    });
+
+    if (remaining <= 0) {
+      setBrushingPhase("complete");
+    }
+  }, [timer.running, brushingPhase, brushingMusicElapsedSeconds]);
+
+  function handlePlaybackTick(seconds) {
+    setPlaybackSeconds(seconds);
+
+    if (brushingPhase !== "running") {
+      lastPlaybackTickRef.current = seconds;
+      return;
+    }
+
+    const previousTick = lastPlaybackTickRef.current;
+    lastPlaybackTickRef.current = seconds;
+
+    if (typeof previousTick !== "number") {
+      return;
+    }
+
+    const delta = seconds - previousTick;
+
+    // New song starts near 0s; ignore negative jump and continue accumulating from subsequent ticks.
+    if (delta <= 0 || delta > 5) {
+      return;
+    }
+
+    setBrushingMusicElapsedSeconds((prev) => prev + delta);
+  }
 
   async function handleSelectSong(song) {
     return handleSelectSongWithOptions(song, { autoplay: false });
@@ -183,7 +210,8 @@ function App() {
     }
 
     const totalSeconds = 120; // 4 sections × 30 seconds (ADA recommended brushing time)
-    setBrushingStartPlaybackSeconds(playbackSeconds);
+    setBrushingMusicElapsedSeconds(0);
+    lastPlaybackTickRef.current = playbackSeconds;
     setTimer({ running: true, remaining: totalSeconds });
     setBrushingPhase("running");
     setError("");
@@ -277,7 +305,7 @@ function App() {
           loading={loading.player}
           brushingPhase={brushingPhase}
           autoplayToken={autoplayToken}
-          onPlaybackTick={setPlaybackSeconds}
+          onPlaybackTick={handlePlaybackTick}
           onSongEnded={handleSongEnded}
         />
 
@@ -286,8 +314,7 @@ function App() {
           brushingPhase={brushingPhase}
           values={values}
           selectedBpm={Number(selectedSong?.bpm || bpmData?.searchBpm || 120)}
-          playbackSeconds={playbackSeconds}
-          brushingStartPlaybackSeconds={brushingStartPlaybackSeconds}
+          brushingMusicElapsedSeconds={brushingMusicElapsedSeconds}
         />
       </section>
 

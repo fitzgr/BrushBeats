@@ -31,9 +31,9 @@ function isPastActiveTooth(mapIndex, activeMapIndex, direction) {
   return direction === "rtl" ? mapIndex > activeMapIndex : mapIndex < activeMapIndex;
 }
 
-function BrushingGuide({ timer, brushingPhase, values, selectedBpm, playbackSeconds, brushingStartPlaybackSeconds }) {
-  const sectionSeconds = 30;
+function BrushingGuide({ timer, brushingPhase, values, selectedBpm, brushingMusicElapsedSeconds }) {
   const totalSeconds = 120;
+  const beatsPerTooth = 4;
   const topTeeth = Number(values?.top || 16);
   const bottomTeeth = Number(values?.bottom || 16);
   const sections = [
@@ -42,35 +42,42 @@ function BrushingGuide({ timer, brushingPhase, values, selectedBpm, playbackSeco
     { key: "front-bottom", label: "Front Bottom", jaw: "bottom", teeth: bottomTeeth, direction: "ltr" },
     { key: "back-bottom", label: "Back Bottom", jaw: "bottom", teeth: bottomTeeth, direction: "rtl" }
   ];
-  const elapsed = totalSeconds - timer.remaining;
-  const progress = Math.min(100, (elapsed / totalSeconds) * 100);
-  const activeSectionIndex = timer.running ? Math.min(3, Math.floor(elapsed / sectionSeconds)) : -1;
-  const sectionElapsed = timer.running && activeSectionIndex >= 0 ? elapsed - activeSectionIndex * sectionSeconds : 0;
-  const activeSection = activeSectionIndex >= 0 ? sections[activeSectionIndex] : null;
-  const isFrontSurface = Boolean(activeSection?.key.includes("front"));
   const safeBpm = Math.max(40, Math.min(240, Number(selectedBpm) || 120));
   const beatDurationMs = 60000 / safeBpm;
   const beatsPerSecond = safeBpm / 60;
-  const sectionRelativePlayback = timer.running
-    ? Math.max(0, playbackSeconds - brushingStartPlaybackSeconds - activeSectionIndex * sectionSeconds)
+  const totalToothActions = topTeeth * 2 + bottomTeeth * 2;
+  const totalSessionBeats = totalToothActions * beatsPerTooth;
+  const beatsElapsedExact = timer.running
+    ? Math.min(totalSessionBeats, Math.max(0, brushingMusicElapsedSeconds * beatsPerSecond))
     : 0;
-  const beatsInSection = sectionRelativePlayback * beatsPerSecond;
-  const beatsPerTooth = activeSection ? (sectionSeconds * beatsPerSecond) / activeSection.teeth : 1;
-  const movementIndex =
-    timer.running && activeSection
-      ? Math.min(activeSection.teeth - 1, Math.floor(beatsInSection / Math.max(0.5, beatsPerTooth)))
+  const progress = totalSessionBeats > 0 ? Math.min(100, (beatsElapsedExact / totalSessionBeats) * 100) : 0;
+  const activeToothActionIndex =
+    timer.running && totalToothActions > 0
+      ? Math.min(totalToothActions - 1, Math.floor(beatsElapsedExact / beatsPerTooth))
       : -1;
+
+  const sectionStarts = [0, topTeeth, topTeeth * 2, topTeeth * 2 + bottomTeeth];
+  const activeSectionIndex =
+    activeToothActionIndex >= 0
+      ? sectionStarts.reduce((index, start, idx) => (activeToothActionIndex >= start ? idx : index), 0)
+      : -1;
+  const activeSection = activeSectionIndex >= 0 ? sections[activeSectionIndex] : null;
+  const movementIndex = activeSection ? activeToothActionIndex - sectionStarts[activeSectionIndex] : -1;
   const activeMapIndex =
     movementIndex >= 0 && activeSection
       ? activeSection.direction === "rtl"
         ? activeSection.teeth - 1 - movementIndex
         : movementIndex
       : -1;
-  const nextMoveSeconds =
-    timer.running && activeSection
-      ? Math.max(1, Math.ceil((((movementIndex + 1) * beatsPerTooth - beatsInSection) / beatsPerSecond)))
-      : null;
-  const nextSectionSeconds = timer.running ? Math.max(1, sectionSeconds - Math.floor(sectionElapsed)) : null;
+  const isFrontSurface = Boolean(activeSection?.key.includes("front"));
+  const beatsIntoCurrentTooth = movementIndex >= 0 ? beatsElapsedExact - movementIndex * beatsPerTooth - sectionStarts[activeSectionIndex] * beatsPerTooth : 0;
+  const beatsUntilNextTooth = movementIndex >= 0 ? Math.max(0.01, beatsPerTooth - beatsIntoCurrentTooth) : 0;
+  const nextMoveSeconds = timer.running && movementIndex >= 0 ? Math.max(1, Math.ceil(beatsUntilNextTooth / beatsPerSecond)) : null;
+  const sectionBeatsRemaining =
+    timer.running && movementIndex >= 0 && activeSection
+      ? Math.max(0.01, (activeSection.teeth - movementIndex - 1) * beatsPerTooth + beatsUntilNextTooth)
+      : 0;
+  const nextSectionSeconds = timer.running && movementIndex >= 0 ? Math.max(1, Math.ceil(sectionBeatsRemaining / beatsPerSecond)) : null;
 
   const topPoints = createArcPoints({
     count: topTeeth,
