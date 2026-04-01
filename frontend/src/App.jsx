@@ -4,7 +4,13 @@ import SongList from "./components/SongList";
 import Player from "./components/Player";
 import BrushingGuide from "./components/BrushingGuide";
 import { getBpm, getSongs, getYoutubeVideo } from "./api/client";
-import { initializeAnalytics, trackEvent } from "./lib/analytics";
+import {
+  analyticsEnabled,
+  getAnalyticsConsentStatus,
+  initializeAnalytics,
+  setAnalyticsConsent,
+  trackEvent
+} from "./lib/analytics";
 import "./App.css";
 
 function App() {
@@ -25,12 +31,27 @@ function App() {
   const [loading, setLoading] = useState({ bpm: false, songs: false, player: false });
   const [backendStatus, setBackendStatus] = useState("");
   const [error, setError] = useState("");
+  const [analyticsConsent, setAnalyticsConsentState] = useState(() => getAnalyticsConsentStatus());
   const seenSongsByQueryRef = useRef(new Map());
   const lastPlaybackTickRef = useRef(null);
+  const analyticsAvailable = useMemo(() => analyticsEnabled(), []);
 
   useEffect(() => {
+    if (analyticsConsent === "granted") {
+      initializeAnalytics();
+    }
+  }, [analyticsConsent]);
+
+  function handleAcceptAnalytics() {
+    const nextStatus = setAnalyticsConsent(true);
+    setAnalyticsConsentState(nextStatus);
     initializeAnalytics();
-  }, []);
+  }
+
+  function handleDeclineAnalytics() {
+    const nextStatus = setAnalyticsConsent(false);
+    setAnalyticsConsentState(nextStatus);
+  }
 
   function toSongKey(song) {
     return `${(song?.title || "").trim().toLowerCase()}::${(song?.artist || "").trim().toLowerCase()}`;
@@ -288,6 +309,22 @@ function App() {
         <p className={`state-chip ${brushingPhase}`}>Status: {phaseLabel}</p>
       </header>
 
+      {analyticsAvailable && analyticsConsent === "unknown" && (
+        <section className="consent-banner" role="region" aria-label="Privacy controls">
+          <p>
+            Help improve BrushBeats by sharing anonymous usage analytics. We never send typed text or personal data.
+          </p>
+          <div className="consent-actions">
+            <button type="button" className="action-btn" onClick={handleAcceptAnalytics}>
+              Allow Analytics
+            </button>
+            <button type="button" className="action-btn secondary" onClick={handleDeclineAnalytics}>
+              Decline
+            </button>
+          </div>
+        </section>
+      )}
+
       {backendStatus && !error && <p className="info-banner">{backendStatus}</p>}
       {error && <p className="error-banner">{error}</p>}
 
@@ -347,6 +384,20 @@ function App() {
             GetSongBPM
           </a>
         </p>
+        {analyticsAvailable && (
+          <div className="privacy-controls">
+            <span>Analytics: {analyticsConsent === "granted" ? "On" : "Off"}</span>
+            {analyticsConsent === "granted" ? (
+              <button type="button" className="privacy-toggle" onClick={handleDeclineAnalytics}>
+                Turn Off
+              </button>
+            ) : (
+              <button type="button" className="privacy-toggle" onClick={handleAcceptAnalytics}>
+                Turn On
+              </button>
+            )}
+          </div>
+        )}
         {import.meta.env.VITE_GIT_SHA && (
           <p className="version-info">
             <code>v{import.meta.env.VITE_GIT_SHA.substring(0, 7)}</code>
