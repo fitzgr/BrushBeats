@@ -1,0 +1,29 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap");
+
+:root {
+  font-family: "Outfit", sans-serif;
+  line-height: 1.45;
+  font-weight: 400;
+  color: #102125;
+  background: #fff9ef;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(45rem 45rem at -15% -10%, rgba(183, 224, 197, 0.7), transparent),
+    radial-gradient(35rem 35rem at 110% 0%, rgba(184, 219, 229, 0.8), transparent),
+    #fff9ef;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Space Grotesk", sans-serif;
+}

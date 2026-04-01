@@ -1,1 +1,102 @@
 # BrushBeats
+
+BrushBeats is a full-stack web app that calculates your brushing tempo (BPM), finds songs near that BPM, and embeds playable YouTube videos without leaving the app.
+
+## Stack
+
+- Frontend: React + Vite
+- Backend: Node.js + Express
+- Integrations:
+  - GetSongBPM API (song BPM lookup)
+  - YouTube Data API v3 (video matching)
+
+## Project Structure
+
+- frontend: React UI
+- backend: Express API and integrations
+- .env.example: required environment variables
+
+## Features Implemented
+
+- BPM calculator with configurable:
+  - top teeth (8-16)
+  - bottom teeth (8-16)
+  - section duration (15s or 30s)
+- BPM outputs:
+  - Raw BPM
+  - Search/Music BPM (raw BPM doubled)
+- Song discovery endpoint and UI with:
+  - BPM tolerance slider
+  - keyword filter
+- YouTube matching endpoint and embedded iframe player
+- Caching for:
+  - song BPM queries
+  - YouTube lookup results
+- Basic API quota and failure handling with graceful fallback
+- Bonus: 2-minute brushing timer button
+
+## API Endpoints
+
+- GET /api/bpm?top=16&bottom=16&sectionSeconds=30
+- GET /api/songs?bpm=128&tolerance=5&q=dua
+- GET /api/youtube?title=Levitating&artist=Dua%20Lipa
+
+## Environment Variables
+
+Copy .env.example to .env at the project root and fill values:
+
+- GETSONGBPM_API_KEY
+- GETSONGBPM_BASE_URL (default: https://api.getsongbpm.com)
+- YOUTUBE_API_KEY
+- PORT (default: 4000)
+
+## Run Locally
+
+1. Install dependencies (already installed if you followed scaffold steps):
+
+```bash
+npm install
+npm install --prefix backend
+npm install --prefix frontend
+```
+
+2. Start backend + frontend together:
+
+```bash
+npm run dev
+```
+
+3. Open:
+
+- Frontend: http://localhost:5173
+- Backend health: http://localhost:4000/api/health
+
+## Notes
+
+- If API keys are missing or rate limited, song discovery falls back to a local sample list.
+- YouTube endpoint returns a warning when YOUTUBE_API_KEY is not configured.
+
+## GitHub Hosting and GetSongBPM URLs
+
+This repo includes a GitHub Pages workflow at [.github/workflows/deploy-frontend.yml](.github/workflows/deploy-frontend.yml).
+
+After pushing to main and enabling Pages (Source: GitHub Actions), your public website URL will be:
+
+- Website URL: https://fitzgr.github.io/BrushBeats/
+
+BrushBeats includes a visible GetSongBPM attribution/footer link in the app. Use this as your backlink URL for GetSongBPM registration:
+
+- Backlink URL: https://fitzgr.github.io/BrushBeats/#credit
+
+## Deploy Steps (GitHub)
+
+1. Push your code to main.
+2. In GitHub repo settings, open Pages and make sure deployment source is GitHub Actions.
+3. Wait for the Deploy Frontend to GitHub Pages workflow to complete.
+4. Open https://fitzgr.github.io/BrushBeats/ and verify footer attribution is visible.
+
+## Production Backend Note
+
+GitHub Pages can host the React frontend but not the Express backend. For production API routes, deploy backend separately (Render, Railway, Fly.io, or similar), then set frontend env:
+
+- VITE_API_BASE=https://your-backend-domain.example
