@@ -4,6 +4,7 @@ import SongList from "./components/SongList";
 import Player from "./components/Player";
 import BrushingGuide from "./components/BrushingGuide";
 import { getBpm, getSongs, getYoutubeVideo } from "./api/client";
+import { initializeAnalytics, trackEvent } from "./lib/analytics";
 import "./App.css";
 
 function App() {
@@ -26,6 +27,10 @@ function App() {
   const [error, setError] = useState("");
   const seenSongsByQueryRef = useRef(new Map());
   const lastPlaybackTickRef = useRef(null);
+
+  useEffect(() => {
+    initializeAnalytics();
+  }, []);
 
   function toSongKey(song) {
     return `${(song?.title || "").trim().toLowerCase()}::${(song?.artist || "").trim().toLowerCase()}`;
@@ -61,6 +66,7 @@ function App() {
 
         if (!cancelled) {
           setBpmData(data);
+          trackEvent("bpm_calculated", { top_teeth: values.top, bottom_teeth: values.bottom, search_bpm: data.searchBpm });
           setError("");
         }
       } catch (err) {
@@ -144,6 +150,7 @@ function App() {
     });
 
     if (remaining <= 0) {
+      trackEvent("brushing_completed");
       setBrushingPhase("complete");
     }
   }, [timer.running, brushingPhase, brushingMusicElapsedSeconds]);
@@ -174,6 +181,7 @@ function App() {
   }
 
   async function handleSelectSong(song) {
+    trackEvent("song_selected", { title: song.title, artist: song.artist });
     return handleSelectSongWithOptions(song, { autoplay: false });
   }
 
@@ -214,6 +222,7 @@ function App() {
     lastPlaybackTickRef.current = playbackSeconds;
     setTimer({ running: true, remaining: totalSeconds });
     setBrushingPhase("running");
+    trackEvent("brushing_started", { song_title: selectedSong?.title, song_artist: selectedSong?.artist });
     setError("");
   }
 
@@ -239,6 +248,7 @@ function App() {
     const nextSong = candidates[Math.floor(Math.random() * candidates.length)];
 
     if (nextSong) {
+      trackEvent("song_auto_queued", { title: nextSong.title, artist: nextSong.artist });
       await handleSelectSongWithOptions(nextSong, { autoplay: true });
     }
   }
