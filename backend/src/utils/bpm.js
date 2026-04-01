@@ -2,10 +2,10 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
-function calculateBpm({ top = 16, bottom = 16, sectionSeconds = 30 }) {
+function calculateBpm({ top = 16, bottom = 16, sectionSeconds = 15 }) {
   const safeTop = clamp(Number(top), 8, 16);
   const safeBottom = clamp(Number(bottom), 8, 16);
-  const safeSectionSeconds = Number(sectionSeconds) === 15 ? 15 : 30;
+  const safeSectionSeconds = Number(sectionSeconds) === 30 ? 30 : 15;
 
   const totalTeeth = safeTop + safeBottom;
   const teethPerSection = totalTeeth / 2;

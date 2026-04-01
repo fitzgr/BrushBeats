@@ -33,8 +33,8 @@ function BPMCalculator({ values, onChange, bpmData, loading, timer, onStartTimer
             value={values.sectionSeconds}
             onChange={(event) => onChange("sectionSeconds", Number(event.target.value))}
           >
+            <option value={15}>15 seconds (recommended)</option>
             <option value={30}>30 seconds</option>
-            <option value={15}>15 seconds</option>
           </select>
         </label>
       </div>

@@ -7,7 +7,7 @@ import { getBpm, getSongs, getYoutubeVideo } from "./api/client";
 import "./App.css";
 
 function App() {
-  const [values, setValues] = useState({ top: 16, bottom: 16, sectionSeconds: 30 });
+  const [values, setValues] = useState({ top: 16, bottom: 16, sectionSeconds: 15 });
   const [bpmData, setBpmData] = useState(null);
   const [songs, setSongs] = useState([]);
   const [selectedSong, setSelectedSong] = useState(null);
