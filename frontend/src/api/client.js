@@ -26,11 +26,10 @@ async function request(path) {
   return response.json();
 }
 
-export function getBpm({ top, bottom, sectionSeconds }) {
+export function getBpm({ top, bottom }) {
   const params = new URLSearchParams({
     top: String(top),
-    bottom: String(bottom),
-    sectionSeconds: String(sectionSeconds)
+    bottom: String(bottom)
   });
 
   return request(`/api/bpm?${params.toString()}`);
