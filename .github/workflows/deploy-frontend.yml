@@ -35,6 +35,8 @@ jobs:
         run: npm ci
 
       - name: Build frontend
+        env:
+          VITE_API_BASE: ${{ secrets.VITE_API_BASE }}
         run: npm run build
 
       - name: Configure Pages

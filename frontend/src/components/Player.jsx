@@ -1,16 +1,85 @@
-function Player({ selectedSong, playerData, loading, isBrushing, playToken }) {
-  let iframeSrc = null;
+import { useEffect, useMemo, useRef, useState } from "react";
 
-  if (playerData?.embedUrl) {
+function parseVideoId(playerData) {
+  if (playerData?.videoId) {
+    return playerData.videoId;
+  }
+
+  if (!playerData?.embedUrl) {
+    return null;
+  }
+
+  try {
     const url = new URL(playerData.embedUrl);
-    url.searchParams.set("rel", "0");
+    return url.pathname.split("/").pop() || null;
+  } catch {
+    return null;
+  }
+}
 
-    if (isBrushing) {
-      url.searchParams.set("autoplay", "1");
+function Player({ selectedSong, playerData, loading, brushingPhase }) {
+  const hostRef = useRef(null);
+  const playerRef = useRef(null);
+  const [apiReady, setApiReady] = useState(Boolean(window.YT?.Player));
+  const videoId = useMemo(() => parseVideoId(playerData), [playerData]);
+
+  useEffect(() => {
+    if (window.YT?.Player) {
+      setApiReady(true);
+      return;
     }
 
-    iframeSrc = url.toString();
-  }
+    const existingScript = document.querySelector('script[src="https://www.youtube.com/iframe_api"]');
+
+    if (!existingScript) {
+      const script = document.createElement("script");
+      script.src = "https://www.youtube.com/iframe_api";
+      document.body.appendChild(script);
+    }
+
+    const previous = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => {
+      if (typeof previous === "function") {
+        previous();
+      }
+      setApiReady(true);
+    };
+
+    return () => {
+      window.onYouTubeIframeAPIReady = previous;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!apiReady || !videoId || !hostRef.current) {
+      return;
+    }
+
+    if (playerRef.current) {
+      playerRef.current.destroy();
+      playerRef.current = null;
+    }
+
+    playerRef.current = new window.YT.Player(hostRef.current, {
+      videoId,
+      playerVars: {
+        rel: 0,
+        autoplay: 0,
+        playsinline: 1,
+        modestbranding: 1
+      },
+      events: {
+        onReady: () => {}
+      }
+    });
+
+    return () => {
+      if (playerRef.current) {
+        playerRef.current.destroy();
+        playerRef.current = null;
+      }
+    };
+  }, [apiReady, videoId]);
 
   return (
     <section className="card player">
@@ -25,19 +94,16 @@ function Player({ selectedSong, playerData, loading, isBrushing, playToken }) {
         <p>Could not find an embeddable video for {selectedSong.title}.</p>
       )}
 
+      {brushingPhase === "running" && (
+        <p className="player-status">Brushing timer is running independently. Video playback remains under YouTube controls.</p>
+      )}
+
       {playerData?.embedUrl && (
         <>
           <h3>
             {selectedSong.title} - {selectedSong.artist}
           </h3>
-          <iframe
-            key={`${playerData.videoId || "video"}-${playToken}-${isBrushing ? "run" : "idle"}`}
-            title={`${selectedSong.title} by ${selectedSong.artist}`}
-            src={iframeSrc}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allowFullScreen
-          />
+          <div ref={hostRef} className="player-frame" aria-label={`${selectedSong.title} by ${selectedSong.artist}`} />
         </>
       )}
     </section>

@@ -14,8 +14,9 @@ function App() {
   const [playerData, setPlayerData] = useState(null);
   const [tolerance, setTolerance] = useState(5);
   const [keyword, setKeyword] = useState("");
+  const [songRefreshSeed, setSongRefreshSeed] = useState(0);
   const [timer, setTimer] = useState({ running: false, remaining: 120 });
-  const [playToken, setPlayToken] = useState(0);
+  const [brushingPhase, setBrushingPhase] = useState("idle");
   const [loading, setLoading] = useState({ bpm: false, songs: false, player: false });
   const [error, setError] = useState("");
 
@@ -58,7 +59,7 @@ function App() {
     async function loadSongs() {
       try {
         setLoading((prev) => ({ ...prev, songs: true }));
-        const result = await getSongs({ bpm: bpmData.searchBpm, tolerance, keyword });
+        const result = await getSongs({ bpm: bpmData.searchBpm, tolerance, keyword, seed: songRefreshSeed });
 
         if (!cancelled) {
           setSongs(result.songs || []);
@@ -81,10 +82,10 @@ function App() {
       cancelled = true;
       window.clearTimeout(timeout);
     };
-  }, [bpmData?.searchBpm, tolerance, keyword]);
+  }, [bpmData?.searchBpm, tolerance, keyword, songRefreshSeed]);
 
   useEffect(() => {
-    if (!timer.running) {
+    if (!timer.running || brushingPhase !== "running") {
       return;
     }
 
@@ -92,6 +93,7 @@ function App() {
       setTimer((prev) => {
         if (prev.remaining <= 1) {
           window.clearInterval(interval);
+          setBrushingPhase("complete");
           return { running: false, remaining: 0 };
         }
 
@@ -100,7 +102,7 @@ function App() {
     }, 1000);
 
     return () => window.clearInterval(interval);
-  }, [timer.running]);
+  }, [timer.running, brushingPhase]);
 
   async function handleSelectSong(song) {
     setSelectedSong(song);
@@ -111,36 +113,36 @@ function App() {
       const video = await getYoutubeVideo({ title: song.title, artist: song.artist });
       setPlayerData(video);
       setError("");
+      return video;
     } catch (err) {
       setError(err.message);
+      return null;
     } finally {
       setLoading((prev) => ({ ...prev, player: false }));
     }
   }
 
-  async function startBrushing() {
-    try {
-      const song = selectedSong || songs[0];
-
-      if (!song) {
-        setError("Pick a song first so we can start your brushing session with music.");
-        return;
-      }
-
-      if (!selectedSong || selectedSong.title !== song.title || selectedSong.artist !== song.artist) {
-        await handleSelectSong(song);
-      }
-
-      setPlayToken((prev) => prev + 1);
-      setTimer({ running: true, remaining: 120 });
-      setError("");
-    } catch (err) {
-      setError(err.message);
+  function startBrushing() {
+    if (!playerData?.embedUrl) {
+      setError("Start playback first, then press Start Brushing to begin only the brush timer and guide.");
+      return;
     }
+
+    setTimer({ running: true, remaining: 120 });
+    setBrushingPhase("running");
+    setError("");
+  }
+
+  function restartBrushing() {
+    startBrushing();
   }
 
   function updateValue(key, value) {
     setValues((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function regenerateSongs() {
+    setSongRefreshSeed((prev) => prev + 1);
   }
 
   const subtitle = useMemo(() => {
@@ -151,12 +153,25 @@ function App() {
     return `Target songs around ${Math.round(bpmData.searchBpm)} BPM (+/- ${tolerance}).`;
   }, [bpmData, tolerance]);
 
+  const phaseLabel = useMemo(() => {
+    if (brushingPhase === "running") {
+      return "Brushing in progress";
+    }
+
+    if (brushingPhase === "complete") {
+      return "Session complete";
+    }
+
+    return "Idle";
+  }, [brushingPhase]);
+
   return (
     <main className="app-shell">
       <header className="app-header">
         <p className="eyebrow">BrushBeats</p>
         <h1>Two-minute brushing. Perfect tempo. Better vibes.</h1>
         <p>{subtitle}</p>
+        <p className={`state-chip ${brushingPhase}`}>Status: {phaseLabel}</p>
       </header>
 
       {error && <p className="error-banner">{error}</p>}
@@ -168,7 +183,9 @@ function App() {
           bpmData={bpmData}
           loading={loading.bpm}
           timer={timer}
+          brushingPhase={brushingPhase}
           onStartTimer={startBrushing}
+          onRestartTimer={restartBrushing}
         />
 
         <SongList
@@ -179,18 +196,24 @@ function App() {
           onToleranceChange={setTolerance}
           onKeywordChange={setKeyword}
           onSelectSong={handleSelectSong}
+          onRegenerate={regenerateSongs}
         />
 
         <Player
           selectedSong={selectedSong}
           playerData={playerData}
           loading={loading.player}
-          isBrushing={timer.running}
-          playToken={playToken}
+          brushingPhase={brushingPhase}
         />
 
-        <BrushingGuide timer={timer} />
+        <BrushingGuide timer={timer} brushingPhase={brushingPhase} values={values} />
       </section>
+
+      {brushingPhase === "complete" && (
+        <section className="success-banner" aria-live="polite">
+          Great work, your 2-minute clean is complete. Keep this habit daily for stronger teeth and healthier gums.
+        </section>
+      )}
 
       <footer className="credit-strip" id="credit">
         <p>

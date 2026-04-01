@@ -1,8 +1,9 @@
-function SongList({ songs, loading, tolerance, keyword, onToleranceChange, onKeywordChange, onSelectSong }) {
+function SongList({ songs, loading, tolerance, keyword, onToleranceChange, onKeywordChange, onSelectSong, onRegenerate }) {
   return (
     <section className="card songs">
       <h2>Song Discovery</h2>
       <p>Find tracks near your target BPM using GetSongBPM + optional keyword filters.</p>
+      <p className="song-note">Use regenerate to pull a fresh set at the same BPM range and discover different artists.</p>
 
       <div className="song-filters">
         <label>
@@ -25,6 +26,10 @@ function SongList({ songs, loading, tolerance, keyword, onToleranceChange, onKey
             onChange={(event) => onKeywordChange(event.target.value)}
           />
         </label>
+
+        <button type="button" className="action-btn regen" onClick={onRegenerate} disabled={loading}>
+          {loading ? "Refreshing..." : "Regenerate Artists & Songs"}
+        </button>
       </div>
 
       {loading && <p>Loading songs...</p>}

@@ -21,11 +21,12 @@ export function getBpm({ top, bottom, sectionSeconds }) {
   return request(`/api/bpm?${params.toString()}`);
 }
 
-export function getSongs({ bpm, tolerance, keyword }) {
+export function getSongs({ bpm, tolerance, keyword, seed = 0 }) {
   const params = new URLSearchParams({
     bpm: String(Math.round(bpm)),
     tolerance: String(tolerance),
-    q: keyword || ""
+    q: keyword || "",
+    seed: String(seed)
   });
 
   return request(`/api/songs?${params.toString()}`);

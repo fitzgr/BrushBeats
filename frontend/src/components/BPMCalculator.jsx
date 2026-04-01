@@ -1,12 +1,21 @@
-function BPMCalculator({ values, onChange, bpmData, loading, timer, onStartTimer }) {
+function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhase, onStartTimer, onRestartTimer }) {
+  const buttonLabel =
+    brushingPhase === "running"
+      ? `Brushing... ${timer.remaining}s`
+      : brushingPhase === "complete"
+          ? "Brush Again (2:00)"
+          : "Start Brushing (2:00)";
+
   return (
     <section className="card calculator">
       <h2>Tempo Lab</h2>
-      <p>Dial in your brushing setup and BrushBeats calculates your ideal rhythm.</p>
+      <p>
+        Enter how many teeth you have on the top and bottom. BrushBeats uses those tooth counts to calculate your brushing tempo.
+      </p>
 
       <div className="controls-grid">
         <label>
-          Top Teeth: {values.top}
+          Top Teeth Count: {values.top}
           <input
             type="range"
             min="8"
@@ -17,7 +26,7 @@ function BPMCalculator({ values, onChange, bpmData, loading, timer, onStartTimer
         </label>
 
         <label>
-          Bottom Teeth: {values.bottom}
+          Bottom Teeth Count: {values.bottom}
           <input
             type="range"
             min="8"
@@ -39,6 +48,8 @@ function BPMCalculator({ values, onChange, bpmData, loading, timer, onStartTimer
         </label>
       </div>
 
+      <p className="form-note">These sliders represent your actual number of teeth, not brushing speed.</p>
+
       <div className="bpm-pill" data-loading={loading}>
         <span className="label">Search BPM</span>
         <strong>{bpmData?.searchBpm ?? bpmData?.musicBpm ?? "--"}</strong>
@@ -49,9 +60,17 @@ function BPMCalculator({ values, onChange, bpmData, loading, timer, onStartTimer
         {bpmData ? `You're brushing at ${Math.round(bpmData.searchBpm ?? bpmData.musicBpm)} BPM.` : "Adjust teeth counts to calculate BPM."}
       </p>
 
-      <button type="button" className="action-btn" onClick={onStartTimer}>
-        {timer.running ? `Brushing... ${timer.remaining}s` : "Start Brushing (2:00)"}
-      </button>
+      <div className="session-actions">
+        <button type="button" className="action-btn" onClick={onStartTimer}>
+          {buttonLabel}
+        </button>
+
+        <button type="button" className="action-btn secondary" onClick={onRestartTimer}>
+          Restart Brushing
+        </button>
+      </div>
+
+      <p className="timer-note">Start Brushing controls only the countdown and brush guide. It never reloads or restarts the YouTube video.</p>
     </section>
   );
 }
