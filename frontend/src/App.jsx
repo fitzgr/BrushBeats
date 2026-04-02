@@ -143,11 +143,11 @@ function App() {
     }
 
     const infoTimer = window.setTimeout(() => {
-      setBackendStatus("Waking up the free backend. The first request can take 10-30 seconds, so please hang on.");
+      setBackendStatus("Waking up the backend. The first request should take no more than 30 seconds, so please hang on.");
     }, 1800);
 
     const detailTimer = window.setTimeout(() => {
-      setBackendStatus("Still connecting to the free backend. Your request is still in progress and should finish once the service wakes up.");
+      setBackendStatus("Still connecting to the backend. This is taking longer than expected, but it should finish shortly.");
     }, 7000);
 
     return () => {
