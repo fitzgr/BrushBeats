@@ -132,13 +132,12 @@
 }
 
 .desktop-step-layout {
-  grid-template-columns: minmax(0, 760px);
-  justify-content: center;
+  grid-template-columns: repeat(12, 1fr);
 }
 
 .desktop-step-layout .calculator,
 .desktop-step-layout .songs {
-  grid-column: 1;
+  grid-column: span 12;
 }
 
 .desktop-brush-layout {
@@ -248,14 +247,17 @@
 
 .desktop-brush-layout .brush-actions-card {
   grid-column: span 4;
+  order: 2;
 }
 
 .desktop-brush-layout .player {
   grid-column: span 4;
+  order: 1;
 }
 
 .desktop-brush-layout .guide {
   grid-column: span 4;
+  order: 3;
 }
 
 .brush-selected-song {
