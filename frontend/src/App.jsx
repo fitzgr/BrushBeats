@@ -282,6 +282,9 @@ function App() {
 
   async function handleSelectSong(song) {
     trackEvent("song_selected", { title: song.title, artist: song.artist });
+    if (device.isMobile) {
+      setMobileWorkflowStep("brush");
+    }
     return handleSelectSongWithOptions(song, { autoplay: false });
   }
 
