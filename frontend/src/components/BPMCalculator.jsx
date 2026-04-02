@@ -1,5 +1,4 @@
 function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhase, isMobile, hideSessionActions = false, onStartTimer, onRestartTimer }) {
-  const toothRangeMarks = Array.from({ length: 9 }, (_, index) => 8 + index);
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -32,17 +31,14 @@ function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhas
             <strong className="slider-value-badge">{values.top}</strong>
           </span>
           <input
+            className="tooth-range-input"
             type="range"
             min="8"
             max="16"
+            step="1"
             value={values.top}
             onChange={(event) => onChange("top", Number(event.target.value))}
           />
-          <span className="slider-tick-row" aria-hidden="true">
-            {toothRangeMarks.map((mark) => (
-              <span key={`top-${mark}`} className="slider-tick" />
-            ))}
-          </span>
           <span className="slider-range-readout" aria-hidden="true">
             <span>8</span>
             <span className="slider-range-hint">Adult range per arch</span>
@@ -56,17 +52,14 @@ function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhas
             <strong className="slider-value-badge">{values.bottom}</strong>
           </span>
           <input
+            className="tooth-range-input"
             type="range"
             min="8"
             max="16"
+            step="1"
             value={values.bottom}
             onChange={(event) => onChange("bottom", Number(event.target.value))}
           />
-          <span className="slider-tick-row" aria-hidden="true">
-            {toothRangeMarks.map((mark) => (
-              <span key={`bottom-${mark}`} className="slider-tick" />
-            ))}
-          </span>
           <span className="slider-range-readout" aria-hidden="true">
             <span>8</span>
             <span className="slider-range-hint">Adult range per arch</span>
