@@ -103,6 +103,30 @@
   color: #40545a;
 }
 
+.workflow-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin: 0 0 1rem;
+}
+
+.workflow-tab {
+  border: 1px solid rgba(16, 33, 37, 0.2);
+  background: #fffdf8;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 0.55rem 0.4rem;
+  cursor: pointer;
+}
+
+.workflow-tab.active {
+  background: linear-gradient(130deg, #f7dfc9, #ffd8b8);
+  border-color: rgba(202, 95, 22, 0.45);
+  color: #6f3206;
+}
+
 .error-banner {
   margin: 0 0 1rem;
   padding: 0.85rem 1rem;
@@ -198,6 +222,15 @@
 .layout-grid.mobile-mode .guide {
   grid-column: span 12;
   order: 4;
+}
+
+.brush-actions-card {
+  grid-column: span 12;
+}
+
+.brush-selected-song {
+  font-size: 0.9rem;
+  color: #4f5f63;
 }
 
 .card {

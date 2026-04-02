@@ -1,4 +1,4 @@
-function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhase, isMobile, onStartTimer, onRestartTimer }) {
+function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhase, isMobile, hideSessionActions = false, onStartTimer, onRestartTimer }) {
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -65,21 +65,25 @@ function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhas
           : "Adjust teeth counts to calculate BPM."}
       </p>
 
-      <div className="session-actions">
-        <button type="button" className="action-btn" onClick={onStartTimer}>
-          {buttonLabel}
-        </button>
+      {!hideSessionActions && (
+        <>
+          <div className="session-actions">
+            <button type="button" className="action-btn" onClick={onStartTimer}>
+              {buttonLabel}
+            </button>
 
-        <button type="button" className="action-btn secondary" onClick={onRestartTimer}>
-          {isMobile ? "Reset" : "Reset Timer"}
-        </button>
-      </div>
+            <button type="button" className="action-btn secondary" onClick={onRestartTimer}>
+              {isMobile ? "Reset" : "Reset Timer"}
+            </button>
+          </div>
 
-      <p className="timer-note">
-        {isMobile
-          ? "Timer and guide only. Video controls stay in YouTube."
-          : "Start Brushing controls only the countdown and brush guide. It never reloads or restarts the YouTube video."}
-      </p>
+          <p className="timer-note">
+            {isMobile
+              ? "Timer and guide only. Video controls stay in YouTube."
+              : "Start Brushing controls only the countdown and brush guide. It never reloads or restarts the YouTube video."}
+          </p>
+        </>
+      )}
     </section>
   );
 }

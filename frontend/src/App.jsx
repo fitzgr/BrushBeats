@@ -46,6 +46,7 @@ function App() {
   const [storageBannerDismissed, setStorageBannerDismissedState] = useState(() => isStorageBannerDismissed());
   const [lastBrushedSong, setLastBrushedSong] = useState(null);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [mobileWorkflowStep, setMobileWorkflowStep] = useState("teeth");
   const seenSongsByQueryRef = useRef(new Map());
   const lastPlaybackTickRef = useRef(null);
   const analyticsAvailable = useMemo(() => analyticsEnabled(), []);
@@ -56,6 +57,12 @@ function App() {
       initializeAnalytics();
     }
   }, [analyticsConsent]);
+
+  useEffect(() => {
+    if (!device.isMobile && mobileWorkflowStep !== "teeth") {
+      setMobileWorkflowStep("teeth");
+    }
+  }, [device.isMobile, mobileWorkflowStep]);
 
   function handleAcceptAnalytics() {
     const nextStatus = setAnalyticsConsent(true);
@@ -383,6 +390,22 @@ function App() {
     return "Idle";
   }, [brushingPhase]);
 
+  function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes}:${secs.toString().padStart(2, "0")}`;
+  }
+
+  const mobileStartLabel =
+    brushingPhase === "running"
+      ? `Brushing... ${formatTime(timer.remaining)}`
+      : brushingPhase === "complete"
+          ? "Brush Again (2:00)"
+          : "Start Brushing (2:00)";
+
+  const showTopConsentNotices = !device.isMobile || mobileWorkflowStep === "teeth";
+  const showLastSongBanner = !device.isMobile || mobileWorkflowStep === "music";
+
   return (
     <main className={`app-shell ${device.isMobile ? "mobile-shell" : "desktop-shell"}`}>
       <header className="app-header">
@@ -393,7 +416,33 @@ function App() {
         <p className={`mode-chip ${device.mode}`}>{device.isMobile ? "Mobile Layout" : "Desktop Layout"}</p>
       </header>
 
-      {analyticsAvailable && analyticsConsent === "unknown" && (
+      {device.isMobile && (
+        <nav className="workflow-tabs" aria-label="Mobile brushing workflow tabs">
+          <button
+            type="button"
+            className={`workflow-tab${mobileWorkflowStep === "teeth" ? " active" : ""}`}
+            onClick={() => setMobileWorkflowStep("teeth")}
+          >
+            1. Teeth
+          </button>
+          <button
+            type="button"
+            className={`workflow-tab${mobileWorkflowStep === "music" ? " active" : ""}`}
+            onClick={() => setMobileWorkflowStep("music")}
+          >
+            2. Music
+          </button>
+          <button
+            type="button"
+            className={`workflow-tab${mobileWorkflowStep === "brush" ? " active" : ""}`}
+            onClick={() => setMobileWorkflowStep("brush")}
+          >
+            3. Brush
+          </button>
+        </nav>
+      )}
+
+      {showTopConsentNotices && analyticsAvailable && analyticsConsent === "unknown" && (
         <section className="consent-banner" role="region" aria-label="Privacy controls">
           <p>
             Help improve BrushBeats by sharing anonymous usage analytics. We never send typed text or personal data.
@@ -412,7 +461,7 @@ function App() {
         </section>
       )}
 
-      {!storageBannerDismissed && (
+      {showTopConsentNotices && !storageBannerDismissed && (
         <section className="storage-banner" role="region" aria-label="Storage consent controls">
           <p>
             BrushBeats can store your last brushed song in browser storage (cookies/localStorage) so you can replay it next
@@ -435,7 +484,7 @@ function App() {
         </section>
       )}
 
-      {lastBrushedSong && storageConsent === "granted" && (
+      {showLastSongBanner && lastBrushedSong && storageConsent === "granted" && (
         <section className="last-song-banner" aria-live="polite">
           <p>
             Last brushed song: <strong>{lastBrushedSong.title}</strong> by <strong>{lastBrushedSong.artist}</strong>
@@ -449,52 +498,131 @@ function App() {
       {backendStatus && !error && <p className="info-banner">{backendStatus}</p>}
       {error && <p className="error-banner">{error}</p>}
 
-      <section className={`layout-grid ${device.isMobile ? "mobile-mode" : "desktop-mode"}`}>
-        <BPMCalculator
-          values={values}
-          onChange={updateValue}
-          bpmData={bpmData}
-          loading={loading.bpm}
-          timer={timer}
-          brushingPhase={brushingPhase}
-          isMobile={device.isMobile}
-          onStartTimer={startBrushing}
-          onRestartTimer={restartBrushing}
-        />
+      {!device.isMobile && (
+        <section className="layout-grid desktop-mode">
+          <BPMCalculator
+            values={values}
+            onChange={updateValue}
+            bpmData={bpmData}
+            loading={loading.bpm}
+            timer={timer}
+            brushingPhase={brushingPhase}
+            isMobile={false}
+            onStartTimer={startBrushing}
+            onRestartTimer={restartBrushing}
+          />
 
-        <SongList
-          songs={songs}
-          exhausted={isSongPoolExhausted}
-          loading={loading.songs}
-          tolerance={tolerance}
-          keyword={keyword}
-          isMobile={device.isMobile}
-          onToleranceChange={setTolerance}
-          onKeywordChange={setKeyword}
-          onSelectSong={handleSelectSong}
-          onRegenerate={regenerateSongs}
-        />
+          <SongList
+            songs={songs}
+            exhausted={isSongPoolExhausted}
+            loading={loading.songs}
+            tolerance={tolerance}
+            keyword={keyword}
+            isMobile={false}
+            onToleranceChange={setTolerance}
+            onKeywordChange={setKeyword}
+            onSelectSong={handleSelectSong}
+            onRegenerate={regenerateSongs}
+          />
 
-        <Player
-          selectedSong={selectedSong}
-          playerData={playerData}
-          loading={loading.player}
-          brushingPhase={brushingPhase}
-          isMobile={device.isMobile}
-          autoplayToken={autoplayToken}
-          onPlaybackTick={handlePlaybackTick}
-          onSongEnded={handleSongEnded}
-        />
+          <Player
+            selectedSong={selectedSong}
+            playerData={playerData}
+            loading={loading.player}
+            brushingPhase={brushingPhase}
+            isMobile={false}
+            autoplayToken={autoplayToken}
+            onPlaybackTick={handlePlaybackTick}
+            onSongEnded={handleSongEnded}
+          />
 
-        <BrushingGuide
-          timer={timer}
-          brushingPhase={brushingPhase}
-          values={values}
-          selectedBpm={Number(selectedSong?.bpm || bpmData?.searchBpm || 120)}
-          isMobile={device.isMobile}
-          brushingMusicElapsedSeconds={brushingMusicElapsedSeconds}
-        />
-      </section>
+          <BrushingGuide
+            timer={timer}
+            brushingPhase={brushingPhase}
+            values={values}
+            selectedBpm={Number(selectedSong?.bpm || bpmData?.searchBpm || 120)}
+            isMobile={false}
+            brushingMusicElapsedSeconds={brushingMusicElapsedSeconds}
+          />
+        </section>
+      )}
+
+      {device.isMobile && mobileWorkflowStep === "teeth" && (
+        <section className="layout-grid mobile-mode">
+          <BPMCalculator
+            values={values}
+            onChange={updateValue}
+            bpmData={bpmData}
+            loading={loading.bpm}
+            timer={timer}
+            brushingPhase={brushingPhase}
+            isMobile
+            hideSessionActions
+            onStartTimer={startBrushing}
+            onRestartTimer={restartBrushing}
+          />
+        </section>
+      )}
+
+      {device.isMobile && mobileWorkflowStep === "music" && (
+        <section className="layout-grid mobile-mode">
+          <SongList
+            songs={songs}
+            exhausted={isSongPoolExhausted}
+            loading={loading.songs}
+            tolerance={tolerance}
+            keyword={keyword}
+            isMobile
+            onToleranceChange={setTolerance}
+            onKeywordChange={setKeyword}
+            onSelectSong={handleSelectSong}
+            onRegenerate={regenerateSongs}
+          />
+        </section>
+      )}
+
+      {device.isMobile && mobileWorkflowStep === "brush" && (
+        <section className="layout-grid mobile-mode">
+          <section className="card brush-actions-card">
+            <h2>Brushing Controls</h2>
+            <p>Start or reset your brush timer after picking a song.</p>
+            {selectedSong && (
+              <p className="brush-selected-song">
+                Selected: <strong>{selectedSong.title}</strong> by <strong>{selectedSong.artist}</strong>
+              </p>
+            )}
+            <div className="session-actions">
+              <button type="button" className="action-btn" onClick={startBrushing}>
+                {mobileStartLabel}
+              </button>
+              <button type="button" className="action-btn secondary" onClick={restartBrushing}>
+                Reset Timer
+              </button>
+            </div>
+            <p className="timer-note">Timer and guide run independently from YouTube controls.</p>
+          </section>
+
+          <Player
+            selectedSong={selectedSong}
+            playerData={playerData}
+            loading={loading.player}
+            brushingPhase={brushingPhase}
+            isMobile
+            autoplayToken={autoplayToken}
+            onPlaybackTick={handlePlaybackTick}
+            onSongEnded={handleSongEnded}
+          />
+
+          <BrushingGuide
+            timer={timer}
+            brushingPhase={brushingPhase}
+            values={values}
+            selectedBpm={Number(selectedSong?.bpm || bpmData?.searchBpm || 120)}
+            isMobile
+            brushingMusicElapsedSeconds={brushingMusicElapsedSeconds}
+          />
+        </section>
+      )}
 
       {brushingPhase === "complete" && (
         <section className="success-banner" aria-live="polite">
