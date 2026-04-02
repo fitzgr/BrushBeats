@@ -1,9 +1,25 @@
-function SongList({ songs, exhausted, loading, tolerance, keyword, isMobile, onToleranceChange, onKeywordChange, onSelectSong, onRegenerate }) {
+function SongList({
+  songs,
+  exhausted,
+  loading,
+  tolerance,
+  danceability,
+  acousticness,
+  keyword,
+  isMobile,
+  onToleranceChange,
+  onDanceabilityChange,
+  onAcousticnessChange,
+  onKeywordChange,
+  onSelectSong,
+  onRegenerate
+}) {
   return (
     <section className="card songs">
       <h2>{isMobile ? "Song Picks" : "Song Discovery"}</h2>
       <p>{isMobile ? "Find tracks near your target BPM." : "Find tracks near your target BPM using GetSongBPM + optional keyword filters."}</p>
       <p className="song-note">{isMobile ? "Tap regenerate for fresh songs." : "Use regenerate to pull a fresh set at the same BPM range and discover different artists."}</p>
+      <p className="song-note">Danceability and acousticness start at random values each time the page loads.</p>
 
       <div className="song-filters">
         <label>
@@ -14,6 +30,28 @@ function SongList({ songs, exhausted, loading, tolerance, keyword, isMobile, onT
             max="20"
             value={tolerance}
             onChange={(event) => onToleranceChange(Number(event.target.value))}
+          />
+        </label>
+
+        <label>
+          Danceability: {danceability}%
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={danceability}
+            onChange={(event) => onDanceabilityChange(Number(event.target.value))}
+          />
+        </label>
+
+        <label>
+          Acousticness: {acousticness}%
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={acousticness}
+            onChange={(event) => onAcousticnessChange(Number(event.target.value))}
           />
         </label>
 

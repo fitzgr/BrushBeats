@@ -10,10 +10,10 @@ async function request(path) {
     response = await fetch(`${API_BASE}${path}`, { signal: controller.signal });
   } catch (error) {
     if (error.name === "AbortError") {
-      throw new Error("The free backend is still waking up. Please wait a few seconds and try again.");
+      throw new Error("The backend is still waking up. Please wait a few seconds and try again.");
     }
 
-    throw new Error("Could not reach the backend. If the free service is cold-starting, please wait a few seconds and retry.");
+    throw new Error("Could not reach the backend. If the service is cold-starting, please wait a few seconds and retry.");
   } finally {
     window.clearTimeout(timeoutId);
   }
@@ -35,10 +35,12 @@ export function getBpm({ top, bottom }) {
   return request(`/api/bpm?${params.toString()}`);
 }
 
-export function getSongs({ bpm, tolerance, keyword, seed = 0 }) {
+export function getSongs({ bpm, tolerance, danceability, acousticness, keyword, seed = 0 }) {
   const params = new URLSearchParams({
     bpm: String(Math.round(bpm)),
     tolerance: String(tolerance),
+    danceability: String(danceability),
+    acousticness: String(acousticness),
     q: keyword || "",
     seed: String(seed)
   });

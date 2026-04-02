@@ -23,6 +23,10 @@ import {
 import { useDeviceContext } from "./lib/deviceContext";
 import "./App.css";
 
+function randomPreferenceValue() {
+  return Math.floor(Math.random() * 101);
+}
+
 function App() {
   const [values, setValues] = useState({ top: 16, bottom: 16 });
   const [bpmData, setBpmData] = useState(null);
@@ -30,6 +34,8 @@ function App() {
   const [selectedSong, setSelectedSong] = useState(null);
   const [playerData, setPlayerData] = useState(null);
   const [tolerance, setTolerance] = useState(5);
+  const [danceability, setDanceability] = useState(() => randomPreferenceValue());
+  const [acousticness, setAcousticness] = useState(() => randomPreferenceValue());
   const [keyword, setKeyword] = useState("");
   const [songRefreshSeed, setSongRefreshSeed] = useState(0);
   const [timer, setTimer] = useState({ running: false, remaining: 120 });
@@ -196,8 +202,15 @@ function App() {
     async function loadSongs() {
       try {
         setLoading((prev) => ({ ...prev, songs: true }));
-        const result = await getSongs({ bpm: bpmData.searchBpm, tolerance, keyword, seed: songRefreshSeed });
-        const queryKey = `${Math.round(bpmData.searchBpm)}:${tolerance}:${keyword.trim().toLowerCase()}`;
+        const result = await getSongs({
+          bpm: bpmData.searchBpm,
+          tolerance,
+          danceability,
+          acousticness,
+          keyword,
+          seed: songRefreshSeed
+        });
+        const queryKey = `${Math.round(bpmData.searchBpm)}:${tolerance}:${danceability}:${acousticness}:${keyword.trim().toLowerCase()}`;
         const seenForQuery = seenSongsByQueryRef.current.get(queryKey) || new Set();
         const fetchedSongs = result.songs || [];
         const unseenSongs = fetchedSongs.filter((song) => !seenForQuery.has(toSongKey(song)));
@@ -231,7 +244,7 @@ function App() {
       cancelled = true;
       window.clearTimeout(timeout);
     };
-  }, [bpmData?.searchBpm, tolerance, keyword, songRefreshSeed]);
+  }, [bpmData?.searchBpm, tolerance, danceability, acousticness, keyword, songRefreshSeed]);
 
   useEffect(() => {
     if (!timer.running || brushingPhase !== "running") {
@@ -520,9 +533,13 @@ function App() {
             exhausted={isSongPoolExhausted}
             loading={loading.songs}
             tolerance={tolerance}
+            danceability={danceability}
+            acousticness={acousticness}
             keyword={keyword}
             isMobile={false}
             onToleranceChange={setTolerance}
+            onDanceabilityChange={setDanceability}
+            onAcousticnessChange={setAcousticness}
             onKeywordChange={setKeyword}
             onSelectSong={handleSelectSong}
             onRegenerate={regenerateSongs}
@@ -574,9 +591,13 @@ function App() {
             exhausted={isSongPoolExhausted}
             loading={loading.songs}
             tolerance={tolerance}
+            danceability={danceability}
+            acousticness={acousticness}
             keyword={keyword}
             isMobile
             onToleranceChange={setTolerance}
+            onDanceabilityChange={setDanceability}
+            onAcousticnessChange={setAcousticness}
             onKeywordChange={setKeyword}
             onSelectSong={handleSelectSong}
             onRegenerate={regenerateSongs}

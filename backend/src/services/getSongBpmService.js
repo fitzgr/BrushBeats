@@ -34,6 +34,86 @@ const seedSongs = [
   { title: "Go Your Own Way", artist: "Fleetwood Mac", bpm: 136 }
 ];
 
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function normalizePreference(value, fallback = 50) {
+  return clamp(Number.isFinite(Number(value)) ? Number(value) : fallback, 0, 100);
+}
+
+function hashString(input) {
+  let hash = 2166136261;
+
+  for (let index = 0; index < input.length; index += 1) {
+    hash ^= input.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return hash >>> 0;
+}
+
+function clampUnit(value) {
+  return clamp(value, 0, 1);
+}
+
+function normalizeFeatureValue(value) {
+  if (!Number.isFinite(Number(value))) {
+    return null;
+  }
+
+  const numericValue = Number(value);
+  return numericValue > 1 ? clampUnit(numericValue / 100) : clampUnit(numericValue);
+}
+
+function estimateSongProfile(song) {
+  const fingerprint = `${song.title || ""}::${song.artist || ""}`.toLowerCase();
+  const primaryHash = hashString(`${fingerprint}:dance`);
+  const secondaryHash = hashString(`${fingerprint}:acoustic`);
+  const bpm = Number(song.bpm) || 120;
+  const bpmBias = clampUnit((bpm - 80) / 120);
+
+  const detectedDanceability = normalizeFeatureValue(song.danceability);
+  const detectedAcousticness = normalizeFeatureValue(song.acousticness);
+
+  return {
+    danceability:
+      detectedDanceability ?? clampUnit(0.2 + ((primaryHash % 1000) / 1000) * 0.55 + bpmBias * 0.2),
+    acousticness:
+      detectedAcousticness ?? clampUnit(0.15 + ((secondaryHash % 1000) / 1000) * 0.65 + (1 - bpmBias) * 0.1)
+  };
+}
+
+function enrichSong(song) {
+  const profile = estimateSongProfile(song);
+
+  return {
+    ...song,
+    danceability: Math.round(profile.danceability * 100),
+    acousticness: Math.round(profile.acousticness * 100)
+  };
+}
+
+function rankSongsByProfile(songs, profilePreference) {
+  const danceabilityTarget = normalizePreference(profilePreference?.danceability);
+  const acousticnessTarget = normalizePreference(profilePreference?.acousticness);
+
+  return [...songs].sort((left, right) => {
+    const leftDistance =
+      Math.abs((left.danceability ?? 50) - danceabilityTarget) +
+      Math.abs((left.acousticness ?? 50) - acousticnessTarget);
+    const rightDistance =
+      Math.abs((right.danceability ?? 50) - danceabilityTarget) +
+      Math.abs((right.acousticness ?? 50) - acousticnessTarget);
+
+    if (leftDistance !== rightDistance) {
+      return leftDistance - rightDistance;
+    }
+
+    return (left.title || "").localeCompare(right.title || "");
+  });
+}
+
 function uniqueSongsByTitleArtist(songs) {
   const map = new Map();
 
@@ -96,17 +176,19 @@ function normalizeSongs(payload) {
     .map((item) => ({
       title: item.song_title || item.title || item.name,
       artist: item.artist || item.song_artist || item.artist_name,
-      bpm: Number(item.tempo || item.bpm)
+      bpm: Number(item.tempo || item.bpm),
+      danceability: item.danceability,
+      acousticness: item.acousticness
     }))
     .filter((item) => item.title && item.artist && Number.isFinite(item.bpm));
 }
 
-function fallbackSongs(targetBpm, tolerance, keyword) {
+function fallbackSongs(targetBpm, tolerance, keyword, profilePreference) {
   const lower = targetBpm - tolerance;
   const upper = targetBpm + tolerance;
   const q = (keyword || "").trim().toLowerCase();
 
-  return seedSongs
+  const songs = seedSongs
     .filter((song) => song.bpm >= lower && song.bpm <= upper)
     .filter((song) => {
       if (!q) {
@@ -115,19 +197,25 @@ function fallbackSongs(targetBpm, tolerance, keyword) {
       const haystack = `${song.title} ${song.artist}`.toLowerCase();
       return haystack.includes(q);
     })
-    .slice(0, 25);
+    .map(enrichSong);
+
+  return rankSongsByProfile(songs, profilePreference).slice(0, 25);
 }
 
-async function fetchSongsByBpm({ bpm, tolerance = 5, keyword = "", limit = 25 }) {
+async function fetchSongsByBpm({ bpm, tolerance = 5, danceability = 50, acousticness = 50, keyword = "", limit = 25 }) {
   const targetBpm = Number(bpm);
   const safeTolerance = Math.max(1, Math.min(20, Number(tolerance) || 5));
+  const profilePreference = {
+    danceability: normalizePreference(danceability),
+    acousticness: normalizePreference(acousticness)
+  };
   const apiKey = process.env.GETSONGBPM_API_KEY;
   const baseUrl = process.env.GETSONGBPM_BASE_URL || "https://api.getsongbpm.com";
 
   if (!apiKey) {
     return {
       source: "fallback",
-      songs: fallbackSongs(targetBpm, safeTolerance, keyword)
+      songs: fallbackSongs(targetBpm, safeTolerance, keyword, profilePreference)
     };
   }
 
@@ -146,16 +234,19 @@ async function fetchSongsByBpm({ bpm, tolerance = 5, keyword = "", limit = 25 })
     let songs = normalizeSongs(response.data);
 
     // Broaden and diversify when external API returns repetitive artist clusters.
-    const fallbackPool = fallbackSongs(targetBpm, Math.min(25, safeTolerance + 8), keyword);
-    songs = uniqueSongsByTitleArtist([...songs, ...fallbackPool]);
+    const fallbackPool = fallbackSongs(targetBpm, Math.min(25, safeTolerance + 8), keyword, profilePreference);
+    songs = uniqueSongsByTitleArtist([...songs, ...fallbackPool]).map(enrichSong);
 
     if (songs.length === 0) {
-      songs = fallbackSongs(targetBpm, safeTolerance, keyword);
+      songs = fallbackSongs(targetBpm, safeTolerance, keyword, profilePreference);
       return { source: "fallback", songs };
     }
 
     songs = songs
       .filter((song) => Math.abs(song.bpm - targetBpm) <= safeTolerance)
+      .slice(0, 100);
+
+    songs = rankSongsByProfile(songs, profilePreference)
       .slice(0, 100);
 
     songs = diversifyArtists(songs, limit);
@@ -167,7 +258,7 @@ async function fetchSongsByBpm({ bpm, tolerance = 5, keyword = "", limit = 25 })
   } catch (error) {
     return {
       source: "fallback",
-      songs: fallbackSongs(targetBpm, safeTolerance, keyword),
+      songs: fallbackSongs(targetBpm, safeTolerance, keyword, profilePreference),
       warning: "GetSongBPM lookup failed; serving local fallback songs."
     };
   }
