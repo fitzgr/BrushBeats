@@ -330,6 +330,23 @@
   color: #4d5d61;
 }
 
+.slider-tick-row {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  align-items: end;
+  gap: 0;
+  padding: 0 0.1rem;
+  margin-top: -0.1rem;
+}
+
+.slider-tick {
+  justify-self: center;
+  width: 2px;
+  height: 0.8rem;
+  border-radius: 999px;
+  background: rgba(16, 33, 37, 0.28);
+}
+
 .slider-range-hint {
   text-align: center;
   color: #7b5d2d;
