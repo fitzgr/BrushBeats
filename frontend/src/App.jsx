@@ -20,6 +20,7 @@ import {
   setStorageBannerDismissed,
   setStorageConsent
 } from "./lib/storagePreference";
+import { useDeviceContext } from "./lib/deviceContext";
 import "./App.css";
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
   const seenSongsByQueryRef = useRef(new Map());
   const lastPlaybackTickRef = useRef(null);
   const analyticsAvailable = useMemo(() => analyticsEnabled(), []);
+  const device = useDeviceContext();
 
   useEffect(() => {
     if (analyticsConsent === "granted") {
@@ -382,12 +384,13 @@ function App() {
   }, [brushingPhase]);
 
   return (
-    <main className="app-shell">
+    <main className={`app-shell ${device.isMobile ? "mobile-shell" : "desktop-shell"}`}>
       <header className="app-header">
         <p className="eyebrow">BrushBeats</p>
-        <h1>Two-minute brushing. Perfect tempo. Better vibes.</h1>
+        <h1>{device.isMobile ? "Brush Anywhere. Stay On Tempo." : "Two-minute brushing. Perfect tempo. Better vibes."}</h1>
         <p>{subtitle}</p>
         <p className={`state-chip ${brushingPhase}`}>Status: {phaseLabel}</p>
+        <p className={`mode-chip ${device.mode}`}>{device.isMobile ? "Mobile Layout" : "Desktop Layout"}</p>
       </header>
 
       {analyticsAvailable && analyticsConsent === "unknown" && (
@@ -446,7 +449,7 @@ function App() {
       {backendStatus && !error && <p className="info-banner">{backendStatus}</p>}
       {error && <p className="error-banner">{error}</p>}
 
-      <section className="layout-grid">
+      <section className={`layout-grid ${device.isMobile ? "mobile-mode" : "desktop-mode"}`}>
         <BPMCalculator
           values={values}
           onChange={updateValue}
@@ -454,6 +457,7 @@ function App() {
           loading={loading.bpm}
           timer={timer}
           brushingPhase={brushingPhase}
+          isMobile={device.isMobile}
           onStartTimer={startBrushing}
           onRestartTimer={restartBrushing}
         />
@@ -464,6 +468,7 @@ function App() {
           loading={loading.songs}
           tolerance={tolerance}
           keyword={keyword}
+          isMobile={device.isMobile}
           onToleranceChange={setTolerance}
           onKeywordChange={setKeyword}
           onSelectSong={handleSelectSong}
@@ -475,6 +480,7 @@ function App() {
           playerData={playerData}
           loading={loading.player}
           brushingPhase={brushingPhase}
+          isMobile={device.isMobile}
           autoplayToken={autoplayToken}
           onPlaybackTick={handlePlaybackTick}
           onSongEnded={handleSongEnded}
@@ -485,6 +491,7 @@ function App() {
           brushingPhase={brushingPhase}
           values={values}
           selectedBpm={Number(selectedSong?.bpm || bpmData?.searchBpm || 120)}
+          isMobile={device.isMobile}
           brushingMusicElapsedSeconds={brushingMusicElapsedSeconds}
         />
       </section>

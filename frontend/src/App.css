@@ -18,6 +18,15 @@
   margin: 2rem auto 3rem;
 }
 
+.app-shell.mobile-shell {
+  width: min(760px, 100% - 1rem);
+  margin-top: 1rem;
+}
+
+.app-shell.desktop-shell {
+  width: min(1140px, 100% - 2rem);
+}
+
 .app-header {
   background: linear-gradient(130deg, rgba(184, 219, 229, 0.8), rgba(255, 249, 239, 0.9));
   border: 1px solid rgba(16, 33, 37, 0.16);
@@ -72,6 +81,26 @@
 .state-chip.complete {
   background: #eaf6ee;
   border-color: rgba(42, 121, 76, 0.35);
+}
+
+.mode-chip {
+  margin-top: 0.55rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  border: 1px dashed rgba(16, 33, 37, 0.24);
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(255, 253, 248, 0.85);
+}
+
+.mode-chip.mobile {
+  color: #2f4a9a;
+}
+
+.mode-chip.desktop {
+  color: #40545a;
 }
 
 .error-banner {
@@ -149,6 +178,26 @@
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(12, 1fr);
+}
+
+.layout-grid.mobile-mode .player {
+  grid-column: span 12;
+  order: 1;
+}
+
+.layout-grid.mobile-mode .calculator {
+  grid-column: span 12;
+  order: 2;
+}
+
+.layout-grid.mobile-mode .songs {
+  grid-column: span 12;
+  order: 3;
+}
+
+.layout-grid.mobile-mode .guide {
+  grid-column: span 12;
+  order: 4;
 }
 
 .card {

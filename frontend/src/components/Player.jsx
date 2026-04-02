@@ -17,7 +17,7 @@ function parseVideoId(playerData) {
   }
 }
 
-function Player({ selectedSong, playerData, loading, brushingPhase, autoplayToken, onPlaybackTick, onSongEnded }) {
+function Player({ selectedSong, playerData, loading, brushingPhase, isMobile, autoplayToken, onPlaybackTick, onSongEnded }) {
   const hostRef = useRef(null);
   const playerRef = useRef(null);
   const tickTimerRef = useRef(null);
@@ -134,8 +134,8 @@ function Player({ selectedSong, playerData, loading, brushingPhase, autoplayToke
 
   return (
     <section className="card player">
-      <h2>Embedded Player</h2>
-      <p>Pick a song and play it inside the app with YouTube iframe embed.</p>
+      <h2>{isMobile ? "Now Playing" : "Embedded Player"}</h2>
+      <p>{isMobile ? "Play your selected track here." : "Pick a song and play it inside the app with YouTube iframe embed."}</p>
 
       {loading && <p>Matching song on YouTube...</p>}
 
@@ -159,7 +159,7 @@ function Player({ selectedSong, playerData, loading, brushingPhase, autoplayToke
               ref={hostRef}
               className="player-frame"
               aria-label={`${selectedSong.title} by ${selectedSong.artist}`}
-              style={{ opacity: playerData?.embedUrl ? 1 : 0.4, minHeight: "200px" }}
+              style={{ opacity: playerData?.embedUrl ? 1 : 0.4, minHeight: isMobile ? "180px" : "200px" }}
             />
             {loading && (
               <div

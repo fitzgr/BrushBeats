@@ -1,4 +1,4 @@
-function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhase, onStartTimer, onRestartTimer }) {
+function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhase, isMobile, onStartTimer, onRestartTimer }) {
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -17,9 +17,11 @@ function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhas
 
   return (
     <section className="card calculator">
-      <h2>Tempo Lab</h2>
+      <h2>{isMobile ? "Quick Tempo" : "Tempo Lab"}</h2>
       <p>
-        Enter how many teeth you have on the top and bottom. BrushBeats uses those tooth counts to calculate your brushing tempo.
+        {isMobile
+          ? "Set top and bottom teeth count to tune your brush tempo."
+          : "Enter how many teeth you have on the top and bottom. BrushBeats uses those tooth counts to calculate your brushing tempo."}
       </p>
 
       <div className="controls-grid">
@@ -69,11 +71,15 @@ function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhas
         </button>
 
         <button type="button" className="action-btn secondary" onClick={onRestartTimer}>
-          Reset Timer
+          {isMobile ? "Reset" : "Reset Timer"}
         </button>
       </div>
 
-      <p className="timer-note">Start Brushing controls only the countdown and brush guide. It never reloads or restarts the YouTube video.</p>
+      <p className="timer-note">
+        {isMobile
+          ? "Timer and guide only. Video controls stay in YouTube."
+          : "Start Brushing controls only the countdown and brush guide. It never reloads or restarts the YouTube video."}
+      </p>
     </section>
   );
 }

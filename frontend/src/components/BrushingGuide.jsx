@@ -31,7 +31,7 @@ function isPastActiveTooth(mapIndex, activeMapIndex, direction) {
   return direction === "rtl" ? mapIndex > activeMapIndex : mapIndex < activeMapIndex;
 }
 
-function BrushingGuide({ timer, brushingPhase, values, selectedBpm, brushingMusicElapsedSeconds }) {
+function BrushingGuide({ timer, brushingPhase, values, selectedBpm, isMobile, brushingMusicElapsedSeconds }) {
   const totalSeconds = 120;
   const beatsPerTooth = 4;
   const topTeeth = Number(values?.top || 16);
@@ -141,7 +141,11 @@ function BrushingGuide({ timer, brushingPhase, values, selectedBpm, brushingMusi
   return (
     <section className="card guide">
       <h2>Brush Map</h2>
-      <p>Each 30-second section is split by the number of teeth in that section. Follow the bouncing marker tooth-by-tooth.</p>
+      <p>
+        {isMobile
+          ? "Follow the bouncing marker tooth-by-tooth."
+          : "Each 30-second section is split by the number of teeth in that section. Follow the bouncing marker tooth-by-tooth."}
+      </p>
 
       <div className="guide-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={Math.round(progress)}>
         <span style={{ width: `${progress}%` }} />
@@ -255,7 +259,9 @@ function BrushingGuide({ timer, brushingPhase, values, selectedBpm, brushingMusi
 
       {brushingPhase === "running" && (
         <p className="guide-callout">
-          Brush {activeSection?.label} now ({activeSection?.direction === "rtl" ? "right to left" : "left to right"}), tooth {movementIndex + 1} of {activeSection?.teeth}. Dot pulse follows ~{Math.round(safeBpm)} BPM. Move in {nextMoveSeconds}s. Switch section in {nextSectionSeconds}s.
+          {isMobile
+            ? `${activeSection?.label}, tooth ${movementIndex + 1}/${activeSection?.teeth}. Move in ${nextMoveSeconds}s.`
+            : `Brush ${activeSection?.label} now (${activeSection?.direction === "rtl" ? "right to left" : "left to right"}), tooth ${movementIndex + 1} of ${activeSection?.teeth}. Dot pulse follows ~${Math.round(safeBpm)} BPM. Move in ${nextMoveSeconds}s. Switch section in ${nextSectionSeconds}s.`}
         </p>
       )}
       {!timer.running && brushingPhase !== "complete" && <p className="guide-callout">Press Start Brushing to begin live tooth guidance.</p>}
