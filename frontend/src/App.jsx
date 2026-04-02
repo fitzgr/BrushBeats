@@ -27,15 +27,22 @@ function randomPreferenceValue() {
   return Math.floor(Math.random() * 101);
 }
 
+function createInitialSongPreferences() {
+  return {
+    tolerance: 5,
+    danceability: randomPreferenceValue(),
+    acousticness: randomPreferenceValue()
+  };
+}
+
 function App() {
   const [values, setValues] = useState({ top: 16, bottom: 16 });
   const [bpmData, setBpmData] = useState(null);
   const [songs, setSongs] = useState([]);
   const [selectedSong, setSelectedSong] = useState(null);
   const [playerData, setPlayerData] = useState(null);
-  const [tolerance, setTolerance] = useState(5);
-  const [danceability, setDanceability] = useState(() => randomPreferenceValue());
-  const [acousticness, setAcousticness] = useState(() => randomPreferenceValue());
+  const [songFilters, setSongFilters] = useState(() => createInitialSongPreferences());
+  const [draftSongFilters, setDraftSongFilters] = useState(songFilters);
   const [keyword, setKeyword] = useState("");
   const [songRefreshSeed, setSongRefreshSeed] = useState(0);
   const [timer, setTimer] = useState({ running: false, remaining: 120 });
@@ -204,13 +211,13 @@ function App() {
         setLoading((prev) => ({ ...prev, songs: true }));
         const result = await getSongs({
           bpm: bpmData.searchBpm,
-          tolerance,
-          danceability,
-          acousticness,
+          tolerance: songFilters.tolerance,
+          danceability: songFilters.danceability,
+          acousticness: songFilters.acousticness,
           keyword,
           seed: songRefreshSeed
         });
-        const queryKey = `${Math.round(bpmData.searchBpm)}:${tolerance}:${danceability}:${acousticness}:${keyword.trim().toLowerCase()}`;
+        const queryKey = `${Math.round(bpmData.searchBpm)}:${songFilters.tolerance}:${songFilters.danceability}:${songFilters.acousticness}:${keyword.trim().toLowerCase()}`;
         const seenForQuery = seenSongsByQueryRef.current.get(queryKey) || new Set();
         const fetchedSongs = result.songs || [];
         const unseenSongs = fetchedSongs.filter((song) => !seenForQuery.has(toSongKey(song)));
@@ -244,7 +251,27 @@ function App() {
       cancelled = true;
       window.clearTimeout(timeout);
     };
-  }, [bpmData?.searchBpm, tolerance, danceability, acousticness, keyword, songRefreshSeed]);
+  }, [bpmData?.searchBpm, songFilters, keyword, songRefreshSeed]);
+
+  function updateDraftSongFilter(key, value) {
+    setDraftSongFilters((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function commitSongFilter(key, value) {
+    const nextFilters = { ...draftSongFilters, [key]: value };
+    setDraftSongFilters(nextFilters);
+    setSongFilters((prev) => {
+      if (
+        prev.tolerance === nextFilters.tolerance &&
+        prev.danceability === nextFilters.danceability &&
+        prev.acousticness === nextFilters.acousticness
+      ) {
+        return prev;
+      }
+
+      return nextFilters;
+    });
+  }
 
   useEffect(() => {
     if (!timer.running || brushingPhase !== "running") {
@@ -391,8 +418,8 @@ function App() {
       return "Matching your brushing rhythm to music you can actually enjoy.";
     }
 
-    return `Target songs around ${Math.round(bpmData.searchBpm)} BPM (+/- ${tolerance}).`;
-  }, [bpmData, tolerance]);
+    return `Target songs around ${Math.round(bpmData.searchBpm)} BPM (+/- ${songFilters.tolerance}).`;
+  }, [bpmData, songFilters.tolerance]);
 
   const phaseLabel = useMemo(() => {
     if (brushingPhase === "running") {
@@ -532,14 +559,17 @@ function App() {
             songs={songs}
             exhausted={isSongPoolExhausted}
             loading={loading.songs}
-            tolerance={tolerance}
-            danceability={danceability}
-            acousticness={acousticness}
+            tolerance={draftSongFilters.tolerance}
+            danceability={draftSongFilters.danceability}
+            acousticness={draftSongFilters.acousticness}
             keyword={keyword}
             isMobile={false}
-            onToleranceChange={setTolerance}
-            onDanceabilityChange={setDanceability}
-            onAcousticnessChange={setAcousticness}
+            onToleranceChange={(value) => updateDraftSongFilter("tolerance", value)}
+            onDanceabilityChange={(value) => updateDraftSongFilter("danceability", value)}
+            onAcousticnessChange={(value) => updateDraftSongFilter("acousticness", value)}
+            onCommitTolerance={(value) => commitSongFilter("tolerance", value)}
+            onCommitDanceability={(value) => commitSongFilter("danceability", value)}
+            onCommitAcousticness={(value) => commitSongFilter("acousticness", value)}
             onKeywordChange={setKeyword}
             onSelectSong={handleSelectSong}
             onRegenerate={regenerateSongs}
@@ -590,14 +620,17 @@ function App() {
             songs={songs}
             exhausted={isSongPoolExhausted}
             loading={loading.songs}
-            tolerance={tolerance}
-            danceability={danceability}
-            acousticness={acousticness}
+            tolerance={draftSongFilters.tolerance}
+            danceability={draftSongFilters.danceability}
+            acousticness={draftSongFilters.acousticness}
             keyword={keyword}
             isMobile
-            onToleranceChange={setTolerance}
-            onDanceabilityChange={setDanceability}
-            onAcousticnessChange={setAcousticness}
+            onToleranceChange={(value) => updateDraftSongFilter("tolerance", value)}
+            onDanceabilityChange={(value) => updateDraftSongFilter("danceability", value)}
+            onAcousticnessChange={(value) => updateDraftSongFilter("acousticness", value)}
+            onCommitTolerance={(value) => commitSongFilter("tolerance", value)}
+            onCommitDanceability={(value) => commitSongFilter("danceability", value)}
+            onCommitAcousticness={(value) => commitSongFilter("acousticness", value)}
             onKeywordChange={setKeyword}
             onSelectSong={handleSelectSong}
             onRegenerate={regenerateSongs}

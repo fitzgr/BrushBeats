@@ -10,10 +10,19 @@ function SongList({
   onToleranceChange,
   onDanceabilityChange,
   onAcousticnessChange,
+  onCommitTolerance,
+  onCommitDanceability,
+  onCommitAcousticness,
   onKeywordChange,
   onSelectSong,
   onRegenerate
 }) {
+  function handleRangeCommit(commitHandler) {
+    return (event) => {
+      commitHandler(Number(event.currentTarget.value));
+    };
+  }
+
   return (
     <section className="card songs">
       <h2>{isMobile ? "Song Picks" : "Song Discovery"}</h2>
@@ -30,6 +39,8 @@ function SongList({
             max="20"
             value={tolerance}
             onChange={(event) => onToleranceChange(Number(event.target.value))}
+            onPointerUp={handleRangeCommit(onCommitTolerance)}
+            onBlur={handleRangeCommit(onCommitTolerance)}
           />
         </label>
 
@@ -41,6 +52,8 @@ function SongList({
             max="100"
             value={danceability}
             onChange={(event) => onDanceabilityChange(Number(event.target.value))}
+            onPointerUp={handleRangeCommit(onCommitDanceability)}
+            onBlur={handleRangeCommit(onCommitDanceability)}
           />
         </label>
 
@@ -52,6 +65,8 @@ function SongList({
             max="100"
             value={acousticness}
             onChange={(event) => onAcousticnessChange(Number(event.target.value))}
+            onPointerUp={handleRangeCommit(onCommitAcousticness)}
+            onBlur={handleRangeCommit(onCommitAcousticness)}
           />
         </label>
 
