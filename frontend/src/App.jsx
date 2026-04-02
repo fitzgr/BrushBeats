@@ -59,7 +59,7 @@ function App() {
   const [storageBannerDismissed, setStorageBannerDismissedState] = useState(() => isStorageBannerDismissed());
   const [lastBrushedSong, setLastBrushedSong] = useState(null);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
-  const [mobileWorkflowStep, setMobileWorkflowStep] = useState("teeth");
+  const [workflowStep, setWorkflowStep] = useState("teeth");
   const seenSongsByQueryRef = useRef(new Map());
   const lastPlaybackTickRef = useRef(null);
   const analyticsAvailable = useMemo(() => analyticsEnabled(), []);
@@ -70,12 +70,6 @@ function App() {
       initializeAnalytics();
     }
   }, [analyticsConsent]);
-
-  useEffect(() => {
-    if (!device.isMobile && mobileWorkflowStep !== "teeth") {
-      setMobileWorkflowStep("teeth");
-    }
-  }, [device.isMobile, mobileWorkflowStep]);
 
   function handleAcceptAnalytics() {
     const nextStatus = setAnalyticsConsent(true);
@@ -322,9 +316,7 @@ function App() {
 
   async function handleSelectSong(song) {
     trackEvent("song_selected", { title: song.title, artist: song.artist });
-    if (device.isMobile) {
-      setMobileWorkflowStep("brush");
-    }
+    setWorkflowStep("brush");
     return handleSelectSongWithOptions(song, { autoplay: false });
   }
 
@@ -418,7 +410,7 @@ function App() {
       return "Matching your brushing rhythm to music you can actually enjoy.";
     }
 
-    return `Target songs around ${Math.round(bpmData.searchBpm)} BPM (+/- ${songFilters.tolerance}).`;
+    return `Step through teeth, music, and brushing around ${Math.round(bpmData.searchBpm)} BPM (+/- ${songFilters.tolerance}).`;
   }, [bpmData, songFilters.tolerance]);
 
   const phaseLabel = useMemo(() => {
@@ -446,8 +438,8 @@ function App() {
           ? "Brush Again (2:00)"
           : "Start Brushing (2:00)";
 
-  const showTopConsentNotices = !device.isMobile || mobileWorkflowStep === "teeth";
-  const showLastSongBanner = !device.isMobile || mobileWorkflowStep === "music";
+  const showTopConsentNotices = workflowStep === "teeth";
+  const showLastSongBanner = workflowStep === "music";
 
   return (
     <main className={`app-shell ${device.isMobile ? "mobile-shell" : "desktop-shell"}`}>
@@ -459,31 +451,29 @@ function App() {
         <p className={`mode-chip ${device.mode}`}>{device.isMobile ? "Mobile Layout" : "Desktop Layout"}</p>
       </header>
 
-      {device.isMobile && (
-        <nav className="workflow-tabs" aria-label="Mobile brushing workflow tabs">
+      <nav className={`workflow-tabs ${device.isMobile ? "mobile-workflow-tabs" : "desktop-workflow-tabs"}`} aria-label="BrushBeats workflow tabs">
           <button
             type="button"
-            className={`workflow-tab${mobileWorkflowStep === "teeth" ? " active" : ""}`}
-            onClick={() => setMobileWorkflowStep("teeth")}
+            className={`workflow-tab${workflowStep === "teeth" ? " active" : ""}`}
+            onClick={() => setWorkflowStep("teeth")}
           >
             1. Teeth
           </button>
           <button
             type="button"
-            className={`workflow-tab${mobileWorkflowStep === "music" ? " active" : ""}`}
-            onClick={() => setMobileWorkflowStep("music")}
+            className={`workflow-tab${workflowStep === "music" ? " active" : ""}`}
+            onClick={() => setWorkflowStep("music")}
           >
             2. Music
           </button>
           <button
             type="button"
-            className={`workflow-tab${mobileWorkflowStep === "brush" ? " active" : ""}`}
-            onClick={() => setMobileWorkflowStep("brush")}
+            className={`workflow-tab${workflowStep === "brush" ? " active" : ""}`}
+            onClick={() => setWorkflowStep("brush")}
           >
             3. Brush
           </button>
-        </nav>
-      )}
+      </nav>
 
       {showTopConsentNotices && analyticsAvailable && analyticsConsent === "unknown" && (
         <section className="consent-banner" role="region" aria-label="Privacy controls">
@@ -541,8 +531,8 @@ function App() {
       {backendStatus && !error && <p className="info-banner">{backendStatus}</p>}
       {error && <p className="error-banner">{error}</p>}
 
-      {!device.isMobile && (
-        <section className="layout-grid desktop-mode">
+      {workflowStep === "teeth" && (
+        <section className={`layout-grid ${device.isMobile ? "mobile-mode" : "desktop-mode desktop-step-layout"}`}>
           <BPMCalculator
             values={values}
             onChange={updateValue}
@@ -550,11 +540,16 @@ function App() {
             loading={loading.bpm}
             timer={timer}
             brushingPhase={brushingPhase}
-            isMobile={false}
+            isMobile={device.isMobile}
+            hideSessionActions={device.isMobile}
             onStartTimer={startBrushing}
             onRestartTimer={restartBrushing}
           />
+        </section>
+      )}
 
+      {workflowStep === "music" && (
+        <section className={`layout-grid ${device.isMobile ? "mobile-mode" : "desktop-mode desktop-step-layout"}`}>
           <SongList
             songs={songs}
             exhausted={isSongPoolExhausted}
@@ -563,68 +558,7 @@ function App() {
             danceability={draftSongFilters.danceability}
             acousticness={draftSongFilters.acousticness}
             keyword={keyword}
-            isMobile={false}
-            onToleranceChange={(value) => updateDraftSongFilter("tolerance", value)}
-            onDanceabilityChange={(value) => updateDraftSongFilter("danceability", value)}
-            onAcousticnessChange={(value) => updateDraftSongFilter("acousticness", value)}
-            onCommitTolerance={(value) => commitSongFilter("tolerance", value)}
-            onCommitDanceability={(value) => commitSongFilter("danceability", value)}
-            onCommitAcousticness={(value) => commitSongFilter("acousticness", value)}
-            onKeywordChange={setKeyword}
-            onSelectSong={handleSelectSong}
-            onRegenerate={regenerateSongs}
-          />
-
-          <Player
-            selectedSong={selectedSong}
-            playerData={playerData}
-            loading={loading.player}
-            brushingPhase={brushingPhase}
-            isMobile={false}
-            autoplayToken={autoplayToken}
-            onPlaybackTick={handlePlaybackTick}
-            onSongEnded={handleSongEnded}
-          />
-
-          <BrushingGuide
-            timer={timer}
-            brushingPhase={brushingPhase}
-            values={values}
-            selectedBpm={Number(selectedSong?.bpm || bpmData?.searchBpm || 120)}
-            isMobile={false}
-            brushingMusicElapsedSeconds={brushingMusicElapsedSeconds}
-          />
-        </section>
-      )}
-
-      {device.isMobile && mobileWorkflowStep === "teeth" && (
-        <section className="layout-grid mobile-mode">
-          <BPMCalculator
-            values={values}
-            onChange={updateValue}
-            bpmData={bpmData}
-            loading={loading.bpm}
-            timer={timer}
-            brushingPhase={brushingPhase}
-            isMobile
-            hideSessionActions
-            onStartTimer={startBrushing}
-            onRestartTimer={restartBrushing}
-          />
-        </section>
-      )}
-
-      {device.isMobile && mobileWorkflowStep === "music" && (
-        <section className="layout-grid mobile-mode">
-          <SongList
-            songs={songs}
-            exhausted={isSongPoolExhausted}
-            loading={loading.songs}
-            tolerance={draftSongFilters.tolerance}
-            danceability={draftSongFilters.danceability}
-            acousticness={draftSongFilters.acousticness}
-            keyword={keyword}
-            isMobile
+            isMobile={device.isMobile}
             onToleranceChange={(value) => updateDraftSongFilter("tolerance", value)}
             onDanceabilityChange={(value) => updateDraftSongFilter("danceability", value)}
             onAcousticnessChange={(value) => updateDraftSongFilter("acousticness", value)}
@@ -638,9 +572,9 @@ function App() {
         </section>
       )}
 
-      {device.isMobile && mobileWorkflowStep === "brush" && (
-        <section className="layout-grid mobile-mode">
-          <section className="card brush-actions-card">
+      {workflowStep === "brush" && (
+        <section className={`layout-grid ${device.isMobile ? "mobile-mode" : "desktop-mode desktop-brush-layout"}`}>
+          <section className={`card brush-actions-card ${device.isMobile ? "" : "desktop-step-card"}`.trim()}>
             <h2>Brushing Controls</h2>
             <p>Start or reset your brush timer after picking a song.</p>
             {selectedSong && (
@@ -664,7 +598,7 @@ function App() {
             playerData={playerData}
             loading={loading.player}
             brushingPhase={brushingPhase}
-            isMobile
+            isMobile={device.isMobile}
             autoplayToken={autoplayToken}
             onPlaybackTick={handlePlaybackTick}
             onSongEnded={handleSongEnded}
@@ -675,7 +609,7 @@ function App() {
             brushingPhase={brushingPhase}
             values={values}
             selectedBpm={Number(selectedSong?.bpm || bpmData?.searchBpm || 120)}
-            isMobile
+            isMobile={device.isMobile}
             brushingMusicElapsedSeconds={brushingMusicElapsedSeconds}
           />
         </section>

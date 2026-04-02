@@ -110,6 +110,10 @@
   margin: 0 0 1rem;
 }
 
+.desktop-workflow-tabs {
+  margin-bottom: 1.2rem;
+}
+
 .workflow-tab {
   border: 1px solid rgba(16, 33, 37, 0.2);
   background: #fffdf8;
@@ -125,6 +129,20 @@
   background: linear-gradient(130deg, #f7dfc9, #ffd8b8);
   border-color: rgba(202, 95, 22, 0.45);
   color: #6f3206;
+}
+
+.desktop-step-layout {
+  grid-template-columns: minmax(0, 760px);
+  justify-content: center;
+}
+
+.desktop-step-layout .calculator,
+.desktop-step-layout .songs {
+  grid-column: 1;
+}
+
+.desktop-brush-layout {
+  grid-template-columns: repeat(12, 1fr);
 }
 
 .error-banner {
@@ -228,6 +246,18 @@
   grid-column: span 12;
 }
 
+.desktop-brush-layout .brush-actions-card {
+  grid-column: span 4;
+}
+
+.desktop-brush-layout .player {
+  grid-column: span 4;
+}
+
+.desktop-brush-layout .guide {
+  grid-column: span 4;
+}
+
 .brush-selected-song {
   font-size: 0.9rem;
   color: #4f5f63;
@@ -269,6 +299,39 @@
 .controls-grid {
   display: grid;
   gap: 0.75rem;
+}
+
+.slider-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.slider-value-badge {
+  min-width: 2.5rem;
+  text-align: center;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  background: linear-gradient(130deg, #f7dfc9, #ffd8b8);
+  border: 1px solid rgba(202, 95, 22, 0.28);
+  color: #6f3206;
+  font-size: 0.95rem;
+}
+
+.slider-range-readout {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.79rem;
+  color: #4d5d61;
+}
+
+.slider-range-hint {
+  text-align: center;
+  color: #7b5d2d;
+  font-weight: 700;
 }
 
 .form-note {
