@@ -11,6 +11,15 @@ import {
   setAnalyticsConsent,
   trackEvent
 } from "./lib/analytics";
+import {
+  clearLastBrushedSong,
+  getStorageConsentStatus,
+  isStorageBannerDismissed,
+  loadLastBrushedSong,
+  saveLastBrushedSong,
+  setStorageBannerDismissed,
+  setStorageConsent
+} from "./lib/storagePreference";
 import "./App.css";
 
 function App() {
@@ -32,6 +41,9 @@ function App() {
   const [backendStatus, setBackendStatus] = useState("");
   const [error, setError] = useState("");
   const [analyticsConsent, setAnalyticsConsentState] = useState(() => getAnalyticsConsentStatus());
+  const [storageConsent, setStorageConsentState] = useState(() => getStorageConsentStatus());
+  const [storageBannerDismissed, setStorageBannerDismissedState] = useState(() => isStorageBannerDismissed());
+  const [lastBrushedSong, setLastBrushedSong] = useState(null);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const seenSongsByQueryRef = useRef(new Map());
   const lastPlaybackTickRef = useRef(null);
@@ -52,6 +64,55 @@ function App() {
   function handleDeclineAnalytics() {
     const nextStatus = setAnalyticsConsent(false);
     setAnalyticsConsentState(nextStatus);
+  }
+
+  useEffect(() => {
+    if (storageConsent === "granted") {
+      setLastBrushedSong(loadLastBrushedSong());
+      return;
+    }
+
+    if (storageConsent === "denied") {
+      clearLastBrushedSong();
+    }
+
+    setLastBrushedSong(null);
+  }, [storageConsent]);
+
+  function handleAllowStorage() {
+    const nextStatus = setStorageConsent(true);
+    setStorageConsentState(nextStatus);
+    setStorageBannerDismissed(false);
+    setStorageBannerDismissedState(false);
+  }
+
+  function handleDeclineStorage() {
+    const nextStatus = setStorageConsent(false);
+    setStorageConsentState(nextStatus);
+    clearLastBrushedSong();
+    setLastBrushedSong(null);
+  }
+
+  function handleDismissStorageBanner() {
+    setStorageBannerDismissed(true);
+    setStorageBannerDismissedState(true);
+  }
+
+  function handleShowStorageBanner() {
+    setStorageBannerDismissed(false);
+    setStorageBannerDismissedState(false);
+  }
+
+  async function handlePlayLastBrushedSong() {
+    if (!lastBrushedSong) {
+      return;
+    }
+
+    await handleSelectSong(lastBrushedSong);
+    trackEvent("last_brushed_song_replayed", {
+      title: lastBrushedSong.title,
+      artist: lastBrushedSong.artist
+    });
   }
 
   function openPrivacyModal() {
@@ -252,6 +313,17 @@ function App() {
     lastPlaybackTickRef.current = playbackSeconds;
     setTimer({ running: true, remaining: totalSeconds });
     setBrushingPhase("running");
+
+    if (storageConsent === "granted" && selectedSong?.title && selectedSong?.artist) {
+      saveLastBrushedSong(selectedSong);
+      setLastBrushedSong({
+        title: selectedSong.title,
+        artist: selectedSong.artist,
+        bpm: selectedSong.bpm,
+        savedAt: Date.now()
+      });
+    }
+
     trackEvent("brushing_started", { song_title: selectedSong?.title, song_artist: selectedSong?.artist });
     setError("");
   }
@@ -337,6 +409,40 @@ function App() {
         </section>
       )}
 
+      {!storageBannerDismissed && (
+        <section className="storage-banner" role="region" aria-label="Storage consent controls">
+          <p>
+            BrushBeats can store your last brushed song in browser storage (cookies/localStorage) so you can replay it next
+            session.
+            <button type="button" className="privacy-link" onClick={openPrivacyModal}>
+              Privacy Policy
+            </button>
+          </p>
+          <div className="consent-actions">
+            <button type="button" className="action-btn" onClick={handleAllowStorage}>
+              Allow Storage
+            </button>
+            <button type="button" className="action-btn secondary" onClick={handleDeclineStorage}>
+              Opt Out
+            </button>
+            <button type="button" className="action-btn secondary" onClick={handleDismissStorageBanner}>
+              Dismiss
+            </button>
+          </div>
+        </section>
+      )}
+
+      {lastBrushedSong && storageConsent === "granted" && (
+        <section className="last-song-banner" aria-live="polite">
+          <p>
+            Last brushed song: <strong>{lastBrushedSong.title}</strong> by <strong>{lastBrushedSong.artist}</strong>
+          </p>
+          <button type="button" className="action-btn secondary" onClick={handlePlayLastBrushedSong}>
+            Play Last Brushed Song
+          </button>
+        </section>
+      )}
+
       {backendStatus && !error && <p className="info-banner">{backendStatus}</p>}
       {error && <p className="error-banner">{error}</p>}
 
@@ -413,6 +519,21 @@ function App() {
             )}
           </div>
         )}
+        <div className="privacy-controls">
+          <span>Song Storage: {storageConsent === "granted" ? "On" : "Off"}</span>
+          {storageConsent === "granted" ? (
+            <button type="button" className="privacy-toggle" onClick={handleDeclineStorage}>
+              Turn Off
+            </button>
+          ) : (
+            <button type="button" className="privacy-toggle" onClick={handleAllowStorage}>
+              Turn On
+            </button>
+          )}
+          <button type="button" className="privacy-toggle" onClick={handleShowStorageBanner}>
+            Storage Notice
+          </button>
+        </div>
         {import.meta.env.VITE_GIT_SHA && (
           <p className="version-info">
             <code>v{import.meta.env.VITE_GIT_SHA.substring(0, 7)}</code>
@@ -435,8 +556,12 @@ function App() {
               such as BPM calculations, song selections, brushing starts, resets, completions, and auto-queue transitions.
             </p>
             <p>
-              We do not send typed form text, email addresses, names, passwords, or payment information. Ad-related storage and
-              personalization are disabled.
+              We may also store your last brushed song in browser storage (cookies/localStorage) only when you allow storage.
+              This lets you quickly replay that song on your next visit.
+            </p>
+            <p>
+              We do not send typed form text, email addresses, names, passwords, or payment information. Ad-related storage is
+              disabled unless required for core analytics consented by you.
             </p>
             <p>
               Your analytics choice is stored on this device and you can change it at any time using the Analytics controls in

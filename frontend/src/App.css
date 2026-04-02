@@ -101,6 +101,32 @@
   color: #194a73;
 }
 
+.storage-banner {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: #f4f2ff;
+  border: 1px solid rgba(67, 57, 135, 0.24);
+  color: #3e347e;
+}
+
+.last-song-banner {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: #f0f8ef;
+  border: 1px solid rgba(49, 120, 58, 0.24);
+  color: #224f2a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+}
+
+.last-song-banner p {
+  margin: 0;
+}
+
 .consent-actions {
   display: flex;
   gap: 0.55rem;
@@ -637,5 +663,10 @@ select {
 
   .mouth-map {
     width: min(100%, 320px);
+  }
+
+  .last-song-banner {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
