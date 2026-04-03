@@ -1,7 +1,10 @@
+import { teethToAgeFullChart } from "../lib/teethAge";
+
 function BPMCalculator({
   brusherProfile,
   values,
   onChange,
+  onContinueToMusic,
   bpmData,
   loading,
   timer,
@@ -18,6 +21,9 @@ function BPMCalculator({
   };
   const toothRange = { min: 0, max: 16, hint: "Per row of teeth, from no erupted teeth to a full 16-tooth arch" };
   const rangeMarks = Array.from({ length: toothRange.max - toothRange.min + 1 }, (_, index) => toothRange.min + index);
+  const totalTeeth = Number(values.top || 0) + Number(values.bottom || 0);
+  const linearMarkers = [0, 4, 8, 12, 16, 20, 24, 28, 32];
+  const ageTimelineMarkers = [...teethToAgeFullChart].sort((left, right) => left.max - right.max);
 
   const totalBrushingTime = 120; // 4 sections × 30 seconds (ADA recommended)
   const totalTimeLabel = formatTime(totalBrushingTime);
@@ -47,6 +53,38 @@ function BPMCalculator({
             Approximate age: {brusherProfile.estimate.maxAge >= 99 ? `${brusherProfile.estimate.minAge}+ ${brusherProfile.estimate.unit}` : `${brusherProfile.estimate.minAge}-${brusherProfile.estimate.maxAge} ${brusherProfile.estimate.unit}`}
           </span>
         )}
+      </div>
+
+      <div className="teeth-growth-scale" aria-label="Total teeth to age scale">
+        <div className="teeth-growth-header">
+          <span className="profile-summary-label">Total Teeth</span>
+          <strong>{totalTeeth} of 32</strong>
+        </div>
+        <div className="teeth-growth-track">
+          <span className="teeth-growth-fill" style={{ width: `${(totalTeeth / 32) * 100}%` }} />
+          <span className="teeth-growth-indicator" style={{ left: `${(totalTeeth / 32) * 100}%` }} />
+          {linearMarkers.map((marker) => (
+            <span
+              key={`teeth-marker-${marker}`}
+              className="teeth-growth-marker"
+              style={{ left: `${(marker / 32) * 100}%` }}
+              aria-hidden="true"
+            />
+          ))}
+        </div>
+        <div className="teeth-growth-labels" aria-hidden="true">
+          {linearMarkers.map((marker) => (
+            <span key={`teeth-label-${marker}`}>{marker}</span>
+          ))}
+        </div>
+        <div className="teeth-age-band-list">
+          {ageTimelineMarkers.map((marker) => (
+            <span key={`${marker.min}-${marker.max}`} className="teeth-age-band">
+              <strong>{marker.min}-{marker.max}</strong>
+              <span>{marker.phase}</span>
+            </span>
+          ))}
+        </div>
       </div>
 
       <div className="controls-grid">
@@ -135,6 +173,14 @@ function BPMCalculator({
           ? `${bpmData.totalTeeth} teeth fit ${bpmData.totalToothTimeSeconds}s of brushing and ${bpmData.totalTransitionSeconds}s of transitions into 2 minutes.`
           : "Adjust teeth counts to calculate BPM."}
       </p>
+
+      <div className="next-step-card">
+        <strong>Next: 2. Music</strong>
+        <span>Use this detected stage and tempo target to queue songs that fit the brusher naturally.</span>
+        <button type="button" className="action-btn secondary next-step-btn" onClick={onContinueToMusic} disabled={totalTeeth <= 0}>
+          Continue to 2. Music
+        </button>
+      </div>
 
       {!hideSessionActions && (
         <>

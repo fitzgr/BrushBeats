@@ -554,7 +554,7 @@ function App() {
             Last brushed song: <strong>{lastBrushedSong.title}</strong> by <strong>{lastBrushedSong.artist}</strong>
           </p>
           <button type="button" className="action-btn secondary" onClick={handlePlayLastBrushedSong}>
-            Play Last Brushed Song
+            Queue Last Brushed Song
           </button>
         </section>
       )}
@@ -568,12 +568,13 @@ function App() {
             brusherProfile={detectedBrusherProfile}
             values={values}
             onChange={updateValue}
+            onContinueToMusic={() => setWorkflowStep("music")}
             bpmData={bpmData}
             loading={loading.bpm}
             timer={timer}
             brushingPhase={brushingPhase}
             isMobile={device.isMobile}
-            hideSessionActions={device.isMobile}
+            hideSessionActions
             onStartTimer={startBrushing}
             onRestartTimer={restartBrushing}
           />
