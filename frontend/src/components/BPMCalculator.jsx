@@ -16,7 +16,7 @@ function BPMCalculator({
     const secs = seconds % 60;
     return `${minutes}:${secs.toString().padStart(2, '0')}`;
   };
-  const toothRange = { min: 1, max: 16, hint: "Per row of teeth, from first teeth to a full 16-tooth arch" };
+  const toothRange = { min: 0, max: 16, hint: "Per row of teeth, from no erupted teeth to a full 16-tooth arch" };
   const rangeMarks = Array.from({ length: toothRange.max - toothRange.min + 1 }, (_, index) => toothRange.min + index);
 
   const totalBrushingTime = 120; // 4 sections × 30 seconds (ADA recommended)
@@ -39,9 +39,14 @@ function BPMCalculator({
       </p>
 
       <div className="profile-summary" aria-live="polite">
-        <span className="profile-summary-label">Detected brusher</span>
+        <span className="profile-summary-label">Detected stage</span>
         <strong>{brusherProfile?.label || "Adult Smile"}</strong>
         <span>{brusherProfile?.description || "Full adult set including wisdom teeth"}</span>
+        {brusherProfile?.estimate && (
+          <span className="profile-summary-age">
+            Approximate age: {brusherProfile.estimate.maxAge >= 99 ? `${brusherProfile.estimate.minAge}+ ${brusherProfile.estimate.unit}` : `${brusherProfile.estimate.minAge}-${brusherProfile.estimate.maxAge} ${brusherProfile.estimate.unit}`}
+          </span>
+        )}
       </div>
 
       <div className="controls-grid">

@@ -20,6 +20,7 @@ import {
   setStorageBannerDismissed,
   setStorageConsent
 } from "./lib/storagePreference";
+import { describeTeethStage, estimateAgeFromTeethFull } from "./lib/teethAge";
 import { useDeviceContext } from "./lib/deviceContext";
 import "./App.css";
 
@@ -33,49 +34,26 @@ function getMaturityScore(totalTeeth) {
   return clampValue((Number(totalTeeth) - 1) / 31, 0, 1);
 }
 
-function inferBrusherProfile(totalTeeth) {
-  if (totalTeeth <= 20) {
-    return {
-      key: "kids",
-      label: "Kids Mode",
-      description: "Primary teeth or an early brusher"
-    };
-  }
-
-  if (totalTeeth <= 27) {
-    return {
-      key: "growing",
-      label: "Growing Smile",
-      description: "Mixed teeth as they grow"
-    };
-  }
-
-  if (totalTeeth <= 31) {
-    return {
-      key: "adult-28",
-      label: "Adult Smile",
-      description: "Typical adult set without wisdom teeth"
-    };
-  }
-
-  return {
-    key: "adult-32",
-    label: "Full Adult Smile",
-    description: "Full adult set including wisdom teeth"
-  };
-}
-
 function randomPreferenceValue() {
   return Math.floor(Math.random() * 101);
 }
 
 function createInitialSongPreferences(totalTeeth = DEFAULT_VALUES.top + DEFAULT_VALUES.bottom) {
   const maturityScore = getMaturityScore(totalTeeth);
+  const ageEstimate = estimateAgeFromTeethFull(totalTeeth);
+  const phaseDefaults = {
+    infant: { tolerance: 7, danceabilityBase: 82, acousticnessBase: 18 },
+    toddler: { tolerance: 6, danceabilityBase: 78, acousticnessBase: 22 },
+    primary: { tolerance: 6, danceabilityBase: 74, acousticnessBase: 26 },
+    mixed: { tolerance: 5, danceabilityBase: 62, acousticnessBase: 38 },
+    adult: { tolerance: 4, danceabilityBase: 50, acousticnessBase: 54 }
+  };
+  const phaseConfig = phaseDefaults[ageEstimate?.phase || "adult"];
 
   return {
-    tolerance: totalTeeth <= 20 ? 6 : totalTeeth <= 27 ? 5 : 4,
-    danceability: clampValue(Math.round(50 + (1 - maturityScore) * 28 + (Math.random() * 24 - 12)), 0, 100),
-    acousticness: clampValue(Math.round(28 + maturityScore * 26 + (Math.random() * 24 - 12)), 0, 100)
+    tolerance: phaseConfig.tolerance,
+    danceability: clampValue(Math.round(phaseConfig.danceabilityBase + (1 - maturityScore) * 8 + (Math.random() * 20 - 10)), 0, 100),
+    acousticness: clampValue(Math.round(phaseConfig.acousticnessBase + maturityScore * 8 + (Math.random() * 20 - 10)), 0, 100)
   };
 }
 
@@ -109,7 +87,8 @@ function App() {
   const analyticsAvailable = useMemo(() => analyticsEnabled(), []);
   const device = useDeviceContext();
   const totalTeeth = values.top + values.bottom;
-  const detectedBrusherProfile = bpmData?.brusherProfile || inferBrusherProfile(totalTeeth);
+  const detectedBrusherProfile = bpmData?.brusherProfile || describeTeethStage(totalTeeth);
+  const ageEstimate = bpmData?.ageEstimate || estimateAgeFromTeethFull(totalTeeth);
 
   useEffect(() => {
     if (analyticsConsent === "granted") {
@@ -394,6 +373,11 @@ function App() {
   }
 
   function startBrushing() {
+    if ((bpmData?.totalTeeth || 0) <= 0) {
+      setError("Enter at least one tooth before starting a brushing session.");
+      return;
+    }
+
     if (!playerData?.embedUrl) {
       setError("Start playback first, then press Start Brushing to begin only the brush timer and guide.");
       return;
@@ -457,8 +441,8 @@ function App() {
       return `Matching brushing rhythm to music for ${detectedBrusherProfile.description.toLowerCase()}.`;
     }
 
-    return `${detectedBrusherProfile.label}: ${Math.round(bpmData.searchBpm)} BPM target, ${bpmData.secondsPerTooth}s per tooth face, ${bpmData.transitionBufferSeconds}s transitions.`;
-  }, [bpmData, detectedBrusherProfile.description, detectedBrusherProfile.label]);
+    return `${detectedBrusherProfile.label}: ${Math.round(bpmData.searchBpm)} BPM target, ${bpmData.secondsPerTooth}s per tooth face, ${bpmData.transitionBufferSeconds}s transitions, ${ageEstimate ? `${ageEstimate.minAge}-${ageEstimate.maxAge} ${ageEstimate.unit}` : "age range unknown"}.`;
+  }, [ageEstimate, bpmData, detectedBrusherProfile.description, detectedBrusherProfile.label]);
 
   const phaseLabel = useMemo(() => {
     if (brushingPhase === "running") {

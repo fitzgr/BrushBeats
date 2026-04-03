@@ -1,4 +1,5 @@
 const axios = require("axios");
+const { describeTeethStage } = require("../utils/teethAge");
 
 const seedSongs = [
   { title: "Shake It Off", artist: "Taylor Swift", bpm: 160 },
@@ -101,8 +102,17 @@ function enrichSong(song) {
 function rankSongsByProfile(songs, profilePreference) {
   const danceabilityTarget = normalizePreference(profilePreference?.danceability);
   const acousticnessTarget = normalizePreference(profilePreference?.acousticness);
-  const maturityScore = getMaturityScore(profilePreference?.totalTeeth ?? 32);
+  const totalTeeth = profilePreference?.totalTeeth ?? 32;
+  const maturityScore = getMaturityScore(totalTeeth);
   const youthfulBias = 1 - maturityScore;
+  const stage = describeTeethStage(totalTeeth);
+  const phaseBoost = {
+    infant: 1,
+    toddler: 0.92,
+    primary: 0.82,
+    mixed: 0.45,
+    adult: 0.12
+  }[stage.estimate?.phase || "adult"];
 
   return [...songs].sort((left, right) => {
     const leftDistance =
@@ -113,8 +123,8 @@ function rankSongsByProfile(songs, profilePreference) {
       Math.abs((right.acousticness ?? 50) - acousticnessTarget);
 
     if (leftDistance !== rightDistance) {
-      const leftProfileBoost = youthfulBias * ((left.danceability ?? 50) * 0.4 + (100 - (left.acousticness ?? 50)) * 0.25);
-      const rightProfileBoost = youthfulBias * ((right.danceability ?? 50) * 0.4 + (100 - (right.acousticness ?? 50)) * 0.25);
+      const leftProfileBoost = youthfulBias * phaseBoost * ((left.danceability ?? 50) * 0.4 + (100 - (left.acousticness ?? 50)) * 0.25);
+      const rightProfileBoost = youthfulBias * phaseBoost * ((right.danceability ?? 50) * 0.4 + (100 - (right.acousticness ?? 50)) * 0.25);
 
       return leftDistance - rightDistance - (leftProfileBoost - rightProfileBoost);
     }

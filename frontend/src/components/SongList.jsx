@@ -30,7 +30,7 @@ function SongList({
       <p>{isMobile ? "Find tracks near your target BPM." : "Find tracks near your target BPM using GetSongBPM + optional keyword filters."}</p>
       <p className="song-note">{isMobile ? "Tap regenerate for fresh songs." : "Use regenerate to pull a fresh set at the same BPM range and discover different artists."}</p>
       <p className="song-note">Danceability and acousticness start at random values each time the page loads.</p>
-      {brusherProfile && <p className="song-note">Detected brusher: {brusherProfile.label}. Music picks also drift with the typical tooth count for that stage.</p>}
+      {brusherProfile && <p className="song-note">Detected stage: {brusherProfile.label}. Music picks also drift with the typical tooth count for that stage.</p>}
 
       <div className="song-filters">
         <label>

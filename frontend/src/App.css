@@ -318,6 +318,11 @@
   color: #1d4b78;
 }
 
+.profile-summary-age {
+  font-size: 0.86rem;
+  color: #425b71;
+}
+
 .profile-summary-label {
   font-size: 0.75rem;
   letter-spacing: 0.08em;
