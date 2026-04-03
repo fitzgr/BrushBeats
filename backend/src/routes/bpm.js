@@ -7,9 +7,9 @@ router.get("/", (req, res) => {
   const top = Number(req.query.top ?? 16);
   const bottom = Number(req.query.bottom ?? 16);
 
-  if (top < 8 || top > 16 || bottom < 8 || bottom > 16) {
+  if (top < 1 || top > 16 || bottom < 1 || bottom > 16) {
     return res.status(400).json({
-      error: "top and bottom teeth must be between 8 and 16"
+      error: "top and bottom teeth must be between 1 and 16"
     });
   }
 

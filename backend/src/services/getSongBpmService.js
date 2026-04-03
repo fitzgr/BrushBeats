@@ -38,6 +38,10 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
+function getMaturityScore(totalTeeth) {
+  return clamp((Number(totalTeeth) - 1) / 31, 0, 1);
+}
+
 function normalizePreference(value, fallback = 50) {
   return clamp(Number.isFinite(Number(value)) ? Number(value) : fallback, 0, 100);
 }
@@ -97,7 +101,8 @@ function enrichSong(song) {
 function rankSongsByProfile(songs, profilePreference) {
   const danceabilityTarget = normalizePreference(profilePreference?.danceability);
   const acousticnessTarget = normalizePreference(profilePreference?.acousticness);
-  const listenerProfile = profilePreference?.listenerProfile || "adult";
+  const maturityScore = getMaturityScore(profilePreference?.totalTeeth ?? 32);
+  const youthfulBias = 1 - maturityScore;
 
   return [...songs].sort((left, right) => {
     const leftDistance =
@@ -108,14 +113,8 @@ function rankSongsByProfile(songs, profilePreference) {
       Math.abs((right.acousticness ?? 50) - acousticnessTarget);
 
     if (leftDistance !== rightDistance) {
-      const leftProfileBoost =
-        listenerProfile === "kids"
-          ? (left.danceability ?? 50) * 0.35 + (100 - (left.acousticness ?? 50)) * 0.2
-          : 0;
-      const rightProfileBoost =
-        listenerProfile === "kids"
-          ? (right.danceability ?? 50) * 0.35 + (100 - (right.acousticness ?? 50)) * 0.2
-          : 0;
+      const leftProfileBoost = youthfulBias * ((left.danceability ?? 50) * 0.4 + (100 - (left.acousticness ?? 50)) * 0.25);
+      const rightProfileBoost = youthfulBias * ((right.danceability ?? 50) * 0.4 + (100 - (right.acousticness ?? 50)) * 0.25);
 
       return leftDistance - rightDistance - (leftProfileBoost - rightProfileBoost);
     }
@@ -212,13 +211,13 @@ function fallbackSongs(targetBpm, tolerance, keyword, profilePreference) {
   return rankSongsByProfile(songs, profilePreference).slice(0, 25);
 }
 
-async function fetchSongsByBpm({ bpm, tolerance = 5, danceability = 50, acousticness = 50, listenerProfile = "adult", keyword = "", limit = 25 }) {
+async function fetchSongsByBpm({ bpm, tolerance = 5, danceability = 50, acousticness = 50, totalTeeth = 32, keyword = "", limit = 25 }) {
   const targetBpm = Number(bpm);
   const safeTolerance = Math.max(1, Math.min(20, Number(tolerance) || 5));
   const profilePreference = {
     danceability: normalizePreference(danceability),
     acousticness: normalizePreference(acousticness),
-    listenerProfile
+    totalTeeth
   };
   const apiKey = process.env.GETSONGBPM_API_KEY;
   const baseUrl = process.env.GETSONGBPM_BASE_URL || "https://api.getsongbpm.com";

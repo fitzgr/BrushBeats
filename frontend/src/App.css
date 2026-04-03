@@ -303,32 +303,26 @@
   gap: 0.75rem;
 }
 
-.profile-toggle {
-  display: inline-grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.45rem;
-  padding: 0.35rem;
+.profile-summary {
+  display: grid;
+  gap: 0.18rem;
   margin: 0 0 1rem;
+  padding: 0.8rem 0.9rem;
   border-radius: 14px;
-  background: rgba(16, 33, 37, 0.05);
-  border: 1px solid rgba(16, 33, 37, 0.12);
+  background: linear-gradient(130deg, rgba(223, 241, 255, 0.9), rgba(255, 249, 239, 0.92));
+  border: 1px solid rgba(36, 96, 156, 0.18);
 }
 
-.profile-option {
-  border: 1px solid rgba(16, 33, 37, 0.14);
-  background: #fffdf8;
-  color: var(--ink);
-  font: inherit;
-  font-weight: 700;
-  border-radius: 10px;
-  padding: 0.55rem 0.9rem;
-  cursor: pointer;
-}
-
-.profile-option.active {
-  background: linear-gradient(130deg, #dff1ff, #c7e6ff);
-  border-color: rgba(36, 96, 156, 0.35);
+.profile-summary strong {
+  font-size: 1rem;
   color: #1d4b78;
+}
+
+.profile-summary-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #4b657d;
 }
 
 .slider-label-row {

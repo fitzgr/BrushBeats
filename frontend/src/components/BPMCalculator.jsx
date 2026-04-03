@@ -1,21 +1,7 @@
-const PROFILE_CONFIG = {
-  adult: {
-    min: 8,
-    max: 16,
-    hint: "Typical adult range for each row"
-  },
-  kids: {
-    min: 1,
-    max: 14,
-    hint: "Covers first teeth through mixed smiles"
-  }
-};
-
 function BPMCalculator({
-  listenerProfile,
+  brusherProfile,
   values,
   onChange,
-  onProfileChange,
   bpmData,
   loading,
   timer,
@@ -30,7 +16,7 @@ function BPMCalculator({
     const secs = seconds % 60;
     return `${minutes}:${secs.toString().padStart(2, '0')}`;
   };
-  const toothRange = PROFILE_CONFIG[listenerProfile] || PROFILE_CONFIG.adult;
+  const toothRange = { min: 1, max: 16, hint: "Per row of teeth, from first teeth to a full 16-tooth arch" };
   const rangeMarks = Array.from({ length: toothRange.max - toothRange.min + 1 }, (_, index) => toothRange.min + index);
 
   const totalBrushingTime = 120; // 4 sections × 30 seconds (ADA recommended)
@@ -48,25 +34,14 @@ function BPMCalculator({
       <h2>{isMobile ? "Quick Tempo" : "Tempo Lab"}</h2>
       <p>
         {isMobile
-          ? "Choose kids or adults, then set top and bottom teeth count to tune your brush tempo."
-          : "Choose kids or adults, then enter how many teeth are on the top and bottom. BrushBeats uses those tooth counts to calculate brushing tempo."}
+          ? "Set top and bottom teeth count. BrushBeats infers who is brushing from the tooth count."
+          : "Enter how many teeth are on the top and bottom. BrushBeats infers who is brushing from the tooth count and adjusts timing automatically."}
       </p>
 
-      <div className="profile-toggle" role="group" aria-label="Brushing profile">
-        <button
-          type="button"
-          className={`profile-option${listenerProfile === "kids" ? " active" : ""}`}
-          onClick={() => onProfileChange("kids")}
-        >
-          Kids
-        </button>
-        <button
-          type="button"
-          className={`profile-option${listenerProfile === "adult" ? " active" : ""}`}
-          onClick={() => onProfileChange("adult")}
-        >
-          Adults
-        </button>
+      <div className="profile-summary" aria-live="polite">
+        <span className="profile-summary-label">Detected brusher</span>
+        <strong>{brusherProfile?.label || "Adult Smile"}</strong>
+        <span>{brusherProfile?.description || "Full adult set including wisdom teeth"}</span>
       </div>
 
       <div className="controls-grid">
@@ -137,20 +112,22 @@ function BPMCalculator({
       </div>
 
       <p className="form-note">
-        These sliders represent actual teeth, not brushing speed. Kids mode covers early brushing years and mixed teeth.
+        These sliders represent actual teeth, not brushing speed. Younger mouths automatically get longer transition buffers between side and surface changes.
       </p>
 
       <div className="bpm-pill" data-loading={loading}>
         <span className="label">Search BPM</span>
         <strong>{bpmData?.searchBpm ?? bpmData?.musicBpm ?? "--"}</strong>
         <span className="sub">
-          Switch teeth every {bpmData?.secondsPerTooth ?? "--"}s, 4 beats per tooth
+          {bpmData
+            ? `${bpmData.secondsPerTooth}s per tooth face, ${bpmData.totalTransitions} transitions at ${bpmData.transitionBufferSeconds}s each`
+            : "Timing includes tooth brushing plus transition buffers inside the same 2-minute session"}
         </span>
       </div>
 
       <p className="headline">
         {bpmData
-          ? `${bpmData.totalTeeth} teeth across 2 minutes gives ${Math.round(bpmData.searchBpm ?? bpmData.musicBpm)} BPM.`
+          ? `${bpmData.totalTeeth} teeth fit ${bpmData.totalToothTimeSeconds}s of brushing and ${bpmData.totalTransitionSeconds}s of transitions into 2 minutes.`
           : "Adjust teeth counts to calculate BPM."}
       </p>
 

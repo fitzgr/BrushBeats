@@ -23,61 +23,142 @@ function createArcPoints({ count, cx, cy, rx, ry, startDeg, endDeg }) {
 
 const TOOTH_PATH = "M0 -10 C7 -10 10 -6 10 -1 C10 4 7 8 3 10 C1 11 -1 11 -3 10 C-7 8 -10 4 -10 -1 C-10 -6 -7 -10 0 -10 Z";
 
-function isPastActiveTooth(mapIndex, activeMapIndex, direction) {
-  if (activeMapIndex < 0) {
-    return false;
-  }
-
-  return direction === "rtl" ? mapIndex > activeMapIndex : mapIndex < activeMapIndex;
+function splitArch(count) {
+  return {
+    left: Math.ceil(count / 2),
+    right: Math.floor(count / 2)
+  };
 }
 
-function BrushingGuide({ timer, brushingPhase, values, selectedBpm, isMobile, brushingMusicElapsedSeconds }) {
-  const totalSeconds = 120;
-  const beatsPerTooth = 4;
+function buildSegments(topTeeth, bottomTeeth) {
+  const topSplit = splitArch(topTeeth);
+  const bottomSplit = splitArch(bottomTeeth);
+  const segments = [
+    {
+      key: "front-top-left",
+      label: "Front Top Left",
+      jaw: "top",
+      surface: "front",
+      mapIndices: Array.from({ length: topSplit.left }, (_, index) => index)
+    },
+    {
+      key: "front-top-right",
+      label: "Front Top Right",
+      jaw: "top",
+      surface: "front",
+      mapIndices: Array.from({ length: topSplit.right }, (_, index) => topSplit.left + index)
+    },
+    {
+      key: "back-top-right",
+      label: "Back Top Right",
+      jaw: "top",
+      surface: "back",
+      mapIndices: Array.from({ length: topSplit.right }, (_, index) => topTeeth - 1 - index)
+    },
+    {
+      key: "back-top-left",
+      label: "Back Top Left",
+      jaw: "top",
+      surface: "back",
+      mapIndices: Array.from({ length: topSplit.left }, (_, index) => topSplit.left - 1 - index)
+    },
+    {
+      key: "front-bottom-left",
+      label: "Front Bottom Left",
+      jaw: "bottom",
+      surface: "front",
+      mapIndices: Array.from({ length: bottomSplit.left }, (_, index) => index)
+    },
+    {
+      key: "front-bottom-right",
+      label: "Front Bottom Right",
+      jaw: "bottom",
+      surface: "front",
+      mapIndices: Array.from({ length: bottomSplit.right }, (_, index) => bottomSplit.left + index)
+    },
+    {
+      key: "back-bottom-right",
+      label: "Back Bottom Right",
+      jaw: "bottom",
+      surface: "back",
+      mapIndices: Array.from({ length: bottomSplit.right }, (_, index) => bottomTeeth - 1 - index)
+    },
+    {
+      key: "back-bottom-left",
+      label: "Back Bottom Left",
+      jaw: "bottom",
+      surface: "back",
+      mapIndices: Array.from({ length: bottomSplit.left }, (_, index) => bottomSplit.left - 1 - index)
+    }
+  ];
+
+  return segments.filter((segment) => segment.mapIndices.length > 0);
+}
+
+function buildTimeline(segments, secondsPerTooth, transitionBufferSeconds) {
+  const timeline = [];
+  let cursor = 0;
+
+  segments.forEach((segment, segmentIndex) => {
+    segment.mapIndices.forEach((mapIndex, toothIndex) => {
+      timeline.push({
+        type: "tooth",
+        key: `${segment.key}-${mapIndex}`,
+        label: segment.label,
+        jaw: segment.jaw,
+        surface: segment.surface,
+        mapIndex,
+        segmentPosition: toothIndex + 1,
+        segmentSize: segment.mapIndices.length,
+        startsAt: cursor,
+        endsAt: cursor + secondsPerTooth
+      });
+      cursor += secondsPerTooth;
+    });
+
+    if (segmentIndex < segments.length - 1) {
+      timeline.push({
+        type: "transition",
+        key: `transition-${segment.key}`,
+        fromLabel: segment.label,
+        toLabel: segments[segmentIndex + 1].label,
+        startsAt: cursor,
+        endsAt: cursor + transitionBufferSeconds
+      });
+      cursor += transitionBufferSeconds;
+    }
+  });
+
+  return timeline;
+}
+
+function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, brushingMusicElapsedSeconds }) {
+  const totalSeconds = Number(bpmData?.totalBrushingSeconds || 120);
   const topTeeth = Number(values?.top || 16);
   const bottomTeeth = Number(values?.bottom || 16);
-  const sections = [
-    { key: "front-top", label: "Front Top", jaw: "top", teeth: topTeeth, direction: "ltr" },
-    { key: "back-top", label: "Back Top", jaw: "top", teeth: topTeeth, direction: "rtl" },
-    { key: "front-bottom", label: "Front Bottom", jaw: "bottom", teeth: bottomTeeth, direction: "ltr" },
-    { key: "back-bottom", label: "Back Bottom", jaw: "bottom", teeth: bottomTeeth, direction: "rtl" }
-  ];
   const safeBpm = Math.max(40, Math.min(240, Number(selectedBpm) || 120));
-  const beatDurationMs = 60000 / safeBpm;
-  const beatsPerSecond = safeBpm / 60;
-  const totalToothActions = topTeeth * 2 + bottomTeeth * 2;
-  const totalSessionBeats = totalToothActions * beatsPerTooth;
-  const beatsElapsedExact = timer.running
-    ? Math.min(totalSessionBeats, Math.max(0, brushingMusicElapsedSeconds * beatsPerSecond))
-    : 0;
-  const progress = totalSessionBeats > 0 ? Math.min(100, (beatsElapsedExact / totalSessionBeats) * 100) : 0;
-  const activeToothActionIndex =
-    timer.running && totalToothActions > 0
-      ? Math.min(totalToothActions - 1, Math.floor(beatsElapsedExact / beatsPerTooth))
-      : -1;
-
-  const sectionStarts = [0, topTeeth, topTeeth * 2, topTeeth * 2 + bottomTeeth];
-  const activeSectionIndex =
-    activeToothActionIndex >= 0
-      ? sectionStarts.reduce((index, start, idx) => (activeToothActionIndex >= start ? idx : index), 0)
-      : -1;
-  const activeSection = activeSectionIndex >= 0 ? sections[activeSectionIndex] : null;
-  const movementIndex = activeSection ? activeToothActionIndex - sectionStarts[activeSectionIndex] : -1;
-  const activeMapIndex =
-    movementIndex >= 0 && activeSection
-      ? activeSection.direction === "rtl"
-        ? activeSection.teeth - 1 - movementIndex
-        : movementIndex
-      : -1;
-  const isFrontSurface = Boolean(activeSection?.key.includes("front"));
-  const beatsIntoCurrentTooth = movementIndex >= 0 ? beatsElapsedExact - movementIndex * beatsPerTooth - sectionStarts[activeSectionIndex] * beatsPerTooth : 0;
-  const beatsUntilNextTooth = movementIndex >= 0 ? Math.max(0.01, beatsPerTooth - beatsIntoCurrentTooth) : 0;
-  const nextMoveSeconds = timer.running && movementIndex >= 0 ? Math.max(1, Math.ceil(beatsUntilNextTooth / beatsPerSecond)) : null;
-  const sectionBeatsRemaining =
-    timer.running && movementIndex >= 0 && activeSection
-      ? Math.max(0.01, (activeSection.teeth - movementIndex - 1) * beatsPerTooth + beatsUntilNextTooth)
+  const toothDurationSeconds = Number(bpmData?.secondsPerTooth || totalSeconds / Math.max(1, (topTeeth + bottomTeeth) * 2));
+  const transitionBufferSeconds = Number(bpmData?.transitionBufferSeconds || 0.75);
+  const pulseDurationMs = Math.max(300, toothDurationSeconds * 1000);
+  const segments = buildSegments(topTeeth, bottomTeeth);
+  const timeline = buildTimeline(segments, toothDurationSeconds, transitionBufferSeconds);
+  const elapsedSeconds = brushingPhase === "complete"
+    ? totalSeconds
+    : timer.running
+      ? Math.min(totalSeconds, Math.max(0, brushingMusicElapsedSeconds))
       : 0;
-  const nextSectionSeconds = timer.running && movementIndex >= 0 ? Math.max(1, Math.ceil(sectionBeatsRemaining / beatsPerSecond)) : null;
+  const progress = totalSeconds > 0 ? Math.min(100, (elapsedSeconds / totalSeconds) * 100) : 0;
+  const activeEntry = timer.running
+    ? timeline.find((entry) => elapsedSeconds >= entry.startsAt && elapsedSeconds < entry.endsAt) || null
+    : null;
+  const activeToothEntry = activeEntry?.type === "tooth" ? activeEntry : null;
+  const activeMapIndex = activeToothEntry?.mapIndex ?? -1;
+  const isFrontSurface = activeToothEntry?.surface === "front";
+  const nextMoveSeconds = activeEntry ? Math.max(1, Math.ceil(activeEntry.endsAt - elapsedSeconds)) : null;
+  const nextTransition = timer.running
+    ? timeline.find((entry) => entry.type === "transition" && entry.startsAt >= elapsedSeconds)
+    : null;
+  const nextSectionSeconds = nextTransition ? Math.max(1, Math.ceil(nextTransition.startsAt - elapsedSeconds)) : null;
 
   const topPoints = createArcPoints({
     count: topTeeth,
@@ -110,29 +191,29 @@ function BrushingGuide({ timer, brushingPhase, values, selectedBpm, isMobile, br
       activeSurface: null
     };
 
-    if (!timer.running || !activeSection) {
+    if (!timer.running) {
       return state;
     }
 
-    const frontSectionIndex = jaw === "top" ? 0 : 2;
-    const backSectionIndex = jaw === "top" ? 1 : 3;
+    state.frontDone = timeline.some(
+      (entry) =>
+        entry.type === "tooth" &&
+        entry.jaw === jaw &&
+        entry.surface === "front" &&
+        entry.mapIndex === mapIndex &&
+        entry.endsAt <= elapsedSeconds
+    );
+    state.backDone = timeline.some(
+      (entry) =>
+        entry.type === "tooth" &&
+        entry.jaw === jaw &&
+        entry.surface === "back" &&
+        entry.mapIndex === mapIndex &&
+        entry.endsAt <= elapsedSeconds
+    );
 
-    if (activeSectionIndex > frontSectionIndex) {
-      state.frontDone = true;
-    } else if (activeSectionIndex === frontSectionIndex && activeSection.jaw === jaw && isFrontSurface) {
-      state.frontDone = isPastActiveTooth(mapIndex, activeMapIndex, activeSection.direction);
-      if (mapIndex === activeMapIndex) {
-        state.activeSurface = "front";
-      }
-    }
-
-    if (activeSectionIndex > backSectionIndex) {
-      state.backDone = true;
-    } else if (activeSectionIndex === backSectionIndex && activeSection.jaw === jaw && !isFrontSurface) {
-      state.backDone = isPastActiveTooth(mapIndex, activeMapIndex, activeSection.direction);
-      if (mapIndex === activeMapIndex) {
-        state.activeSurface = "back";
-      }
+    if (activeToothEntry?.jaw === jaw && activeToothEntry.mapIndex === mapIndex) {
+      state.activeSurface = activeToothEntry.surface;
     }
 
     return state;
@@ -143,8 +224,8 @@ function BrushingGuide({ timer, brushingPhase, values, selectedBpm, isMobile, br
       <h2>Brush Map</h2>
       <p>
         {isMobile
-          ? "Follow the bouncing marker tooth-by-tooth."
-          : "Each 30-second section is split by the number of teeth in that section. Follow the bouncing marker tooth-by-tooth."}
+          ? "Follow the marker tooth-by-tooth. Transition buffers are built into the same 2-minute session."
+          : "Brush every tooth face evenly. When you switch sides or move from front to back, the guide inserts transition buffers without extending the 2-minute session."}
       </p>
 
       <div className="guide-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={Math.round(progress)}>
@@ -194,7 +275,7 @@ function BrushingGuide({ timer, brushingPhase, values, selectedBpm, isMobile, br
                     cy={indicatorY}
                     r="4"
                     className={`tooth-indicator ${isFrontSurface ? "front" : "back"}`}
-                    style={{ animationDuration: `${beatDurationMs}ms` }}
+                    style={{ animationDuration: `${pulseDurationMs}ms` }}
                   />
                 )}
               </g>
@@ -240,7 +321,7 @@ function BrushingGuide({ timer, brushingPhase, values, selectedBpm, isMobile, br
                     cy={indicatorY}
                     r="4"
                     className={`tooth-indicator ${isFrontSurface ? "front" : "back"}`}
-                    style={{ animationDuration: `${beatDurationMs}ms` }}
+                    style={{ animationDuration: `${pulseDurationMs}ms` }}
                   />
                 )}
               </g>
@@ -248,7 +329,7 @@ function BrushingGuide({ timer, brushingPhase, values, selectedBpm, isMobile, br
           })}
 
           <text x="180" y="200" textAnchor="middle" className="map-score">{Math.round(progress)}%</text>
-          <text x="180" y="228" textAnchor="middle" className="map-score-label">Completeness</text>
+          <text x="180" y="228" textAnchor="middle" className="map-score-label">Session</text>
         </svg>
       </div>
 
@@ -259,9 +340,11 @@ function BrushingGuide({ timer, brushingPhase, values, selectedBpm, isMobile, br
 
       {brushingPhase === "running" && (
         <p className="guide-callout">
-          {isMobile
-            ? `${activeSection?.label}, tooth ${movementIndex + 1}/${activeSection?.teeth}. Move in ${nextMoveSeconds}s.`
-            : `Brush ${activeSection?.label} now (${activeSection?.direction === "rtl" ? "right to left" : "left to right"}), tooth ${movementIndex + 1} of ${activeSection?.teeth}. Dot pulse follows ~${Math.round(safeBpm)} BPM. Move in ${nextMoveSeconds}s. Switch section in ${nextSectionSeconds}s.`}
+          {activeEntry?.type === "transition"
+            ? `Transition from ${activeEntry.fromLabel} to ${activeEntry.toLabel}. Resume brushing in ${nextMoveSeconds}s.`
+            : isMobile
+              ? `${activeToothEntry?.label}, tooth ${activeToothEntry?.segmentPosition}/${activeToothEntry?.segmentSize}. Move in ${nextMoveSeconds}s.`
+              : `Brush ${activeToothEntry?.label} now, tooth ${activeToothEntry?.segmentPosition} of ${activeToothEntry?.segmentSize}. Song target is ~${Math.round(safeBpm)} BPM. Move in ${nextMoveSeconds}s.${nextSectionSeconds ? ` Transition in ${nextSectionSeconds}s.` : ""}`}
         </p>
       )}
       {!timer.running && brushingPhase !== "complete" && <p className="guide-callout">Press Start Brushing to begin live tooth guidance.</p>}

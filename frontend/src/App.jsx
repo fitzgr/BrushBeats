@@ -23,51 +23,69 @@ import {
 import { useDeviceContext } from "./lib/deviceContext";
 import "./App.css";
 
-const BRUSHING_PROFILES = {
-  adult: {
-    label: "Adults",
-    teethRange: { min: 8, max: 16 },
-    defaultValues: { top: 16, bottom: 16 }
-  },
-  kids: {
-    label: "Kids",
-    teethRange: { min: 1, max: 14 },
-    defaultValues: { top: 10, bottom: 10 }
-  }
-};
+const DEFAULT_VALUES = { top: 16, bottom: 16 };
 
 function clampValue(value, min, max) {
   return Math.min(max, Math.max(min, value));
+}
+
+function getMaturityScore(totalTeeth) {
+  return clampValue((Number(totalTeeth) - 1) / 31, 0, 1);
+}
+
+function inferBrusherProfile(totalTeeth) {
+  if (totalTeeth <= 20) {
+    return {
+      key: "kids",
+      label: "Kids Mode",
+      description: "Primary teeth or an early brusher"
+    };
+  }
+
+  if (totalTeeth <= 27) {
+    return {
+      key: "growing",
+      label: "Growing Smile",
+      description: "Mixed teeth as they grow"
+    };
+  }
+
+  if (totalTeeth <= 31) {
+    return {
+      key: "adult-28",
+      label: "Adult Smile",
+      description: "Typical adult set without wisdom teeth"
+    };
+  }
+
+  return {
+    key: "adult-32",
+    label: "Full Adult Smile",
+    description: "Full adult set including wisdom teeth"
+  };
 }
 
 function randomPreferenceValue() {
   return Math.floor(Math.random() * 101);
 }
 
-function createInitialSongPreferences(listenerProfile = "adult") {
-  if (listenerProfile === "kids") {
-    return {
-      tolerance: 6,
-      danceability: 70 + Math.floor(Math.random() * 26),
-      acousticness: Math.floor(Math.random() * 41)
-    };
-  }
+function createInitialSongPreferences(totalTeeth = DEFAULT_VALUES.top + DEFAULT_VALUES.bottom) {
+  const maturityScore = getMaturityScore(totalTeeth);
 
   return {
-    tolerance: 5,
-    danceability: randomPreferenceValue(),
-    acousticness: randomPreferenceValue()
+    tolerance: totalTeeth <= 20 ? 6 : totalTeeth <= 27 ? 5 : 4,
+    danceability: clampValue(Math.round(50 + (1 - maturityScore) * 28 + (Math.random() * 24 - 12)), 0, 100),
+    acousticness: clampValue(Math.round(28 + maturityScore * 26 + (Math.random() * 24 - 12)), 0, 100)
   };
 }
 
 function App() {
-  const [listenerProfile, setListenerProfile] = useState("adult");
-  const [values, setValues] = useState(BRUSHING_PROFILES.adult.defaultValues);
+  const [values, setValues] = useState(DEFAULT_VALUES);
   const [bpmData, setBpmData] = useState(null);
   const [songs, setSongs] = useState([]);
   const [selectedSong, setSelectedSong] = useState(null);
   const [playerData, setPlayerData] = useState(null);
-  const [songFilters, setSongFilters] = useState(() => createInitialSongPreferences("adult"));
+  const [songFilters, setSongFilters] = useState(() => createInitialSongPreferences(DEFAULT_VALUES.top + DEFAULT_VALUES.bottom));
   const [draftSongFilters, setDraftSongFilters] = useState(songFilters);
   const [keyword, setKeyword] = useState("");
   const [songRefreshSeed, setSongRefreshSeed] = useState(0);
@@ -90,7 +108,8 @@ function App() {
   const lastPlaybackTickRef = useRef(null);
   const analyticsAvailable = useMemo(() => analyticsEnabled(), []);
   const device = useDeviceContext();
-  const activeProfile = BRUSHING_PROFILES[listenerProfile];
+  const totalTeeth = values.top + values.bottom;
+  const detectedBrusherProfile = bpmData?.brusherProfile || inferBrusherProfile(totalTeeth);
 
   useEffect(() => {
     if (analyticsConsent === "granted") {
@@ -235,11 +254,11 @@ function App() {
           tolerance: songFilters.tolerance,
           danceability: songFilters.danceability,
           acousticness: songFilters.acousticness,
-          listenerProfile,
+          totalTeeth,
           keyword,
           seed: songRefreshSeed
         });
-        const queryKey = `${listenerProfile}:${Math.round(bpmData.searchBpm)}:${songFilters.tolerance}:${songFilters.danceability}:${songFilters.acousticness}:${keyword.trim().toLowerCase()}`;
+        const queryKey = `${totalTeeth}:${Math.round(bpmData.searchBpm)}:${songFilters.tolerance}:${songFilters.danceability}:${songFilters.acousticness}:${keyword.trim().toLowerCase()}`;
         const seenForQuery = seenSongsByQueryRef.current.get(queryKey) || new Set();
         const fetchedSongs = result.songs || [];
         const unseenSongs = fetchedSongs.filter((song) => !seenForQuery.has(toSongKey(song)));
@@ -273,27 +292,7 @@ function App() {
       cancelled = true;
       window.clearTimeout(timeout);
     };
-  }, [bpmData?.searchBpm, songFilters, listenerProfile, keyword, songRefreshSeed]);
-
-  function handleListenerProfileChange(profile) {
-    if (!BRUSHING_PROFILES[profile]) {
-      return;
-    }
-
-    const nextProfile = BRUSHING_PROFILES[profile];
-    const nextFilters = createInitialSongPreferences(profile);
-
-    setListenerProfile(profile);
-    setValues((prev) => ({
-      top: clampValue(prev.top, nextProfile.teethRange.min, nextProfile.teethRange.max),
-      bottom: clampValue(prev.bottom, nextProfile.teethRange.min, nextProfile.teethRange.max)
-    }));
-    setSongFilters(nextFilters);
-    setDraftSongFilters(nextFilters);
-    setWorkflowStep("teeth");
-    setSelectedSong(null);
-    setPlayerData(null);
-  }
+  }, [bpmData?.searchBpm, songFilters, totalTeeth, keyword, songRefreshSeed]);
 
   function updateDraftSongFilter(key, value) {
     setDraftSongFilters((prev) => ({ ...prev, [key]: value }));
@@ -455,13 +454,11 @@ function App() {
 
   const subtitle = useMemo(() => {
     if (!bpmData) {
-      return listenerProfile === "kids"
-        ? "Tune brushing for younger mouths and more upbeat picks."
-        : "Matching your brushing rhythm to music you can actually enjoy.";
+      return `Matching brushing rhythm to music for ${detectedBrusherProfile.description.toLowerCase()}.`;
     }
 
-    return `Step through teeth, music, and brushing around ${Math.round(bpmData.searchBpm)} BPM (+/- ${songFilters.tolerance}) for ${activeProfile.label.toLowerCase()} mode.`;
-  }, [activeProfile.label, bpmData, listenerProfile, songFilters.tolerance]);
+    return `${detectedBrusherProfile.label}: ${Math.round(bpmData.searchBpm)} BPM target, ${bpmData.secondsPerTooth}s per tooth face, ${bpmData.transitionBufferSeconds}s transitions.`;
+  }, [bpmData, detectedBrusherProfile.description, detectedBrusherProfile.label]);
 
   const phaseLabel = useMemo(() => {
     if (brushingPhase === "running") {
@@ -584,10 +581,9 @@ function App() {
       {workflowStep === "teeth" && (
         <section className={`layout-grid ${device.isMobile ? "mobile-mode" : "desktop-mode desktop-step-layout"}`}>
           <BPMCalculator
-            listenerProfile={listenerProfile}
+            brusherProfile={detectedBrusherProfile}
             values={values}
             onChange={updateValue}
-            onProfileChange={handleListenerProfileChange}
             bpmData={bpmData}
             loading={loading.bpm}
             timer={timer}
@@ -603,7 +599,7 @@ function App() {
       {workflowStep === "music" && (
         <section className={`layout-grid ${device.isMobile ? "mobile-mode" : "desktop-mode desktop-step-layout"}`}>
           <SongList
-            listenerProfile={listenerProfile}
+            brusherProfile={detectedBrusherProfile}
             songs={songs}
             exhausted={isSongPoolExhausted}
             loading={loading.songs}
@@ -658,6 +654,7 @@ function App() {
           />
 
           <BrushingGuide
+            bpmData={bpmData}
             timer={timer}
             brushingPhase={brushingPhase}
             values={values}
