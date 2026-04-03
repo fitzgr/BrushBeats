@@ -27,6 +27,7 @@ router.get("/", async (req, res, next) => {
     const tolerance = Number(req.query.tolerance ?? 5);
     const danceability = Number(req.query.danceability ?? 50);
     const acousticness = Number(req.query.acousticness ?? 50);
+    const listenerProfile = (req.query.listenerProfile || "adult").trim().toLowerCase();
     const keyword = (req.query.q || "").trim();
     const seed = Number(req.query.seed ?? 0);
 
@@ -34,14 +35,14 @@ router.get("/", async (req, res, next) => {
       return res.status(400).json({ error: "bpm query param is required" });
     }
 
-    const cacheKey = `songs:${bpm}:${tolerance}:${danceability}:${acousticness}:${keyword.toLowerCase()}:${seed}`;
+    const cacheKey = `songs:${listenerProfile}:${bpm}:${tolerance}:${danceability}:${acousticness}:${keyword.toLowerCase()}:${seed}`;
     const cached = songsCache.get(cacheKey);
 
     if (cached) {
       return res.json({ ...cached, cached: true });
     }
 
-    const result = await fetchSongsByBpm({ bpm, tolerance, danceability, acousticness, keyword, seed });
+    const result = await fetchSongsByBpm({ bpm, tolerance, danceability, acousticness, listenerProfile, keyword, seed });
     const shuffled = {
       ...result,
       songs: seededShuffle(result.songs || [], seed)

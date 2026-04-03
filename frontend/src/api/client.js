@@ -35,12 +35,13 @@ export function getBpm({ top, bottom }) {
   return request(`/api/bpm?${params.toString()}`);
 }
 
-export function getSongs({ bpm, tolerance, danceability, acousticness, keyword, seed = 0 }) {
+export function getSongs({ bpm, tolerance, danceability, acousticness, listenerProfile, keyword, seed = 0 }) {
   const params = new URLSearchParams({
     bpm: String(Math.round(bpm)),
     tolerance: String(tolerance),
     danceability: String(danceability),
     acousticness: String(acousticness),
+    listenerProfile: listenerProfile || "adult",
     q: keyword || "",
     seed: String(seed)
   });

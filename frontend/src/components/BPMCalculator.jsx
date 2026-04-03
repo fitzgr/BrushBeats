@@ -1,9 +1,37 @@
-function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhase, isMobile, hideSessionActions = false, onStartTimer, onRestartTimer }) {
+const PROFILE_CONFIG = {
+  adult: {
+    min: 8,
+    max: 16,
+    hint: "Typical adult range for each row"
+  },
+  kids: {
+    min: 1,
+    max: 14,
+    hint: "Covers first teeth through mixed smiles"
+  }
+};
+
+function BPMCalculator({
+  listenerProfile,
+  values,
+  onChange,
+  onProfileChange,
+  bpmData,
+  loading,
+  timer,
+  brushingPhase,
+  isMobile,
+  hideSessionActions = false,
+  onStartTimer,
+  onRestartTimer
+}) {
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${minutes}:${secs.toString().padStart(2, '0')}`;
   };
+  const toothRange = PROFILE_CONFIG[listenerProfile] || PROFILE_CONFIG.adult;
+  const rangeMarks = Array.from({ length: toothRange.max - toothRange.min + 1 }, (_, index) => toothRange.min + index);
 
   const totalBrushingTime = 120; // 4 sections × 30 seconds (ADA recommended)
   const totalTimeLabel = formatTime(totalBrushingTime);
@@ -20,9 +48,26 @@ function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhas
       <h2>{isMobile ? "Quick Tempo" : "Tempo Lab"}</h2>
       <p>
         {isMobile
-          ? "Set top and bottom teeth count to tune your brush tempo."
-          : "Enter how many teeth you have on the top and bottom. BrushBeats uses those tooth counts to calculate your brushing tempo."}
+          ? "Choose kids or adults, then set top and bottom teeth count to tune your brush tempo."
+          : "Choose kids or adults, then enter how many teeth are on the top and bottom. BrushBeats uses those tooth counts to calculate brushing tempo."}
       </p>
+
+      <div className="profile-toggle" role="group" aria-label="Brushing profile">
+        <button
+          type="button"
+          className={`profile-option${listenerProfile === "kids" ? " active" : ""}`}
+          onClick={() => onProfileChange("kids")}
+        >
+          Kids
+        </button>
+        <button
+          type="button"
+          className={`profile-option${listenerProfile === "adult" ? " active" : ""}`}
+          onClick={() => onProfileChange("adult")}
+        >
+          Adults
+        </button>
+      </div>
 
       <div className="controls-grid">
         <label>
@@ -30,19 +75,30 @@ function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhas
             <span>Top Teeth Count</span>
             <strong className="slider-value-badge">{values.top}</strong>
           </span>
-          <input
-            className="tooth-range-input"
-            type="range"
-            min="8"
-            max="16"
-            step="1"
-            value={values.top}
-            onChange={(event) => onChange("top", Number(event.target.value))}
-          />
+          <span className="tooth-range-shell">
+            <input
+              className="tooth-range-input"
+              type="range"
+              min={toothRange.min}
+              max={toothRange.max}
+              step="1"
+              value={values.top}
+              onChange={(event) => onChange("top", Number(event.target.value))}
+            />
+            <span className="tooth-range-ticks" aria-hidden="true">
+              {rangeMarks.map((mark) => (
+                <span
+                  key={`top-${mark}`}
+                  className="tooth-range-tick"
+                  style={{ left: `${((mark - toothRange.min) / Math.max(1, toothRange.max - toothRange.min)) * 100}%` }}
+                />
+              ))}
+            </span>
+          </span>
           <span className="slider-range-readout" aria-hidden="true">
-            <span>8</span>
-            <span className="slider-range-hint">Adult range per arch</span>
-            <span>16</span>
+            <span>{toothRange.min}</span>
+            <span className="slider-range-hint">{toothRange.hint}</span>
+            <span>{toothRange.max}</span>
           </span>
         </label>
 
@@ -51,25 +107,38 @@ function BPMCalculator({ values, onChange, bpmData, loading, timer, brushingPhas
             <span>Bottom Teeth Count</span>
             <strong className="slider-value-badge">{values.bottom}</strong>
           </span>
-          <input
-            className="tooth-range-input"
-            type="range"
-            min="8"
-            max="16"
-            step="1"
-            value={values.bottom}
-            onChange={(event) => onChange("bottom", Number(event.target.value))}
-          />
+          <span className="tooth-range-shell">
+            <input
+              className="tooth-range-input"
+              type="range"
+              min={toothRange.min}
+              max={toothRange.max}
+              step="1"
+              value={values.bottom}
+              onChange={(event) => onChange("bottom", Number(event.target.value))}
+            />
+            <span className="tooth-range-ticks" aria-hidden="true">
+              {rangeMarks.map((mark) => (
+                <span
+                  key={`bottom-${mark}`}
+                  className="tooth-range-tick"
+                  style={{ left: `${((mark - toothRange.min) / Math.max(1, toothRange.max - toothRange.min)) * 100}%` }}
+                />
+              ))}
+            </span>
+          </span>
           <span className="slider-range-readout" aria-hidden="true">
-            <span>8</span>
-            <span className="slider-range-hint">Adult range per arch</span>
-            <span>16</span>
+            <span>{toothRange.min}</span>
+            <span className="slider-range-hint">{toothRange.hint}</span>
+            <span>{toothRange.max}</span>
           </span>
         </label>
 
       </div>
 
-      <p className="form-note">These sliders represent your actual number of teeth, not brushing speed.</p>
+      <p className="form-note">
+        These sliders represent actual teeth, not brushing speed. Kids mode covers early brushing years and mixed teeth.
+      </p>
 
       <div className="bpm-pill" data-loading={loading}>
         <span className="label">Search BPM</span>

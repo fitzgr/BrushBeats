@@ -303,6 +303,34 @@
   gap: 0.75rem;
 }
 
+.profile-toggle {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+  padding: 0.35rem;
+  margin: 0 0 1rem;
+  border-radius: 14px;
+  background: rgba(16, 33, 37, 0.05);
+  border: 1px solid rgba(16, 33, 37, 0.12);
+}
+
+.profile-option {
+  border: 1px solid rgba(16, 33, 37, 0.14);
+  background: #fffdf8;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+}
+
+.profile-option.active {
+  background: linear-gradient(130deg, #dff1ff, #c7e6ff);
+  border-color: rgba(36, 96, 156, 0.35);
+  color: #1d4b78;
+}
+
 .slider-label-row {
   display: flex;
   align-items: center;
@@ -334,7 +362,15 @@
   -webkit-appearance: none;
   appearance: none;
   height: 1.4rem;
+  width: 100%;
   background: transparent;
+  position: relative;
+  z-index: 2;
+}
+
+.tooth-range-shell {
+  position: relative;
+  display: block;
 }
 
 .tooth-range-input::-webkit-slider-runnable-track {
@@ -342,11 +378,7 @@
   border-radius: 999px;
   border: 1px solid rgba(36, 96, 156, 0.24);
   background-color: #b8dbe5;
-  background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.08)),
-    linear-gradient(to right, rgba(18, 71, 125, 0.3) 0 2px, transparent 2px);
-  background-size: 100% 100%, calc(100% / 8) 100%;
-  background-repeat: no-repeat, repeat-x;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.08));
 }
 
 .tooth-range-input::-webkit-slider-thumb {
@@ -366,11 +398,7 @@
   border-radius: 999px;
   border: 1px solid rgba(36, 96, 156, 0.24);
   background-color: #b8dbe5;
-  background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.08)),
-    linear-gradient(to right, rgba(18, 71, 125, 0.3) 0 2px, transparent 2px);
-  background-size: 100% 100%, calc(100% / 8) 100%;
-  background-repeat: no-repeat, repeat-x;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.08));
 }
 
 .tooth-range-input::-moz-range-thumb {
@@ -380,6 +408,27 @@
   border: 2px solid #ffffff;
   background: #24609c;
   box-shadow: 0 2px 8px rgba(16, 33, 37, 0.2);
+}
+
+.tooth-range-ticks {
+  position: absolute;
+  left: 0.52rem;
+  right: 0.52rem;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 0.8rem;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tooth-range-tick {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-1px);
+  border-radius: 999px;
+  background: rgba(18, 71, 125, 0.35);
 }
 
 .slider-range-hint {

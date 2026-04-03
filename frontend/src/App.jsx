@@ -23,11 +23,36 @@ import {
 import { useDeviceContext } from "./lib/deviceContext";
 import "./App.css";
 
+const BRUSHING_PROFILES = {
+  adult: {
+    label: "Adults",
+    teethRange: { min: 8, max: 16 },
+    defaultValues: { top: 16, bottom: 16 }
+  },
+  kids: {
+    label: "Kids",
+    teethRange: { min: 1, max: 14 },
+    defaultValues: { top: 10, bottom: 10 }
+  }
+};
+
+function clampValue(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
 function randomPreferenceValue() {
   return Math.floor(Math.random() * 101);
 }
 
-function createInitialSongPreferences() {
+function createInitialSongPreferences(listenerProfile = "adult") {
+  if (listenerProfile === "kids") {
+    return {
+      tolerance: 6,
+      danceability: 70 + Math.floor(Math.random() * 26),
+      acousticness: Math.floor(Math.random() * 41)
+    };
+  }
+
   return {
     tolerance: 5,
     danceability: randomPreferenceValue(),
@@ -36,12 +61,13 @@ function createInitialSongPreferences() {
 }
 
 function App() {
-  const [values, setValues] = useState({ top: 16, bottom: 16 });
+  const [listenerProfile, setListenerProfile] = useState("adult");
+  const [values, setValues] = useState(BRUSHING_PROFILES.adult.defaultValues);
   const [bpmData, setBpmData] = useState(null);
   const [songs, setSongs] = useState([]);
   const [selectedSong, setSelectedSong] = useState(null);
   const [playerData, setPlayerData] = useState(null);
-  const [songFilters, setSongFilters] = useState(() => createInitialSongPreferences());
+  const [songFilters, setSongFilters] = useState(() => createInitialSongPreferences("adult"));
   const [draftSongFilters, setDraftSongFilters] = useState(songFilters);
   const [keyword, setKeyword] = useState("");
   const [songRefreshSeed, setSongRefreshSeed] = useState(0);
@@ -64,6 +90,7 @@ function App() {
   const lastPlaybackTickRef = useRef(null);
   const analyticsAvailable = useMemo(() => analyticsEnabled(), []);
   const device = useDeviceContext();
+  const activeProfile = BRUSHING_PROFILES[listenerProfile];
 
   useEffect(() => {
     if (analyticsConsent === "granted") {
@@ -208,10 +235,11 @@ function App() {
           tolerance: songFilters.tolerance,
           danceability: songFilters.danceability,
           acousticness: songFilters.acousticness,
+          listenerProfile,
           keyword,
           seed: songRefreshSeed
         });
-        const queryKey = `${Math.round(bpmData.searchBpm)}:${songFilters.tolerance}:${songFilters.danceability}:${songFilters.acousticness}:${keyword.trim().toLowerCase()}`;
+        const queryKey = `${listenerProfile}:${Math.round(bpmData.searchBpm)}:${songFilters.tolerance}:${songFilters.danceability}:${songFilters.acousticness}:${keyword.trim().toLowerCase()}`;
         const seenForQuery = seenSongsByQueryRef.current.get(queryKey) || new Set();
         const fetchedSongs = result.songs || [];
         const unseenSongs = fetchedSongs.filter((song) => !seenForQuery.has(toSongKey(song)));
@@ -245,7 +273,27 @@ function App() {
       cancelled = true;
       window.clearTimeout(timeout);
     };
-  }, [bpmData?.searchBpm, songFilters, keyword, songRefreshSeed]);
+  }, [bpmData?.searchBpm, songFilters, listenerProfile, keyword, songRefreshSeed]);
+
+  function handleListenerProfileChange(profile) {
+    if (!BRUSHING_PROFILES[profile]) {
+      return;
+    }
+
+    const nextProfile = BRUSHING_PROFILES[profile];
+    const nextFilters = createInitialSongPreferences(profile);
+
+    setListenerProfile(profile);
+    setValues((prev) => ({
+      top: clampValue(prev.top, nextProfile.teethRange.min, nextProfile.teethRange.max),
+      bottom: clampValue(prev.bottom, nextProfile.teethRange.min, nextProfile.teethRange.max)
+    }));
+    setSongFilters(nextFilters);
+    setDraftSongFilters(nextFilters);
+    setWorkflowStep("teeth");
+    setSelectedSong(null);
+    setPlayerData(null);
+  }
 
   function updateDraftSongFilter(key, value) {
     setDraftSongFilters((prev) => ({ ...prev, [key]: value }));
@@ -407,11 +455,13 @@ function App() {
 
   const subtitle = useMemo(() => {
     if (!bpmData) {
-      return "Matching your brushing rhythm to music you can actually enjoy.";
+      return listenerProfile === "kids"
+        ? "Tune brushing for younger mouths and more upbeat picks."
+        : "Matching your brushing rhythm to music you can actually enjoy.";
     }
 
-    return `Step through teeth, music, and brushing around ${Math.round(bpmData.searchBpm)} BPM (+/- ${songFilters.tolerance}).`;
-  }, [bpmData, songFilters.tolerance]);
+    return `Step through teeth, music, and brushing around ${Math.round(bpmData.searchBpm)} BPM (+/- ${songFilters.tolerance}) for ${activeProfile.label.toLowerCase()} mode.`;
+  }, [activeProfile.label, bpmData, listenerProfile, songFilters.tolerance]);
 
   const phaseLabel = useMemo(() => {
     if (brushingPhase === "running") {
@@ -534,8 +584,10 @@ function App() {
       {workflowStep === "teeth" && (
         <section className={`layout-grid ${device.isMobile ? "mobile-mode" : "desktop-mode desktop-step-layout"}`}>
           <BPMCalculator
+            listenerProfile={listenerProfile}
             values={values}
             onChange={updateValue}
+            onProfileChange={handleListenerProfileChange}
             bpmData={bpmData}
             loading={loading.bpm}
             timer={timer}
@@ -551,6 +603,7 @@ function App() {
       {workflowStep === "music" && (
         <section className={`layout-grid ${device.isMobile ? "mobile-mode" : "desktop-mode desktop-step-layout"}`}>
           <SongList
+            listenerProfile={listenerProfile}
             songs={songs}
             exhausted={isSongPoolExhausted}
             loading={loading.songs}
