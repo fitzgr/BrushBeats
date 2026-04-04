@@ -132,7 +132,7 @@ function App() {
   const [storageBannerDismissed, setStorageBannerDismissedState] = useState(() => isStorageBannerDismissed());
   const [lastSession, setLastSession] = useState(null);
   const [languageFallbackState, setLanguageFallbackState] = useState(() => getLanguageFallbackInfo());
-  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [activeModal, setActiveModal] = useState(null);
   const [workflowStep, setWorkflowStep] = useState("teeth");
   const [brushingHand, setBrushingHand] = useState("right");
   const [brushDurationSeconds, setBrushDurationSeconds] = useState(DEFAULT_BRUSH_DURATION_SECONDS);
@@ -276,11 +276,15 @@ function App() {
   }
 
   function openPrivacyModal() {
-    setShowPrivacyModal(true);
+    setActiveModal("privacy");
+  }
+
+  function openStorageInfoModal() {
+    setActiveModal("storage");
   }
 
   function closePrivacyModal() {
-    setShowPrivacyModal(false);
+    setActiveModal(null);
   }
 
   function toSongKey(song) {
@@ -938,7 +942,7 @@ function App() {
               {t("common.buttons.turnOn")}
             </button>
           )}
-          <button type="button" className="privacy-toggle" onClick={handleShowStorageBanner}>
+          <button type="button" className="privacy-toggle" onClick={openStorageInfoModal}>
             {t("common.buttons.storageNotice")}
           </button>
         </div>
@@ -949,20 +953,31 @@ function App() {
         )}
       </footer>
 
-      {showPrivacyModal && (
+      {activeModal && (
         <div className="privacy-modal-overlay" role="presentation" onClick={closePrivacyModal}>
           <section
             className="privacy-modal"
             role="dialog"
             aria-modal="true"
-            aria-label={t("privacy.modalTitle")}
+            aria-label={activeModal === "privacy" ? t("privacy.modalTitle") : t("privacy.storageModalTitle")}
             onClick={(event) => event.stopPropagation()}
           >
-            <h2>{t("privacy.modalTitle")}</h2>
-            <p>{t("privacy.modalBody1")}</p>
-            <p>{t("privacy.modalBody2")}</p>
-            <p>{t("privacy.modalBody3")}</p>
-            <p>{t("privacy.modalBody4")}</p>
+            <h2>{activeModal === "privacy" ? t("privacy.modalTitle") : t("privacy.storageModalTitle")}</h2>
+            {activeModal === "privacy" ? (
+              <>
+                <p>{t("privacy.modalBody1")}</p>
+                <p>{t("privacy.modalBody2")}</p>
+                <p>{t("privacy.modalBody3")}</p>
+                <p>{t("privacy.modalBody4")}</p>
+              </>
+            ) : (
+              <>
+                <p>{t("privacy.storageModalBody1")}</p>
+                <p>{t("privacy.storageModalBody2")}</p>
+                <p>{t("privacy.storageModalBody3")}</p>
+                <p>{t("privacy.storageModalBody4")}</p>
+              </>
+            )}
             <div className="privacy-modal-actions">
               <button type="button" className="action-btn secondary" onClick={closePrivacyModal}>
                 {t("common.buttons.close")}

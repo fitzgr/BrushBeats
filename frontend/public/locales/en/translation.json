@@ -255,7 +255,12 @@
     "modalBody1": "BrushBeats uses Google Analytics 4 only when you opt in. We collect anonymous usage events to improve the app, such as BPM calculations, song selections, brushing starts, resets, completions, and auto-queue transitions.",
     "modalBody2": "We may also store your last brushing session in browser storage (cookies/localStorage) only when you allow storage. This lets you quickly restore the same song, tooth counts, filters, brushing hand, and duration on your next visit.",
     "modalBody3": "We do not send typed form text, email addresses, names, passwords, or payment information. Ad-related storage is disabled unless required for core analytics consented by you.",
-    "modalBody4": "Your analytics choice is stored on this device and you can change it at any time using the Analytics controls in the footer."
+    "modalBody4": "Your analytics choice is stored on this device and you can change it at any time using the Analytics controls in the footer.",
+    "storageModalTitle": "Storage Notice",
+    "storageModalBody1": "When you allow storage, BrushBeats saves data only in your browser using cookies and localStorage so your setup can be restored on a later visit.",
+    "storageModalBody2": "That stored data can include your tooth counts, song discovery filters, keyword search, selected brushing hand, selected brush duration, and the last song you started brushing with.",
+    "storageModalBody3": "The storage also keeps the last session summary so Repeat Last Session can restore the song, teeth setup, filters, hand preference, and brush duration more quickly.",
+    "storageModalBody4": "This information stays on your device, is not a login system, and you can clear it at any time by turning storage off in the footer controls."
   },
   "footer": {
     "poweredBy": "Song tempo data powered by",

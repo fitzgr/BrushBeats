@@ -255,7 +255,12 @@
     "modalBody1": "BrushBeats usa Google Analytics 4 solo cuando aceptas. Recopilamos eventos anonimos de uso para mejorar la app, como calculos de BPM, selecciones de canciones, inicios de cepillado, reinicios, finalizaciones y transiciones automáticas de cola.",
     "modalBody2": "Tambien podemos guardar tu ultima sesion de cepillado en el almacenamiento del navegador (cookies/localStorage) solo cuando permites el almacenamiento. Esto te permite restaurar rapidamente la misma cancion, cantidad de dientes, filtros, mano de cepillado y duracion en tu proxima visita.",
     "modalBody3": "No enviamos texto escrito en formularios, direcciones de correo, nombres, contrasenas ni informacion de pago. El almacenamiento relacionado con anuncios esta desactivado a menos que sea necesario para analiticas esenciales autorizadas por ti.",
-    "modalBody4": "Tu eleccion de analiticas se guarda en este dispositivo y puedes cambiarla en cualquier momento usando los controles de Analiticas en el pie de pagina."
+    "modalBody4": "Tu eleccion de analiticas se guarda en este dispositivo y puedes cambiarla en cualquier momento usando los controles de Analiticas en el pie de pagina.",
+    "storageModalTitle": "Aviso de almacenamiento",
+    "storageModalBody1": "Cuando permites el almacenamiento, BrushBeats guarda datos solo en tu navegador usando cookies y localStorage para poder recuperar tu configuracion en una visita futura.",
+    "storageModalBody2": "Esos datos pueden incluir la cantidad de dientes, los filtros de descubrimiento de canciones, la busqueda por palabra clave, la mano elegida para cepillarte, la duracion seleccionada y la ultima cancion con la que empezaste a cepillarte.",
+    "storageModalBody3": "Tambien se guarda el resumen de la ultima sesion para que Repetir la ultima sesion pueda restaurar mas rapido la cancion, la configuracion dental, los filtros, la mano preferida y la duracion del cepillado.",
+    "storageModalBody4": "Esta informacion se queda en tu dispositivo, no es un sistema de inicio de sesion y puedes borrarla en cualquier momento desactivando el almacenamiento desde los controles del pie de pagina."
   },
   "footer": {
     "poweredBy": "Datos de tempo de canciones proporcionados por",
