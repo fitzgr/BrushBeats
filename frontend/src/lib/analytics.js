@@ -7,6 +7,7 @@ const CONSENT_STATUS = {
 };
 
 let initialized = false;
+const pendingLanguageFallbackEvents = [];
 
 function canUseLocalStorage() {
   try {
@@ -26,12 +27,36 @@ function consentPayload(analyticsStorage) {
 }
 
 function ensureGtagShim() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
   window.dataLayer = window.dataLayer || [];
 
   if (typeof window.gtag !== "function") {
     window.gtag = function gtag() {
       window.dataLayer.push(arguments);
     };
+  }
+}
+
+function sendGtagEvent(eventName, params = {}) {
+  if (typeof window === "undefined" || typeof window.gtag !== "function") {
+    return false;
+  }
+
+  window.gtag("event", eventName, params);
+  return true;
+}
+
+function flushPendingLanguageFallbackEvents() {
+  if (!initialized || !hasAnalyticsConsent()) {
+    return;
+  }
+
+  while (pendingLanguageFallbackEvents.length > 0) {
+    const nextEvent = pendingLanguageFallbackEvents.shift();
+    sendGtagEvent("language_fallback", nextEvent);
   }
 }
 
@@ -95,6 +120,7 @@ export function initializeAnalytics() {
   });
 
   initialized = true;
+  flushPendingLanguageFallbackEvents();
   return true;
 }
 
@@ -104,4 +130,14 @@ export function trackEvent(eventName, params = {}) {
   }
 
   window.gtag("event", eventName, params);
+}
+
+export function trackLanguageFallback(payload) {
+  if (!analyticsEnabled()) {
+    return;
+  }
+
+  if (!hasAnalyticsConsent() || !initialized || !sendGtagEvent("language_fallback", payload)) {
+    pendingLanguageFallbackEvents.push(payload);
+  }
 }

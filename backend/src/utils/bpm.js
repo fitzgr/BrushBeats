@@ -4,7 +4,9 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
-const TOTAL_BRUSHING_SECONDS = 120;
+const DEFAULT_BRUSHING_SECONDS = 120;
+const MIN_BRUSHING_SECONDS = 60;
+const MAX_BRUSHING_SECONDS = 300;
 const TOOTH_SURFACES_PER_TOOTH = 2;
 const BEATS_PER_TOOTH = 4;
 
@@ -36,9 +38,10 @@ function createBrushingSegments(top, bottom) {
   return segments.filter((segment) => segment.teeth > 0);
 }
 
-function calculateBpm({ top = 16, bottom = 16 }) {
+function calculateBpm({ top = 16, bottom = 16, totalBrushingSeconds = DEFAULT_BRUSHING_SECONDS }) {
   const safeTop = clamp(Number(top), 0, 16);
   const safeBottom = clamp(Number(bottom), 0, 16);
+  const safeTotalBrushingSeconds = clamp(Number(totalBrushingSeconds), MIN_BRUSHING_SECONDS, MAX_BRUSHING_SECONDS);
 
   const totalTeeth = safeTop + safeBottom;
   const totalToothActions = totalTeeth * TOOTH_SURFACES_PER_TOOTH;
@@ -48,7 +51,7 @@ function calculateBpm({ top = 16, bottom = 16 }) {
   const brushingSegments = createBrushingSegments(safeTop, safeBottom);
   const totalTransitions = Math.max(0, brushingSegments.length - 1);
   const totalTransitionSeconds = Number((totalTransitions * transitionBufferSeconds).toFixed(2));
-  const totalToothTimeSeconds = TOTAL_BRUSHING_SECONDS - totalTransitionSeconds;
+  const totalToothTimeSeconds = safeTotalBrushingSeconds - totalTransitionSeconds;
   const secondsPerTooth = totalToothActions > 0 ? totalToothTimeSeconds / totalToothActions : 0;
   const rawBpm = secondsPerTooth > 0 ? 60 / secondsPerTooth : 0;
   const searchBpm = secondsPerTooth > 0 ? (60 * BEATS_PER_TOOTH) / secondsPerTooth : 0;
@@ -66,7 +69,7 @@ function calculateBpm({ top = 16, bottom = 16 }) {
     brusherProfile: detectedStage,
     ageEstimate: detectedStage.estimate,
     brushingSegments,
-    totalBrushingSeconds: TOTAL_BRUSHING_SECONDS,
+    totalBrushingSeconds: safeTotalBrushingSeconds,
     secondsPerTooth: Number(secondsPerTooth.toFixed(2)),
     beatsPerTooth: BEATS_PER_TOOTH,
     rawBpm: Number(rawBpm.toFixed(2)),

@@ -1,0 +1,301 @@
+{
+  "common": {
+    "buttons": {
+      "allowAnalytics": "Allow Analytics",
+      "decline": "Decline",
+      "allowStorage": "Allow Storage",
+      "optOut": "Opt Out",
+      "dismiss": "Dismiss",
+      "close": "Close",
+      "turnOn": "Turn On",
+      "turnOff": "Turn Off",
+      "storageNotice": "Storage Notice",
+      "continueToMusic": "Continue to 2. Music",
+      "queue": "Queue",
+      "regenerateSongs": "Regenerate Songs",
+      "regenerateArtistsSongs": "Regenerate Artists & Songs",
+      "refreshing": "Refreshing...",
+      "repeatLastSession": "Repeat Last Session",
+      "leftHand": "Left Hand",
+      "rightHand": "Right Hand",
+      "resetTimer": "Reset Timer",
+      "privacyPolicy": "Privacy Policy"
+    },
+    "states": {
+      "on": "On",
+      "off": "Off"
+    },
+    "hands": {
+      "left": "left",
+      "right": "right"
+    },
+    "layouts": {
+      "mobile": "Mobile Layout",
+      "desktop": "Desktop Layout"
+    }
+  },
+  "app": {
+    "eyebrow": "BrushBeats",
+    "title": {
+      "mobile": "Brush Anywhere. Stay On Tempo.",
+      "desktop": "Two-minute brushing. Perfect tempo. Better vibes."
+    },
+    "subtitle": {
+      "withBpm": "{{label}}: {{bpm}} BPM target, {{secondsPerTooth}}s per tooth face, {{transitionSeconds}}s transitions, {{ageText}}.",
+      "withoutBpm": "Matching brushing rhythm to music for {{description}}."
+    },
+    "status": {
+      "label": "Status: {{state}}",
+      "idle": "Idle",
+      "running": "Brushing in progress",
+      "complete": "Session complete"
+    },
+    "backendStatus": {
+      "waking": "Waking up the backend. The first request should take no more than 30 seconds, so please hang on.",
+      "connecting": "Still connecting to the backend. This is taking longer than expected, but it should finish shortly."
+    },
+    "workflow": {
+      "ariaLabel": "BrushBeats workflow tabs",
+      "teeth": "1. Teeth",
+      "music": "2. Music",
+      "brush": "3. Brush"
+    },
+    "routine": {
+      "ariaLabel": "Dental care roadmap",
+      "title": "Complete dental care",
+      "available": "Available now",
+      "comingSoon": "Coming soon",
+      "brushing": {
+        "title": "Brushing",
+        "description": "Tempo-matched brushing, music, and guided hand positioning."
+      },
+      "flossing": {
+        "title": "Flossing",
+        "description": "Daily floss guidance and timing will be added next."
+      },
+      "waterPicking": {
+        "title": "Water Picking",
+        "description": "Water flosser routines and pressure guidance are planned."
+      }
+    },
+    "languageFallbackNotice": "This language is not available yet. Showing English.",
+    "lastSession": {
+      "summary": "Last session: {{title}} by {{artist}}, {{top}} top teeth, {{bottom}} bottom teeth, {{duration}} brush time."
+    },
+    "success": "Great work, your {{duration}} clean is complete. Keep this habit daily for stronger teeth and healthier gums."
+  },
+  "settings": {
+    "language": "Language",
+    "supportedLanguage": {
+      "ariaLabel": "Supported language selector",
+      "label": "Choose a supported language",
+      "hint": "Your browser is set to {{requestedLanguage}}. BrushBeats currently supports English and Spanish, so choose which supported language to use on this device.",
+      "unknownLanguage": "an unsupported language",
+      "options": {
+        "english": "English",
+        "spanish": "Spanish"
+      }
+    },
+    "languageSimulator": {
+      "ariaLabel": "Browser language simulator",
+      "label": "Browser language simulator",
+      "hint": "Overrides navigator language for testing fallback behavior. Query string ?lng= still takes priority.",
+      "options": {
+        "system": "System default",
+        "english": "English (en-US)",
+        "french": "French (fr)",
+        "german": "German (de)",
+        "spanish": "Spanish (es)",
+        "japanese": "Japanese (ja)"
+      }
+    },
+    "topTeeth": "Top Teeth Count",
+    "bottomTeeth": "Bottom Teeth Count",
+    "teethCount": "Teeth count",
+    "topBottomIntroMobile": "Set top and bottom teeth count. BrushBeats infers who is brushing from the tooth count.",
+    "topBottomIntroDesktop": "Enter how many teeth are on the top and bottom. BrushBeats infers who is brushing from the tooth count and adjusts timing automatically.",
+    "detectedStage": "Detected stage",
+    "searchBpm": "Search BPM",
+    "searchBpmDetails": "{{secondsPerTooth}}s per tooth face, {{transitions}} transitions at {{transitionSeconds}}s each",
+    "searchBpmFallback": "Timing includes tooth brushing plus transition buffers inside the same {{minutes}}-minute session",
+    "toothRangeHint": "Per row of teeth, from no erupted teeth to a full 16-tooth arch",
+    "totalTeethSelected": "Total Teeth Selected",
+    "totalTeethValue": "{{count}} of 32",
+    "formNote": "These sliders represent actual teeth, not brushing speed. Younger mouths automatically get longer transition buffers between side and surface changes.",
+    "headlineCalculated": "{{totalTeeth}} teeth fit {{toothTime}}s of brushing and {{transitionTime}}s of transitions into {{minutes}} minutes.",
+    "headlineEmpty": "Adjust teeth counts to calculate BPM.",
+    "nextStepTitle": "Next: 2. Music",
+    "nextStepDescription": "Use this detected stage and tempo target to queue songs that fit the brusher naturally.",
+    "approximateAge": {
+      "range": "Approximate age: {{min}}-{{max}} {{unit}}",
+      "plus": "Approximate age: {{min}}+ {{unit}}"
+    },
+    "resultsTitle": "Tempo Lab",
+    "resultsTitleMobile": "Quick Tempo"
+  },
+  "music": {
+    "resultsTitle": "Song Discovery",
+    "resultsTitleMobile": "Song Picks",
+    "introDesktop": "Find tracks near your target BPM using GetSongBPM + optional keyword filters.",
+    "introMobile": "Find tracks near your target BPM.",
+    "noteDesktop": "Use regenerate to pull a fresh set at the same BPM range and discover different artists.",
+    "noteMobile": "Tap regenerate for fresh songs.",
+    "randomFiltersNote": "Danceability and acousticness start at random values each time the page loads.",
+    "detectedStageNote": "Detected stage: {{label}}. Music picks also drift with the typical tooth count for that stage.",
+    "tolerance": "BPM Tolerance: +/- {{value}}",
+    "danceability": "Danceability: {{value}}%",
+    "acousticness": "Acousticness: {{value}}%",
+    "searchBy": "Search by Title or Artist",
+    "searchPlaceholder": "e.g. dua lipa",
+    "loading": "Loading songs...",
+    "empty": "No songs found at this BPM range yet.",
+    "exhausted": "You've already seen all songs in this current pool. Change keyword/tolerance or regenerate again for a fresh pool.",
+    "songBpm": "{{bpm}} BPM"
+  },
+  "player": {
+    "titleDesktop": "Embedded Player",
+    "titleMobile": "Now Playing",
+    "introDesktop": "Pick a song and play it inside the app with YouTube iframe embed.",
+    "introMobile": "Play your selected track here.",
+    "matchingYoutube": "Matching song on YouTube...",
+    "selectSong": "Select a song to start playback.",
+    "noEmbed": "Could not find an embeddable video for {{title}}.",
+    "runningStatus": "Brushing timer is running independently. Video playback remains under YouTube controls.",
+    "loadingVideo": "Loading new video...",
+    "frameAria": "{{title}} by {{artist}}"
+  },
+  "brushing": {
+    "controlsTitle": "Brushing Controls",
+    "controlsIntro": "Wait until any ads are played or skipped, then start brushing so the timing stays aligned.",
+    "selectedSong": "Selected: {{title}} by {{artist}}",
+    "handPreference": "Brushing hand",
+    "duration": "Brush time",
+    "durationHint": "Default is 2:00. Change it before starting if this brusher needs more or less time.",
+    "start": "Start Brushing ({{duration}})",
+    "running": "Brushing... {{duration}}",
+    "again": "Brush Again ({{duration}})",
+    "stop": "Reset Timer",
+    "timerNote": "Timer and guide run independently from YouTube controls, but the pacing is recalculated for the selected brush time.",
+    "readyTitle": "Ready to brush",
+    "readyDetail": "Brush with your {{hand}} hand and follow the guide once playback is ready.",
+    "errors": {
+      "needsTeeth": "Enter at least one tooth before starting a brushing session.",
+      "needsPlayback": "Start playback first, then press Start Brushing to begin only the brush timer and guide."
+    },
+    "guide": {
+      "title": "Brush Map",
+      "introMobile": "Follow the marker tooth-by-tooth. Transition buffers are built into the same {{minutes}}-minute session.",
+      "introDesktop": "Brush every tooth face evenly. Keep the bristles angled toward the gumline and sweep away from the gums as the guide reorients for each quadrant without extending the {{minutes}}-minute session.",
+      "handOrientation": "Hand Orientation",
+      "leftView": "Left-handed view",
+      "rightView": "Right-handed view",
+      "transitionOrientation": "Switching toward {{toLabel}}. Reorient your hand before the next strokes.",
+      "activeOrientation": "Animated brush tracks {{label}} and shows the gum-away stroke for that quadrant.",
+      "idleOrientation": "Align your {{hand}} hand to the highlighted quadrant, then start the session.",
+      "mouthMapAria": "Dynamic tooth brushing map",
+      "sessionLabel": "Session",
+      "legendAria": "Brush guide legend",
+      "legendFront": "Front tooth face",
+      "legendBack": "Back tooth face",
+      "transitionCallout": "Transition from {{fromLabel}} to {{toLabel}}. Resume brushing in {{seconds}}s.",
+      "activeCalloutMobile": "{{label}}, tooth {{position}}/{{size}}. Move in {{seconds}}s.",
+      "activeCalloutDesktop": "Brush {{label}} now, tooth {{position}} of {{size}}. Song target is ~{{bpm}} BPM. Move in {{seconds}}s.{{transitionNotice}}",
+      "transitionNotice": " Transition in {{seconds}}s.",
+      "inactiveCallout": "Press Start Brushing to begin live tooth guidance.",
+      "completeCallout": "All teeth brushed. Nice consistency."
+    },
+    "cue": {
+      "completeTitle": "Brushing complete",
+      "completeDetail": "All sections are done. Restart when you are ready for another pass.",
+      "readyTitle": "Ready to brush",
+      "readyDetail": "Use your {{hand}} hand, wait for any ads to finish or be skipped, then start the timer.",
+      "halfwayTitle": "Halfway switch",
+      "halfwayDetail": "Move from the {{fromJaw}} teeth to the {{toJaw}} teeth. Reposition your {{hand}} hand now.",
+      "sideSwitchTitle": "Switch mouth side",
+      "sideSwitchDetail": "Move from the {{fromSide}} side to the {{toSide}} side of the mouth. Keep the brush in your {{hand}} hand and adjust your reach.",
+      "transitionTitle": "Transition buffer",
+      "transitionDetail": "Transition from {{fromLabel}} to {{toLabel}}. Resume in {{seconds}}s.",
+      "activeTitle": "Brush {{label}}",
+      "activeDetail": "Tooth {{position}} of {{size}}. Keep the brush in your {{hand}} hand and move in {{seconds}}s."
+    },
+    "quadrants": {
+      "topLeft": "Top Left",
+      "topRight": "Top Right",
+      "bottomLeft": "Bottom Left",
+      "bottomRight": "Bottom Right"
+    },
+    "segments": {
+      "frontTopLeft": "Front Top Left",
+      "frontTopRight": "Front Top Right",
+      "backTopRight": "Back Top Right",
+      "backTopLeft": "Back Top Left",
+      "frontBottomLeft": "Front Bottom Left",
+      "frontBottomRight": "Front Bottom Right",
+      "backBottomRight": "Back Bottom Right",
+      "backBottomLeft": "Back Bottom Left"
+    },
+    "jaw": {
+      "top": "top",
+      "bottom": "bottom"
+    },
+    "side": {
+      "left": "left",
+      "right": "right"
+    },
+    "motions": {
+      "top": "Brush down away from the gums",
+      "bottom": "Brush up away from the gums"
+    },
+    "technique": "{{quadrant}}: {{motion}} with your {{hand}} hand."
+  },
+  "privacy": {
+    "analyticsMessage": "Help improve BrushBeats by sharing anonymous usage analytics. We never send typed text or personal data.",
+    "storageMessage": "BrushBeats can store your last session in browser storage (cookies/localStorage) so you can quickly repeat the same brushing setup next time.",
+    "modalTitle": "Privacy Policy",
+    "modalBody1": "BrushBeats uses Google Analytics 4 only when you opt in. We collect anonymous usage events to improve the app, such as BPM calculations, song selections, brushing starts, resets, completions, and auto-queue transitions.",
+    "modalBody2": "We may also store your last brushing session in browser storage (cookies/localStorage) only when you allow storage. This lets you quickly restore the same song, tooth counts, filters, brushing hand, and duration on your next visit.",
+    "modalBody3": "We do not send typed form text, email addresses, names, passwords, or payment information. Ad-related storage is disabled unless required for core analytics consented by you.",
+    "modalBody4": "Your analytics choice is stored on this device and you can change it at any time using the Analytics controls in the footer."
+  },
+  "footer": {
+    "poweredBy": "Song tempo data powered by",
+    "analytics": "Analytics: {{state}}",
+    "sessionStorage": "Session Storage: {{state}}"
+  },
+  "errors": {
+    "backendTimeout": "The backend is still waking up. Please wait a few seconds and try again.",
+    "backendUnavailable": "Waking up my music brain. If the service is cold-starting, please wait a few seconds and retry.",
+    "languageFallbackNotice": "This language is not available yet. Showing English."
+  },
+  "age": {
+    "units": {
+      "months": "months",
+      "years": "years"
+    },
+    "stages": {
+      "unknown": {
+        "label": "Unknown Stage",
+        "description": "No tooth-age estimate available"
+      },
+      "infant": "Infant Teeth",
+      "toddler": "Toddler Teeth",
+      "primary": "Primary Teeth",
+      "mixed": "Mixed Dentition",
+      "adultSmile": "Adult Smile",
+      "fullAdultSmile": "Full Adult Smile"
+    },
+    "descriptions": {
+      "monthRange": "About {{min}}-{{max}} months old",
+      "yearRange": "About {{min}}-{{max}} years old",
+      "yearsPlus": "{{min}}+ years old",
+      "unknownRange": "age range unknown"
+    },
+    "phases": {
+      "infant": "infant",
+      "toddler": "toddler",
+      "primary": "primary",
+      "mixed": "mixed",
+      "adult": "adult"
+    }
+  }
+}

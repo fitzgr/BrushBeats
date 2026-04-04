@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 function SongList({
   brusherProfile,
   songs,
@@ -18,6 +20,8 @@ function SongList({
   onSelectSong,
   onRegenerate
 }) {
+  const { t } = useTranslation();
+
   function handleRangeCommit(commitHandler) {
     return (event) => {
       commitHandler(Number(event.currentTarget.value));
@@ -26,15 +30,15 @@ function SongList({
 
   return (
     <section className="card songs">
-      <h2>{isMobile ? "Song Picks" : "Song Discovery"}</h2>
-      <p>{isMobile ? "Find tracks near your target BPM." : "Find tracks near your target BPM using GetSongBPM + optional keyword filters."}</p>
-      <p className="song-note">{isMobile ? "Tap regenerate for fresh songs." : "Use regenerate to pull a fresh set at the same BPM range and discover different artists."}</p>
-      <p className="song-note">Danceability and acousticness start at random values each time the page loads.</p>
-      {brusherProfile && <p className="song-note">Detected stage: {brusherProfile.label}. Music picks also drift with the typical tooth count for that stage.</p>}
+      <h2>{isMobile ? t("music.resultsTitleMobile") : t("music.resultsTitle")}</h2>
+      <p>{isMobile ? t("music.introMobile") : t("music.introDesktop")}</p>
+      <p className="song-note">{isMobile ? t("music.noteMobile") : t("music.noteDesktop")}</p>
+      <p className="song-note">{t("music.randomFiltersNote")}</p>
+      {brusherProfile && <p className="song-note">{t("music.detectedStageNote", { label: brusherProfile.label })}</p>}
 
       <div className="song-filters">
         <label>
-          BPM Tolerance: +/- {tolerance}
+          {t("music.tolerance", { value: tolerance })}
           <input
             type="range"
             min="1"
@@ -47,7 +51,7 @@ function SongList({
         </label>
 
         <label>
-          Danceability: {danceability}%
+          {t("music.danceability", { value: danceability })}
           <input
             type="range"
             min="0"
@@ -60,7 +64,7 @@ function SongList({
         </label>
 
         <label>
-          Acousticness: {acousticness}%
+          {t("music.acousticness", { value: acousticness })}
           <input
             type="range"
             min="0"
@@ -73,24 +77,24 @@ function SongList({
         </label>
 
         <label>
-          Search by Title or Artist
+          {t("music.searchBy")}
           <input
             type="text"
             value={keyword}
-            placeholder="e.g. dua lipa"
+            placeholder={t("music.searchPlaceholder")}
             onChange={(event) => onKeywordChange(event.target.value)}
           />
         </label>
 
         <button type="button" className="action-btn regen" onClick={onRegenerate} disabled={loading}>
-          {loading ? "Refreshing..." : isMobile ? "Regenerate Songs" : "Regenerate Artists & Songs"}
+          {loading ? t("common.buttons.refreshing") : isMobile ? t("common.buttons.regenerateSongs") : t("common.buttons.regenerateArtistsSongs")}
         </button>
       </div>
 
-      {loading && <p>Loading songs...</p>}
-      {!loading && songs.length === 0 && <p>No songs found at this BPM range yet.</p>}
+      {loading && <p>{t("music.loading")}</p>}
+      {!loading && songs.length === 0 && <p>{t("music.empty")}</p>}
       {!loading && exhausted && (
-        <p>You've already seen all songs in this current pool. Change keyword/tolerance or regenerate again for a fresh pool.</p>
+        <p>{t("music.exhausted")}</p>
       )}
 
       <ul className="song-list">
@@ -101,9 +105,9 @@ function SongList({
               <span>{song.artist}</span>
             </div>
             <div>
-              <span className="song-bpm">{song.bpm} BPM</span>
+              <span className="song-bpm">{t("music.songBpm", { bpm: song.bpm })}</span>
               <button type="button" onClick={() => onSelectSong(song)}>
-                Play
+                {t("common.buttons.queue")}
               </button>
             </div>
           </li>

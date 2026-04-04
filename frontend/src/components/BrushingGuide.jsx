@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
+
 function toRadians(degrees) {
   return (degrees * Math.PI) / 180;
 }
@@ -22,6 +25,16 @@ function createArcPoints({ count, cx, cy, rx, ry, startDeg, endDeg }) {
 }
 
 const TOOTH_PATH = "M0 -10 C7 -10 10 -6 10 -1 C10 4 7 8 3 10 C1 11 -1 11 -3 10 C-7 8 -10 4 -10 -1 C-10 -6 -7 -10 0 -10 Z";
+const SEGMENT_LABEL_KEYS = {
+  "Front Top Left": "brushing.segments.frontTopLeft",
+  "Front Top Right": "brushing.segments.frontTopRight",
+  "Back Top Right": "brushing.segments.backTopRight",
+  "Back Top Left": "brushing.segments.backTopLeft",
+  "Front Bottom Left": "brushing.segments.frontBottomLeft",
+  "Front Bottom Right": "brushing.segments.frontBottomRight",
+  "Back Bottom Right": "brushing.segments.backBottomRight",
+  "Back Bottom Left": "brushing.segments.backBottomLeft"
+};
 
 function splitArch(count) {
   return {
@@ -132,16 +145,42 @@ function buildTimeline(segments, secondsPerTooth, transitionBufferSeconds) {
   return timeline;
 }
 
-function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, brushingMusicElapsedSeconds }) {
+function getLabelSide(label) {
+  if (!label) {
+    return null;
+  }
+
+  return label.includes("Left") ? "left" : label.includes("Right") ? "right" : null;
+}
+
+function getLabelJaw(label) {
+  if (!label) {
+    return null;
+  }
+
+  return label.includes("Top") ? "top" : label.includes("Bottom") ? "bottom" : null;
+}
+
+function getSegmentLabel(t, label) {
+  return t(SEGMENT_LABEL_KEYS[label] || label);
+}
+
+function formatMinutes(totalSeconds) {
+  return Math.round((Number(totalSeconds || 120) / 60) * 10) / 10;
+}
+
+function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, brushingMusicElapsedSeconds, brushingHand, onCueChange }) {
+  const { t } = useTranslation();
   const totalSeconds = Number(bpmData?.totalBrushingSeconds || 120);
   const topTeeth = Number(values?.top || 16);
   const bottomTeeth = Number(values?.bottom || 16);
   const safeBpm = Math.max(40, Math.min(240, Number(selectedBpm) || 120));
   const toothDurationSeconds = Number(bpmData?.secondsPerTooth || totalSeconds / Math.max(1, (topTeeth + bottomTeeth) * 2));
   const transitionBufferSeconds = Number(bpmData?.transitionBufferSeconds || 0.75);
-  const pulseDurationMs = Math.max(300, toothDurationSeconds * 1000);
   const segments = buildSegments(topTeeth, bottomTeeth);
   const timeline = buildTimeline(segments, toothDurationSeconds, transitionBufferSeconds);
+  const beatDurationMs = Math.max(220, 60000 / safeBpm);
+  const brushStrokeDurationMs = Math.max(420, beatDurationMs * 2);
   const elapsedSeconds = brushingPhase === "complete"
     ? totalSeconds
     : timer.running
@@ -152,13 +191,99 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
     ? timeline.find((entry) => elapsedSeconds >= entry.startsAt && elapsedSeconds < entry.endsAt) || null
     : null;
   const activeToothEntry = activeEntry?.type === "tooth" ? activeEntry : null;
-  const activeMapIndex = activeToothEntry?.mapIndex ?? -1;
+  const orientationLabel = activeEntry?.type === "transition" ? activeEntry.toLabel : activeToothEntry?.label;
+  const activeSide = getLabelSide(orientationLabel);
+  const activeJaw = getLabelJaw(orientationLabel);
   const isFrontSurface = activeToothEntry?.surface === "front";
   const nextMoveSeconds = activeEntry ? Math.max(1, Math.ceil(activeEntry.endsAt - elapsedSeconds)) : null;
   const nextTransition = timer.running
     ? timeline.find((entry) => entry.type === "transition" && entry.startsAt >= elapsedSeconds)
     : null;
   const nextSectionSeconds = nextTransition ? Math.max(1, Math.ceil(nextTransition.startsAt - elapsedSeconds)) : null;
+
+  useEffect(() => {
+    if (!onCueChange) {
+      return;
+    }
+
+    if (brushingPhase === "complete") {
+      onCueChange({
+        kind: "complete",
+        title: t("brushing.cue.completeTitle"),
+        detail: t("brushing.cue.completeDetail")
+      });
+      return;
+    }
+
+    if (!timer.running) {
+      onCueChange({
+        kind: "ready",
+        title: t("brushing.cue.readyTitle"),
+        detail: t("brushing.cue.readyDetail", { hand: t(`common.hands.${brushingHand}`) })
+      });
+      return;
+    }
+
+    if (activeEntry?.type === "transition") {
+      const fromRight = activeEntry.fromLabel.includes("Right");
+      const toRight = activeEntry.toLabel.includes("Right");
+      const fromTop = activeEntry.fromLabel.includes("Top");
+      const toTop = activeEntry.toLabel.includes("Top");
+
+      if (fromTop !== toTop) {
+        onCueChange({
+          kind: "halfway",
+          title: t("brushing.cue.halfwayTitle"),
+          detail: t("brushing.cue.halfwayDetail", {
+            fromJaw: t(`brushing.jaw.${fromTop ? "top" : "bottom"}`),
+            toJaw: t(`brushing.jaw.${toTop ? "top" : "bottom"}`),
+            hand: t(`common.hands.${brushingHand}`)
+          })
+        });
+        return;
+      }
+
+      if (fromRight !== toRight) {
+        onCueChange({
+          kind: "side-switch",
+          title: t("brushing.cue.sideSwitchTitle"),
+          detail: t("brushing.cue.sideSwitchDetail", {
+            fromSide: t(`brushing.side.${fromRight ? "right" : "left"}`),
+            toSide: t(`brushing.side.${toRight ? "right" : "left"}`),
+            hand: t(`common.hands.${brushingHand}`)
+          })
+        });
+        return;
+      }
+
+      onCueChange({
+        kind: "transition",
+        title: t("brushing.cue.transitionTitle"),
+        detail: t("brushing.cue.transitionDetail", {
+          fromLabel: getSegmentLabel(t, activeEntry.fromLabel),
+          toLabel: getSegmentLabel(t, activeEntry.toLabel),
+          seconds: nextMoveSeconds
+        })
+      });
+      return;
+    }
+
+    if (activeToothEntry) {
+      onCueChange({
+        kind: "brushing",
+        title: t("brushing.cue.activeTitle", { label: getSegmentLabel(t, activeToothEntry.label) }),
+        detail: t("brushing.cue.activeDetail", {
+          position: activeToothEntry.segmentPosition,
+          size: activeToothEntry.segmentSize,
+          hand: t(`common.hands.${brushingHand}`),
+          seconds: nextMoveSeconds
+        })
+      });
+      return;
+    }
+
+    onCueChange(null);
+  }, [activeEntry, activeToothEntry, brushingHand, brushingPhase, nextMoveSeconds, onCueChange, t, timer.running]);
 
   const topPoints = createArcPoints({
     count: topTeeth,
@@ -219,20 +344,56 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
     return state;
   }
 
+  const activeQuadrantKey = activeJaw && activeSide ? `${activeJaw}-${activeSide}` : null;
+  const boardStateClass = activeEntry?.type === "transition" ? "transition" : timer.running ? "running" : brushingPhase === "complete" ? "complete" : "idle";
+  const boardQuadrantClass = activeQuadrantKey ? `focus-${activeQuadrantKey}` : "focus-top-left";
+
   return (
     <section className="card guide">
-      <h2>Brush Map</h2>
+      <h2>{t("brushing.guide.title")}</h2>
       <p>
         {isMobile
-          ? "Follow the marker tooth-by-tooth. Transition buffers are built into the same 2-minute session."
-          : "Brush every tooth face evenly. When you switch sides or move from front to back, the guide inserts transition buffers without extending the 2-minute session."}
+          ? t("brushing.guide.introMobile", { minutes: formatMinutes(totalSeconds) })
+          : t("brushing.guide.introDesktop", { minutes: formatMinutes(totalSeconds) })}
       </p>
 
       <div className="guide-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={Math.round(progress)}>
         <span style={{ width: `${progress}%` }} />
       </div>
 
-      <div className="mouth-map" role="img" aria-label="Dynamic tooth brushing map">
+      <div className="hand-orientation-panel" aria-live="polite">
+        <div className="hand-orientation-header visual-only-header">
+          <span className="profile-summary-label">{t("brushing.guide.handOrientation")}</span>
+        </div>
+
+        <div className={`hand-orientation-board ${brushingHand} ${boardStateClass} ${boardQuadrantClass}`}>
+          <span className="orientation-focus-halo" aria-hidden="true" />
+
+          <div className="orientation-demo-arches" aria-hidden="true">
+            <div className="orientation-demo-row top">
+              <span />
+              <span />
+              <span />
+              <span />
+            </div>
+            <div className="orientation-demo-row bottom">
+              <span />
+              <span />
+              <span />
+              <span />
+            </div>
+          </div>
+
+          <div className={`orientation-brush-demo ${brushingHand} ${boardStateClass} ${boardQuadrantClass}`} style={{ "--brush-stroke-duration": `${brushStrokeDurationMs}ms` }} aria-hidden="true">
+            <div className="orientation-demo-brush">
+              <span className="orientation-demo-head" />
+              <span className="orientation-demo-handle" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mouth-map" role="img" aria-label={t("brushing.guide.mouthMapAria")}>
         <svg viewBox="0 0 360 420" preserveAspectRatio="xMidYMid meet">
           <ellipse cx="180" cy="210" rx="150" ry="170" className="mouth-outline" />
 
@@ -275,7 +436,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
                     cy={indicatorY}
                     r="4"
                     className={`tooth-indicator ${isFrontSurface ? "front" : "back"}`}
-                    style={{ animationDuration: `${pulseDurationMs}ms` }}
+                    style={{ animationDuration: `${beatDurationMs}ms` }}
                   />
                 )}
               </g>
@@ -321,7 +482,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
                     cy={indicatorY}
                     r="4"
                     className={`tooth-indicator ${isFrontSurface ? "front" : "back"}`}
-                    style={{ animationDuration: `${pulseDurationMs}ms` }}
+                    style={{ animationDuration: `${beatDurationMs}ms` }}
                   />
                 )}
               </g>
@@ -329,26 +490,42 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
           })}
 
           <text x="180" y="200" textAnchor="middle" className="map-score">{Math.round(progress)}%</text>
-          <text x="180" y="228" textAnchor="middle" className="map-score-label">Session</text>
+          <text x="180" y="228" textAnchor="middle" className="map-score-label">{t("brushing.guide.sessionLabel")}</text>
         </svg>
       </div>
 
-      <div className="map-legend" aria-label="Brush guide legend">
-        <span><em className="legend-dot front" />Front tooth face</span>
-        <span><em className="legend-dot back" />Back tooth face</span>
+      <div className="map-legend" aria-label={t("brushing.guide.legendAria")}>
+        <span><em className="legend-dot front" />{t("brushing.guide.legendFront")}</span>
+        <span><em className="legend-dot back" />{t("brushing.guide.legendBack")}</span>
       </div>
 
       {brushingPhase === "running" && (
         <p className="guide-callout">
           {activeEntry?.type === "transition"
-            ? `Transition from ${activeEntry.fromLabel} to ${activeEntry.toLabel}. Resume brushing in ${nextMoveSeconds}s.`
+            ? t("brushing.guide.transitionCallout", {
+                fromLabel: getSegmentLabel(t, activeEntry.fromLabel),
+                toLabel: getSegmentLabel(t, activeEntry.toLabel),
+                seconds: nextMoveSeconds
+              })
             : isMobile
-              ? `${activeToothEntry?.label}, tooth ${activeToothEntry?.segmentPosition}/${activeToothEntry?.segmentSize}. Move in ${nextMoveSeconds}s.`
-              : `Brush ${activeToothEntry?.label} now, tooth ${activeToothEntry?.segmentPosition} of ${activeToothEntry?.segmentSize}. Song target is ~${Math.round(safeBpm)} BPM. Move in ${nextMoveSeconds}s.${nextSectionSeconds ? ` Transition in ${nextSectionSeconds}s.` : ""}`}
+              ? t("brushing.guide.activeCalloutMobile", {
+                  label: getSegmentLabel(t, activeToothEntry?.label),
+                  position: activeToothEntry?.segmentPosition,
+                  size: activeToothEntry?.segmentSize,
+                  seconds: nextMoveSeconds
+                })
+              : t("brushing.guide.activeCalloutDesktop", {
+                  label: getSegmentLabel(t, activeToothEntry?.label),
+                  position: activeToothEntry?.segmentPosition,
+                  size: activeToothEntry?.segmentSize,
+                  bpm: Math.round(safeBpm),
+                  seconds: nextMoveSeconds,
+                  transitionNotice: nextSectionSeconds ? t("brushing.guide.transitionNotice", { seconds: nextSectionSeconds }) : ""
+                })}
         </p>
       )}
-      {!timer.running && brushingPhase !== "complete" && <p className="guide-callout">Press Start Brushing to begin live tooth guidance.</p>}
-      {brushingPhase === "complete" && <p className="guide-callout">All teeth brushed. Nice consistency.</p>}
+      {!timer.running && brushingPhase !== "complete" && <p className="guide-callout">{t("brushing.guide.inactiveCallout")}</p>}
+      {brushingPhase === "complete" && <p className="guide-callout">{t("brushing.guide.completeCallout")}</p>}
     </section>
   );
 }

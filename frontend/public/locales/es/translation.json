@@ -1,0 +1,301 @@
+{
+  "common": {
+    "buttons": {
+      "allowAnalytics": "Permitir analiticas",
+      "decline": "Rechazar",
+      "allowStorage": "Permitir almacenamiento",
+      "optOut": "Desactivar",
+      "dismiss": "Cerrar",
+      "close": "Cerrar",
+      "turnOn": "Activar",
+      "turnOff": "Desactivar",
+      "storageNotice": "Aviso de almacenamiento",
+      "continueToMusic": "Continuar a 2. Musica",
+      "queue": "Poner en cola",
+      "regenerateSongs": "Buscar canciones nuevas",
+      "regenerateArtistsSongs": "Buscar nuevos artistas y canciones",
+      "refreshing": "Actualizando...",
+      "repeatLastSession": "Repetir la ultima sesion",
+      "leftHand": "Mano izquierda",
+      "rightHand": "Mano derecha",
+      "resetTimer": "Reiniciar temporizador",
+      "privacyPolicy": "Politica de privacidad"
+    },
+    "states": {
+      "on": "Activado",
+      "off": "Desactivado"
+    },
+    "hands": {
+      "left": "izquierda",
+      "right": "derecha"
+    },
+    "layouts": {
+      "mobile": "Diseno movil",
+      "desktop": "Diseno de escritorio"
+    }
+  },
+  "app": {
+    "eyebrow": "BrushBeats",
+    "title": {
+      "mobile": "Cepillate donde sea y sigue el ritmo.",
+      "desktop": "Dos minutos de cepillado, el ritmo ideal y mejor energia."
+    },
+    "subtitle": {
+      "withBpm": "{{label}}: meta de {{bpm}} BPM, {{secondsPerTooth}} s por cara dental, transiciones de {{transitionSeconds}} s, {{ageText}}.",
+      "withoutBpm": "Ajustando el ritmo del cepillado para que combine con la musica de {{description}}."
+    },
+    "status": {
+      "label": "Estado: {{state}}",
+      "idle": "En espera",
+      "running": "Cepillado en progreso",
+      "complete": "Sesion completa"
+    },
+    "backendStatus": {
+      "waking": "Despertando el backend. La primera solicitud no deberia tardar mas de 30 segundos, asi que espera un momento.",
+      "connecting": "Todavia conectando con el backend. Esta tardando mas de lo esperado, pero deberia terminar pronto."
+    },
+    "workflow": {
+      "ariaLabel": "Pestanas del flujo de BrushBeats",
+      "teeth": "1. Dientes",
+      "music": "2. Musica",
+      "brush": "3. Cepillar"
+    },
+    "routine": {
+      "ariaLabel": "Hoja de ruta de cuidado dental",
+      "title": "Cuidado dental completo",
+      "available": "Disponible ahora",
+      "comingSoon": "Proximamente",
+      "brushing": {
+        "title": "Cepillado",
+        "description": "Cepillado sincronizado con el ritmo, musica y guia de posicion de la mano."
+      },
+      "flossing": {
+        "title": "Hilo dental",
+        "description": "La guia diaria de uso de hilo dental y su temporizacion se agregaran despues."
+      },
+      "waterPicking": {
+        "title": "Irrigador dental",
+        "description": "Se planean rutinas de irrigador y guia de presion."
+      }
+    },
+    "languageFallbackNotice": "Este idioma todavia no esta disponible. Mostrando ingles.",
+    "lastSession": {
+      "summary": "Ultima sesion: {{title}} de {{artist}}, {{top}} dientes arriba, {{bottom}} abajo y {{duration}} de cepillado."
+    },
+    "success": "Muy bien. Terminaste tu limpieza de {{duration}}. Mantener este habito todos los dias ayuda a fortalecer los dientes y cuidar las encias."
+  },
+  "settings": {
+    "language": "Idioma",
+    "supportedLanguage": {
+      "ariaLabel": "Selector de idioma disponible",
+      "label": "Elige un idioma disponible",
+      "hint": "Tu navegador esta configurado en {{requestedLanguage}}. Por ahora, BrushBeats solo esta disponible en ingles y espanol, asi que elige cual quieres usar en este dispositivo.",
+      "unknownLanguage": "un idioma no compatible",
+      "options": {
+        "english": "Ingles",
+        "spanish": "Espanol"
+      }
+    },
+    "languageSimulator": {
+      "ariaLabel": "Simulador de idioma del navegador",
+      "label": "Simulador de idioma del navegador",
+      "hint": "Sobrescribe el idioma del navegador para probar el comportamiento de respaldo. La cadena de consulta ?lng= sigue teniendo prioridad.",
+      "options": {
+        "system": "Predeterminado del sistema",
+        "english": "Ingles (en-US)",
+        "french": "Frances (fr)",
+        "german": "Aleman (de)",
+        "spanish": "Espanol (es)",
+        "japanese": "Japones (ja)"
+      }
+    },
+    "topTeeth": "Cantidad de dientes superiores",
+    "bottomTeeth": "Cantidad de dientes inferiores",
+    "teethCount": "Cantidad de dientes",
+    "topBottomIntroMobile": "Configura la cantidad de dientes arriba y abajo. BrushBeats deduce quien se cepilla segun la cantidad de dientes.",
+    "topBottomIntroDesktop": "Ingresa cuantos dientes hay arriba y abajo. BrushBeats deduce quien se cepilla segun la cantidad de dientes y ajusta el tiempo automaticamente.",
+    "detectedStage": "Etapa detectada",
+    "searchBpm": "Buscar BPM",
+    "searchBpmDetails": "{{secondsPerTooth}} s por cara dental, {{transitions}} transiciones de {{transitionSeconds}} s cada una",
+    "searchBpmFallback": "La temporizacion incluye el cepillado y los intervalos de transicion dentro de la misma sesion de {{minutes}} minutos",
+    "toothRangeHint": "Por fila de dientes, desde ningun diente erupcionado hasta un arco completo de 16 dientes",
+    "totalTeethSelected": "Total de dientes seleccionados",
+    "totalTeethValue": "{{count}} de 32",
+    "formNote": "Estos deslizadores representan dientes reales, no la velocidad del cepillado. Las bocas mas jovenes reciben automaticamente pausas de transicion mas largas entre cambios de lado y superficie.",
+    "headlineCalculated": "{{totalTeeth}} dientes encajan {{toothTime}} s de cepillado y {{transitionTime}} s de transiciones dentro de {{minutes}} minutos.",
+    "headlineEmpty": "Ajusta la cantidad de dientes para calcular el BPM.",
+    "nextStepTitle": "Siguiente: 2. Musica",
+    "nextStepDescription": "Usa esta etapa detectada y el tempo objetivo para poner en cola canciones que le queden naturalmente a quien se cepilla.",
+    "approximateAge": {
+      "range": "Edad aproximada: {{min}}-{{max}} {{unit}}",
+      "plus": "Edad aproximada: {{min}}+ {{unit}}"
+    },
+    "resultsTitle": "Laboratorio de tempo",
+    "resultsTitleMobile": "Tempo rapido"
+  },
+  "music": {
+    "resultsTitle": "Descubre canciones",
+    "resultsTitleMobile": "Canciones sugeridas",
+    "introDesktop": "Encuentra canciones cerca de tu BPM objetivo usando GetSongBPM y filtros opcionales por palabra clave.",
+    "introMobile": "Encuentra canciones cerca de tu BPM objetivo.",
+    "noteDesktop": "Usa regenerar para traer otra tanda dentro del mismo rango de BPM y descubrir artistas distintos.",
+    "noteMobile": "Toca regenerar para ver otra tanda de canciones.",
+    "randomFiltersNote": "La bailabilidad y la acustica empiezan con valores aleatorios cada vez que se carga la pagina.",
+    "detectedStageNote": "Etapa detectada: {{label}}. Las sugerencias musicales tambien cambian segun la cantidad tipica de dientes en esa etapa.",
+    "tolerance": "Tolerancia BPM: +/- {{value}}",
+    "danceability": "Bailabilidad: {{value}}%",
+    "acousticness": "Acustica: {{value}}%",
+    "searchBy": "Buscar por titulo o artista",
+    "searchPlaceholder": "ej. dua lipa",
+    "loading": "Cargando canciones...",
+    "empty": "Aun no se encontraron canciones en este rango de BPM.",
+    "exhausted": "Ya viste todas las canciones de este conjunto actual. Cambia la palabra clave, la tolerancia o regenera otra vez para obtener un conjunto nuevo.",
+    "songBpm": "{{bpm}} BPM"
+  },
+  "player": {
+    "titleDesktop": "Reproductor integrado",
+    "titleMobile": "Reproduciendo ahora",
+    "introDesktop": "Elige una cancion y reproducela dentro de la app con el iframe de YouTube.",
+    "introMobile": "Reproduce aqui la cancion seleccionada.",
+    "matchingYoutube": "Buscando la cancion en YouTube...",
+    "selectSong": "Selecciona una cancion para comenzar la reproduccion.",
+    "noEmbed": "No se pudo encontrar un video insertable para {{title}}.",
+    "runningStatus": "El temporizador de cepillado funciona independientemente. La reproduccion del video sigue bajo los controles de YouTube.",
+    "loadingVideo": "Cargando nuevo video...",
+    "frameAria": "{{title}} de {{artist}}"
+  },
+  "brushing": {
+    "controlsTitle": "Controles de cepillado",
+    "controlsIntro": "Espera a que cualquier anuncio termine o se pueda omitir y, despues, empieza a cepillarte para mantener el tiempo alineado.",
+    "selectedSong": "Seleccionada: {{title}} de {{artist}}",
+    "handPreference": "Mano para cepillarse",
+    "duration": "Tiempo de cepillado",
+    "durationHint": "El valor predeterminado es 2:00. Cambialo antes de empezar si esta persona necesita mas o menos tiempo.",
+    "start": "Empezar cepillado ({{duration}})",
+    "running": "Cepillando... {{duration}}",
+    "again": "Cepillar otra vez ({{duration}})",
+    "stop": "Reiniciar temporizador",
+    "timerNote": "El temporizador y la guia funcionan independientemente de los controles de YouTube, pero el ritmo se recalcula para el tiempo de cepillado seleccionado.",
+    "readyTitle": "Listo para cepillarte",
+    "readyDetail": "Cepillate con tu mano {{hand}} y sigue la guia cuando la reproduccion este lista.",
+    "errors": {
+      "needsTeeth": "Ingresa al menos un diente antes de empezar una sesion de cepillado.",
+      "needsPlayback": "Primero inicia la reproduccion y luego presiona Empezar cepillado para comenzar solo el temporizador y la guia."
+    },
+    "guide": {
+      "title": "Mapa de cepillado",
+      "introMobile": "Sigue el marcador diente por diente. Las pausas de transicion ya estan incluidas dentro de la misma sesion de {{minutes}} minutos.",
+      "introDesktop": "Cepilla cada cara dental de manera uniforme. Mantén las cerdas inclinadas hacia la linea de la encia y barre alejandote de ella mientras la guia se reorienta en cada zona sin alargar la sesion de {{minutes}} minutos.",
+      "handOrientation": "Orientacion de la mano",
+      "leftView": "Vista para zurdos",
+      "rightView": "Vista para diestros",
+      "transitionOrientation": "Cambiando hacia {{toLabel}}. Reorienta tu mano antes de las siguientes pasadas.",
+      "activeOrientation": "El cepillo animado sigue {{label}} y muestra el barrido alejandose de la encia en esa zona.",
+      "idleOrientation": "Alinea tu mano {{hand}} con el cuadrante resaltado y luego inicia la sesion.",
+      "mouthMapAria": "Mapa dinamico de cepillado dental",
+      "sessionLabel": "Sesion",
+      "legendAria": "Leyenda de la guia de cepillado",
+      "legendFront": "Cara frontal del diente",
+      "legendBack": "Cara posterior del diente",
+      "transitionCallout": "Transicion de {{fromLabel}} a {{toLabel}}. Reanuda el cepillado en {{seconds}} s.",
+      "activeCalloutMobile": "{{label}}, diente {{position}}/{{size}}. Cambia en {{seconds}} s.",
+      "activeCalloutDesktop": "Cepilla {{label}} ahora, diente {{position}} de {{size}}. La meta de la cancion es ~{{bpm}} BPM. Cambia en {{seconds}} s.{{transitionNotice}}",
+      "transitionNotice": " Transicion en {{seconds}} s.",
+      "inactiveCallout": "Presiona Empezar cepillado para iniciar la guia dental en vivo.",
+      "completeCallout": "Todos los dientes fueron cepillados. Buena constancia."
+    },
+    "cue": {
+      "completeTitle": "Cepillado completo",
+      "completeDetail": "Todas las secciones estan terminadas. Reinicia cuando quieras otra pasada.",
+      "readyTitle": "Listo para cepillarte",
+      "readyDetail": "Usa tu mano {{hand}}, espera a que cualquier anuncio termine o se omita, y luego inicia el temporizador.",
+      "halfwayTitle": "Cambio de mitad",
+      "halfwayDetail": "Pasa de los dientes {{fromJaw}} a los dientes {{toJaw}}. Reacomoda ahora tu mano {{hand}}.",
+      "sideSwitchTitle": "Cambia de lado de la boca",
+      "sideSwitchDetail": "Pasa del lado {{fromSide}} al lado {{toSide}} de la boca. Mantén el cepillo en tu mano {{hand}} y ajusta el alcance.",
+      "transitionTitle": "Pausa de transicion",
+      "transitionDetail": "Transicion de {{fromLabel}} a {{toLabel}}. Reanuda en {{seconds}} s.",
+      "activeTitle": "Cepilla {{label}}",
+      "activeDetail": "Diente {{position}} de {{size}}. Mantén el cepillo en tu mano {{hand}} y cambia en {{seconds}} s."
+    },
+    "quadrants": {
+      "topLeft": "Superior izquierdo",
+      "topRight": "Superior derecho",
+      "bottomLeft": "Inferior izquierdo",
+      "bottomRight": "Inferior derecho"
+    },
+    "segments": {
+      "frontTopLeft": "Frente superior izquierdo",
+      "frontTopRight": "Frente superior derecho",
+      "backTopRight": "Parte posterior superior derecha",
+      "backTopLeft": "Parte posterior superior izquierda",
+      "frontBottomLeft": "Frente inferior izquierdo",
+      "frontBottomRight": "Frente inferior derecho",
+      "backBottomRight": "Parte posterior inferior derecha",
+      "backBottomLeft": "Parte posterior inferior izquierda"
+    },
+    "jaw": {
+      "top": "superiores",
+      "bottom": "inferiores"
+    },
+    "side": {
+      "left": "izquierdo",
+      "right": "derecho"
+    },
+    "motions": {
+      "top": "Cepilla hacia abajo alejandote de la encia",
+      "bottom": "Cepilla hacia arriba alejandote de la encia"
+    },
+    "technique": "{{quadrant}}: {{motion}} con tu mano {{hand}}."
+  },
+  "privacy": {
+    "analyticsMessage": "Ayuda a mejorar BrushBeats compartiendo analiticas anonimas de uso. Nunca enviamos texto escrito ni datos personales.",
+    "storageMessage": "BrushBeats puede guardar tu ultima sesion en el navegador (cookies/localStorage) para que repitas rapidamente la misma configuracion de cepillado la proxima vez.",
+    "modalTitle": "Politica de privacidad",
+    "modalBody1": "BrushBeats usa Google Analytics 4 solo cuando aceptas. Recopilamos eventos anonimos de uso para mejorar la app, como calculos de BPM, selecciones de canciones, inicios de cepillado, reinicios, finalizaciones y transiciones automáticas de cola.",
+    "modalBody2": "Tambien podemos guardar tu ultima sesion de cepillado en el almacenamiento del navegador (cookies/localStorage) solo cuando permites el almacenamiento. Esto te permite restaurar rapidamente la misma cancion, cantidad de dientes, filtros, mano de cepillado y duracion en tu proxima visita.",
+    "modalBody3": "No enviamos texto escrito en formularios, direcciones de correo, nombres, contrasenas ni informacion de pago. El almacenamiento relacionado con anuncios esta desactivado a menos que sea necesario para analiticas esenciales autorizadas por ti.",
+    "modalBody4": "Tu eleccion de analiticas se guarda en este dispositivo y puedes cambiarla en cualquier momento usando los controles de Analiticas en el pie de pagina."
+  },
+  "footer": {
+    "poweredBy": "Datos de tempo de canciones proporcionados por",
+    "analytics": "Analiticas: {{state}}",
+    "sessionStorage": "Almacenamiento de sesion: {{state}}"
+  },
+  "errors": {
+    "backendTimeout": "El backend todavia se esta despertando. Espera unos segundos e intentalo de nuevo.",
+    "backendUnavailable": "Despertando mi cerebro musical. Si el servicio esta iniciando en frio, espera unos segundos y vuelve a intentarlo.",
+    "languageFallbackNotice": "Este idioma aun no esta disponible. Mostrando ingles."
+  },
+  "age": {
+    "units": {
+      "months": "meses",
+      "years": "anos"
+    },
+    "stages": {
+      "unknown": {
+        "label": "Etapa desconocida",
+        "description": "No hay una estimacion de edad dental disponible"
+      },
+      "infant": "Dientes de bebe",
+      "toddler": "Dientes de nino pequeno",
+      "primary": "Denticion primaria",
+      "mixed": "Denticion mixta",
+      "adultSmile": "Sonrisa adulta",
+      "fullAdultSmile": "Sonrisa adulta completa"
+    },
+    "descriptions": {
+      "monthRange": "Aproximadamente de {{min}} a {{max}} meses",
+      "yearRange": "Aproximadamente de {{min}} a {{max}} anos",
+      "yearsPlus": "{{min}}+ anos",
+      "unknownRange": "rango de edad desconocido"
+    },
+    "phases": {
+      "infant": "bebe",
+      "toddler": "nino pequeno",
+      "primary": "primaria",
+      "mixed": "mixta",
+      "adult": "adulta"
+    }
+  }
+}

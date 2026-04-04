@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import BPMCalculator from "./components/BPMCalculator";
 import SongList from "./components/SongList";
 import Player from "./components/Player";
 import BrushingGuide from "./components/BrushingGuide";
+import { getLanguageFallbackInfo, setPreferredSupportedLanguage } from "./i18n.ts";
 import { getBpm, getSongs, getYoutubeVideo } from "./api/client";
 import {
   analyticsEnabled,
@@ -12,19 +14,24 @@ import {
   trackEvent
 } from "./lib/analytics";
 import {
-  clearLastBrushedSong,
+  clearStoredPreferences,
+  clearLastSession,
   getStorageConsentStatus,
   isStorageBannerDismissed,
-  loadLastBrushedSong,
-  saveLastBrushedSong,
+  loadLastSession,
+  loadStoredPreferences,
+  saveLastSession,
+  saveStoredPreferences,
   setStorageBannerDismissed,
   setStorageConsent
 } from "./lib/storagePreference";
-import { describeTeethStage, estimateAgeFromTeethFull } from "./lib/teethAge";
+import { estimateAgeFromTeethFull } from "./lib/teethAge";
 import { useDeviceContext } from "./lib/deviceContext";
 import "./App.css";
 
 const DEFAULT_VALUES = { top: 16, bottom: 16 };
+const DEFAULT_BRUSH_DURATION_SECONDS = 120;
+const BRUSH_DURATION_OPTIONS = [90, 120, 150, 180];
 
 function clampValue(value, min, max) {
   return Math.min(max, Math.max(min, value));
@@ -32,10 +39,6 @@ function clampValue(value, min, max) {
 
 function getMaturityScore(totalTeeth) {
   return clampValue((Number(totalTeeth) - 1) / 31, 0, 1);
-}
-
-function randomPreferenceValue() {
-  return Math.floor(Math.random() * 101);
 }
 
 function createInitialSongPreferences(totalTeeth = DEFAULT_VALUES.top + DEFAULT_VALUES.bottom) {
@@ -57,7 +60,55 @@ function createInitialSongPreferences(totalTeeth = DEFAULT_VALUES.top + DEFAULT_
   };
 }
 
+function formatAgeDescription(t, ageEstimate) {
+  if (!ageEstimate) {
+    return t("age.descriptions.unknownRange");
+  }
+
+  if (ageEstimate.unit === "months") {
+    return t("age.descriptions.monthRange", {
+      min: ageEstimate.minAge,
+      max: ageEstimate.maxAge
+    });
+  }
+
+  if (ageEstimate.maxAge >= 99) {
+    return t("age.descriptions.yearsPlus", {
+      min: ageEstimate.minAge
+    });
+  }
+
+  return t("age.descriptions.yearRange", {
+    min: ageEstimate.minAge,
+    max: ageEstimate.maxAge
+  });
+}
+
+function buildLocalizedBrusherProfile(t, totalTeeth, ageEstimate) {
+  if (!ageEstimate) {
+    return {
+      safeTeeth: totalTeeth,
+      estimate: null,
+      label: t("age.stages.unknown.label"),
+      description: t("age.stages.unknown.description")
+    };
+  }
+
+  let labelKey = `age.stages.${ageEstimate.phase}`;
+  if (ageEstimate.phase === "adult") {
+    labelKey = totalTeeth >= 29 ? "age.stages.fullAdultSmile" : "age.stages.adultSmile";
+  }
+
+  return {
+    safeTeeth: totalTeeth,
+    estimate: ageEstimate,
+    label: t(labelKey),
+    description: formatAgeDescription(t, ageEstimate)
+  };
+}
+
 function App() {
+  const { t, i18n } = useTranslation();
   const [values, setValues] = useState(DEFAULT_VALUES);
   const [bpmData, setBpmData] = useState(null);
   const [songs, setSongs] = useState([]);
@@ -67,7 +118,7 @@ function App() {
   const [draftSongFilters, setDraftSongFilters] = useState(songFilters);
   const [keyword, setKeyword] = useState("");
   const [songRefreshSeed, setSongRefreshSeed] = useState(0);
-  const [timer, setTimer] = useState({ running: false, remaining: 120 });
+  const [timer, setTimer] = useState({ running: false, remaining: DEFAULT_BRUSH_DURATION_SECONDS });
   const [brushingPhase, setBrushingPhase] = useState("idle");
   const [playbackSeconds, setPlaybackSeconds] = useState(0);
   const [brushingMusicElapsedSeconds, setBrushingMusicElapsedSeconds] = useState(0);
@@ -79,16 +130,48 @@ function App() {
   const [analyticsConsent, setAnalyticsConsentState] = useState(() => getAnalyticsConsentStatus());
   const [storageConsent, setStorageConsentState] = useState(() => getStorageConsentStatus());
   const [storageBannerDismissed, setStorageBannerDismissedState] = useState(() => isStorageBannerDismissed());
-  const [lastBrushedSong, setLastBrushedSong] = useState(null);
+  const [lastSession, setLastSession] = useState(null);
+  const [languageFallbackState, setLanguageFallbackState] = useState(() => getLanguageFallbackInfo());
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [workflowStep, setWorkflowStep] = useState("teeth");
+  const [brushingHand, setBrushingHand] = useState("right");
+  const [brushDurationSeconds, setBrushDurationSeconds] = useState(DEFAULT_BRUSH_DURATION_SECONDS);
+  const [brushControlCue, setBrushControlCue] = useState(null);
   const seenSongsByQueryRef = useRef(new Map());
   const lastPlaybackTickRef = useRef(null);
+  const preferencesHydratedRef = useRef(false);
   const analyticsAvailable = useMemo(() => analyticsEnabled(), []);
   const device = useDeviceContext();
   const totalTeeth = values.top + values.bottom;
-  const detectedBrusherProfile = bpmData?.brusherProfile || describeTeethStage(totalTeeth);
   const ageEstimate = bpmData?.ageEstimate || estimateAgeFromTeethFull(totalTeeth);
+  const detectedBrusherProfile = useMemo(
+    () => buildLocalizedBrusherProfile(t, totalTeeth, ageEstimate),
+    [ageEstimate, t, totalTeeth]
+  );
+  const supportedLanguageOptions = useMemo(
+    () => [
+      { value: "en", label: t("settings.supportedLanguage.options.english") },
+      { value: "es", label: t("settings.supportedLanguage.options.spanish") }
+    ],
+    [t]
+  );
+
+  useEffect(() => {
+    setLanguageFallbackState(getLanguageFallbackInfo());
+  }, [i18n.language, i18n.resolvedLanguage]);
+
+  function applySavedSession(session) {
+    if (!session) {
+      return;
+    }
+
+    setValues(session.values);
+    setSongFilters(session.filters);
+    setDraftSongFilters(session.filters);
+    setKeyword(session.keyword || "");
+    setBrushingHand(session.brushingHand || "right");
+    setBrushDurationSeconds(session.brushDurationSeconds || DEFAULT_BRUSH_DURATION_SECONDS);
+  }
 
   useEffect(() => {
     if (analyticsConsent === "granted") {
@@ -109,16 +192,43 @@ function App() {
 
   useEffect(() => {
     if (storageConsent === "granted") {
-      setLastBrushedSong(loadLastBrushedSong());
+      const savedPreferences = loadStoredPreferences();
+      const savedSession = loadLastSession();
+
+      if (savedPreferences) {
+        applySavedSession(savedPreferences);
+      } else if (savedSession) {
+        applySavedSession(savedSession);
+      }
+
+      setLastSession(savedSession);
+      preferencesHydratedRef.current = true;
       return;
     }
 
     if (storageConsent === "denied") {
-      clearLastBrushedSong();
+      clearStoredPreferences();
+      clearLastSession();
     }
 
-    setLastBrushedSong(null);
+    preferencesHydratedRef.current = false;
+    setLastSession(null);
   }, [storageConsent]);
+
+  useEffect(() => {
+    if (storageConsent !== "granted" || !preferencesHydratedRef.current) {
+      return;
+    }
+
+    saveStoredPreferences({
+      values,
+      filters: songFilters,
+      keyword,
+      brushingHand,
+      brushDurationSeconds,
+      savedAt: Date.now()
+    });
+  }, [brushDurationSeconds, brushingHand, keyword, songFilters, storageConsent, values]);
 
   function handleAllowStorage() {
     const nextStatus = setStorageConsent(true);
@@ -130,8 +240,9 @@ function App() {
   function handleDeclineStorage() {
     const nextStatus = setStorageConsent(false);
     setStorageConsentState(nextStatus);
-    clearLastBrushedSong();
-    setLastBrushedSong(null);
+    clearStoredPreferences();
+    clearLastSession();
+    setLastSession(null);
   }
 
   function handleDismissStorageBanner() {
@@ -144,15 +255,23 @@ function App() {
     setStorageBannerDismissedState(false);
   }
 
-  async function handlePlayLastBrushedSong() {
-    if (!lastBrushedSong) {
+  async function handlePreferredLanguageChange(nextLanguage) {
+    const nextFallbackInfo = await setPreferredSupportedLanguage(nextLanguage);
+    setLanguageFallbackState(nextFallbackInfo);
+  }
+
+  async function handleRepeatLastSession() {
+    if (!lastSession?.song) {
       return;
     }
 
-    await handleSelectSong(lastBrushedSong);
-    trackEvent("last_brushed_song_replayed", {
-      title: lastBrushedSong.title,
-      artist: lastBrushedSong.artist
+    applySavedSession(lastSession);
+    setWorkflowStep("brush");
+    await handleSelectSongWithOptions(lastSession.song, { autoplay: false });
+    trackEvent("last_session_repeated", {
+      title: lastSession.song.title,
+      artist: lastSession.song.artist,
+      duration_seconds: lastSession.brushDurationSeconds
     });
   }
 
@@ -175,18 +294,18 @@ function App() {
     }
 
     const infoTimer = window.setTimeout(() => {
-      setBackendStatus("Waking up the backend. The first request should take no more than 30 seconds, so please hang on.");
+      setBackendStatus(t("app.backendStatus.waking"));
     }, 1800);
 
     const detailTimer = window.setTimeout(() => {
-      setBackendStatus("Still connecting to the backend. This is taking longer than expected, but it should finish shortly.");
+      setBackendStatus(t("app.backendStatus.connecting"));
     }, 7000);
 
     return () => {
       window.clearTimeout(infoTimer);
       window.clearTimeout(detailTimer);
     };
-  }, [loading.bpm, loading.songs, loading.player]);
+  }, [loading.bpm, loading.player, loading.songs, t]);
 
   useEffect(() => {
     let cancelled = false;
@@ -194,7 +313,7 @@ function App() {
     async function loadBpm() {
       try {
         setLoading((prev) => ({ ...prev, bpm: true }));
-        const data = await getBpm(values);
+        const data = await getBpm({ ...values, duration: brushDurationSeconds });
 
         if (!cancelled) {
           setBpmData(data);
@@ -216,7 +335,22 @@ function App() {
     return () => {
       cancelled = true;
     };
-  }, [values]);
+  }, [values, brushDurationSeconds]);
+
+  useEffect(() => {
+    if (timer.running) {
+      return;
+    }
+
+    const nextSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
+    setTimer((prev) => {
+      if (prev.remaining === nextSeconds && prev.running === false) {
+        return prev;
+      }
+
+      return { running: false, remaining: nextSeconds };
+    });
+  }, [bpmData?.totalBrushingSeconds, brushDurationSeconds, timer.running]);
 
   useEffect(() => {
     if (!bpmData?.searchBpm) {
@@ -298,7 +432,8 @@ function App() {
       return;
     }
 
-    const remaining = Math.max(0, 120 - Math.floor(brushingMusicElapsedSeconds));
+    const totalSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
+    const remaining = Math.max(0, totalSeconds - Math.floor(brushingMusicElapsedSeconds));
 
     setTimer((prev) => {
       const nextRunning = remaining > 0;
@@ -313,7 +448,7 @@ function App() {
       trackEvent("brushing_completed");
       setBrushingPhase("complete");
     }
-  }, [timer.running, brushingPhase, brushingMusicElapsedSeconds]);
+  }, [timer.running, brushingPhase, brushingMusicElapsedSeconds, bpmData?.totalBrushingSeconds, brushDurationSeconds]);
 
   function handlePlaybackTick(seconds) {
     setPlaybackSeconds(seconds);
@@ -374,43 +509,65 @@ function App() {
 
   function startBrushing() {
     if ((bpmData?.totalTeeth || 0) <= 0) {
-      setError("Enter at least one tooth before starting a brushing session.");
+      setError(t("brushing.errors.needsTeeth"));
       return;
     }
 
     if (!playerData?.embedUrl) {
-      setError("Start playback first, then press Start Brushing to begin only the brush timer and guide.");
+      setError(t("brushing.errors.needsPlayback"));
       return;
     }
 
-    const totalSeconds = 120; // 4 sections × 30 seconds (ADA recommended brushing time)
+    const totalSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
     setBrushingMusicElapsedSeconds(0);
     lastPlaybackTickRef.current = playbackSeconds;
     setTimer({ running: true, remaining: totalSeconds });
     setBrushingPhase("running");
 
     if (storageConsent === "granted" && selectedSong?.title && selectedSong?.artist) {
-      saveLastBrushedSong(selectedSong);
-      setLastBrushedSong({
-        title: selectedSong.title,
-        artist: selectedSong.artist,
-        bpm: selectedSong.bpm,
+      const sessionToSave = {
+        song: {
+          title: selectedSong.title,
+          artist: selectedSong.artist,
+          bpm: selectedSong.bpm
+        },
+        values,
+        filters: songFilters,
+        keyword,
+        brushingHand,
+        brushDurationSeconds,
         savedAt: Date.now()
+      };
+
+      saveStoredPreferences({
+        values,
+        filters: songFilters,
+        keyword,
+        brushingHand,
+        brushDurationSeconds,
+        savedAt: sessionToSave.savedAt
       });
+      saveLastSession(sessionToSave);
+      setLastSession(sessionToSave);
     }
 
-    trackEvent("brushing_started", { song_title: selectedSong?.title, song_artist: selectedSong?.artist });
+    trackEvent("brushing_started", { song_title: selectedSong?.title, song_artist: selectedSong?.artist, duration_seconds: totalSeconds });
     setError("");
   }
 
   function restartBrushing() {
-    const totalSeconds = 120;
+    const totalSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
     setBrushingMusicElapsedSeconds(0);
     lastPlaybackTickRef.current = playbackSeconds;
     setTimer({ running: false, remaining: totalSeconds });
     setBrushingPhase("idle");
-    trackEvent("brushing_reset", { song_title: selectedSong?.title, song_artist: selectedSong?.artist });
+    trackEvent("brushing_reset", { song_title: selectedSong?.title, song_artist: selectedSong?.artist, duration_seconds: totalSeconds });
     setError("");
+  }
+
+  function handleBrushDurationChange(nextDuration) {
+    const safeDuration = Number(nextDuration || DEFAULT_BRUSH_DURATION_SECONDS);
+    setBrushDurationSeconds(safeDuration);
   }
 
   function updateValue(key, value) {
@@ -438,23 +595,31 @@ function App() {
 
   const subtitle = useMemo(() => {
     if (!bpmData) {
-      return `Matching brushing rhythm to music for ${detectedBrusherProfile.description.toLowerCase()}.`;
+      return t("app.subtitle.withoutBpm", {
+        description: detectedBrusherProfile.description
+      });
     }
 
-    return `${detectedBrusherProfile.label}: ${Math.round(bpmData.searchBpm)} BPM target, ${bpmData.secondsPerTooth}s per tooth face, ${bpmData.transitionBufferSeconds}s transitions, ${ageEstimate ? `${ageEstimate.minAge}-${ageEstimate.maxAge} ${ageEstimate.unit}` : "age range unknown"}.`;
-  }, [ageEstimate, bpmData, detectedBrusherProfile.description, detectedBrusherProfile.label]);
+    return t("app.subtitle.withBpm", {
+      label: detectedBrusherProfile.label,
+      bpm: Math.round(bpmData.searchBpm),
+      secondsPerTooth: bpmData.secondsPerTooth,
+      transitionSeconds: bpmData.transitionBufferSeconds,
+      ageText: formatAgeDescription(t, ageEstimate)
+    });
+  }, [ageEstimate, bpmData, detectedBrusherProfile.description, detectedBrusherProfile.label, t]);
 
   const phaseLabel = useMemo(() => {
     if (brushingPhase === "running") {
-      return "Brushing in progress";
+      return t("app.status.running");
     }
 
     if (brushingPhase === "complete") {
-      return "Session complete";
+      return t("app.status.complete");
     }
 
-    return "Idle";
-  }, [brushingPhase]);
+    return t("app.status.idle");
+  }, [brushingPhase, t]);
 
   function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
@@ -464,62 +629,107 @@ function App() {
 
   const mobileStartLabel =
     brushingPhase === "running"
-      ? `Brushing... ${formatTime(timer.remaining)}`
+      ? t("brushing.running", { duration: formatTime(timer.remaining) })
       : brushingPhase === "complete"
-          ? "Brush Again (2:00)"
-          : "Start Brushing (2:00)";
+          ? t("brushing.again", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) })
+          : t("brushing.start", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) });
 
   const showTopConsentNotices = workflowStep === "teeth";
-  const showLastSongBanner = workflowStep === "music";
+  const showLastSessionBanner = workflowStep === "music";
 
   return (
     <main className={`app-shell ${device.isMobile ? "mobile-shell" : "desktop-shell"}`}>
       <header className="app-header">
-        <p className="eyebrow">BrushBeats</p>
-        <h1>{device.isMobile ? "Brush Anywhere. Stay On Tempo." : "Two-minute brushing. Perfect tempo. Better vibes."}</h1>
+        <p className="eyebrow">{t("app.eyebrow")}</p>
+        <h1>{device.isMobile ? t("app.title.mobile") : t("app.title.desktop")}</h1>
         <p>{subtitle}</p>
-        <p className={`state-chip ${brushingPhase}`}>Status: {phaseLabel}</p>
-        <p className={`mode-chip ${device.mode}`}>{device.isMobile ? "Mobile Layout" : "Desktop Layout"}</p>
+        <p className={`state-chip ${brushingPhase}`}>{t("app.status.label", { state: phaseLabel })}</p>
+        <p className={`mode-chip ${device.mode}`}>{device.isMobile ? t("common.layouts.mobile") : t("common.layouts.desktop")}</p>
       </header>
 
-      <nav className={`workflow-tabs ${device.isMobile ? "mobile-workflow-tabs" : "desktop-workflow-tabs"}`} aria-label="BrushBeats workflow tabs">
+      <nav className={`workflow-tabs ${device.isMobile ? "mobile-workflow-tabs" : "desktop-workflow-tabs"}`} aria-label={t("app.workflow.ariaLabel")}>
           <button
             type="button"
             className={`workflow-tab${workflowStep === "teeth" ? " active" : ""}`}
             onClick={() => setWorkflowStep("teeth")}
           >
-            1. Teeth
+            {t("app.workflow.teeth")}
           </button>
           <button
             type="button"
             className={`workflow-tab${workflowStep === "music" ? " active" : ""}`}
             onClick={() => setWorkflowStep("music")}
           >
-            2. Music
+            {t("app.workflow.music")}
           </button>
           <button
             type="button"
             className={`workflow-tab${workflowStep === "brush" ? " active" : ""}`}
             onClick={() => setWorkflowStep("brush")}
           >
-            3. Brush
+            {t("app.workflow.brush")}
           </button>
       </nav>
+
+      <section className="care-routine-strip" aria-label={t("app.routine.ariaLabel")}>
+        <div className="care-routine-header">
+          <strong>{t("app.routine.title")}</strong>
+        </div>
+        <div className="care-routine-grid">
+          <article className="care-routine-card active">
+            <span className="care-routine-badge">{t("app.routine.available")}</span>
+            <strong>{t("app.routine.brushing.title")}</strong>
+            <p>{t("app.routine.brushing.description")}</p>
+          </article>
+          <article className="care-routine-card coming-soon" aria-disabled="true">
+            <span className="care-routine-badge">{t("app.routine.comingSoon")}</span>
+            <strong>{t("app.routine.flossing.title")}</strong>
+            <p>{t("app.routine.flossing.description")}</p>
+          </article>
+          <article className="care-routine-card coming-soon" aria-disabled="true">
+            <span className="care-routine-badge">{t("app.routine.comingSoon")}</span>
+            <strong>{t("app.routine.waterPicking.title")}</strong>
+            <p>{t("app.routine.waterPicking.description")}</p>
+          </article>
+        </div>
+      </section>
+
+      {languageFallbackState.needsSupportedLanguageChoice && (
+        <section className="language-simulator-card" aria-label={t("settings.supportedLanguage.ariaLabel")}>
+          <div className="language-simulator-copy">
+            <strong>{t("settings.supportedLanguage.label")}</strong>
+            <span>{t("settings.supportedLanguage.hint", { requestedLanguage: languageFallbackState.requestedLanguage || t("settings.supportedLanguage.unknownLanguage") })}</span>
+          </div>
+          <label className="language-simulator-control">
+            <span>{t("settings.language")}</span>
+            <select
+              value={i18n.resolvedLanguage || i18n.language || "en"}
+              onChange={(event) => handlePreferredLanguageChange(event.target.value)}
+            >
+              {supportedLanguageOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </section>
+      )}
 
       {showTopConsentNotices && analyticsAvailable && analyticsConsent === "unknown" && (
         <section className="consent-banner" role="region" aria-label="Privacy controls">
           <p>
-            Help improve BrushBeats by sharing anonymous usage analytics. We never send typed text or personal data.
+            {t("privacy.analyticsMessage")}
             <button type="button" className="privacy-link" onClick={openPrivacyModal}>
-              Privacy Policy
+              {t("common.buttons.privacyPolicy")}
             </button>
           </p>
           <div className="consent-actions">
             <button type="button" className="action-btn" onClick={handleAcceptAnalytics}>
-              Allow Analytics
+              {t("common.buttons.allowAnalytics")}
             </button>
             <button type="button" className="action-btn secondary" onClick={handleDeclineAnalytics}>
-              Decline
+              {t("common.buttons.decline")}
             </button>
           </div>
         </section>
@@ -528,33 +738,36 @@ function App() {
       {showTopConsentNotices && !storageBannerDismissed && (
         <section className="storage-banner" role="region" aria-label="Storage consent controls">
           <p>
-            BrushBeats can store your last brushed song in browser storage (cookies/localStorage) so you can replay it next
-            session.
+            {t("privacy.storageMessage")}
             <button type="button" className="privacy-link" onClick={openPrivacyModal}>
-              Privacy Policy
+              {t("common.buttons.privacyPolicy")}
             </button>
           </p>
           <div className="consent-actions">
             <button type="button" className="action-btn" onClick={handleAllowStorage}>
-              Allow Storage
+              {t("common.buttons.allowStorage")}
             </button>
             <button type="button" className="action-btn secondary" onClick={handleDeclineStorage}>
-              Opt Out
+              {t("common.buttons.optOut")}
             </button>
             <button type="button" className="action-btn secondary" onClick={handleDismissStorageBanner}>
-              Dismiss
+              {t("common.buttons.dismiss")}
             </button>
           </div>
         </section>
       )}
 
-      {showLastSongBanner && lastBrushedSong && storageConsent === "granted" && (
+      {showLastSessionBanner && lastSession?.song && storageConsent === "granted" && (
         <section className="last-song-banner" aria-live="polite">
-          <p>
-            Last brushed song: <strong>{lastBrushedSong.title}</strong> by <strong>{lastBrushedSong.artist}</strong>
-          </p>
-          <button type="button" className="action-btn secondary" onClick={handlePlayLastBrushedSong}>
-            Queue Last Brushed Song
+          <p>{t("app.lastSession.summary", {
+            title: lastSession.song.title,
+            artist: lastSession.song.artist,
+            top: lastSession.values.top,
+            bottom: lastSession.values.bottom,
+            duration: formatTime(lastSession.brushDurationSeconds)
+          })}</p>
+          <button type="button" className="action-btn secondary" onClick={handleRepeatLastSession}>
+            {t("common.buttons.repeatLastSession")}
           </button>
         </section>
       )}
@@ -570,13 +783,9 @@ function App() {
             onChange={updateValue}
             onContinueToMusic={() => setWorkflowStep("music")}
             bpmData={bpmData}
+            brushDurationSeconds={brushDurationSeconds}
             loading={loading.bpm}
-            timer={timer}
-            brushingPhase={brushingPhase}
             isMobile={device.isMobile}
-            hideSessionActions
-            onStartTimer={startBrushing}
-            onRestartTimer={restartBrushing}
           />
         </section>
       )}
@@ -609,22 +818,58 @@ function App() {
       {workflowStep === "brush" && (
         <section className={`layout-grid ${device.isMobile ? "mobile-mode" : "desktop-mode desktop-brush-layout"}`}>
           <section className={`card brush-actions-card ${device.isMobile ? "" : "desktop-step-card"}`.trim()}>
-            <h2>Brushing Controls</h2>
-            <p>Start or reset your brush timer after picking a song.</p>
+            <h2>{t("brushing.controlsTitle")}</h2>
+            <p>{t("brushing.controlsIntro")}</p>
             {selectedSong && (
-              <p className="brush-selected-song">
-                Selected: <strong>{selectedSong.title}</strong> by <strong>{selectedSong.artist}</strong>
-              </p>
+              <p className="brush-selected-song">{t("brushing.selectedSong", { title: selectedSong.title, artist: selectedSong.artist })}</p>
             )}
+            <div className="brush-hand-picker" role="group" aria-label={t("brushing.handPreference")}>
+              <span className="profile-summary-label">{t("brushing.handPreference")}</span>
+              <div className="brush-hand-actions">
+                <button
+                  type="button"
+                  className={`brush-hand-btn${brushingHand === "left" ? " active" : ""}`}
+                  onClick={() => setBrushingHand("left")}
+                >
+                  {t("common.buttons.leftHand")}
+                </button>
+                <button
+                  type="button"
+                  className={`brush-hand-btn${brushingHand === "right" ? " active" : ""}`}
+                  onClick={() => setBrushingHand("right")}
+                >
+                  {t("common.buttons.rightHand")}
+                </button>
+              </div>
+            </div>
+            <label className="brush-duration-picker">
+              <span className="profile-summary-label">{t("brushing.duration")}</span>
+              <select
+                value={brushDurationSeconds}
+                onChange={(event) => handleBrushDurationChange(Number(event.target.value))}
+                disabled={brushingPhase === "running"}
+              >
+                {BRUSH_DURATION_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {formatTime(option)}
+                  </option>
+                ))}
+              </select>
+              <span className="brush-duration-hint">{t("brushing.durationHint")}</span>
+            </label>
+            <div className={`brush-cue-card${brushControlCue?.kind ? ` ${brushControlCue.kind}` : ""}`} aria-live="polite">
+              <strong>{brushControlCue?.title || t("brushing.readyTitle")}</strong>
+              <span>{brushControlCue?.detail || t("brushing.readyDetail", { hand: t(`common.hands.${brushingHand}`) })}</span>
+            </div>
             <div className="session-actions">
               <button type="button" className="action-btn" onClick={startBrushing}>
                 {mobileStartLabel}
               </button>
               <button type="button" className="action-btn secondary" onClick={restartBrushing}>
-                Reset Timer
+                {t("brushing.stop")}
               </button>
             </div>
-            <p className="timer-note">Timer and guide run independently from YouTube controls.</p>
+            <p className="timer-note">{t("brushing.timerNote")}</p>
           </section>
 
           <Player
@@ -646,53 +891,55 @@ function App() {
             selectedBpm={Number(selectedSong?.bpm || bpmData?.searchBpm || 120)}
             isMobile={device.isMobile}
             brushingMusicElapsedSeconds={brushingMusicElapsedSeconds}
+            brushingHand={brushingHand}
+            onCueChange={setBrushControlCue}
           />
         </section>
       )}
 
       {brushingPhase === "complete" && (
         <section className="success-banner" aria-live="polite">
-          Great work, your 2-minute clean is complete. Keep this habit daily for stronger teeth and healthier gums.
+          {t("app.success", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) })}
         </section>
       )}
 
       <footer className="credit-strip" id="credit">
         <p>
-          Song tempo data powered by
+          {t("footer.poweredBy")}
           <a href="https://getsongbpm.com" target="_blank" rel="noreferrer">
             GetSongBPM
           </a>
         </p>
         {analyticsAvailable && (
           <div className="privacy-controls">
-            <span>Analytics: {analyticsConsent === "granted" ? "On" : "Off"}</span>
+            <span>{t("footer.analytics", { state: analyticsConsent === "granted" ? t("common.states.on") : t("common.states.off") })}</span>
             <button type="button" className="privacy-toggle" onClick={openPrivacyModal}>
-              Privacy Policy
+              {t("common.buttons.privacyPolicy")}
             </button>
             {analyticsConsent === "granted" ? (
               <button type="button" className="privacy-toggle" onClick={handleDeclineAnalytics}>
-                Turn Off
+                {t("common.buttons.turnOff")}
               </button>
             ) : (
               <button type="button" className="privacy-toggle" onClick={handleAcceptAnalytics}>
-                Turn On
+                {t("common.buttons.turnOn")}
               </button>
             )}
           </div>
         )}
         <div className="privacy-controls">
-          <span>Song Storage: {storageConsent === "granted" ? "On" : "Off"}</span>
+          <span>{t("footer.sessionStorage", { state: storageConsent === "granted" ? t("common.states.on") : t("common.states.off") })}</span>
           {storageConsent === "granted" ? (
             <button type="button" className="privacy-toggle" onClick={handleDeclineStorage}>
-              Turn Off
+              {t("common.buttons.turnOff")}
             </button>
           ) : (
             <button type="button" className="privacy-toggle" onClick={handleAllowStorage}>
-              Turn On
+              {t("common.buttons.turnOn")}
             </button>
           )}
           <button type="button" className="privacy-toggle" onClick={handleShowStorageBanner}>
-            Storage Notice
+            {t("common.buttons.storageNotice")}
           </button>
         </div>
         {import.meta.env.VITE_GIT_SHA && (
@@ -708,29 +955,17 @@ function App() {
             className="privacy-modal"
             role="dialog"
             aria-modal="true"
-            aria-label="BrushBeats privacy policy"
+            aria-label={t("privacy.modalTitle")}
             onClick={(event) => event.stopPropagation()}
           >
-            <h2>Privacy Policy</h2>
-            <p>
-              BrushBeats uses Google Analytics 4 only when you opt in. We collect anonymous usage events to improve the app,
-              such as BPM calculations, song selections, brushing starts, resets, completions, and auto-queue transitions.
-            </p>
-            <p>
-              We may also store your last brushed song in browser storage (cookies/localStorage) only when you allow storage.
-              This lets you quickly replay that song on your next visit.
-            </p>
-            <p>
-              We do not send typed form text, email addresses, names, passwords, or payment information. Ad-related storage is
-              disabled unless required for core analytics consented by you.
-            </p>
-            <p>
-              Your analytics choice is stored on this device and you can change it at any time using the Analytics controls in
-              the footer.
-            </p>
+            <h2>{t("privacy.modalTitle")}</h2>
+            <p>{t("privacy.modalBody1")}</p>
+            <p>{t("privacy.modalBody2")}</p>
+            <p>{t("privacy.modalBody3")}</p>
+            <p>{t("privacy.modalBody4")}</p>
             <div className="privacy-modal-actions">
               <button type="button" className="action-btn secondary" onClick={closePrivacyModal}>
-                Close
+                {t("common.buttons.close")}
               </button>
             </div>
           </section>

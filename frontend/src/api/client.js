@@ -1,3 +1,5 @@
+import i18n from "../i18n.ts";
+
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:4000";
 const REQUEST_TIMEOUT_MS = 35000;
 
@@ -10,10 +12,10 @@ async function request(path) {
     response = await fetch(`${API_BASE}${path}`, { signal: controller.signal });
   } catch (error) {
     if (error.name === "AbortError") {
-      throw new Error("The backend is still waking up. Please wait a few seconds and try again.");
+      throw new Error(i18n.t("errors.backendTimeout"));
     }
 
-    throw new Error("Could not reach the backend. If the service is cold-starting, please wait a few seconds and retry.");
+    throw new Error(i18n.t("errors.backendUnavailable"));
   } finally {
     window.clearTimeout(timeoutId);
   }
@@ -26,10 +28,11 @@ async function request(path) {
   return response.json();
 }
 
-export function getBpm({ top, bottom }) {
+export function getBpm({ top, bottom, duration }) {
   const params = new URLSearchParams({
     top: String(top),
-    bottom: String(bottom)
+    bottom: String(bottom),
+    duration: String(duration ?? 120)
   });
 
   return request(`/api/bpm?${params.toString()}`);

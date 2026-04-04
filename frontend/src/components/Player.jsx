@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 function parseVideoId(playerData) {
   if (playerData?.videoId) {
@@ -18,6 +19,7 @@ function parseVideoId(playerData) {
 }
 
 function Player({ selectedSong, playerData, loading, brushingPhase, isMobile, autoplayToken, onPlaybackTick, onSongEnded }) {
+  const { t } = useTranslation();
   const hostRef = useRef(null);
   const playerRef = useRef(null);
   const tickTimerRef = useRef(null);
@@ -34,24 +36,23 @@ function Player({ selectedSong, playerData, loading, brushingPhase, isMobile, au
     onSongEndedRef.current = onSongEnded;
   }, [onSongEnded]);
 
-  function stopTickTimer() {
+  const stopTickTimer = useEffectEvent(() => {
     if (tickTimerRef.current) {
       window.clearInterval(tickTimerRef.current);
       tickTimerRef.current = null;
     }
-  }
+  });
 
-  function startTickTimer() {
+  const startTickTimer = useEffectEvent(() => {
     stopTickTimer();
     tickTimerRef.current = window.setInterval(() => {
       const seconds = playerRef.current?.getCurrentTime?.() ?? 0;
       onPlaybackTickRef.current?.(seconds);
     }, 250);
-  }
+  });
 
   useEffect(() => {
     if (window.YT?.Player) {
-      setApiReady(true);
       return;
     }
 
@@ -134,19 +135,19 @@ function Player({ selectedSong, playerData, loading, brushingPhase, isMobile, au
 
   return (
     <section className="card player">
-      <h2>{isMobile ? "Now Playing" : "Embedded Player"}</h2>
-      <p>{isMobile ? "Play your selected track here." : "Pick a song and play it inside the app with YouTube iframe embed."}</p>
+      <h2>{isMobile ? t("player.titleMobile") : t("player.titleDesktop")}</h2>
+      <p>{isMobile ? t("player.introMobile") : t("player.introDesktop")}</p>
 
-      {loading && <p>Matching song on YouTube...</p>}
+      {loading && <p>{t("player.matchingYoutube")}</p>}
 
-      {!loading && !selectedSong && <p>Select a song to start playback.</p>}
+      {!loading && !selectedSong && <p>{t("player.selectSong")}</p>}
 
       {!loading && selectedSong && !playerData?.embedUrl && (
-        <p>Could not find an embeddable video for {selectedSong.title}.</p>
+        <p>{t("player.noEmbed", { title: selectedSong.title })}</p>
       )}
 
       {brushingPhase === "running" && (
-        <p className="player-status">Brushing timer is running independently. Video playback remains under YouTube controls.</p>
+        <p className="player-status">{t("player.runningStatus")}</p>
       )}
 
       {selectedSong && (
@@ -158,7 +159,7 @@ function Player({ selectedSong, playerData, loading, brushingPhase, isMobile, au
             <div
               ref={hostRef}
               className="player-frame"
-              aria-label={`${selectedSong.title} by ${selectedSong.artist}`}
+              aria-label={t("player.frameAria", { title: selectedSong.title, artist: selectedSong.artist })}
               style={{ opacity: playerData?.embedUrl ? 1 : 0.4, minHeight: isMobile ? "180px" : "200px" }}
             />
             {loading && (
@@ -178,7 +179,7 @@ function Player({ selectedSong, playerData, loading, brushingPhase, isMobile, au
                   color: "#666"
                 }}
               >
-                Loading new video...
+                {t("player.loadingVideo")}
               </div>
             )}
           </div>
