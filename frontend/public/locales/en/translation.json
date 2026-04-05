@@ -16,6 +16,7 @@
       "regenerateArtistsSongs": "Regenerate Artists & Songs",
       "refreshing": "Refreshing...",
       "repeatLastSession": "Repeat Last Session",
+      "changeMusic": "Change Music",
       "leftHand": "Left Hand",
       "rightHand": "Right Hand",
       "resetTimer": "Reset Timer",
@@ -89,11 +90,12 @@
     "supportedLanguage": {
       "ariaLabel": "Supported language selector",
       "label": "Choose a supported language",
-      "hint": "Your browser is set to {{requestedLanguage}}. BrushBeats currently supports English and Spanish, so choose which supported language to use on this device.",
+      "hint": "Your browser is set to {{requestedLanguage}}. BrushBeats currently supports English, Spanish, and Turkish, so choose which supported language to use on this device.",
       "unknownLanguage": "an unsupported language",
       "options": {
         "english": "English",
-        "spanish": "Spanish"
+        "spanish": "Spanish",
+        "turkish": "Turkish"
       }
     },
     "languageSimulator": {
@@ -168,6 +170,7 @@
     "controlsTitle": "Brushing Controls",
     "controlsIntro": "Wait until any ads are played or skipped, then start brushing so the timing stays aligned.",
     "selectedSong": "Selected: {{title}} by {{artist}}",
+    "upNext": "Up next: {{title}} by {{artist}}",
     "handPreference": "Brushing hand",
     "duration": "Brush time",
     "durationHint": "Default is 2:00. Change it before starting if this brusher needs more or less time.",
@@ -197,6 +200,7 @@
       "legendAria": "Brush guide legend",
       "legendFront": "Front tooth face",
       "legendBack": "Back tooth face",
+      "activeToothName": "Current tooth: {{toothLabel}}",
       "transitionCallout": "Transition from {{fromLabel}} to {{toLabel}}. Resume brushing in {{seconds}}s.",
       "activeCalloutMobile": "{{label}}, tooth {{position}}/{{size}}. Move in {{seconds}}s.",
       "activeCalloutDesktop": "Brush {{label}} now, tooth {{position}} of {{size}}. Song target is ~{{bpm}} BPM. Move in {{seconds}}s.{{transitionNotice}}",
@@ -247,6 +251,19 @@
       "bottom": "Brush up away from the gums"
     },
     "technique": "{{quadrant}}: {{motion}} with your {{hand}} hand."
+    ,"toothChart": {
+      "label": "Tooth {{number}}: {{name}}",
+      "names": {
+        "thirdMolar": "3rd molar (wisdom tooth)",
+        "secondMolar": "2nd molar (12-year molar)",
+        "firstMolar": "1st molar (6-year molar)",
+        "secondBicuspid": "2nd bicuspid (2nd premolar)",
+        "firstBicuspid": "1st bicuspid (1st premolar)",
+        "cuspid": "cuspid (canine/eye tooth)",
+        "lateralIncisor": "lateral incisor",
+        "centralIncisor": "central incisor"
+      }
+    }
   },
   "privacy": {
     "analyticsMessage": "Help improve BrushBeats by sharing anonymous usage analytics. We never send typed text or personal data.",
@@ -260,7 +277,7 @@
     "storageModalBody1": "When you allow storage, BrushBeats saves data only in your browser using cookies and localStorage so your setup can be restored on a later visit.",
     "storageModalBody2": "That stored data can include your tooth counts, song discovery filters, keyword search, selected brushing hand, selected brush duration, and the last song you started brushing with.",
     "storageModalBody3": "The storage also keeps the last session summary so Repeat Last Session can restore the song, teeth setup, filters, hand preference, and brush duration more quickly.",
-    "storageModalBody4": "This information stays on your device, is not a login system, and you can clear it at any time by turning storage off in the footer controls."
+    "storageModalBody4": "This information stays on your device, is not collected by the service, is not a login system, and is only stored locally to provide a more seamless interface. You can clear it at any time by turning storage off in the footer controls."
   },
   "footer": {
     "poweredBy": "Song tempo data powered by",

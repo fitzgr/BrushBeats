@@ -16,6 +16,7 @@
       "regenerateArtistsSongs": "Buscar nuevos artistas y canciones",
       "refreshing": "Actualizando...",
       "repeatLastSession": "Repetir la ultima sesion",
+      "changeMusic": "Cambiar musica",
       "leftHand": "Mano izquierda",
       "rightHand": "Mano derecha",
       "resetTimer": "Reiniciar temporizador",
@@ -89,11 +90,12 @@
     "supportedLanguage": {
       "ariaLabel": "Selector de idioma disponible",
       "label": "Elige un idioma disponible",
-      "hint": "Tu navegador esta configurado en {{requestedLanguage}}. Por ahora, BrushBeats solo esta disponible en ingles y espanol, asi que elige cual quieres usar en este dispositivo.",
+      "hint": "Tu navegador esta configurado en {{requestedLanguage}}. Por ahora, BrushBeats esta disponible en ingles, espanol y turco, asi que elige cual quieres usar en este dispositivo.",
       "unknownLanguage": "un idioma no compatible",
       "options": {
         "english": "Ingles",
-        "spanish": "Espanol"
+        "spanish": "Espanol",
+        "turkish": "Turco"
       }
     },
     "languageSimulator": {
@@ -168,6 +170,7 @@
     "controlsTitle": "Controles de cepillado",
     "controlsIntro": "Espera a que cualquier anuncio termine o se pueda omitir y, despues, empieza a cepillarte para mantener el tiempo alineado.",
     "selectedSong": "Seleccionada: {{title}} de {{artist}}",
+    "upNext": "Siguiente: {{title}} de {{artist}}",
     "handPreference": "Mano para cepillarse",
     "duration": "Tiempo de cepillado",
     "durationHint": "El valor predeterminado es 2:00. Cambialo antes de empezar si esta persona necesita mas o menos tiempo.",
@@ -197,6 +200,7 @@
       "legendAria": "Leyenda de la guia de cepillado",
       "legendFront": "Cara frontal del diente",
       "legendBack": "Cara posterior del diente",
+      "activeToothName": "Diente actual: {{toothLabel}}",
       "transitionCallout": "Transicion de {{fromLabel}} a {{toLabel}}. Reanuda el cepillado en {{seconds}} s.",
       "activeCalloutMobile": "{{label}}, diente {{position}}/{{size}}. Cambia en {{seconds}} s.",
       "activeCalloutDesktop": "Cepilla {{label}} ahora, diente {{position}} de {{size}}. La meta de la cancion es ~{{bpm}} BPM. Cambia en {{seconds}} s.{{transitionNotice}}",
@@ -246,7 +250,20 @@
       "top": "Cepilla hacia abajo alejandote de la encia",
       "bottom": "Cepilla hacia arriba alejandote de la encia"
     },
-    "technique": "{{quadrant}}: {{motion}} con tu mano {{hand}}."
+    "technique": "{{quadrant}}: {{motion}} con tu mano {{hand}}.",
+    "toothChart": {
+      "label": "Diente {{number}}: {{name}}",
+      "names": {
+        "thirdMolar": "tercer molar (muela del juicio)",
+        "secondMolar": "segundo molar (muela de los 12 anos)",
+        "firstMolar": "primer molar (muela de los 6 anos)",
+        "secondBicuspid": "segundo bicuspide (segundo premolar)",
+        "firstBicuspid": "primer bicuspide (primer premolar)",
+        "cuspid": "canino",
+        "lateralIncisor": "incisivo lateral",
+        "centralIncisor": "incisivo central"
+      }
+    }
   },
   "privacy": {
     "analyticsMessage": "Ayuda a mejorar BrushBeats compartiendo analiticas anonimas de uso. Nunca enviamos texto escrito ni datos personales.",
@@ -260,7 +277,7 @@
     "storageModalBody1": "Cuando permites el almacenamiento, BrushBeats guarda datos solo en tu navegador usando cookies y localStorage para poder recuperar tu configuracion en una visita futura.",
     "storageModalBody2": "Esos datos pueden incluir la cantidad de dientes, los filtros de descubrimiento de canciones, la busqueda por palabra clave, la mano elegida para cepillarte, la duracion seleccionada y la ultima cancion con la que empezaste a cepillarte.",
     "storageModalBody3": "Tambien se guarda el resumen de la ultima sesion para que Repetir la ultima sesion pueda restaurar mas rapido la cancion, la configuracion dental, los filtros, la mano preferida y la duracion del cepillado.",
-    "storageModalBody4": "Esta informacion se queda en tu dispositivo, no es un sistema de inicio de sesion y puedes borrarla en cualquier momento desactivando el almacenamiento desde los controles del pie de pagina."
+    "storageModalBody4": "Esta informacion se queda en tu dispositivo, el servicio no la recopila, no es un sistema de inicio de sesion y solo se guarda localmente para ofrecer una experiencia mas fluida. Puedes borrarla en cualquier momento desactivando el almacenamiento desde los controles del pie de pagina."
   },
   "footer": {
     "poweredBy": "Datos de tempo de canciones proporcionados por",

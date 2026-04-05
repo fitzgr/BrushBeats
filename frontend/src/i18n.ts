@@ -5,7 +5,7 @@ import type { Resource } from "i18next";
 import { initReactI18next } from "react-i18next";
 import { trackLanguageFallback } from "./lib/analytics";
 
-export const SUPPORTED_LANGUAGES = ["en", "es"] as const;
+export const SUPPORTED_LANGUAGES = ["en", "es", "tr"] as const;
 export const FALLBACK_LANGUAGE = "en";
 export const SUPPORTED_LANGUAGE_OVERRIDE_KEY = "brushbeats_supported_language_override";
 

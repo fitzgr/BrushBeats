@@ -4,12 +4,22 @@ const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:4000";
 const REQUEST_TIMEOUT_MS = 35000;
 
 async function request(path) {
+  return requestWithOptions(path);
+}
+
+async function requestWithOptions(path, options = {}) {
   const controller = new AbortController();
   const timeoutId = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   let response;
 
   try {
-    response = await fetch(`${API_BASE}${path}`, { signal: controller.signal });
+    response = await fetch(`${API_BASE}${path}`, {
+      ...options,
+      signal: controller.signal,
+      headers: {
+        ...(options.headers || {})
+      }
+    });
   } catch (error) {
     if (error.name === "AbortError") {
       throw new Error(i18n.t("errors.backendTimeout"));
@@ -55,4 +65,23 @@ export function getSongs({ bpm, tolerance, danceability, acousticness, totalTeet
 export function getYoutubeVideo({ title, artist }) {
   const params = new URLSearchParams({ title, artist });
   return request(`/api/youtube?${params.toString()}`);
+}
+
+export function getAdminLocale(language, password) {
+  return requestWithOptions(`/api/admin/locales/${encodeURIComponent(language)}`, {
+    headers: {
+      "x-admin-password": password
+    }
+  });
+}
+
+export function saveAdminLocale(language, translation, password) {
+  return requestWithOptions(`/api/admin/locales/${encodeURIComponent(language)}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "x-admin-password": password
+    },
+    body: JSON.stringify({ translation })
+  });
 }

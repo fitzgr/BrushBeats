@@ -1,0 +1,323 @@
+{
+  "common": {
+    "buttons": {
+      "allowAnalytics": "Analitiğe İzin Ver",
+      "decline": "Reddet",
+      "allowStorage": "Depolamaya İzin Ver",
+      "optOut": "Kapat",
+      "dismiss": "Kapat",
+      "close": "Kapat",
+      "turnOn": "Aç",
+      "turnOff": "Kapat",
+      "storageNotice": "Depolama Bildirimi",
+      "continueToMusic": "2. Müziğe Geç",
+      "queue": "Sıraya Al",
+      "regenerateSongs": "Şarkıları Yenile",
+      "regenerateArtistsSongs": "Sanatçıları ve Şarkıları Yenile",
+      "refreshing": "Yenileniyor...",
+      "repeatLastSession": "Son Oturumu Tekrarla",
+      "changeMusic": "Müziği Değiştir",
+      "leftHand": "Sol El",
+      "rightHand": "Sağ El",
+      "resetTimer": "Zamanlayıcıyı Sıfırla",
+      "privacyPolicy": "Gizlilik Politikası"
+    },
+    "states": {
+      "on": "Açık",
+      "off": "Kapalı"
+    },
+    "hands": {
+      "left": "sol",
+      "right": "sağ"
+    },
+    "layouts": {
+      "mobile": "Mobil Düzen",
+      "desktop": "Masaüstü Düzeni"
+    }
+  },
+  "app": {
+    "eyebrow": "BrushBeats",
+    "title": {
+      "mobile": "Her Yerde Fırçala. Ritmi Koru.",
+      "desktop": "İki dakikalık fırçalama. Doğru tempo. Daha iyi his."
+    },
+    "subtitle": {
+      "withBpm": "{{label}}: hedef {{bpm}} BPM, her diş yüzeyi için {{secondsPerTooth}} sn, {{transitionSeconds}} sn geçiş, {{ageText}}.",
+      "withoutBpm": "{{description}} için fırçalama ritmini müzikle eşleştiriyor."
+    },
+    "status": {
+      "label": "Durum: {{state}}",
+      "idle": "Boşta",
+      "running": "Fırçalama devam ediyor",
+      "complete": "Oturum tamamlandı"
+    },
+    "backendStatus": {
+      "waking": "Arka ucu uyandırıyoruz. İlk istek 30 saniyeden uzun sürmemeli, lütfen biraz bekleyin.",
+      "connecting": "Arka uca hâlâ bağlanıyor. Beklenenden uzun sürüyor ama kısa sürede tamamlanmalı."
+    },
+    "workflow": {
+      "ariaLabel": "BrushBeats iş akışı sekmeleri",
+      "teeth": "1. Dişler",
+      "music": "2. Müzik",
+      "brush": "3. Fırçala"
+    },
+    "routine": {
+      "ariaLabel": "Ağız bakımı yol haritası",
+      "title": "Tam diş bakımı",
+      "available": "Şimdi kullanılabilir",
+      "comingSoon": "Yakında",
+      "brushing": {
+        "title": "Fırçalama",
+        "description": "Tempoya uyarlanmış fırçalama, müzik ve el konumu rehberi."
+      },
+      "flossing": {
+        "title": "Diş İpi",
+        "description": "Günlük diş ipi rehberi ve zamanlama daha sonra eklenecek."
+      },
+      "waterPicking": {
+        "title": "Ağız Duşu",
+        "description": "Ağız duşu rutinleri ve basınç rehberi planlanıyor."
+      }
+    },
+    "languageFallbackNotice": "Bu dil henüz mevcut değil. İngilizce gösteriliyor.",
+    "lastSession": {
+      "summary": "Son oturum: {{artist}} tarafından {{title}}, üstte {{top}} diş, altta {{bottom}} diş, fırçalama süresi {{duration}}."
+    },
+    "success": "Harika iş, {{duration}} temizlik tamamlandı. Daha güçlü dişler ve daha sağlıklı diş etleri için bu alışkanlığı her gün sürdür."
+  },
+  "settings": {
+    "language": "Dil",
+    "supportedLanguage": {
+      "ariaLabel": "Desteklenen dil seçici",
+      "label": "Desteklenen bir dil seçin",
+      "hint": "Tarayıcınız {{requestedLanguage}} olarak ayarlı. BrushBeats şu anda İngilizce, İspanyolca ve Türkçeyi destekliyor; bu cihazda kullanmak istediğiniz dili seçin.",
+      "unknownLanguage": "desteklenmeyen bir dil",
+      "options": {
+        "english": "İngilizce",
+        "spanish": "İspanyolca",
+        "turkish": "Türkçe"
+      }
+    },
+    "languageSimulator": {
+      "ariaLabel": "Tarayıcı dil simülasyonu",
+      "label": "Tarayıcı dil simülasyonu",
+      "hint": "Geri dönüş davranışını test etmek için tarayıcı dilini geçersiz kılar. ?lng= sorgu parametresi yine önceliklidir.",
+      "options": {
+        "system": "Sistem varsayılanı",
+        "english": "İngilizce (en-US)",
+        "french": "Fransızca (fr)",
+        "german": "Almanca (de)",
+        "spanish": "İspanyolca (es)",
+        "japanese": "Japonca (ja)"
+      }
+    },
+    "topTeeth": "Üst Diş Sayısı",
+    "bottomTeeth": "Alt Diş Sayısı",
+    "teethCount": "Diş sayısı",
+    "topBottomIntroMobile": "Üst ve alt diş sayısını ayarlayın. BrushBeats, diş sayısından kimin fırçaladığını tahmin eder.",
+    "topBottomIntroDesktop": "Üstte ve altta kaç diş olduğunu girin. BrushBeats, diş sayısından kimin fırçaladığını tahmin eder ve zamanı otomatik ayarlar.",
+    "detectedStage": "Algılanan aşama",
+    "searchBpm": "BPM Ara",
+    "searchBpmDetails": "Her diş yüzeyi için {{secondsPerTooth}} sn, her biri {{transitionSeconds}} sn olan {{transitions}} geçiş",
+    "searchBpmFallback": "Zamanlama, aynı {{minutes}} dakikalık oturum içinde fırçalama ve geçiş aralıklarını kapsar",
+    "toothRangeHint": "Her sıra için, hiç çıkmamış dişlerden tam 16 dişli bir kemere kadar",
+    "totalTeethSelected": "Seçilen Toplam Diş",
+    "totalTeethValue": "{{count}} / 32",
+    "formNote": "Bu kaydırıcılar fırçalama hızını değil, gerçek dişleri temsil eder. Daha genç ağızlar, taraf ve yüzey değişimleri arasında otomatik olarak daha uzun geçiş aralıkları alır.",
+    "headlineCalculated": "{{totalTeeth}} diş, {{minutes}} dakika içine {{toothTime}} sn fırçalama ve {{transitionTime}} sn geçiş sığdırır.",
+    "headlineEmpty": "BPM hesaplamak için diş sayılarını ayarlayın.",
+    "nextStepTitle": "Sonraki: 2. Müzik",
+    "nextStepDescription": "Bu algılanan aşamayı ve hedef tempoyu, fırçalayana doğal gelen şarkıları sıraya almak için kullanın.",
+    "approximateAge": {
+      "range": "Yaklaşık yaş: {{min}}-{{max}} {{unit}}",
+      "plus": "Yaklaşık yaş: {{min}}+ {{unit}}"
+    },
+    "resultsTitle": "Tempo Laboratuvarı",
+    "resultsTitleMobile": "Hızlı Tempo"
+  },
+  "music": {
+    "resultsTitle": "Şarkı Keşfi",
+    "resultsTitleMobile": "Şarkı Seçimleri",
+    "introDesktop": "Hedef BPM'inize yakın parçaları GetSongBPM ve isteğe bağlı anahtar kelime filtreleriyle bulun.",
+    "introMobile": "Hedef BPM'inize yakın şarkılar bulun.",
+    "noteDesktop": "Aynı BPM aralığında yeni bir grup çekmek ve farklı sanatçılar keşfetmek için yenileyi kullanın.",
+    "noteMobile": "Yeni şarkılar için yenileye dokunun.",
+    "randomFiltersNote": "Dans edilebilirlik ve akustiklik, sayfa her yüklendiğinde rastgele değerlerle başlar.",
+    "detectedStageNote": "Algılanan aşama: {{label}}. Müzik seçimleri de bu aşamaya ait tipik diş sayısına göre değişir.",
+    "tolerance": "BPM Toleransı: +/- {{value}}",
+    "danceability": "Dans Edilebilirlik: {{value}}%",
+    "acousticness": "Akustiklik: {{value}}%",
+    "searchBy": "Başlık veya Sanatçı ile Ara",
+    "searchPlaceholder": "ör. dua lipa",
+    "loading": "Şarkılar yükleniyor...",
+    "empty": "Bu BPM aralığında henüz şarkı bulunamadı.",
+    "exhausted": "Bu havuzdaki tüm şarkıları gördünüz. Yeni bir havuz için anahtar kelimeyi veya toleransı değiştirin ya da tekrar yenileyin.",
+    "songBpm": "{{bpm}} BPM"
+  },
+  "player": {
+    "titleDesktop": "Gömülü Oynatıcı",
+    "titleMobile": "Şimdi Çalıyor",
+    "introDesktop": "Bir şarkı seçin ve YouTube iframe ile uygulama içinde çalın.",
+    "introMobile": "Seçtiğiniz parçayı burada çalın.",
+    "matchingYoutube": "Şarkı YouTube'da eşleştiriliyor...",
+    "selectSong": "Oynatmaya başlamak için bir şarkı seçin.",
+    "noEmbed": "{{title}} için gömülebilir bir video bulunamadı.",
+    "runningStatus": "Fırçalama zamanlayıcısı bağımsız çalışır. Video oynatımı YouTube kontrollerinde kalır.",
+    "loadingVideo": "Yeni video yükleniyor...",
+    "frameAria": "{{artist}} tarafından {{title}}"
+  },
+  "brushing": {
+    "controlsTitle": "Fırçalama Kontrolleri",
+    "controlsIntro": "Reklamlar bittikten veya geçildikten sonra fırçalamaya başlayın ki zamanlama uyumlu kalsın.",
+    "selectedSong": "Seçilen: {{artist}} tarafından {{title}}",
+    "upNext": "Sıradaki: {{artist}} tarafından {{title}}",
+    "handPreference": "Fırçalama eli",
+    "duration": "Fırçalama süresi",
+    "durationHint": "Varsayılan 2:00'dır. Bu fırçalayan daha fazla veya daha az süreye ihtiyaç duyuyorsa başlamadan önce değiştirin.",
+    "start": "Fırçalamayı Başlat ({{duration}})",
+    "running": "Fırçalanıyor... {{duration}}",
+    "again": "Tekrar Fırçala ({{duration}})",
+    "stop": "Zamanlayıcıyı Sıfırla",
+    "timerNote": "Zamanlayıcı ve rehber YouTube kontrollerinden bağımsız çalışır, ancak tempo seçilen süreye göre yeniden hesaplanır.",
+    "readyTitle": "Fırçalamaya hazır",
+    "readyDetail": "{{hand}} elinizle fırçalayın ve oynatım hazır olduğunda rehberi takip edin.",
+    "errors": {
+      "needsTeeth": "Fırçalama oturumu başlatmadan önce en az bir diş girin.",
+      "needsPlayback": "Önce oynatımı başlatın, sonra yalnızca fırçalama zamanlayıcısı ve rehberi için Fırçalamayı Başlat'a basın."
+    },
+    "guide": {
+      "title": "Fırçalama Haritası",
+      "introMobile": "İşaretçiyi diş diş takip edin. Geçiş aralıkları aynı {{minutes}} dakikalık oturuma dahildir.",
+      "introDesktop": "Her diş yüzeyini eşit fırçalayın. Kılları diş etine doğru açılandırın ve rehber her bölgede yeniden konumlanırken diş etinden uzağa süpürün; bunu {{minutes}} dakikalık oturumu uzatmadan yapın.",
+      "handOrientation": "El Yönelimi",
+      "leftView": "Sol el görünümü",
+      "rightView": "Sağ el görünümü",
+      "transitionOrientation": "{{toLabel}} yönüne geçiliyor. Sonraki fırçalamadan önce elinizi yeniden konumlandırın.",
+      "activeOrientation": "Animasyonlu fırça {{label}} alanını takip eder ve o bölge için diş etinden uzak süpürme hareketini gösterir.",
+      "idleOrientation": "Vurgulanan bölgeye {{hand}} elinizi hizalayın, sonra oturumu başlatın.",
+      "mouthMapAria": "Dinamik diş fırçalama haritası",
+      "sessionLabel": "Oturum",
+      "legendAria": "Fırçalama rehberi açıklaması",
+      "legendFront": "Ön diş yüzeyi",
+      "legendBack": "Arka diş yüzeyi",
+      "activeToothName": "Güncel diş: {{toothLabel}}",
+      "transitionCallout": "{{fromLabel}} konumundan {{toLabel}} konumuna geçiş. {{seconds}} sn sonra devam edin.",
+      "activeCalloutMobile": "{{label}}, {{position}}/{{size}}. diş. {{seconds}} sn sonra ilerleyin.",
+      "activeCalloutDesktop": "Şimdi {{label}} bölgesini fırçalayın, {{size}} içinde {{position}}. diş. Şarkı hedefi yaklaşık {{bpm}} BPM. {{seconds}} sn sonra ilerleyin.{{transitionNotice}}",
+      "transitionNotice": " {{seconds}} sn sonra geçiş.",
+      "inactiveCallout": "Canlı diş rehberini başlatmak için Fırçalamayı Başlat'a basın.",
+      "completeCallout": "Tüm dişler fırçalandı. İyi tutarlılık."
+    },
+    "cue": {
+      "completeTitle": "Fırçalama tamamlandı",
+      "completeDetail": "Tüm bölümler tamamlandı. Yeni bir tur için hazır olduğunuzda yeniden başlatın.",
+      "readyTitle": "Fırçalamaya hazır",
+      "readyDetail": "{{hand}} elinizi kullanın, reklamlar bitsin veya geçilsin, sonra zamanlayıcıyı başlatın.",
+      "halfwayTitle": "Yarı geçişi",
+      "halfwayDetail": "{{fromJaw}} dişlerinden {{toJaw}} dişlerine geçin. {{hand}} elinizi şimdi yeniden konumlandırın.",
+      "sideSwitchTitle": "Ağzın tarafını değiştir",
+      "sideSwitchDetail": "Ağzın {{fromSide}} tarafından {{toSide}} tarafına geçin. Fırça {{hand}} elinizde kalsın ve erişimi ayarlayın.",
+      "transitionTitle": "Geçiş aralığı",
+      "transitionDetail": "{{fromLabel}} konumundan {{toLabel}} konumuna geçiş. {{seconds}} sn sonra devam edin.",
+      "activeTitle": "{{label}} bölgesini fırçala",
+      "activeDetail": "{{size}} içinde {{position}}. diş. Fırça {{hand}} elinizde kalsın ve {{seconds}} sn sonra ilerleyin."
+    },
+    "quadrants": {
+      "topLeft": "Üst Sol",
+      "topRight": "Üst Sağ",
+      "bottomLeft": "Alt Sol",
+      "bottomRight": "Alt Sağ"
+    },
+    "segments": {
+      "frontTopLeft": "Ön Üst Sol",
+      "frontTopRight": "Ön Üst Sağ",
+      "backTopRight": "Arka Üst Sağ",
+      "backTopLeft": "Arka Üst Sol",
+      "frontBottomLeft": "Ön Alt Sol",
+      "frontBottomRight": "Ön Alt Sağ",
+      "backBottomRight": "Arka Alt Sağ",
+      "backBottomLeft": "Arka Alt Sol"
+    },
+    "jaw": {
+      "top": "üst",
+      "bottom": "alt"
+    },
+    "side": {
+      "left": "sol",
+      "right": "sağ"
+    },
+    "motions": {
+      "top": "Diş etinden uzağa doğru aşağı fırçala",
+      "bottom": "Diş etinden uzağa doğru yukarı fırçala"
+    },
+    "technique": "{{quadrant}}: {{motion}} hareketini {{hand}} elinizle yapın.",
+    "toothChart": {
+      "label": "Diş {{number}}: {{name}}",
+      "names": {
+        "thirdMolar": "3. azı dişi (20 yaş dişi)",
+        "secondMolar": "2. azı dişi (12 yaş azısı)",
+        "firstMolar": "1. azı dişi (6 yaş azısı)",
+        "secondBicuspid": "2. küçük azı (2. premolar)",
+        "firstBicuspid": "1. küçük azı (1. premolar)",
+        "cuspid": "köpek dişi (kanin)",
+        "lateralIncisor": "yan kesici",
+        "centralIncisor": "orta kesici"
+      }
+    }
+  },
+  "privacy": {
+    "analyticsMessage": "Anonim kullanım analitiklerini paylaşarak BrushBeats'i geliştirmemize yardım edin. Yazılan metinleri veya kişisel verileri asla göndermeyiz.",
+    "storageMessage": "BrushBeats, aynı fırçalama düzenini bir sonraki ziyaretinizde hızlıca tekrarlayabilmeniz için son oturumunuzu tarayıcı depolamasında (cookies/localStorage) saklayabilir.",
+    "modalTitle": "Gizlilik Politikası",
+    "modalBody1": "BrushBeats, yalnızca izin verdiğinizde Google Analytics 4 kullanır. BPM hesaplamaları, şarkı seçimleri, fırçalama başlangıçları, sıfırlamalar, tamamlanmalar ve otomatik sıraya alma geçişleri gibi anonim kullanım olaylarını toplarız.",
+    "modalBody2": "Depolamaya izin verdiğinizde son fırçalama oturumunuzu tarayıcı depolamasında (cookies/localStorage) saklayabiliriz. Bu, bir sonraki ziyaretinizde aynı şarkıyı, diş sayılarını, filtreleri, fırçalama elini ve süreyi hızlıca geri yüklemenizi sağlar.",
+    "modalBody3": "Yazılan form metinlerini, e-posta adreslerini, isimleri, şifreleri veya ödeme bilgilerini göndermeyiz. Reklamla ilgili depolama, sizin izin verdiğiniz temel analitik için zorunlu olmadıkça kapalıdır.",
+    "modalBody4": "Analitik tercihiniz bu cihazda saklanır ve alt bilgideki Analitik kontrollerinden istediğiniz zaman değiştirilebilir.",
+    "storageModalTitle": "Depolama Bildirimi",
+    "storageModalBody1": "Depolamaya izin verdiğinizde BrushBeats, kurulumunuzun sonraki bir ziyarette geri yüklenebilmesi için verileri sadece tarayıcınızda cookies ve localStorage ile saklar.",
+    "storageModalBody2": "Bu veriler diş sayılarınızı, şarkı keşif filtrelerinizi, anahtar kelime aramanızı, seçilen fırçalama elinizi, seçilen fırçalama süresini ve fırçalamaya başladığınız son şarkıyı içerebilir.",
+    "storageModalBody3": "Ayrıca son oturum özeti de saklanır; böylece Son Oturumu Tekrarla, şarkıyı, diş düzenini, filtreleri, el tercihini ve fırçalama süresini daha hızlı geri getirebilir.",
+    "storageModalBody4": "Bu bilgiler cihazınızda kalır, hizmet tarafından toplanmaz, bir oturum açma sistemi değildir ve sadece daha akıcı bir deneyim sağlamak için yerel olarak saklanır. Alt bilgide depolamayı kapatarak istediğiniz zaman temizleyebilirsiniz."
+  },
+  "footer": {
+    "poweredBy": "Şarkı tempo verileri şu kaynak tarafından sağlanır",
+    "analytics": "Analitik: {{state}}",
+    "sessionStorage": "Oturum Depolaması: {{state}}"
+  },
+  "errors": {
+    "backendTimeout": "Arka uç hâlâ uyanıyor. Lütfen birkaç saniye bekleyip tekrar deneyin.",
+    "backendUnavailable": "Müzik beynimi uyandırıyorum. Hizmet soğuk başlatıyorsa birkaç saniye bekleyip tekrar deneyin.",
+    "languageFallbackNotice": "Bu dil henüz kullanılamıyor. İngilizce gösteriliyor."
+  },
+  "age": {
+    "units": {
+      "months": "ay",
+      "years": "yıl"
+    },
+    "stages": {
+      "unknown": {
+        "label": "Bilinmeyen Aşama",
+        "description": "Diş yaş tahmini yok"
+      },
+      "infant": "Bebek Dişleri",
+      "toddler": "Küçük Çocuk Dişleri",
+      "primary": "Süt Dişleri",
+      "mixed": "Karışık Dişlenme",
+      "adultSmile": "Yetişkin Gülümsemesi",
+      "fullAdultSmile": "Tam Yetişkin Gülümsemesi"
+    },
+    "descriptions": {
+      "monthRange": "Yaklaşık {{min}}-{{max}} aylık",
+      "yearRange": "Yaklaşık {{min}}-{{max}} yaşında",
+      "yearsPlus": "{{min}}+ yaş",
+      "unknownRange": "yaş aralığı bilinmiyor"
+    },
+    "phases": {
+      "infant": "bebek",
+      "toddler": "küçük çocuk",
+      "primary": "süt",
+      "mixed": "karışık",
+      "adult": "yetişkin"
+    }
+  }
+}

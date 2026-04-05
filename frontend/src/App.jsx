@@ -4,6 +4,7 @@ import BPMCalculator from "./components/BPMCalculator";
 import SongList from "./components/SongList";
 import Player from "./components/Player";
 import BrushingGuide from "./components/BrushingGuide";
+import TranslationWorkshop from "./components/TranslationWorkshop";
 import { getLanguageFallbackInfo, setPreferredSupportedLanguage } from "./i18n.ts";
 import { getBpm, getSongs, getYoutubeVideo } from "./api/client";
 import {
@@ -109,6 +110,13 @@ function buildLocalizedBrusherProfile(t, totalTeeth, ageEstimate) {
 
 function App() {
   const { t, i18n } = useTranslation();
+  const [appView, setAppView] = useState(() => {
+    if (typeof window === "undefined") {
+      return "brush";
+    }
+
+    return new URLSearchParams(window.location.search).get("mode") === "workshop" ? "workshop" : "brush";
+  });
   const [values, setValues] = useState(DEFAULT_VALUES);
   const [bpmData, setBpmData] = useState(null);
   const [songs, setSongs] = useState([]);
@@ -137,9 +145,14 @@ function App() {
   const [brushingHand, setBrushingHand] = useState("right");
   const [brushDurationSeconds, setBrushDurationSeconds] = useState(DEFAULT_BRUSH_DURATION_SECONDS);
   const [brushControlCue, setBrushControlCue] = useState(null);
+  const [queuedSongPreview, setQueuedSongPreview] = useState(null);
   const seenSongsByQueryRef = useRef(new Map());
+  const playedSongsRef = useRef(new Set());
+  const queuedSongRef = useRef(null);
   const lastPlaybackTickRef = useRef(null);
   const preferencesHydratedRef = useRef(false);
+  const repeatSessionBootstrapRef = useRef(false);
+  const restoredSessionRef = useRef(null);
   const analyticsAvailable = useMemo(() => analyticsEnabled(), []);
   const device = useDeviceContext();
   const totalTeeth = values.top + values.bottom;
@@ -151,10 +164,40 @@ function App() {
   const supportedLanguageOptions = useMemo(
     () => [
       { value: "en", label: t("settings.supportedLanguage.options.english") },
-      { value: "es", label: t("settings.supportedLanguage.options.spanish") }
+      { value: "es", label: t("settings.supportedLanguage.options.spanish") },
+      { value: "tr", label: t("settings.supportedLanguage.options.turkish") }
     ],
     [t]
   );
+  const workshopInitialLanguage = useMemo(() => {
+    if (i18n.resolvedLanguage && i18n.resolvedLanguage !== "en") {
+      return i18n.resolvedLanguage;
+    }
+
+    return supportedLanguageOptions.find((option) => option.value !== "en")?.value || "es";
+  }, [i18n.resolvedLanguage, supportedLanguageOptions]);
+
+  useEffect(() => {
+    if (device.isMobile && appView === "workshop") {
+      setAppView("brush");
+    }
+  }, [appView, device.isMobile]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const url = new URL(window.location.href);
+
+    if (!device.isMobile && appView === "workshop") {
+      url.searchParams.set("mode", "workshop");
+    } else {
+      url.searchParams.delete("mode");
+    }
+
+    window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+  }, [appView, device.isMobile]);
 
   useEffect(() => {
     setLanguageFallbackState(getLanguageFallbackInfo());
@@ -201,6 +244,8 @@ function App() {
         applySavedSession(savedSession);
       }
 
+      restoredSessionRef.current = savedSession;
+      setBpmData(savedSession?.bpmSnapshot || null);
       setLastSession(savedSession);
       preferencesHydratedRef.current = true;
       return;
@@ -212,7 +257,10 @@ function App() {
     }
 
     preferencesHydratedRef.current = false;
+    repeatSessionBootstrapRef.current = false;
+    restoredSessionRef.current = null;
     setLastSession(null);
+    setBpmData(null);
   }, [storageConsent]);
 
   useEffect(() => {
@@ -229,6 +277,26 @@ function App() {
       savedAt: Date.now()
     });
   }, [brushDurationSeconds, brushingHand, keyword, songFilters, storageConsent, values]);
+
+  useEffect(() => {
+    if (storageConsent !== "granted" || repeatSessionBootstrapRef.current || !lastSession?.song) {
+      return;
+    }
+
+    repeatSessionBootstrapRef.current = true;
+    applySavedSession(lastSession);
+    setWorkflowStep("brush");
+    setSelectedSong(lastSession.song);
+    setError("");
+    setBpmData(lastSession.bpmSnapshot || null);
+
+    if (lastSession.youtube?.embedUrl) {
+      setPlayerData(lastSession.youtube);
+      return;
+    }
+
+    void handleSelectSongWithOptions(lastSession.song, { autoplay: false });
+  }, [lastSession, storageConsent]);
 
   function handleAllowStorage() {
     const nextStatus = setStorageConsent(true);
@@ -267,7 +335,15 @@ function App() {
 
     applySavedSession(lastSession);
     setWorkflowStep("brush");
-    await handleSelectSongWithOptions(lastSession.song, { autoplay: false });
+    setSelectedSong(lastSession.song);
+    setBpmData(lastSession.bpmSnapshot || null);
+
+    if (lastSession.youtube?.embedUrl) {
+      setPlayerData(lastSession.youtube);
+    } else {
+      await handleSelectSongWithOptions(lastSession.song, { autoplay: false });
+    }
+
     trackEvent("last_session_repeated", {
       title: lastSession.song.title,
       artist: lastSession.song.artist,
@@ -291,6 +367,45 @@ function App() {
     return `${(song?.title || "").trim().toLowerCase()}::${(song?.artist || "").trim().toLowerCase()}`;
   }
 
+  function markSongAsPlayed(song) {
+    const songKey = toSongKey(song);
+    if (!songKey || songKey === "::") {
+      return;
+    }
+
+    playedSongsRef.current.add(songKey);
+  }
+
+  function pickRandomQueuedSong(currentSong, songPool = songs) {
+    const currentSongKey = toSongKey(currentSong);
+    const unplayedCandidates = songPool.filter((song) => {
+      const songKey = toSongKey(song);
+      return songKey !== currentSongKey && !playedSongsRef.current.has(songKey);
+    });
+
+    const fallbackCandidates = songPool.filter((song) => toSongKey(song) !== currentSongKey);
+    const candidates = unplayedCandidates.length > 0 ? unplayedCandidates : fallbackCandidates;
+
+    if (!candidates.length) {
+      return null;
+    }
+
+    return candidates[Math.floor(Math.random() * candidates.length)];
+  }
+
+  function queueNextGeneratedSong(currentSong, songPool = songs) {
+    const nextSong = pickRandomQueuedSong(currentSong, songPool);
+    queuedSongRef.current = nextSong;
+    setQueuedSongPreview(nextSong);
+    return nextSong;
+  }
+
+  useEffect(() => {
+    playedSongsRef.current = new Set();
+    queuedSongRef.current = null;
+    setQueuedSongPreview(null);
+  }, [bpmData?.searchBpm, keyword, songFilters.acousticness, songFilters.danceability, songFilters.tolerance, songRefreshSeed, totalTeeth]);
+
   useEffect(() => {
     if (!loading.bpm && !loading.songs && !loading.player) {
       setBackendStatus("");
@@ -313,6 +428,30 @@ function App() {
 
   useEffect(() => {
     let cancelled = false;
+
+    const restoredSession = restoredSessionRef.current;
+    if (restoredSession) {
+      const restoredMatches =
+        restoredSession.values?.top === values.top &&
+        restoredSession.values?.bottom === values.bottom &&
+        restoredSession.brushDurationSeconds === brushDurationSeconds;
+
+      if (!restoredMatches) {
+        return () => {
+          cancelled = true;
+        };
+      }
+
+      if (restoredSession.bpmSnapshot) {
+        setBpmData(restoredSession.bpmSnapshot);
+        restoredSessionRef.current = null;
+        return () => {
+          cancelled = true;
+        };
+      }
+
+      restoredSessionRef.current = null;
+    }
 
     async function loadBpm() {
       try {
@@ -357,7 +496,7 @@ function App() {
   }, [bpmData?.totalBrushingSeconds, brushDurationSeconds, timer.running]);
 
   useEffect(() => {
-    if (!bpmData?.searchBpm) {
+    if (!bpmData?.searchBpm || (workflowStep !== "music" && brushingPhase !== "running")) {
       return;
     }
 
@@ -409,7 +548,7 @@ function App() {
       cancelled = true;
       window.clearTimeout(timeout);
     };
-  }, [bpmData?.searchBpm, songFilters, totalTeeth, keyword, songRefreshSeed]);
+  }, [bpmData?.searchBpm, brushingPhase, keyword, songFilters, songRefreshSeed, totalTeeth, workflowStep]);
 
   function updateDraftSongFilter(key, value) {
     setDraftSongFilters((prev) => ({ ...prev, [key]: value }));
@@ -482,6 +621,8 @@ function App() {
   async function handleSelectSong(song) {
     trackEvent("song_selected", { title: song.title, artist: song.artist });
     setWorkflowStep("brush");
+    queuedSongRef.current = null;
+    setQueuedSongPreview(null);
     return handleSelectSongWithOptions(song, { autoplay: false });
   }
 
@@ -527,6 +668,12 @@ function App() {
     lastPlaybackTickRef.current = playbackSeconds;
     setTimer({ running: true, remaining: totalSeconds });
     setBrushingPhase("running");
+    markSongAsPlayed(selectedSong);
+
+    const queuedSong = queueNextGeneratedSong(selectedSong);
+    if (queuedSong) {
+      trackEvent("song_auto_queued", { title: queuedSong.title, artist: queuedSong.artist, trigger: "start_brushing" });
+    }
 
     if (storageConsent === "granted" && selectedSong?.title && selectedSong?.artist) {
       const sessionToSave = {
@@ -535,6 +682,13 @@ function App() {
           artist: selectedSong.artist,
           bpm: selectedSong.bpm
         },
+        youtube: playerData?.embedUrl
+          ? {
+              embedUrl: playerData.embedUrl,
+              videoId: playerData.videoId
+            }
+          : undefined,
+        bpmSnapshot: bpmData,
         values,
         filters: songFilters,
         keyword,
@@ -565,8 +719,14 @@ function App() {
     lastPlaybackTickRef.current = playbackSeconds;
     setTimer({ running: false, remaining: totalSeconds });
     setBrushingPhase("idle");
+    queuedSongRef.current = null;
+    setQueuedSongPreview(null);
     trackEvent("brushing_reset", { song_title: selectedSong?.title, song_artist: selectedSong?.artist, duration_seconds: totalSeconds });
     setError("");
+  }
+
+  function goToMusicStep() {
+    setWorkflowStep("music");
   }
 
   function handleBrushDurationChange(nextDuration) {
@@ -587,14 +747,18 @@ function App() {
       return;
     }
 
-    const pool = songs.filter((song) => song.title !== selectedSong?.title || song.artist !== selectedSong?.artist);
-    const candidates = pool.length > 0 ? pool : songs;
-    const nextSong = candidates[Math.floor(Math.random() * candidates.length)];
+    const nextSong = queuedSongRef.current || pickRandomQueuedSong(selectedSong);
 
     if (nextSong) {
-      trackEvent("song_auto_queued", { title: nextSong.title, artist: nextSong.artist });
+      markSongAsPlayed(nextSong);
+      queueNextGeneratedSong(nextSong);
+      trackEvent("song_auto_queued", { title: nextSong.title, artist: nextSong.artist, trigger: "song_ended" });
       await handleSelectSongWithOptions(nextSong, { autoplay: true });
+      return;
     }
+
+    queuedSongRef.current = null;
+    setQueuedSongPreview(null);
   }
 
   const subtitle = useMemo(() => {
@@ -642,15 +806,36 @@ function App() {
   const showLastSessionBanner = workflowStep === "music";
 
   return (
-    <main className={`app-shell ${device.isMobile ? "mobile-shell" : "desktop-shell"}`}>
+    <main className={`app-shell ${device.isMobile ? "mobile-shell" : "desktop-shell"}${appView === "workshop" && !device.isMobile ? " workshop-shell" : ""}`}>
+      {!(appView === "workshop" && !device.isMobile) && (
       <header className="app-header">
         <p className="eyebrow">{t("app.eyebrow")}</p>
         <h1>{device.isMobile ? t("app.title.mobile") : t("app.title.desktop")}</h1>
         <p>{subtitle}</p>
         <p className={`state-chip ${brushingPhase}`}>{t("app.status.label", { state: phaseLabel })}</p>
         <p className={`mode-chip ${device.mode}`}>{device.isMobile ? t("common.layouts.mobile") : t("common.layouts.desktop")}</p>
+        {!device.isMobile && (
+          <div className="header-utility-row">
+            <button
+              type="button"
+              className="header-utility-btn"
+              onClick={() => setAppView((current) => (current === "workshop" ? "brush" : "workshop"))}
+            >
+              {appView === "workshop" ? "Return to brushing flow" : "Open translation workshop"}
+            </button>
+          </div>
+        )}
       </header>
+      )}
 
+      {appView === "workshop" && !device.isMobile ? (
+        <TranslationWorkshop
+          initialTargetLanguage={workshopInitialLanguage}
+          languageOptions={supportedLanguageOptions}
+          onExit={() => setAppView("brush")}
+        />
+      ) : (
+        <>
       <nav className={`workflow-tabs ${device.isMobile ? "mobile-workflow-tabs" : "desktop-workflow-tabs"}`} aria-label={t("app.workflow.ariaLabel")}>
           <button
             type="button"
@@ -825,7 +1010,15 @@ function App() {
             <h2>{t("brushing.controlsTitle")}</h2>
             <p>{t("brushing.controlsIntro")}</p>
             {selectedSong && (
-              <p className="brush-selected-song">{t("brushing.selectedSong", { title: selectedSong.title, artist: selectedSong.artist })}</p>
+              <>
+                <p className="brush-selected-song">{t("brushing.selectedSong", { title: selectedSong.title, artist: selectedSong.artist })}</p>
+                {queuedSongPreview && brushingPhase === "running" && (
+                  <p className="brush-next-song">{t("brushing.upNext", { title: queuedSongPreview.title, artist: queuedSongPreview.artist })}</p>
+                )}
+                <button type="button" className="action-btn secondary" onClick={goToMusicStep}>
+                  {t("common.buttons.changeMusic")}
+                </button>
+              </>
             )}
             <div className="brush-hand-picker" role="group" aria-label={t("brushing.handPreference")}>
               <span className="profile-summary-label">{t("brushing.handPreference")}</span>
@@ -905,6 +1098,8 @@ function App() {
         <section className="success-banner" aria-live="polite">
           {t("app.success", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) })}
         </section>
+      )}
+        </>
       )}
 
       <footer className="credit-strip" id="credit">

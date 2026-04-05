@@ -92,6 +92,41 @@ function clampInteger(value, min, max, fallback) {
   return Math.min(max, Math.max(min, Math.round(numericValue)));
 }
 
+function normalizeAgeEstimate(ageEstimate) {
+  if (!ageEstimate || typeof ageEstimate !== "object") {
+    return null;
+  }
+
+  const phase = typeof ageEstimate.phase === "string" ? ageEstimate.phase : undefined;
+  const unit = ageEstimate.unit === "months" ? "months" : ageEstimate.unit === "years" ? "years" : undefined;
+
+  return {
+    phase,
+    unit,
+    minAge: Number.isFinite(Number(ageEstimate.minAge)) ? Number(ageEstimate.minAge) : undefined,
+    maxAge: Number.isFinite(Number(ageEstimate.maxAge)) ? Number(ageEstimate.maxAge) : undefined
+  };
+}
+
+function normalizeBpmSnapshot(snapshot, values, brushDurationSeconds) {
+  if (!snapshot || typeof snapshot !== "object") {
+    return null;
+  }
+
+  return {
+    searchBpm: Number.isFinite(Number(snapshot.searchBpm)) ? Number(snapshot.searchBpm) : undefined,
+    musicBpm: Number.isFinite(Number(snapshot.musicBpm)) ? Number(snapshot.musicBpm) : undefined,
+    secondsPerTooth: Number.isFinite(Number(snapshot.secondsPerTooth)) ? Number(snapshot.secondsPerTooth) : undefined,
+    transitionBufferSeconds: Number.isFinite(Number(snapshot.transitionBufferSeconds)) ? Number(snapshot.transitionBufferSeconds) : undefined,
+    totalTransitions: Number.isFinite(Number(snapshot.totalTransitions)) ? Number(snapshot.totalTransitions) : undefined,
+    totalToothTimeSeconds: Number.isFinite(Number(snapshot.totalToothTimeSeconds)) ? Number(snapshot.totalToothTimeSeconds) : undefined,
+    totalTransitionSeconds: Number.isFinite(Number(snapshot.totalTransitionSeconds)) ? Number(snapshot.totalTransitionSeconds) : undefined,
+    totalBrushingSeconds: Number.isFinite(Number(snapshot.totalBrushingSeconds)) ? Number(snapshot.totalBrushingSeconds) : brushDurationSeconds,
+    totalTeeth: Number.isFinite(Number(snapshot.totalTeeth)) ? Number(snapshot.totalTeeth) : Number(values.top) + Number(values.bottom),
+    ageEstimate: normalizeAgeEstimate(snapshot.ageEstimate)
+  };
+}
+
 function normalizeLastSession(parsed) {
   if (!parsed || typeof parsed !== "object") {
     return null;
@@ -104,6 +139,12 @@ function normalizeLastSession(parsed) {
 
   const values = parsed.values || {};
   const filters = parsed.filters || {};
+  const youtube = parsed.youtube || {};
+  const normalizedValues = {
+    top: clampInteger(values.top, 0, 16, 16),
+    bottom: clampInteger(values.bottom, 0, 16, 16)
+  };
+  const normalizedBrushDurationSeconds = clampInteger(parsed.brushDurationSeconds, 90, 180, 120);
 
   return {
     song: {
@@ -111,10 +152,12 @@ function normalizeLastSession(parsed) {
       artist: song.artist,
       bpm: Number.isFinite(Number(song.bpm)) ? Number(song.bpm) : undefined
     },
-    values: {
-      top: clampInteger(values.top, 0, 16, 16),
-      bottom: clampInteger(values.bottom, 0, 16, 16)
+    youtube: {
+      videoId: typeof youtube.videoId === "string" ? youtube.videoId : undefined,
+      embedUrl: typeof youtube.embedUrl === "string" ? youtube.embedUrl : undefined
     },
+    bpmSnapshot: normalizeBpmSnapshot(parsed.bpmSnapshot, normalizedValues, normalizedBrushDurationSeconds),
+    values: normalizedValues,
     filters: {
       tolerance: clampInteger(filters.tolerance, 1, 20, 4),
       danceability: clampInteger(filters.danceability, 0, 100, 50),
@@ -122,7 +165,7 @@ function normalizeLastSession(parsed) {
     },
     keyword: typeof parsed.keyword === "string" ? parsed.keyword : "",
     brushingHand: parsed.brushingHand === "left" ? "left" : "right",
-    brushDurationSeconds: clampInteger(parsed.brushDurationSeconds, 90, 180, 120),
+    brushDurationSeconds: normalizedBrushDurationSeconds,
     savedAt: Number.isFinite(Number(parsed.savedAt)) ? Number(parsed.savedAt) : undefined
   };
 }

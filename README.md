@@ -49,6 +49,7 @@ Copy .env.example to .env at the project root and fill values:
 - GETSONGBPM_BASE_URL (default: https://api.getsongbpm.com)
 - YOUTUBE_API_KEY
 - PORT (default: 4000)
+- ADMIN_WORKSHOP_PASSWORD
 
 ## Run Locally
 
@@ -66,10 +67,21 @@ npm install --prefix frontend
 npm run dev
 ```
 
+This starts the backend API on `http://localhost:4000` and the Vite frontend on `http://localhost:5173`.
+Because the frontend base path is `/BrushBeats/`, local development should be opened at `http://localhost:5173/BrushBeats/` while the dev server is running.
+
 3. Open:
 
-- Frontend: http://localhost:5173
+- Frontend: http://localhost:5173/BrushBeats/
 - Backend health: http://localhost:4000/api/health
+
+If `http://localhost:5173/BrushBeats/` does not load, the dev server is not running yet or the combined `npm run dev` process failed to start.
+
+## Translation Workshop
+
+- Open the desktop app and switch into the translation workshop from the header.
+- Set `ADMIN_WORKSHOP_PASSWORD` in your local `.env`. The example file uses `brush4you!`.
+- Saving locale edits back into the project requires the backend to be running, because write-back is handled by the local Express API.
 
 ## Notes
 
