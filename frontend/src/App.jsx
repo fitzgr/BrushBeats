@@ -179,6 +179,7 @@ function App() {
 
     return supportedLanguageOptions.find((option) => option.value !== "en")?.value || "es";
   }, [i18n.resolvedLanguage, supportedLanguageOptions]);
+  const hideRestoredReadyCue = device.isMobile && autoRestoredBrushView && (!brushControlCue || brushControlCue.kind === "ready");
 
   useEffect(() => {
     if (device.isMobile && appView === "workshop") {
@@ -1139,12 +1140,14 @@ function App() {
           >
             {device.isMobile && (
               <>
-              <div className={`brush-cue-card${brushControlCue?.kind ? ` ${brushControlCue.kind}` : ""}`} aria-live="polite">
-                <strong>{brushControlCue?.title || t("brushing.readyTitle")}</strong>
-                {(brushControlCue?.detail || !brushControlCue)
-                  ? <span>{brushControlCue?.detail || t("brushing.readyDetail", { hand: t(`common.hands.${brushingHand}`) })}</span>
-                  : null}
-              </div>
+              {!hideRestoredReadyCue && (
+                <div className={`brush-cue-card${brushControlCue?.kind ? ` ${brushControlCue.kind}` : ""}`} aria-live="polite">
+                  <strong>{brushControlCue?.title || t("brushing.readyTitle")}</strong>
+                  {(brushControlCue?.detail || !brushControlCue)
+                    ? <span>{brushControlCue?.detail || t("brushing.readyDetail", { hand: t(`common.hands.${brushingHand}`) })}</span>
+                    : null}
+                </div>
+              )}
               <div className="session-actions compact-mobile-actions">
                 <button
                   type="button"
