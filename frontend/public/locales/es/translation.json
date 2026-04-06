@@ -179,6 +179,7 @@
     "start": "Empezar cepillado ({{duration}})",
     "running": "Cepillando... {{duration}}",
     "pause": "Pausar",
+    "resume": "Reanudar",
     "restart": "Reiniciar",
     "again": "Cepillar otra vez ({{duration}})",
     "stop": "Reiniciar temporizador",
@@ -215,12 +216,15 @@
       "activeCalloutMobile": "{{label}}, diente {{position}}/{{size}}. Cambia en {{seconds}} s.",
       "activeCalloutDesktop": "Cepilla {{label}} ahora, diente {{position}} de {{size}}. La meta de la cancion es ~{{bpm}} BPM. Cambia en {{seconds}} s.{{transitionNotice}}",
       "transitionNotice": " Transicion en {{seconds}} s.",
+      "pausedCallout": "En pausa. Presiona Reanudar para continuar desde el mismo punto.",
       "inactiveCallout": "Presiona Empezar cepillado para iniciar la guia dental en vivo.",
       "completeCallout": "Todos los dientes fueron cepillados. Buena constancia."
     },
     "cue": {
       "completeTitle": "Cepillado completo",
       "completeDetail": "Todas las secciones estan terminadas. Reinicia cuando quieras otra pasada.",
+      "pausedTitle": "En pausa",
+      "pausedDetail": "Presiona Reanudar para continuar desde el mismo diente y posicion del video.",
       "readyTitle": "Listo para cepillarte",
       "readyDetail": "Usa tu mano {{hand}}, espera a que cualquier anuncio termine o se omita, y luego inicia el temporizador.",
       "halfwayTitle": "Cambio de mitad",

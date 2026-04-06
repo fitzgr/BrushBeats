@@ -179,6 +179,7 @@
     "start": "Fırçalamayı Başlat ({{duration}})",
     "running": "Fırçalanıyor... {{duration}}",
     "pause": "Duraklat",
+    "resume": "Devam Et",
     "restart": "Yeniden başlat",
     "again": "Tekrar Fırçala ({{duration}})",
     "stop": "Zamanlayıcıyı Sıfırla",
@@ -215,12 +216,15 @@
       "activeCalloutMobile": "{{label}}, {{position}}/{{size}}. diş. {{seconds}} sn sonra ilerleyin.",
       "activeCalloutDesktop": "Şimdi {{label}} bölgesini fırçalayın, {{size}} içinde {{position}}. diş. Şarkı hedefi yaklaşık {{bpm}} BPM. {{seconds}} sn sonra ilerleyin.{{transitionNotice}}",
       "transitionNotice": " {{seconds}} sn sonra geçiş.",
+      "pausedCallout": "Duraklatıldı. Aynı noktadan devam etmek için Devam Et'e basın.",
       "inactiveCallout": "Canlı diş rehberini başlatmak için Fırçalamayı Başlat'a basın.",
       "completeCallout": "Tüm dişler fırçalandı. İyi tutarlılık."
     },
     "cue": {
       "completeTitle": "Fırçalama tamamlandı",
       "completeDetail": "Tüm bölümler tamamlandı. Yeni bir tur için hazır olduğunuzda yeniden başlatın.",
+      "pausedTitle": "Duraklatıldı",
+      "pausedDetail": "Aynı dişten ve video konumundan devam etmek için Devam Et'e basın.",
       "readyTitle": "Fırçalamaya hazır",
       "readyDetail": "{{hand}} elinizi kullanın, reklamlar bitsin veya geçilsin, sonra zamanlayıcıyı başlatın.",
       "halfwayTitle": "Yarı geçişi",

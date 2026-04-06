@@ -488,7 +488,7 @@ function App() {
   }, [values, brushDurationSeconds]);
 
   useEffect(() => {
-    if (timer.running) {
+    if (timer.running || brushingPhase === "paused" || brushingPhase === "complete") {
       return;
     }
 
@@ -500,7 +500,7 @@ function App() {
 
       return { running: false, remaining: nextSeconds };
     });
-  }, [bpmData?.totalBrushingSeconds, brushDurationSeconds, timer.running]);
+  }, [bpmData?.totalBrushingSeconds, brushDurationSeconds, brushingPhase, timer.running]);
 
   useEffect(() => {
     if (!bpmData?.searchBpm || (workflowStep !== "music" && brushingPhase !== "running")) {
@@ -665,7 +665,7 @@ function App() {
     }
   }
 
-  function startBrushing(options = { restartVideo: false }) {
+  function startBrushing(options = {}) {
     if ((bpmData?.totalTeeth || 0) <= 0) {
       setError(t("brushing.errors.needsTeeth"));
       return;
@@ -677,12 +677,28 @@ function App() {
     }
 
     const totalSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
-    setBrushingMusicElapsedSeconds(0);
-  setPlaybackSeconds(options.restartVideo ? 0 : playbackSeconds);
-  lastPlaybackTickRef.current = options.restartVideo ? 0 : playbackSeconds;
-    setTimer({ running: true, remaining: totalSeconds });
+    const shouldResume = Boolean(options.resumeFromPause);
+    const shouldRestartVideo = Boolean(options.restartVideo);
+
+    if (shouldResume) {
+      lastPlaybackTickRef.current = playbackSeconds;
+      setTimer((previous) => ({ ...previous, running: true }));
+    } else {
+      setBrushingMusicElapsedSeconds(0);
+      setPlaybackSeconds(shouldRestartVideo ? 0 : playbackSeconds);
+      lastPlaybackTickRef.current = shouldRestartVideo ? 0 : playbackSeconds;
+      setTimer({ running: true, remaining: totalSeconds });
+    }
+
     setBrushingPhase("running");
-  issuePlayerCommand(options.restartVideo ? "restart" : "play");
+    issuePlayerCommand(shouldRestartVideo ? "restart" : "play");
+
+    if (shouldResume) {
+      trackEvent("brushing_resumed", { song_title: selectedSong?.title, song_artist: selectedSong?.artist, remaining_seconds: timer.remaining });
+      setError("");
+      return;
+    }
+
     markSongAsPlayed(selectedSong);
 
     const queuedSong = queueNextGeneratedSong(selectedSong);
@@ -751,6 +767,20 @@ function App() {
     setQueuedSongPreview(null);
     trackEvent("brushing_reset", { song_title: selectedSong?.title, song_artist: selectedSong?.artist, duration_seconds: totalSeconds });
     setError("");
+  }
+
+  function handlePrimaryBrushAction() {
+    if (brushingPhase === "running") {
+      pauseBrushing();
+      return;
+    }
+
+    if (brushingPhase === "paused") {
+      startBrushing({ resumeFromPause: true });
+      return;
+    }
+
+    startBrushing({ restartVideo: brushingPhase === "complete" });
   }
 
   function goToMusicStep() {
@@ -826,7 +856,7 @@ function App() {
     brushingPhase === "running"
       ? t("brushing.pause")
       : brushingPhase === "paused"
-        ? t("brushing.restart")
+        ? t("brushing.resume")
         : brushingPhase === "complete"
           ? t("brushing.again", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) })
           : t("brushing.start", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) });
@@ -1095,19 +1125,7 @@ function App() {
                   <button
                     type="button"
                     className="action-btn"
-                    onClick={() => {
-                      if (brushingPhase === "running") {
-                        pauseBrushing();
-                        return;
-                      }
-
-                      if (brushingPhase === "paused") {
-                        startBrushing({ restartVideo: true });
-                        return;
-                      }
-
-                      startBrushing({ restartVideo: brushingPhase === "complete" });
-                    }}
+                    onClick={handlePrimaryBrushAction}
                   >
                     {primaryBrushActionLabel}
                   </button>
@@ -1152,19 +1170,7 @@ function App() {
                 <button
                   type="button"
                   className="action-btn"
-                  onClick={() => {
-                    if (brushingPhase === "running") {
-                      pauseBrushing();
-                      return;
-                    }
-
-                    if (brushingPhase === "paused") {
-                      startBrushing({ restartVideo: true });
-                      return;
-                    }
-
-                    startBrushing({ restartVideo: brushingPhase === "complete" });
-                  }}
+                  onClick={handlePrimaryBrushAction}
                 >
                   {primaryBrushActionLabel}
                 </button>

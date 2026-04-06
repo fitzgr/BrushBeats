@@ -179,6 +179,7 @@
     "start": "Start Brushing ({{duration}})",
     "running": "Brushing... {{duration}}",
     "pause": "Pause",
+    "resume": "Resume",
     "restart": "Restart",
     "again": "Brush Again ({{duration}})",
     "stop": "Reset Timer",
@@ -215,12 +216,15 @@
       "activeCalloutMobile": "{{label}}, tooth {{position}}/{{size}}. Move in {{seconds}}s.",
       "activeCalloutDesktop": "Brush {{label}} now, tooth {{position}} of {{size}}. Song target is ~{{bpm}} BPM. Move in {{seconds}}s.{{transitionNotice}}",
       "transitionNotice": " Transition in {{seconds}}s.",
+      "pausedCallout": "Paused. Tap Resume to continue from the same spot.",
       "inactiveCallout": "Press Start Brushing to begin live tooth guidance.",
       "completeCallout": "All teeth brushed. Nice consistency."
     },
     "cue": {
       "completeTitle": "Brushing complete",
       "completeDetail": "All sections are done. Restart when you are ready for another pass.",
+      "pausedTitle": "Paused",
+      "pausedDetail": "Tap Resume to continue from the same tooth and video position.",
       "readyTitle": "Ready to brush",
       "readyDetail": "Use your {{hand}} hand, wait for any ads to finish or be skipped, then start the timer.",
       "halfwayTitle": "Halfway switch",
