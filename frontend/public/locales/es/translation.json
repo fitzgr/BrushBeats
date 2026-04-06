@@ -163,6 +163,7 @@
     "matchingYoutube": "Buscando la cancion en YouTube...",
     "selectSong": "Selecciona una cancion para comenzar la reproduccion.",
     "noEmbed": "No se pudo encontrar un video insertable para {{title}}.",
+    "restoredSession": "Recuperado de tu ultima sesion",
     "runningStatus": "Los controles de cepillado pueden pausar o reiniciar juntos el temporizador y el video.",
     "loadingVideo": "Cargando nuevo video...",
     "frameAria": "{{title}} de {{artist}}"

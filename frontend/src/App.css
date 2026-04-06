@@ -1483,11 +1483,6 @@
   order: 1;
 }
 
-.layout-grid.mobile-mode .mobile-brush-runtime-card {
-  grid-column: span 12;
-  order: 3;
-}
-
 .layout-grid.mobile-mode .calculator {
   grid-column: span 12;
   order: 2;
@@ -1500,16 +1495,11 @@
 
 .layout-grid.mobile-mode .guide {
   grid-column: span 12;
-  order: 4;
+  order: 3;
 }
 
 .brush-actions-card {
   grid-column: span 12;
-}
-
-.mobile-brush-runtime-card {
-  display: grid;
-  gap: 0.6rem;
 }
 
 .desktop-brush-layout .brush-actions-card {
@@ -2137,6 +2127,27 @@ select {
   border: 0;
   border-radius: 14px;
   background: #111;
+}
+
+.player-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.55rem;
+}
+
+.player-restored-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.8rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(36, 96, 156, 0.1);
+  border: 1px solid rgba(36, 96, 156, 0.18);
+  color: #1d4b78;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .player-status {
@@ -2909,6 +2920,19 @@ select {
   .player iframe,
   .player .player-frame {
     min-height: 230px;
+  }
+
+  .player.compact-mobile-frame iframe,
+  .player.compact-mobile-frame .player-frame {
+    min-height: 156px;
+  }
+
+  .player.compact-mobile-frame {
+    padding-bottom: 1rem;
+  }
+
+  .player-restored-chip {
+    font-size: 0.72rem;
   }
 
   .mouth-map {

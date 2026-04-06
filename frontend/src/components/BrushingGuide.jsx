@@ -267,7 +267,7 @@ function getToothLabel(t, tooth) {
   });
 }
 
-function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, playbackSeconds, brushingMusicElapsedSeconds, brushingHand, onCueChange }) {
+function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, playbackSeconds, brushingMusicElapsedSeconds, brushingHand, hideIntro = false, onCueChange }) {
   const { t } = useTranslation();
   const totalSeconds = Number(bpmData?.totalBrushingSeconds || 120);
   const topTeeth = Number(values?.top || 16);
@@ -561,11 +561,13 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
   return (
     <section className="card guide">
       <h2>{t("brushing.guide.title")}</h2>
-      <p>
-        {isMobile
-          ? t("brushing.guide.introMobile", { minutes: formatMinutes(totalSeconds) })
-          : t("brushing.guide.introDesktop", { minutes: formatMinutes(totalSeconds) })}
-      </p>
+      {!hideIntro && (
+        <p>
+          {isMobile
+            ? t("brushing.guide.introMobile", { minutes: formatMinutes(totalSeconds) })
+            : t("brushing.guide.introDesktop", { minutes: formatMinutes(totalSeconds) })}
+        </p>
+      )}
 
 
       <div className="mouth-map" role="img" aria-label={t("brushing.guide.mouthMapAria")}>

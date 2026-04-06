@@ -18,7 +18,20 @@ function parseVideoId(playerData) {
   }
 }
 
-function Player({ selectedSong, playerData, loading, brushingPhase, isMobile, autoplayToken, playbackCommand, onPlaybackTick, onSongEnded }) {
+function Player({
+  selectedSong,
+  playerData,
+  loading,
+  brushingPhase,
+  isMobile,
+  compactMobileFrame = false,
+  showRestoredSessionBadge = false,
+  autoplayToken,
+  playbackCommand,
+  onPlaybackTick,
+  onSongEnded,
+  children
+}) {
   const { t } = useTranslation();
   const hostRef = useRef(null);
   const playerRef = useRef(null);
@@ -165,8 +178,11 @@ function Player({ selectedSong, playerData, loading, brushingPhase, isMobile, au
     }
   }, [playbackCommand, stopTickTimer]);
 
+  const playerClassName = `card player${compactMobileFrame ? " compact-mobile-frame" : ""}`;
+  const frameMinHeight = isMobile ? (compactMobileFrame ? "156px" : "180px") : "200px";
+
   return (
-    <section className="card player">
+    <section className={playerClassName}>
       <h2>{isMobile ? t("player.titleMobile") : t("player.titleDesktop")}</h2>
       <p>{isMobile ? t("player.introMobile") : t("player.introDesktop")}</p>
 
@@ -184,6 +200,11 @@ function Player({ selectedSong, playerData, loading, brushingPhase, isMobile, au
 
       {selectedSong && (
         <>
+          {showRestoredSessionBadge && (
+            <div className="player-meta-row">
+              <span className="player-restored-chip">{t("player.restoredSession")}</span>
+            </div>
+          )}
           <h3>
             {selectedSong.title} - {selectedSong.artist}
           </h3>
@@ -192,7 +213,7 @@ function Player({ selectedSong, playerData, loading, brushingPhase, isMobile, au
               ref={hostRef}
               className="player-frame"
               aria-label={t("player.frameAria", { title: selectedSong.title, artist: selectedSong.artist })}
-              style={{ opacity: playerData?.embedUrl ? 1 : 0.4, minHeight: isMobile ? "180px" : "200px" }}
+              style={{ opacity: playerData?.embedUrl ? 1 : 0.4, minHeight: frameMinHeight }}
             />
             {loading && (
               <div
@@ -215,6 +236,7 @@ function Player({ selectedSong, playerData, loading, brushingPhase, isMobile, au
               </div>
             )}
           </div>
+          {children}
         </>
       )}
     </section>

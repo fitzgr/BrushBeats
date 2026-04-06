@@ -163,6 +163,7 @@
     "matchingYoutube": "Şarkı YouTube'da eşleştiriliyor...",
     "selectSong": "Oynatmaya başlamak için bir şarkı seçin.",
     "noEmbed": "{{title}} için gömülebilir bir video bulunamadı.",
+    "restoredSession": "Son oturumunuzdan geri yüklendi",
     "runningStatus": "Fırçalama kontrolleri zamanlayıcıyı ve videoyu birlikte duraklatabilir veya yeniden başlatabilir.",
     "loadingVideo": "Yeni video yükleniyor...",
     "frameAria": "{{artist}} tarafından {{title}}"

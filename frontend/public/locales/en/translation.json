@@ -163,6 +163,7 @@
     "matchingYoutube": "Matching song on YouTube...",
     "selectSong": "Select a song to start playback.",
     "noEmbed": "Could not find an embeddable video for {{title}}.",
+    "restoredSession": "Restored from your last session",
     "runningStatus": "Brushing controls can pause or restart the timer and video together.",
     "loadingVideo": "Loading new video...",
     "frameAria": "{{title}} by {{artist}}"

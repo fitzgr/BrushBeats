@@ -147,6 +147,7 @@ function App() {
   const [brushControlCue, setBrushControlCue] = useState(null);
   const [queuedSongPreview, setQueuedSongPreview] = useState(null);
   const [playerCommand, setPlayerCommand] = useState({ type: "idle", nonce: 0 });
+  const [autoRestoredBrushView, setAutoRestoredBrushView] = useState(false);
   const seenSongsByQueryRef = useRef(new Map());
   const playedSongsRef = useRef(new Set());
   const queuedSongRef = useRef(null);
@@ -263,6 +264,7 @@ function App() {
     restoredSessionRef.current = null;
     setLastSession(null);
     setBpmData(null);
+    setAutoRestoredBrushView(false);
   }, [storageConsent]);
 
   useEffect(() => {
@@ -288,6 +290,7 @@ function App() {
     repeatSessionBootstrapRef.current = true;
     applySavedSession(lastSession);
     setWorkflowStep("brush");
+    setAutoRestoredBrushView(true);
     setSelectedSong(lastSession.song);
     setError("");
     setBpmData(lastSession.bpmSnapshot || null);
@@ -335,6 +338,7 @@ function App() {
       return;
     }
 
+    setAutoRestoredBrushView(false);
     applySavedSession(lastSession);
     setWorkflowStep("brush");
     setSelectedSong(lastSession.song);
@@ -627,6 +631,7 @@ function App() {
 
   async function handleSelectSong(song) {
     trackEvent("song_selected", { title: song.title, artist: song.artist });
+    setAutoRestoredBrushView(false);
     setWorkflowStep("brush");
     queuedSongRef.current = null;
     setQueuedSongPreview(null);
@@ -748,6 +753,7 @@ function App() {
   }
 
   function goToMusicStep() {
+    setAutoRestoredBrushView(false);
     setWorkflowStep("music");
   }
 
@@ -1124,14 +1130,15 @@ function App() {
             loading={loading.player}
             brushingPhase={brushingPhase}
             isMobile={device.isMobile}
+            compactMobileFrame={device.isMobile && workflowStep === "brush"}
+            showRestoredSessionBadge={device.isMobile && autoRestoredBrushView}
             autoplayToken={autoplayToken}
             playbackCommand={playerCommand}
             onPlaybackTick={handlePlaybackTick}
             onSongEnded={handleSongEnded}
-          />
-
-          {device.isMobile && (
-            <section className="card mobile-brush-runtime-card">
+          >
+            {device.isMobile && (
+              <>
               <div className={`brush-cue-card${brushControlCue?.kind ? ` ${brushControlCue.kind}` : ""}`} aria-live="polite">
                 <strong>{brushControlCue?.title || t("brushing.readyTitle")}</strong>
                 {(brushControlCue?.detail || !brushControlCue)
@@ -1167,8 +1174,9 @@ function App() {
                   {t("app.success", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) })}
                 </section>
               )}
-            </section>
-          )}
+              </>
+            )}
+          </Player>
 
           <BrushingGuide
             bpmData={bpmData}
@@ -1180,6 +1188,7 @@ function App() {
             playbackSeconds={playbackSeconds}
             brushingMusicElapsedSeconds={brushingMusicElapsedSeconds}
             brushingHand={brushingHand}
+            hideIntro={device.isMobile && autoRestoredBrushView}
             onCueChange={setBrushControlCue}
           />
         </section>
