@@ -19,8 +19,9 @@
 }
 
 .app-shell.mobile-shell {
-  width: min(760px, 100% - 1rem);
-  margin-top: 1rem;
+  width: min(760px, 100% - 0.5rem);
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .app-shell.desktop-shell {
@@ -360,6 +361,10 @@
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(12, 1fr);
+}
+
+.layout-grid.mobile-mode {
+  gap: 0.75rem;
 }
 
 .translation-workshop {
@@ -1470,12 +1475,17 @@
 
 .layout-grid.mobile-mode .player {
   grid-column: span 12;
-  order: 1;
+  order: 2;
 }
 
 .layout-grid.mobile-mode .brush-actions-card {
   grid-column: span 12;
-  order: 2;
+  order: 1;
+}
+
+.layout-grid.mobile-mode .mobile-brush-runtime-card {
+  grid-column: span 12;
+  order: 3;
 }
 
 .layout-grid.mobile-mode .calculator {
@@ -1490,11 +1500,16 @@
 
 .layout-grid.mobile-mode .guide {
   grid-column: span 12;
-  order: 3;
+  order: 4;
 }
 
 .brush-actions-card {
   grid-column: span 12;
+}
+
+.mobile-brush-runtime-card {
+  display: grid;
+  gap: 0.6rem;
 }
 
 .desktop-brush-layout .brush-actions-card {
@@ -2881,7 +2896,14 @@ select {
   }
 
   .session-actions {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  .compact-mobile-actions .action-btn {
+    padding: 0.52rem 0.6rem;
+    min-height: 0;
+    font-size: 0.88rem;
   }
 
   .player iframe,

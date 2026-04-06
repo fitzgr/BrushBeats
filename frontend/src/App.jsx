@@ -1076,42 +1076,46 @@ function App() {
               </select>
               <span className="brush-duration-hint">{t("brushing.durationHint")}</span>
             </label>
-            <div className={`brush-cue-card${brushControlCue?.kind ? ` ${brushControlCue.kind}` : ""}`} aria-live="polite">
-              <strong>{brushControlCue?.title || t("brushing.readyTitle")}</strong>
-              {(brushControlCue?.detail || !brushControlCue)
-                ? <span>{brushControlCue?.detail || t("brushing.readyDetail", { hand: t(`common.hands.${brushingHand}`) })}</span>
-                : null}
-            </div>
-            <div className="session-actions">
-              <button
-                type="button"
-                className="action-btn"
-                onClick={() => {
-                  if (brushingPhase === "running") {
-                    pauseBrushing();
-                    return;
-                  }
+            {!device.isMobile && (
+              <>
+                <div className={`brush-cue-card${brushControlCue?.kind ? ` ${brushControlCue.kind}` : ""}`} aria-live="polite">
+                  <strong>{brushControlCue?.title || t("brushing.readyTitle")}</strong>
+                  {(brushControlCue?.detail || !brushControlCue)
+                    ? <span>{brushControlCue?.detail || t("brushing.readyDetail", { hand: t(`common.hands.${brushingHand}`) })}</span>
+                    : null}
+                </div>
+                <div className="session-actions">
+                  <button
+                    type="button"
+                    className="action-btn"
+                    onClick={() => {
+                      if (brushingPhase === "running") {
+                        pauseBrushing();
+                        return;
+                      }
 
-                  if (brushingPhase === "paused") {
-                    startBrushing({ restartVideo: true });
-                    return;
-                  }
+                      if (brushingPhase === "paused") {
+                        startBrushing({ restartVideo: true });
+                        return;
+                      }
 
-                  startBrushing({ restartVideo: brushingPhase === "complete" });
-                }}
-              >
-                {primaryBrushActionLabel}
-              </button>
-              <button type="button" className="action-btn secondary" onClick={restartBrushing}>
-                {t("brushing.stop")}
-              </button>
-            </div>
-            {brushingPhase === "complete" && (
-              <section className="success-banner brush-success-banner" aria-live="polite">
-                {t("app.success", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) })}
-              </section>
+                      startBrushing({ restartVideo: brushingPhase === "complete" });
+                    }}
+                  >
+                    {primaryBrushActionLabel}
+                  </button>
+                  <button type="button" className="action-btn secondary" onClick={restartBrushing}>
+                    {t("brushing.stop")}
+                  </button>
+                </div>
+                {brushingPhase === "complete" && (
+                  <section className="success-banner brush-success-banner" aria-live="polite">
+                    {t("app.success", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) })}
+                  </section>
+                )}
+                <p className="timer-note">{t("brushing.timerNote")}</p>
+              </>
             )}
-            <p className="timer-note">{t("brushing.timerNote")}</p>
           </section>
 
           <Player
@@ -1125,6 +1129,46 @@ function App() {
             onPlaybackTick={handlePlaybackTick}
             onSongEnded={handleSongEnded}
           />
+
+          {device.isMobile && (
+            <section className="card mobile-brush-runtime-card">
+              <div className={`brush-cue-card${brushControlCue?.kind ? ` ${brushControlCue.kind}` : ""}`} aria-live="polite">
+                <strong>{brushControlCue?.title || t("brushing.readyTitle")}</strong>
+                {(brushControlCue?.detail || !brushControlCue)
+                  ? <span>{brushControlCue?.detail || t("brushing.readyDetail", { hand: t(`common.hands.${brushingHand}`) })}</span>
+                  : null}
+              </div>
+              <div className="session-actions compact-mobile-actions">
+                <button
+                  type="button"
+                  className="action-btn"
+                  onClick={() => {
+                    if (brushingPhase === "running") {
+                      pauseBrushing();
+                      return;
+                    }
+
+                    if (brushingPhase === "paused") {
+                      startBrushing({ restartVideo: true });
+                      return;
+                    }
+
+                    startBrushing({ restartVideo: brushingPhase === "complete" });
+                  }}
+                >
+                  {primaryBrushActionLabel}
+                </button>
+                <button type="button" className="action-btn secondary" onClick={restartBrushing}>
+                  {t("brushing.stop")}
+                </button>
+              </div>
+              {brushingPhase === "complete" && (
+                <section className="success-banner brush-success-banner" aria-live="polite">
+                  {t("app.success", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) })}
+                </section>
+              )}
+            </section>
+          )}
 
           <BrushingGuide
             bpmData={bpmData}
