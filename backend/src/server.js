@@ -17,6 +17,15 @@ const port = Number(process.env.PORT || 4000);
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (_req, res) => {
+  res.json({
+    ok: true,
+    name: "BrushBeats API",
+    frontend: "http://localhost:5173/BrushBeats/",
+    health: "/api/health"
+  });
+});
+
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true, name: "BrushBeats API" });
 });

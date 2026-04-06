@@ -239,7 +239,15 @@ function getSegmentLabel(t, label) {
 }
 
 function formatMinutes(totalSeconds) {
-  return Math.round((Number(totalSeconds || 120) / 60) * 10) / 10;
+  const safeSeconds = Math.max(0, Math.round(Number(totalSeconds || 120)));
+  const minutes = Math.floor(safeSeconds / 60);
+  const seconds = safeSeconds % 60;
+
+  if (seconds === 0) {
+    return String(minutes);
+  }
+
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
 function selectVisibleToothChart(chart, count) {
@@ -259,7 +267,7 @@ function getToothLabel(t, tooth) {
   });
 }
 
-function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, brushingMusicElapsedSeconds, brushingHand, onCueChange }) {
+function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, playbackSeconds, brushingMusicElapsedSeconds, beatOffsetMs = 0, brushingHand, onCueChange }) {
   const { t } = useTranslation();
   const totalSeconds = Number(bpmData?.totalBrushingSeconds || 120);
   const topTeeth = Number(values?.top || 16);
@@ -272,7 +280,10 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
   const segments = buildSegments(topTeeth, bottomTeeth);
   const timeline = buildTimeline(segments, toothDurationSeconds, transitionBufferSeconds);
   const beatDurationMs = Math.max(220, 60000 / safeBpm);
-  const brushStrokeDurationMs = Math.max(420, beatDurationMs * 2);
+  const normalizedBeatAnchorMs = (((Math.max(0, Number(playbackSeconds) || 0) * 1000 + Number(beatOffsetMs || 0)) % beatDurationMs) + beatDurationMs) % beatDurationMs;
+  const beatPhaseOffsetMs = timer.running
+    ? -normalizedBeatAnchorMs
+    : 0;
   const elapsedSeconds = brushingPhase === "complete"
     ? totalSeconds
     : timer.running
@@ -298,6 +309,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
       : bottomToothChart[activeToothEntry.mapIndex]
     : null;
   const mapCenter = { x: 180, y: 214 };
+  const mapCenterRadius = 42;
 
   useEffect(() => {
     if (!onCueChange) {
@@ -407,6 +419,19 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
       ? topPoints[activeToothEntry.mapIndex]
       : bottomPoints[activeToothEntry.mapIndex]
     : null;
+  const activeBounceStartPoint = activeToothPoint
+    ? (() => {
+        const deltaX = activeToothPoint.x - mapCenter.x;
+        const deltaY = activeToothPoint.y - mapCenter.y;
+        const distance = Math.hypot(deltaX, deltaY) || 1;
+        const radius = Math.min(mapCenterRadius, Math.max(0, distance - 12));
+
+        return {
+          x: mapCenter.x + (deltaX / distance) * radius,
+          y: mapCenter.y + (deltaY / distance) * radius
+        };
+      })()
+    : null;
 
   function getToothState(jaw, mapIndex) {
     if (brushingPhase === "complete") {
@@ -448,13 +473,30 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
   }
 
   const activeQuadrantKey = activeJaw && activeSide ? `${activeJaw}-${activeSide}` : null;
-  const boardStateClass = activeEntry?.type === "transition" ? "transition" : timer.running ? "running" : brushingPhase === "complete" ? "complete" : "idle";
-  const boardQuadrantClass = activeQuadrantKey ? `focus-${activeQuadrantKey}` : "focus-top-left";
+  const guideStatusText = brushingPhase === "running"
+    ? activeEntry?.type === "transition"
+      ? t("brushing.guide.transitionCallout", {
+          fromLabel: getSegmentLabel(t, activeEntry.fromLabel),
+          toLabel: getSegmentLabel(t, activeEntry.toLabel),
+          seconds: nextMoveSeconds
+        })
+      : t("brushing.guide.activeCurrentCallout", {
+          label: getSegmentLabel(t, activeToothEntry?.label),
+          toothLabel: getToothLabel(t, activeToothMeta),
+          position: activeToothEntry?.segmentPosition,
+          size: activeToothEntry?.segmentSize,
+          seconds: nextMoveSeconds
+        })
+    : brushingPhase === "complete"
+        ? t("brushing.guide.completeCallout")
+        : "";
+  const inactiveGuideText = !timer.running && brushingPhase !== "complete"
+    ? t("brushing.guide.inactiveCallout")
+    : "";
 
   function renderTooth(point, jaw, meta, mapIndex) {
     const state = getToothState(jaw, mapIndex);
     const activeSurface = state.activeSurface;
-    const indicatorY = activeSurface === "front" ? 11 : -11;
     const toothId = `${jaw}-${mapIndex + 1}`;
     const toothShape = TOOTH_SHAPES[meta?.type || "molar"];
     const toothLabel = getToothLabel(t, meta);
@@ -513,135 +555,105 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
           : t("brushing.guide.introDesktop", { minutes: formatMinutes(totalSeconds) })}
       </p>
 
-      <div className="guide-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={Math.round(progress)}>
-        <span style={{ width: `${progress}%` }} />
-      </div>
-
-      {activeToothMeta && (
-        <p className="position-readout">{t("brushing.guide.activeToothName", { toothLabel: getToothLabel(t, activeToothMeta) })}</p>
-      )}
-
-      <div className="hand-orientation-panel" aria-live="polite">
-        <div className="hand-orientation-header visual-only-header">
-          <span className="profile-summary-label">{t("brushing.guide.handOrientation")}</span>
-        </div>
-
-        <div className={`hand-orientation-board ${brushingHand} ${boardStateClass} ${boardQuadrantClass}`}>
-          <span className="orientation-focus-halo" aria-hidden="true" />
-
-          <div className={`orientation-demo-arches ${activeJaw === "bottom" ? "bottom" : "top"}`} aria-hidden="true">
-            <div className={`orientation-demo-row ${activeJaw === "bottom" ? "bottom" : "top"}`}>
-              <span />
-              <span />
-              <span />
-              <span />
-            </div>
-          </div>
-
-          <div className={`orientation-brush-demo ${brushingHand} ${boardStateClass} ${boardQuadrantClass}`} style={{ "--brush-stroke-duration": `${brushStrokeDurationMs}ms` }} aria-hidden="true">
-            <div className="orientation-demo-brush">
-              <span className="orientation-demo-head" />
-              <span className="orientation-demo-handle" />
-            </div>
-          </div>
-        </div>
-      </div>
 
       <div className="mouth-map" role="img" aria-label={t("brushing.guide.mouthMapAria")}>
         <svg viewBox="0 0 360 420" preserveAspectRatio="xMidYMid meet">
           <ellipse cx="180" cy="210" rx="150" ry="170" className="mouth-outline" />
 
-          {activeToothPoint && (
-            <>
+          {activeToothPoint && activeBounceStartPoint && (
+            <g>
               <circle
-                cx={mapCenter.x}
-                cy={mapCenter.y}
+                cx={activeToothPoint.x}
+                cy={activeToothPoint.y}
                 r="4.4"
                 className={`active-brush-tail tail-3 ${activeToothEntry?.surface || "front"}`}
               >
                 <animate
                   attributeName="cx"
-                  values={`${mapCenter.x};${activeToothPoint.x};${mapCenter.x}`}
+                  values={`${activeToothPoint.x};${activeBounceStartPoint.x};${activeToothPoint.x}`}
                   dur={`${beatDurationMs}ms`}
-                  begin={`-${beatDurationMs * 0.2}ms`}
+                  begin={`${beatPhaseOffsetMs - beatDurationMs * 0.2}ms`}
                   repeatCount="indefinite"
                 />
                 <animate
                   attributeName="cy"
-                  values={`${mapCenter.y};${activeToothPoint.y};${mapCenter.y}`}
+                  values={`${activeToothPoint.y};${activeBounceStartPoint.y};${activeToothPoint.y}`}
                   dur={`${beatDurationMs}ms`}
-                  begin={`-${beatDurationMs * 0.2}ms`}
+                  begin={`${beatPhaseOffsetMs - beatDurationMs * 0.2}ms`}
                   repeatCount="indefinite"
                 />
               </circle>
               <circle
-                cx={mapCenter.x}
-                cy={mapCenter.y}
+                cx={activeToothPoint.x}
+                cy={activeToothPoint.y}
                 r="5"
                 className={`active-brush-tail tail-2 ${activeToothEntry?.surface || "front"}`}
               >
                 <animate
                   attributeName="cx"
-                  values={`${mapCenter.x};${activeToothPoint.x};${mapCenter.x}`}
+                  values={`${activeToothPoint.x};${activeBounceStartPoint.x};${activeToothPoint.x}`}
                   dur={`${beatDurationMs}ms`}
-                  begin={`-${beatDurationMs * 0.12}ms`}
+                  begin={`${beatPhaseOffsetMs - beatDurationMs * 0.12}ms`}
                   repeatCount="indefinite"
                 />
                 <animate
                   attributeName="cy"
-                  values={`${mapCenter.y};${activeToothPoint.y};${mapCenter.y}`}
+                  values={`${activeToothPoint.y};${activeBounceStartPoint.y};${activeToothPoint.y}`}
                   dur={`${beatDurationMs}ms`}
-                  begin={`-${beatDurationMs * 0.12}ms`}
+                  begin={`${beatPhaseOffsetMs - beatDurationMs * 0.12}ms`}
                   repeatCount="indefinite"
                 />
               </circle>
               <circle
-                cx={mapCenter.x}
-                cy={mapCenter.y}
+                cx={activeToothPoint.x}
+                cy={activeToothPoint.y}
                 r="5.5"
                 className={`active-brush-tail tail-1 ${activeToothEntry?.surface || "front"}`}
               >
                 <animate
                   attributeName="cx"
-                  values={`${mapCenter.x};${activeToothPoint.x};${mapCenter.x}`}
+                  values={`${activeToothPoint.x};${activeBounceStartPoint.x};${activeToothPoint.x}`}
                   dur={`${beatDurationMs}ms`}
-                  begin={`-${beatDurationMs * 0.06}ms`}
+                  begin={`${beatPhaseOffsetMs - beatDurationMs * 0.06}ms`}
                   repeatCount="indefinite"
                 />
                 <animate
                   attributeName="cy"
-                  values={`${mapCenter.y};${activeToothPoint.y};${mapCenter.y}`}
+                  values={`${activeToothPoint.y};${activeBounceStartPoint.y};${activeToothPoint.y}`}
                   dur={`${beatDurationMs}ms`}
-                  begin={`-${beatDurationMs * 0.06}ms`}
+                  begin={`${beatPhaseOffsetMs - beatDurationMs * 0.06}ms`}
                   repeatCount="indefinite"
                 />
               </circle>
               <circle
-                cx={mapCenter.x}
-                cy={mapCenter.y}
+                cx={activeToothPoint.x}
+                cy={activeToothPoint.y}
                 r="6"
                 className={`active-brush-ball ${activeToothEntry?.surface || "front"}`}
               >
                 <animate
                   attributeName="cx"
-                  values={`${mapCenter.x};${activeToothPoint.x};${mapCenter.x}`}
+                  values={`${activeToothPoint.x};${activeBounceStartPoint.x};${activeToothPoint.x}`}
                   dur={`${beatDurationMs}ms`}
+                  begin={`${beatPhaseOffsetMs}ms`}
                   repeatCount="indefinite"
                 />
                 <animate
                   attributeName="cy"
-                  values={`${mapCenter.y};${activeToothPoint.y};${mapCenter.y}`}
+                  values={`${activeToothPoint.y};${activeBounceStartPoint.y};${activeToothPoint.y}`}
                   dur={`${beatDurationMs}ms`}
+                  begin={`${beatPhaseOffsetMs}ms`}
                   repeatCount="indefinite"
                 />
                 <animate
                   attributeName="r"
                   values="5.2;6.4;5.2"
                   dur={`${beatDurationMs}ms`}
+                  begin={`${beatPhaseOffsetMs}ms`}
                   repeatCount="indefinite"
                 />
               </circle>
-            </>
+            </g>
           )}
 
           {topPoints.map((point, index) => renderTooth(point, "top", topToothChart[index], index))}
@@ -658,33 +670,9 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
         <span><em className="legend-dot back" />{t("brushing.guide.legendBack")}</span>
       </div>
 
-      {brushingPhase === "running" && (
-        <p className="guide-callout">
-          {activeEntry?.type === "transition"
-            ? t("brushing.guide.transitionCallout", {
-                fromLabel: getSegmentLabel(t, activeEntry.fromLabel),
-                toLabel: getSegmentLabel(t, activeEntry.toLabel),
-                seconds: nextMoveSeconds
-              })
-            : isMobile
-              ? t("brushing.guide.activeCalloutMobile", {
-                  label: getSegmentLabel(t, activeToothEntry?.label),
-                  position: activeToothEntry?.segmentPosition,
-                  size: activeToothEntry?.segmentSize,
-                  seconds: nextMoveSeconds
-                })
-              : t("brushing.guide.activeCalloutDesktop", {
-                  label: getSegmentLabel(t, activeToothEntry?.label),
-                  position: activeToothEntry?.segmentPosition,
-                  size: activeToothEntry?.segmentSize,
-                  bpm: Math.round(safeBpm),
-                  seconds: nextMoveSeconds,
-                  transitionNotice: nextSectionSeconds ? t("brushing.guide.transitionNotice", { seconds: nextSectionSeconds }) : ""
-                })}
-        </p>
-      )}
-      {!timer.running && brushingPhase !== "complete" && <p className="guide-callout">{t("brushing.guide.inactiveCallout")}</p>}
-      {brushingPhase === "complete" && <p className="guide-callout">{t("brushing.guide.completeCallout")}</p>}
+      {guideStatusText && <p className="guide-callout">{guideStatusText}</p>}
+      {inactiveGuideText && <p className="guide-callout">{inactiveGuideText}</p>}
+
     </section>
   );
 }

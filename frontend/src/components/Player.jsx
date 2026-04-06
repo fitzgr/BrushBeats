@@ -18,7 +18,7 @@ function parseVideoId(playerData) {
   }
 }
 
-function Player({ selectedSong, playerData, loading, brushingPhase, isMobile, autoplayToken, onPlaybackTick, onSongEnded }) {
+function Player({ selectedSong, selectedBpm, playerData, loading, brushingPhase, isMobile, autoplayToken, beatOffsetMs = 0, beatAdjustStepMs = 40, onAdjustBeatOffset, onResetBeatOffset, onPlaybackTick, onSongEnded }) {
   const { t } = useTranslation();
   const hostRef = useRef(null);
   const playerRef = useRef(null);
@@ -27,6 +27,8 @@ function Player({ selectedSong, playerData, loading, brushingPhase, isMobile, au
   const onSongEndedRef = useRef(onSongEnded);
   const [apiReady, setApiReady] = useState(Boolean(window.YT?.Player));
   const videoId = useMemo(() => parseVideoId(playerData), [playerData]);
+  const beatOffsetLabel = beatOffsetMs > 0 ? `+${beatOffsetMs}` : `${beatOffsetMs}`;
+  const beatSyncVisible = Boolean(selectedSong && playerData?.embedUrl);
 
   useEffect(() => {
     onPlaybackTickRef.current = onPlaybackTick;
@@ -148,6 +150,27 @@ function Player({ selectedSong, playerData, loading, brushingPhase, isMobile, au
 
       {brushingPhase === "running" && (
         <p className="player-status">{t("player.runningStatus")}</p>
+      )}
+
+      {beatSyncVisible && (
+        <div className="player-sync-panel">
+          <div className="player-sync-copy">
+            <strong>{t("player.syncLabel")}</strong>
+            <span>{t("player.syncHint", { stepMs: beatAdjustStepMs, bpm: Math.round(Number(selectedBpm) || 120) })}</span>
+          </div>
+          <div className="player-sync-actions">
+            <button type="button" className="action-btn secondary" onClick={() => onAdjustBeatOffset?.(-beatAdjustStepMs)}>
+              {t("player.syncEarlier")}
+            </button>
+            <button type="button" className="action-btn secondary" onClick={() => onAdjustBeatOffset?.(beatAdjustStepMs)}>
+              {t("player.syncLater")}
+            </button>
+            <button type="button" className="action-btn secondary" onClick={() => onResetBeatOffset?.()}>
+              {t("player.syncReset")}
+            </button>
+          </div>
+          <p className="player-sync-offset">{t("player.syncOffset", { offsetMs: beatOffsetLabel })}</p>
+        </div>
       )}
 
       {selectedSong && (

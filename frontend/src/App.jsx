@@ -20,8 +20,10 @@ import {
   getStorageConsentStatus,
   isStorageBannerDismissed,
   loadLastSession,
+  loadSongBeatOffset,
   loadStoredPreferences,
   saveLastSession,
+  saveSongBeatOffset,
   saveStoredPreferences,
   setStorageBannerDismissed,
   setStorageConsent
@@ -33,9 +35,22 @@ import "./App.css";
 const DEFAULT_VALUES = { top: 16, bottom: 16 };
 const DEFAULT_BRUSH_DURATION_SECONDS = 120;
 const BRUSH_DURATION_OPTIONS = [90, 120, 150, 180];
+const MAX_BEAT_OFFSET_MS = 2000;
 
 function clampValue(value, min, max) {
   return Math.min(max, Math.max(min, value));
+}
+
+function clampBeatOffsetMs(value) {
+  return clampValue(Math.round(Number(value) || 0), -MAX_BEAT_OFFSET_MS, MAX_BEAT_OFFSET_MS);
+}
+
+function getSongBeatOffsetKey(song) {
+  if (!song?.title || !song?.artist) {
+    return "";
+  }
+
+  return `${song.title}`.trim().toLowerCase() + "::" + `${song.artist}`.trim().toLowerCase();
 }
 
 function getMaturityScore(totalTeeth) {
@@ -146,6 +161,7 @@ function App() {
   const [brushDurationSeconds, setBrushDurationSeconds] = useState(DEFAULT_BRUSH_DURATION_SECONDS);
   const [brushControlCue, setBrushControlCue] = useState(null);
   const [queuedSongPreview, setQueuedSongPreview] = useState(null);
+  const [beatOffsetMs, setBeatOffsetMs] = useState(0);
   const seenSongsByQueryRef = useRef(new Map());
   const playedSongsRef = useRef(new Set());
   const queuedSongRef = useRef(null);
@@ -160,6 +176,12 @@ function App() {
   const detectedBrusherProfile = useMemo(
     () => buildLocalizedBrusherProfile(t, totalTeeth, ageEstimate),
     [ageEstimate, t, totalTeeth]
+  );
+  const selectedBrushBpm = Number(selectedSong?.bpm || bpmData?.searchBpm || 120);
+  const beatAdjustStepMs = Math.round(clampValue(60000 / Math.max(40, Math.min(240, selectedBrushBpm || 120)) / 8, 20, 120));
+  const selectedSongBeatOffsetKey = useMemo(
+    () => getSongBeatOffsetKey(selectedSong),
+    [selectedSong?.artist, selectedSong?.title]
   );
   const supportedLanguageOptions = useMemo(
     () => [
@@ -202,6 +224,20 @@ function App() {
   useEffect(() => {
     setLanguageFallbackState(getLanguageFallbackInfo());
   }, [i18n.language, i18n.resolvedLanguage]);
+
+  useEffect(() => {
+    if (!selectedSongBeatOffsetKey) {
+      setBeatOffsetMs(0);
+      return;
+    }
+
+    if (storageConsent !== "granted") {
+      setBeatOffsetMs(0);
+      return;
+    }
+
+    setBeatOffsetMs(loadSongBeatOffset(selectedSongBeatOffsetKey));
+  }, [selectedSongBeatOffsetKey, storageConsent]);
 
   function applySavedSession(session) {
     if (!session) {
@@ -742,23 +778,37 @@ function App() {
     setSongRefreshSeed((prev) => prev + 1);
   }
 
-  async function handleSongEnded() {
-    if (!songs.length || brushingPhase !== "running") {
+  function handleSongEnded() {
+    if (brushingPhase !== "running") {
       return;
     }
 
-    const nextSong = queuedSongRef.current || pickRandomQueuedSong(selectedSong);
+    trackEvent("song_playback_finished_during_brushing", {
+      song_title: selectedSong?.title,
+      song_artist: selectedSong?.artist,
+      queued_title: queuedSongRef.current?.title,
+      queued_artist: queuedSongRef.current?.artist
+    });
+  }
 
-    if (nextSong) {
-      markSongAsPlayed(nextSong);
-      queueNextGeneratedSong(nextSong);
-      trackEvent("song_auto_queued", { title: nextSong.title, artist: nextSong.artist, trigger: "song_ended" });
-      await handleSelectSongWithOptions(nextSong, { autoplay: true });
-      return;
+  function adjustBeatOffset(deltaMs) {
+    setBeatOffsetMs((previous) => {
+      const nextOffset = clampBeatOffsetMs(previous + deltaMs);
+
+      if (storageConsent === "granted" && selectedSongBeatOffsetKey) {
+        saveSongBeatOffset(selectedSongBeatOffsetKey, nextOffset);
+      }
+
+      return nextOffset;
+    });
+  }
+
+  function resetBeatOffset() {
+    setBeatOffsetMs(0);
+
+    if (storageConsent === "granted" && selectedSongBeatOffsetKey) {
+      saveSongBeatOffset(selectedSongBeatOffsetKey, 0);
     }
-
-    queuedSongRef.current = null;
-    setQueuedSongPreview(null);
   }
 
   const subtitle = useMemo(() => {
@@ -1071,11 +1121,16 @@ function App() {
 
           <Player
             selectedSong={selectedSong}
+            selectedBpm={selectedBrushBpm}
             playerData={playerData}
             loading={loading.player}
             brushingPhase={brushingPhase}
             isMobile={device.isMobile}
             autoplayToken={autoplayToken}
+            beatOffsetMs={beatOffsetMs}
+            beatAdjustStepMs={beatAdjustStepMs}
+            onAdjustBeatOffset={adjustBeatOffset}
+            onResetBeatOffset={resetBeatOffset}
             onPlaybackTick={handlePlaybackTick}
             onSongEnded={handleSongEnded}
           />
@@ -1085,9 +1140,11 @@ function App() {
             timer={timer}
             brushingPhase={brushingPhase}
             values={values}
-            selectedBpm={Number(selectedSong?.bpm || bpmData?.searchBpm || 120)}
+            selectedBpm={selectedBrushBpm}
             isMobile={device.isMobile}
+            playbackSeconds={playbackSeconds}
             brushingMusicElapsedSeconds={brushingMusicElapsedSeconds}
+            beatOffsetMs={beatOffsetMs}
             brushingHand={brushingHand}
             onCueChange={setBrushControlCue}
           />
