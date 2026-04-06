@@ -48,6 +48,7 @@
     "status": {
       "label": "Status: {{state}}",
       "idle": "Idle",
+      "paused": "Paused",
       "running": "Brushing in progress",
       "complete": "Session complete"
     },
@@ -162,13 +163,7 @@
     "matchingYoutube": "Matching song on YouTube...",
     "selectSong": "Select a song to start playback.",
     "noEmbed": "Could not find an embeddable video for {{title}}.",
-    "runningStatus": "Brushing timer is running independently. Video playback remains under YouTube controls.",
-    "syncLabel": "Beat sync",
-    "syncHint": "Nudge the brush bounce by {{stepMs}} ms until tooth contact lands on the song's downbeat at about {{bpm}} BPM.",
-    "syncEarlier": "Earlier",
-    "syncLater": "Later",
-    "syncReset": "Reset sync",
-    "syncOffset": "Current beat offset: {{offsetMs}} ms",
+    "runningStatus": "Brushing controls can pause or restart the timer and video together.",
     "loadingVideo": "Loading new video...",
     "frameAria": "{{title}} by {{artist}}"
   },
@@ -182,6 +177,8 @@
     "durationHint": "Default is 2:00. Change it before starting if this brusher needs more or less time.",
     "start": "Start Brushing ({{duration}})",
     "running": "Brushing... {{duration}}",
+    "pause": "Pause",
+    "restart": "Restart",
     "again": "Brush Again ({{duration}})",
     "stop": "Reset Timer",
     "timerNote": "Timer and guide run independently from YouTube controls, but the pacing is recalculated for the selected brush time.",
@@ -206,8 +203,13 @@
       "legendAria": "Brush guide legend",
       "legendFront": "Front tooth face",
       "legendBack": "Back tooth face",
+      "directions": {
+        "left": "left",
+        "right": "right"
+      },
       "activeToothName": "Current tooth: {{toothLabel}}",
       "activeCurrentCallout": "Brush {{label}} now on {{toothLabel}}, tooth {{position}} of {{size}}. Move in {{seconds}}s.",
+      "handOrientationCompact": "Use your {{hand}} hand and point the brush toward the {{direction}} side.",
       "transitionCallout": "Transition from {{fromLabel}} to {{toLabel}}. Resume brushing in {{seconds}}s.",
       "activeCalloutMobile": "{{label}}, tooth {{position}}/{{size}}. Move in {{seconds}}s.",
       "activeCalloutDesktop": "Brush {{label}} now, tooth {{position}} of {{size}}. Song target is ~{{bpm}} BPM. Move in {{seconds}}s.{{transitionNotice}}",

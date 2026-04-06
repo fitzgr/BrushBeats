@@ -2,7 +2,6 @@ const STORAGE_CONSENT_KEY = "brushbeats_storage_consent";
 const STORAGE_BANNER_DISMISSED_KEY = "brushbeats_storage_banner_dismissed";
 const LAST_SESSION_KEY = "brushbeats_last_session_v1";
 const PREFERENCES_KEY = "brushbeats_preferences_v1";
-const SONG_BEAT_OFFSETS_KEY = "brushbeats_song_beat_offsets_v1";
 const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 180;
 
 const CONSENT_STATUS = {
@@ -196,40 +195,6 @@ function normalizePreferences(parsed) {
   };
 }
 
-function normalizeSongBeatOffsets(parsed) {
-  if (!parsed || typeof parsed !== "object") {
-    return {};
-  }
-
-  return Object.fromEntries(
-    Object.entries(parsed)
-      .filter(([key]) => typeof key === "string" && key.trim())
-      .map(([key, value]) => [key, clampInteger(value, -2000, 2000, 0)])
-  );
-}
-
-function loadSongBeatOffsets() {
-  try {
-    const raw = readStoredValue(SONG_BEAT_OFFSETS_KEY);
-    if (!raw) {
-      return {};
-    }
-
-    return normalizeSongBeatOffsets(JSON.parse(raw));
-  } catch {
-    return {};
-  }
-}
-
-function saveSongBeatOffsets(offsets) {
-  try {
-    writeStoredValue(SONG_BEAT_OFFSETS_KEY, JSON.stringify(normalizeSongBeatOffsets(offsets)));
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 export function getStorageConsentStatus() {
   if (!canUseStorage()) {
     return CONSENT_STATUS.denied;
@@ -334,32 +299,6 @@ export function saveStoredPreferences(preferences) {
 
 export function clearStoredPreferences() {
   removeStoredValue(PREFERENCES_KEY);
-}
-
-export function loadSongBeatOffset(songKey) {
-  if (typeof songKey !== "string" || !songKey.trim()) {
-    return 0;
-  }
-
-  const offsets = loadSongBeatOffsets();
-  return clampInteger(offsets[songKey], -2000, 2000, 0);
-}
-
-export function saveSongBeatOffset(songKey, offsetMs) {
-  if (typeof songKey !== "string" || !songKey.trim()) {
-    return false;
-  }
-
-  const offsets = loadSongBeatOffsets();
-  const nextOffset = clampInteger(offsetMs, -2000, 2000, 0);
-
-  if (nextOffset === 0) {
-    delete offsets[songKey];
-  } else {
-    offsets[songKey] = nextOffset;
-  }
-
-  return saveSongBeatOffsets(offsets);
 }
 
 export function loadLastBrushedSong() {

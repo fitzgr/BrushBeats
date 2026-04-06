@@ -20,10 +20,8 @@ import {
   getStorageConsentStatus,
   isStorageBannerDismissed,
   loadLastSession,
-  loadSongBeatOffset,
   loadStoredPreferences,
   saveLastSession,
-  saveSongBeatOffset,
   saveStoredPreferences,
   setStorageBannerDismissed,
   setStorageConsent
@@ -35,22 +33,9 @@ import "./App.css";
 const DEFAULT_VALUES = { top: 16, bottom: 16 };
 const DEFAULT_BRUSH_DURATION_SECONDS = 120;
 const BRUSH_DURATION_OPTIONS = [90, 120, 150, 180];
-const MAX_BEAT_OFFSET_MS = 2000;
 
 function clampValue(value, min, max) {
   return Math.min(max, Math.max(min, value));
-}
-
-function clampBeatOffsetMs(value) {
-  return clampValue(Math.round(Number(value) || 0), -MAX_BEAT_OFFSET_MS, MAX_BEAT_OFFSET_MS);
-}
-
-function getSongBeatOffsetKey(song) {
-  if (!song?.title || !song?.artist) {
-    return "";
-  }
-
-  return `${song.title}`.trim().toLowerCase() + "::" + `${song.artist}`.trim().toLowerCase();
 }
 
 function getMaturityScore(totalTeeth) {
@@ -161,7 +146,7 @@ function App() {
   const [brushDurationSeconds, setBrushDurationSeconds] = useState(DEFAULT_BRUSH_DURATION_SECONDS);
   const [brushControlCue, setBrushControlCue] = useState(null);
   const [queuedSongPreview, setQueuedSongPreview] = useState(null);
-  const [beatOffsetMs, setBeatOffsetMs] = useState(0);
+  const [playerCommand, setPlayerCommand] = useState({ type: "idle", nonce: 0 });
   const seenSongsByQueryRef = useRef(new Map());
   const playedSongsRef = useRef(new Set());
   const queuedSongRef = useRef(null);
@@ -178,11 +163,6 @@ function App() {
     [ageEstimate, t, totalTeeth]
   );
   const selectedBrushBpm = Number(selectedSong?.bpm || bpmData?.searchBpm || 120);
-  const beatAdjustStepMs = Math.round(clampValue(60000 / Math.max(40, Math.min(240, selectedBrushBpm || 120)) / 8, 20, 120));
-  const selectedSongBeatOffsetKey = useMemo(
-    () => getSongBeatOffsetKey(selectedSong),
-    [selectedSong?.artist, selectedSong?.title]
-  );
   const supportedLanguageOptions = useMemo(
     () => [
       { value: "en", label: t("settings.supportedLanguage.options.english") },
@@ -224,20 +204,6 @@ function App() {
   useEffect(() => {
     setLanguageFallbackState(getLanguageFallbackInfo());
   }, [i18n.language, i18n.resolvedLanguage]);
-
-  useEffect(() => {
-    if (!selectedSongBeatOffsetKey) {
-      setBeatOffsetMs(0);
-      return;
-    }
-
-    if (storageConsent !== "granted") {
-      setBeatOffsetMs(0);
-      return;
-    }
-
-    setBeatOffsetMs(loadSongBeatOffset(selectedSongBeatOffsetKey));
-  }, [selectedSongBeatOffsetKey, storageConsent]);
 
   function applySavedSession(session) {
     if (!session) {
@@ -626,8 +592,13 @@ function App() {
     if (remaining <= 0) {
       trackEvent("brushing_completed");
       setBrushingPhase("complete");
+      setPlayerCommand((previous) => ({ type: "pause", nonce: previous.nonce + 1 }));
     }
   }, [timer.running, brushingPhase, brushingMusicElapsedSeconds, bpmData?.totalBrushingSeconds, brushDurationSeconds]);
+
+  function issuePlayerCommand(type) {
+    setPlayerCommand((previous) => ({ type, nonce: previous.nonce + 1 }));
+  }
 
   function handlePlaybackTick(seconds) {
     setPlaybackSeconds(seconds);
@@ -688,7 +659,7 @@ function App() {
     }
   }
 
-  function startBrushing() {
+  function startBrushing(options = { restartVideo: false }) {
     if ((bpmData?.totalTeeth || 0) <= 0) {
       setError(t("brushing.errors.needsTeeth"));
       return;
@@ -701,9 +672,11 @@ function App() {
 
     const totalSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
     setBrushingMusicElapsedSeconds(0);
-    lastPlaybackTickRef.current = playbackSeconds;
+  setPlaybackSeconds(options.restartVideo ? 0 : playbackSeconds);
+  lastPlaybackTickRef.current = options.restartVideo ? 0 : playbackSeconds;
     setTimer({ running: true, remaining: totalSeconds });
     setBrushingPhase("running");
+  issuePlayerCommand(options.restartVideo ? "restart" : "play");
     markSongAsPlayed(selectedSong);
 
     const queuedSong = queueNextGeneratedSong(selectedSong);
@@ -749,10 +722,23 @@ function App() {
     setError("");
   }
 
+  function pauseBrushing() {
+    if (brushingPhase !== "running") {
+      return;
+    }
+
+    setTimer((previous) => ({ ...previous, running: false }));
+    setBrushingPhase("paused");
+    lastPlaybackTickRef.current = playbackSeconds;
+    issuePlayerCommand("pause");
+  }
+
   function restartBrushing() {
     const totalSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
+    issuePlayerCommand("reset");
+    setPlaybackSeconds(0);
     setBrushingMusicElapsedSeconds(0);
-    lastPlaybackTickRef.current = playbackSeconds;
+    lastPlaybackTickRef.current = 0;
     setTimer({ running: false, remaining: totalSeconds });
     setBrushingPhase("idle");
     queuedSongRef.current = null;
@@ -791,26 +777,6 @@ function App() {
     });
   }
 
-  function adjustBeatOffset(deltaMs) {
-    setBeatOffsetMs((previous) => {
-      const nextOffset = clampBeatOffsetMs(previous + deltaMs);
-
-      if (storageConsent === "granted" && selectedSongBeatOffsetKey) {
-        saveSongBeatOffset(selectedSongBeatOffsetKey, nextOffset);
-      }
-
-      return nextOffset;
-    });
-  }
-
-  function resetBeatOffset() {
-    setBeatOffsetMs(0);
-
-    if (storageConsent === "granted" && selectedSongBeatOffsetKey) {
-      saveSongBeatOffset(selectedSongBeatOffsetKey, 0);
-    }
-  }
-
   const subtitle = useMemo(() => {
     if (!bpmData) {
       return t("app.subtitle.withoutBpm", {
@@ -832,6 +798,10 @@ function App() {
       return t("app.status.running");
     }
 
+    if (brushingPhase === "paused") {
+      return t("app.status.paused");
+    }
+
     if (brushingPhase === "complete") {
       return t("app.status.complete");
     }
@@ -845,10 +815,12 @@ function App() {
     return `${minutes}:${secs.toString().padStart(2, "0")}`;
   }
 
-  const mobileStartLabel =
+  const primaryBrushActionLabel =
     brushingPhase === "running"
-      ? t("brushing.running", { duration: formatTime(timer.remaining) })
-      : brushingPhase === "complete"
+      ? t("brushing.pause")
+      : brushingPhase === "paused"
+        ? t("brushing.restart")
+        : brushingPhase === "complete"
           ? t("brushing.again", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) })
           : t("brushing.start", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) });
 
@@ -1106,31 +1078,50 @@ function App() {
             </label>
             <div className={`brush-cue-card${brushControlCue?.kind ? ` ${brushControlCue.kind}` : ""}`} aria-live="polite">
               <strong>{brushControlCue?.title || t("brushing.readyTitle")}</strong>
-              <span>{brushControlCue?.detail || t("brushing.readyDetail", { hand: t(`common.hands.${brushingHand}`) })}</span>
+              {(brushControlCue?.detail || !brushControlCue)
+                ? <span>{brushControlCue?.detail || t("brushing.readyDetail", { hand: t(`common.hands.${brushingHand}`) })}</span>
+                : null}
             </div>
             <div className="session-actions">
-              <button type="button" className="action-btn" onClick={startBrushing}>
-                {mobileStartLabel}
+              <button
+                type="button"
+                className="action-btn"
+                onClick={() => {
+                  if (brushingPhase === "running") {
+                    pauseBrushing();
+                    return;
+                  }
+
+                  if (brushingPhase === "paused") {
+                    startBrushing({ restartVideo: true });
+                    return;
+                  }
+
+                  startBrushing({ restartVideo: brushingPhase === "complete" });
+                }}
+              >
+                {primaryBrushActionLabel}
               </button>
               <button type="button" className="action-btn secondary" onClick={restartBrushing}>
                 {t("brushing.stop")}
               </button>
             </div>
+            {brushingPhase === "complete" && (
+              <section className="success-banner brush-success-banner" aria-live="polite">
+                {t("app.success", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) })}
+              </section>
+            )}
             <p className="timer-note">{t("brushing.timerNote")}</p>
           </section>
 
           <Player
             selectedSong={selectedSong}
-            selectedBpm={selectedBrushBpm}
             playerData={playerData}
             loading={loading.player}
             brushingPhase={brushingPhase}
             isMobile={device.isMobile}
             autoplayToken={autoplayToken}
-            beatOffsetMs={beatOffsetMs}
-            beatAdjustStepMs={beatAdjustStepMs}
-            onAdjustBeatOffset={adjustBeatOffset}
-            onResetBeatOffset={resetBeatOffset}
+            playbackCommand={playerCommand}
             onPlaybackTick={handlePlaybackTick}
             onSongEnded={handleSongEnded}
           />
@@ -1144,16 +1135,9 @@ function App() {
             isMobile={device.isMobile}
             playbackSeconds={playbackSeconds}
             brushingMusicElapsedSeconds={brushingMusicElapsedSeconds}
-            beatOffsetMs={beatOffsetMs}
             brushingHand={brushingHand}
             onCueChange={setBrushControlCue}
           />
-        </section>
-      )}
-
-      {brushingPhase === "complete" && (
-        <section className="success-banner" aria-live="polite">
-          {t("app.success", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) })}
         </section>
       )}
         </>

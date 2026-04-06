@@ -48,6 +48,7 @@
     "status": {
       "label": "Estado: {{state}}",
       "idle": "En espera",
+      "paused": "En pausa",
       "running": "Cepillado en progreso",
       "complete": "Sesion completa"
     },
@@ -162,13 +163,7 @@
     "matchingYoutube": "Buscando la cancion en YouTube...",
     "selectSong": "Selecciona una cancion para comenzar la reproduccion.",
     "noEmbed": "No se pudo encontrar un video insertable para {{title}}.",
-    "runningStatus": "El temporizador de cepillado funciona independientemente. La reproduccion del video sigue bajo los controles de YouTube.",
-    "syncLabel": "Sincronizacion del pulso",
-    "syncHint": "Ajusta el rebote del cepillo en pasos de {{stepMs}} ms hasta que el contacto con el diente caiga en el golpe fuerte de la cancion, alrededor de {{bpm}} BPM.",
-    "syncEarlier": "Antes",
-    "syncLater": "Despues",
-    "syncReset": "Restablecer sincronizacion",
-    "syncOffset": "Desfase actual del pulso: {{offsetMs}} ms",
+    "runningStatus": "Los controles de cepillado pueden pausar o reiniciar juntos el temporizador y el video.",
     "loadingVideo": "Cargando nuevo video...",
     "frameAria": "{{title}} de {{artist}}"
   },
@@ -182,6 +177,8 @@
     "durationHint": "El valor predeterminado es 2:00. Cambialo antes de empezar si esta persona necesita mas o menos tiempo.",
     "start": "Empezar cepillado ({{duration}})",
     "running": "Cepillando... {{duration}}",
+    "pause": "Pausar",
+    "restart": "Reiniciar",
     "again": "Cepillar otra vez ({{duration}})",
     "stop": "Reiniciar temporizador",
     "timerNote": "El temporizador y la guia funcionan independientemente de los controles de YouTube, pero el ritmo se recalcula para el tiempo de cepillado seleccionado.",
@@ -206,8 +203,13 @@
       "legendAria": "Leyenda de la guia de cepillado",
       "legendFront": "Cara frontal del diente",
       "legendBack": "Cara posterior del diente",
+      "directions": {
+        "left": "lado izquierdo",
+        "right": "lado derecho"
+      },
       "activeToothName": "Diente actual: {{toothLabel}}",
       "activeCurrentCallout": "Cepilla {{label}} ahora en {{toothLabel}}, diente {{position}} de {{size}}. Cambia en {{seconds}} s.",
+      "handOrientationCompact": "Usa tu mano {{hand}} y apunta el cepillo hacia el {{direction}}.",
       "transitionCallout": "Transicion de {{fromLabel}} a {{toLabel}}. Reanuda el cepillado en {{seconds}} s.",
       "activeCalloutMobile": "{{label}}, diente {{position}}/{{size}}. Cambia en {{seconds}} s.",
       "activeCalloutDesktop": "Cepilla {{label}} ahora, diente {{position}} de {{size}}. La meta de la cancion es ~{{bpm}} BPM. Cambia en {{seconds}} s.{{transitionNotice}}",

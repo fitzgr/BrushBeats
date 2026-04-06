@@ -1473,6 +1473,11 @@
   order: 1;
 }
 
+.layout-grid.mobile-mode .brush-actions-card {
+  grid-column: span 12;
+  order: 2;
+}
+
 .layout-grid.mobile-mode .calculator {
   grid-column: span 12;
   order: 2;
@@ -1485,7 +1490,7 @@
 
 .layout-grid.mobile-mode .guide {
   grid-column: span 12;
-  order: 4;
+  order: 3;
 }
 
 .brush-actions-card {
@@ -2491,6 +2496,125 @@ select {
   font-weight: 700;
 }
 
+.brush-hand-orientation {
+  margin-top: 0.75rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 12px;
+  background: rgba(16, 33, 37, 0.04);
+  border: 1px solid rgba(16, 33, 37, 0.12);
+  display: grid;
+  gap: 0.45rem;
+  justify-items: center;
+}
+
+.brush-hand-orientation-title {
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #4b657d;
+}
+
+.brush-hand-orientation-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+}
+
+.brush-hand-orientation.facing-left .brush-hand-orientation-visual {
+  flex-direction: row-reverse;
+}
+
+.brush-hand-orientation-hand {
+  position: relative;
+  width: 26px;
+  height: 22px;
+  border-radius: 11px 11px 10px 10px;
+  background: linear-gradient(180deg, #ffd8ba, #f0a36f);
+  box-shadow: inset 0 -3px 5px rgba(159, 96, 52, 0.2);
+}
+
+.brush-hand-orientation-hand::before,
+.brush-hand-orientation-hand::after {
+  content: "";
+  position: absolute;
+  background: linear-gradient(180deg, #ffd8ba, #f0a36f);
+  box-shadow: inset 0 -2px 4px rgba(159, 96, 52, 0.18);
+}
+
+.brush-hand-orientation-hand::before {
+  left: 3px;
+  top: -4px;
+  width: 16px;
+  height: 8px;
+  border-radius: 6px 6px 3px 3px;
+  box-shadow:
+    0 0 0 0 rgba(0, 0, 0, 0),
+    5px 0 0 0 #f7ba8f,
+    10px 0 0 0 #f5b180;
+}
+
+.brush-hand-orientation-hand::after {
+  width: 10px;
+  height: 12px;
+  right: -4px;
+  top: 6px;
+  border-radius: 8px 8px 8px 4px;
+  transform: rotate(-28deg);
+}
+
+.brush-hand-orientation.facing-left .brush-hand-orientation-hand::after {
+  right: auto;
+  left: -4px;
+  transform: rotate(28deg);
+}
+
+.brush-hand-orientation-handle {
+  width: 62px;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ea7f33, #f6b066);
+}
+
+.brush-hand-orientation-neck {
+  width: 10px;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffd1aa, #f4a86a);
+}
+
+.brush-hand-orientation-head {
+  position: relative;
+  width: 26px;
+  height: 20px;
+  display: block;
+}
+
+.brush-hand-orientation-bristles {
+  position: absolute;
+  inset: 1px 0 1px 2px;
+  border-radius: 8px 10px 10px 8px;
+  background: linear-gradient(180deg, #f5fcff, #8fd1ff);
+  border: 1px solid rgba(36, 96, 156, 0.24);
+  box-shadow: inset 0 -4px 0 rgba(36, 96, 156, 0.15);
+}
+
+.brush-hand-orientation-bristles::before {
+  content: "";
+  position: absolute;
+  inset: 3px 4px;
+  background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.9) 0 2px, rgba(122, 196, 255, 0.75) 2px 4px);
+  border-radius: 4px;
+}
+
+.brush-hand-orientation-copy {
+  display: none;
+}
+
+.brush-success-banner {
+  margin-top: 0.7rem;
+}
+
 .orientation-callout {
   margin-top: 0.55rem;
 }
@@ -2527,6 +2651,43 @@ select {
   .orientation-demo-hand {
     width: 15px;
     height: 15px;
+  }
+
+  .brush-hand-orientation-handle {
+    width: 54px;
+    height: 8px;
+  }
+
+  .brush-hand-orientation-neck {
+    width: 8px;
+    height: 5px;
+  }
+
+  .brush-hand-orientation-head {
+    width: 20px;
+    height: 18px;
+  }
+
+  .brush-hand-orientation-hand {
+    width: 20px;
+    height: 17px;
+  }
+
+  .brush-hand-orientation-hand::before {
+    left: 2px;
+    top: -3px;
+    width: 12px;
+    height: 6px;
+    box-shadow:
+      0 0 0 0 rgba(0, 0, 0, 0),
+      3px 0 0 0 #f7ba8f,
+      6px 0 0 0 #f5b180;
+  }
+
+  .brush-hand-orientation-hand::after {
+    width: 7px;
+    height: 9px;
+    top: 5px;
   }
 }
 

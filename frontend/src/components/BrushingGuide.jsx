@@ -267,7 +267,7 @@ function getToothLabel(t, tooth) {
   });
 }
 
-function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, playbackSeconds, brushingMusicElapsedSeconds, beatOffsetMs = 0, brushingHand, onCueChange }) {
+function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, playbackSeconds, brushingMusicElapsedSeconds, brushingHand, onCueChange }) {
   const { t } = useTranslation();
   const totalSeconds = Number(bpmData?.totalBrushingSeconds || 120);
   const topTeeth = Number(values?.top || 16);
@@ -280,7 +280,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
   const segments = buildSegments(topTeeth, bottomTeeth);
   const timeline = buildTimeline(segments, toothDurationSeconds, transitionBufferSeconds);
   const beatDurationMs = Math.max(220, 60000 / safeBpm);
-  const normalizedBeatAnchorMs = (((Math.max(0, Number(playbackSeconds) || 0) * 1000 + Number(beatOffsetMs || 0)) % beatDurationMs) + beatDurationMs) % beatDurationMs;
+  const normalizedBeatAnchorMs = (((Math.max(0, Number(playbackSeconds) || 0) * 1000) % beatDurationMs) + beatDurationMs) % beatDurationMs;
   const beatPhaseOffsetMs = timer.running
     ? -normalizedBeatAnchorMs
     : 0;
@@ -320,7 +320,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
       onCueChange({
         kind: "complete",
         title: t("brushing.cue.completeTitle"),
-        detail: t("brushing.cue.completeDetail")
+        detail: ""
       });
       return;
     }
@@ -472,7 +472,13 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
     return state;
   }
 
-  const activeQuadrantKey = activeJaw && activeSide ? `${activeJaw}-${activeSide}` : null;
+  const brushFacingDirection = activeSide
+    ? brushingHand === "right"
+      ? activeSide
+      : activeSide === "left"
+        ? "right"
+        : "left"
+    : null;
   const guideStatusText = brushingPhase === "running"
     ? activeEntry?.type === "transition"
       ? t("brushing.guide.transitionCallout", {
@@ -492,6 +498,12 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
         : "";
   const inactiveGuideText = !timer.running && brushingPhase !== "complete"
     ? t("brushing.guide.inactiveCallout")
+    : "";
+  const handOrientationText = brushFacingDirection
+    ? t("brushing.guide.handOrientationCompact", {
+        hand: t(`common.hands.${brushingHand}`),
+        direction: t(`brushing.guide.directions.${brushFacingDirection}`)
+      })
     : "";
 
   function renderTooth(point, jaw, meta, mapIndex) {
@@ -670,6 +682,19 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
         <span><em className="legend-dot back" />{t("brushing.guide.legendBack")}</span>
       </div>
 
+      {handOrientationText && (
+        <div className={`brush-hand-orientation ${brushFacingDirection === "left" ? "facing-left" : "facing-right"}`}>
+          <span className="brush-hand-orientation-title">{t("brushing.guide.handOrientation")}</span>
+          <div className="brush-hand-orientation-visual" aria-hidden="true">
+            <span className="brush-hand-orientation-hand" />
+            <span className="brush-hand-orientation-handle" />
+            <span className="brush-hand-orientation-neck" />
+            <span className="brush-hand-orientation-head">
+              <span className="brush-hand-orientation-bristles" />
+            </span>
+          </div>
+        </div>
+      )}
       {guideStatusText && <p className="guide-callout">{guideStatusText}</p>}
       {inactiveGuideText && <p className="guide-callout">{inactiveGuideText}</p>}
 

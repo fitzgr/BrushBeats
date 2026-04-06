@@ -48,6 +48,7 @@
     "status": {
       "label": "Durum: {{state}}",
       "idle": "Boşta",
+      "paused": "Duraklatıldı",
       "running": "Fırçalama devam ediyor",
       "complete": "Oturum tamamlandı"
     },
@@ -162,13 +163,7 @@
     "matchingYoutube": "Şarkı YouTube'da eşleştiriliyor...",
     "selectSong": "Oynatmaya başlamak için bir şarkı seçin.",
     "noEmbed": "{{title}} için gömülebilir bir video bulunamadı.",
-    "runningStatus": "Fırçalama zamanlayıcısı bağımsız çalışır. Video oynatımı YouTube kontrollerinde kalır.",
-    "syncLabel": "Vuruş senkronu",
-    "syncHint": "Diş temasını şarkının güçlü vuruşuna yaklaşık {{bpm}} BPM'de oturtmak için fırça sıçramasını {{stepMs}} ms adımlarla ayarlayın.",
-    "syncEarlier": "Daha erken",
-    "syncLater": "Daha geç",
-    "syncReset": "Senkronu sıfırla",
-    "syncOffset": "Geçerli vuruş ofseti: {{offsetMs}} ms",
+    "runningStatus": "Fırçalama kontrolleri zamanlayıcıyı ve videoyu birlikte duraklatabilir veya yeniden başlatabilir.",
     "loadingVideo": "Yeni video yükleniyor...",
     "frameAria": "{{artist}} tarafından {{title}}"
   },
@@ -182,6 +177,8 @@
     "durationHint": "Varsayılan 2:00'dır. Bu fırçalayan daha fazla veya daha az süreye ihtiyaç duyuyorsa başlamadan önce değiştirin.",
     "start": "Fırçalamayı Başlat ({{duration}})",
     "running": "Fırçalanıyor... {{duration}}",
+    "pause": "Duraklat",
+    "restart": "Yeniden başlat",
     "again": "Tekrar Fırçala ({{duration}})",
     "stop": "Zamanlayıcıyı Sıfırla",
     "timerNote": "Zamanlayıcı ve rehber YouTube kontrollerinden bağımsız çalışır, ancak tempo seçilen süreye göre yeniden hesaplanır.",
@@ -206,8 +203,13 @@
       "legendAria": "Fırçalama rehberi açıklaması",
       "legendFront": "Ön diş yüzeyi",
       "legendBack": "Arka diş yüzeyi",
+      "directions": {
+        "left": "sol tarafa",
+        "right": "sağ tarafa"
+      },
       "activeToothName": "Güncel diş: {{toothLabel}}",
       "activeCurrentCallout": "Şimdi {{label}} bölgesini {{toothLabel}} üzerinde fırçalayın, {{size}} içinde {{position}}. diş. {{seconds}} sn sonra ilerleyin.",
+      "handOrientationCompact": "{{hand}} elinizi kullanın ve fırçayı {{direction}} çevirin.",
       "transitionCallout": "{{fromLabel}} konumundan {{toLabel}} konumuna geçiş. {{seconds}} sn sonra devam edin.",
       "activeCalloutMobile": "{{label}}, {{position}}/{{size}}. diş. {{seconds}} sn sonra ilerleyin.",
       "activeCalloutDesktop": "Şimdi {{label}} bölgesini fırçalayın, {{size}} içinde {{position}}. diş. Şarkı hedefi yaklaşık {{bpm}} BPM. {{seconds}} sn sonra ilerleyin.{{transitionNotice}}",
