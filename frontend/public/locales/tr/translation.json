@@ -48,6 +48,7 @@
     "status": {
       "label": "Durum: {{state}}",
       "idle": "Boşta",
+      "countdown": "Birazdan başlıyor",
       "paused": "Duraklatıldı",
       "running": "Fırçalama devam ediyor",
       "complete": "Oturum tamamlandı"
@@ -164,7 +165,7 @@
     "selectSong": "Oynatmaya başlamak için bir şarkı seçin.",
     "noEmbed": "{{title}} için gömülebilir bir video bulunamadı.",
     "restoredSession": "Son oturumunuzdan geri yüklendi",
-    "runningStatus": "Fırçalama kontrolleri zamanlayıcıyı ve videoyu birlikte duraklatabilir veya yeniden başlatabilir.",
+    "runningStatus": "Fırçalama kontrolleri, duraklatıp devam ederken videoyu ve rehberi senkron tutar.",
     "loadingVideo": "Yeni video yükleniyor...",
     "frameAria": "{{artist}} tarafından {{title}}"
   },
@@ -183,17 +184,21 @@
     "restart": "Yeniden başlat",
     "again": "Tekrar Fırçala ({{duration}})",
     "stop": "Zamanlayıcıyı Sıfırla",
+    "resetConfirm": "Yalnızca fırçalama zamanlayıcısını sıfırlayıp şarkının şu anki konumunu korumak için Tamam'a basın. Şarkıyı da baştan başlatmak için İptal'e basın.",
+    "resetConfirmRestartSuggested": "Şarkının yalnızca {{remaining}} kadarı kaldı. Yalnızca fırçalama zamanlayıcısını sıfırlayıp şarkının şu anki konumunu korumak için Tamam'a basın. Şarkıyı da baştan başlatmak için İptal'e basın.",
     "timerNote": "Zamanlayıcı ve rehber YouTube kontrollerinden bağımsız çalışır, ancak tempo seçilen süreye göre yeniden hesaplanır.",
     "readyTitle": "Fırçalamaya hazır",
     "readyDetail": "{{hand}} elinizle fırçalayın ve oynatım hazır olduğunda rehberi takip edin.",
     "errors": {
       "needsTeeth": "Fırçalama oturumu başlatmadan önce en az bir diş girin.",
-      "needsPlayback": "Önce oynatımı başlatın, sonra yalnızca fırçalama zamanlayıcısı ve rehberi için Fırçalamayı Başlat'a basın."
+      "needsPlayback": "Önce oynatımı başlatın, sonra yalnızca fırçalama zamanlayıcısı ve rehberi için Fırçalamayı Başlat'a basın.",
+      "songMayEndEarly": "Şarkının yalnızca {{remaining}} kadarı kaldı; tam bir fırçalama için parçayı baştan başlatmak isteyebilirsiniz."
     },
     "guide": {
       "title": "Fırçalama Haritası",
       "introMobile": "İşaretçiyi diş diş takip edin. Geçiş aralıkları aynı {{minutes}} dakikalık oturuma dahildir.",
       "introDesktop": "Tüm diş yüzeylerini seçilen {{minutes}} dakikalık fırçalama süresi boyunca eşit şekilde fırçalayın. Kılları diş eti çizgisine doğru 45 derecelik açıyla tutun ve diş etlerinden uzağa doğru nazik hareketlerle temizleyin; önerilen fırçalama süresini uzatmadan her bölgenin kapsandığından emin olun.",
+      "countdownCallout": "Fırçayı konumlandırın. Fırçalama {{seconds}} sn içinde başlıyor.",
       "handOrientation": "El Yönelimi",
       "leftView": "Sol el görünümü",
       "rightView": "Sağ el görünümü",
@@ -201,6 +206,8 @@
       "activeOrientation": "Animasyonlu fırça {{label}} alanını takip eder ve o bölge için diş etinden uzak süpürme hareketini gösterir.",
       "idleOrientation": "Vurgulanan bölgeye {{hand}} elinizi hizalayın, sonra oturumu başlatın.",
       "mouthMapAria": "Dinamik diş fırçalama haritası",
+      "startLabel": "Başlangıç",
+      "switchLabel": "Geçiş",
       "sessionLabel": "Oturum",
       "legendAria": "Fırçalama rehberi açıklaması",
       "legendFront": "Ön diş yüzeyi",
@@ -223,6 +230,8 @@
     "cue": {
       "completeTitle": "Fırçalama tamamlandı",
       "completeDetail": "Tüm bölümler tamamlandı. Yeni bir tur için hazır olduğunuzda yeniden başlatın.",
+      "countdownTitle": "Hazırlanın",
+      "countdownDetail": "Pozisyon alın. Fırçalama {{seconds}} sn içinde başlıyor.",
       "pausedTitle": "Duraklatıldı",
       "pausedDetail": "Aynı dişten ve video konumundan devam etmek için Devam Et'e basın.",
       "readyTitle": "Fırçalamaya hazır",

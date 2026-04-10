@@ -29,6 +29,7 @@ function Player({
   autoplayToken,
   playbackCommand,
   onPlaybackTick,
+  onPlaybackDurationChange,
   onSongEnded,
   children
 }) {
@@ -37,6 +38,7 @@ function Player({
   const playerRef = useRef(null);
   const tickTimerRef = useRef(null);
   const onPlaybackTickRef = useRef(onPlaybackTick);
+  const onPlaybackDurationChangeRef = useRef(onPlaybackDurationChange);
   const onSongEndedRef = useRef(onSongEnded);
   const [apiReady, setApiReady] = useState(Boolean(window.YT?.Player));
   const videoId = useMemo(() => parseVideoId(playerData), [playerData]);
@@ -48,6 +50,10 @@ function Player({
   useEffect(() => {
     onSongEndedRef.current = onSongEnded;
   }, [onSongEnded]);
+
+  useEffect(() => {
+    onPlaybackDurationChangeRef.current = onPlaybackDurationChange;
+  }, [onPlaybackDurationChange]);
 
   const stopTickTimer = useEffectEvent(() => {
     if (tickTimerRef.current) {
@@ -110,6 +116,7 @@ function Player({
       },
       events: {
         onReady: () => {
+          onPlaybackDurationChangeRef.current?.(playerRef.current?.getDuration?.() ?? 0);
           onPlaybackTickRef.current?.(playerRef.current?.getCurrentTime?.() ?? 0);
         },
         onStateChange: (event) => {
@@ -164,19 +171,27 @@ function Player({
     }
 
     if (playbackCommand.type === "restart") {
-      playerRef.current.seekTo?.(0, true);
+      if (videoId && playerRef.current.loadVideoById) {
+        playerRef.current.loadVideoById(videoId, 0);
+      } else {
+        playerRef.current.seekTo?.(0, true);
+        playerRef.current.playVideo?.();
+      }
       onPlaybackTickRef.current?.(0);
-      playerRef.current.playVideo?.();
       return;
     }
 
     if (playbackCommand.type === "reset") {
-      playerRef.current.pauseVideo?.();
-      playerRef.current.seekTo?.(0, true);
+      if (videoId && playerRef.current.cueVideoById) {
+        playerRef.current.cueVideoById(videoId, 0);
+      } else {
+        playerRef.current.pauseVideo?.();
+        playerRef.current.seekTo?.(0, true);
+      }
       stopTickTimer();
       onPlaybackTickRef.current?.(0);
     }
-  }, [playbackCommand, stopTickTimer]);
+  }, [playbackCommand, stopTickTimer, videoId]);
 
   const playerClassName = `card player${compactMobileFrame ? " compact-mobile-frame" : ""}`;
   const frameMinHeight = isMobile ? (compactMobileFrame ? "156px" : "180px") : "200px";

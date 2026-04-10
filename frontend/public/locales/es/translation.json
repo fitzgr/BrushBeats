@@ -48,6 +48,7 @@
     "status": {
       "label": "Estado: {{state}}",
       "idle": "En espera",
+      "countdown": "Empieza enseguida",
       "paused": "En pausa",
       "running": "Cepillado en progreso",
       "complete": "Sesion completa"
@@ -164,7 +165,7 @@
     "selectSong": "Selecciona una cancion para comenzar la reproduccion.",
     "noEmbed": "No se pudo encontrar un video insertable para {{title}}.",
     "restoredSession": "Recuperado de tu ultima sesion",
-    "runningStatus": "Los controles de cepillado pueden pausar o reiniciar juntos el temporizador y el video.",
+    "runningStatus": "Los controles de cepillado mantienen sincronizados el video y la guia cuando pausas o reanudas.",
     "loadingVideo": "Cargando nuevo video...",
     "frameAria": "{{title}} de {{artist}}"
   },
@@ -183,17 +184,21 @@
     "restart": "Reiniciar",
     "again": "Cepillar otra vez ({{duration}})",
     "stop": "Reiniciar temporizador",
+    "resetConfirm": "Presiona Aceptar para reiniciar solo el temporizador de cepillado y mantener la posicion actual de la cancion. Presiona Cancelar para reiniciar tambien la cancion desde el principio.",
+    "resetConfirmRestartSuggested": "Solo quedan {{remaining}} de la cancion. Presiona Aceptar para reiniciar solo el temporizador de cepillado y mantener la posicion actual de la cancion. Presiona Cancelar para reiniciar tambien la cancion desde el principio.",
     "timerNote": "El temporizador y la guia funcionan independientemente de los controles de YouTube, pero el ritmo se recalcula para el tiempo de cepillado seleccionado.",
     "readyTitle": "Listo para cepillarte",
     "readyDetail": "Cepillate con tu mano {{hand}} y sigue la guia cuando la reproduccion este lista.",
     "errors": {
       "needsTeeth": "Ingresa al menos un diente antes de empezar una sesion de cepillado.",
-      "needsPlayback": "Primero inicia la reproduccion y luego presiona Empezar cepillado para comenzar solo el temporizador y la guia."
+      "needsPlayback": "Primero inicia la reproduccion y luego presiona Empezar cepillado para comenzar solo el temporizador y la guia.",
+      "songMayEndEarly": "Solo quedan {{remaining}} de la cancion, asi que tal vez quieras reiniciarla para completar todo el cepillado."
     },
     "guide": {
       "title": "Mapa de cepillado",
       "introMobile": "Sigue el marcador diente por diente. Las pausas de transicion ya estan incluidas dentro de la misma sesion de {{minutes}} minutos.",
       "introDesktop": "Cepilla todas las superficies dentales de manera uniforme durante todo el tiempo de cepillado de {{minutes}} minutos. Mantén las cerdas en un angulo de 45 grados hacia la linea de la encia y usa movimientos suaves para limpiar alejandote de las encias, asegurando que cada zona quede cubierta sin extender el tiempo recomendado de cepillado.",
+      "countdownCallout": "Coloca el cepillo en posicion. El cepillado empieza en {{seconds}} s.",
       "handOrientation": "Orientacion de la mano",
       "leftView": "Vista para zurdos",
       "rightView": "Vista para diestros",
@@ -201,6 +206,8 @@
       "activeOrientation": "El cepillo animado sigue {{label}} y muestra el barrido alejandose de la encia en esa zona.",
       "idleOrientation": "Alinea tu mano {{hand}} con el cuadrante resaltado y luego inicia la sesion.",
       "mouthMapAria": "Mapa dinamico de cepillado dental",
+      "startLabel": "Empieza en",
+      "switchLabel": "Cambia en",
       "sessionLabel": "Sesion",
       "legendAria": "Leyenda de la guia de cepillado",
       "legendFront": "Cara frontal del diente",
@@ -223,6 +230,8 @@
     "cue": {
       "completeTitle": "Cepillado completo",
       "completeDetail": "Todas las secciones estan terminadas. Reinicia cuando quieras otra pasada.",
+      "countdownTitle": "Preparandose",
+      "countdownDetail": "Colocate en posicion. El cepillado empieza en {{seconds}} s.",
       "pausedTitle": "En pausa",
       "pausedDetail": "Presiona Reanudar para continuar desde el mismo diente y posicion del video.",
       "readyTitle": "Listo para cepillarte",

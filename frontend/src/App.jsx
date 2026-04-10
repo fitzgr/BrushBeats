@@ -33,6 +33,7 @@ import "./App.css";
 const DEFAULT_VALUES = { top: 16, bottom: 16 };
 const DEFAULT_BRUSH_DURATION_SECONDS = 120;
 const BRUSH_DURATION_OPTIONS = [90, 120, 150, 180];
+const START_DELAY_SECONDS = 5;
 
 function clampValue(value, min, max) {
   return Math.min(max, Math.max(min, value));
@@ -129,7 +130,9 @@ function App() {
   const [timer, setTimer] = useState({ running: false, remaining: DEFAULT_BRUSH_DURATION_SECONDS });
   const [brushingPhase, setBrushingPhase] = useState("idle");
   const [playbackSeconds, setPlaybackSeconds] = useState(0);
+  const [songDurationSeconds, setSongDurationSeconds] = useState(0);
   const [brushingMusicElapsedSeconds, setBrushingMusicElapsedSeconds] = useState(0);
+  const [countdownRemainingMs, setCountdownRemainingMs] = useState(0);
   const [autoplayToken, setAutoplayToken] = useState(0);
   const [isSongPoolExhausted, setIsSongPoolExhausted] = useState(false);
   const [loading, setLoading] = useState({ bpm: false, songs: false, player: false });
@@ -152,6 +155,8 @@ function App() {
   const playedSongsRef = useRef(new Set());
   const queuedSongRef = useRef(null);
   const lastPlaybackTickRef = useRef(null);
+  const playbackSecondsRef = useRef(0);
+  const countdownDeadlineRef = useRef(null);
   const preferencesHydratedRef = useRef(false);
   const repeatSessionBootstrapRef = useRef(false);
   const restoredSessionRef = useRef(null);
@@ -206,6 +211,10 @@ function App() {
   useEffect(() => {
     setLanguageFallbackState(getLanguageFallbackInfo());
   }, [i18n.language, i18n.resolvedLanguage]);
+
+  useEffect(() => {
+    playbackSecondsRef.current = playbackSeconds;
+  }, [playbackSeconds]);
 
   function applySavedSession(session) {
     if (!session) {
@@ -503,6 +512,31 @@ function App() {
   }, [bpmData?.totalBrushingSeconds, brushDurationSeconds, brushingPhase, timer.running]);
 
   useEffect(() => {
+    if (brushingPhase !== "countdown") {
+      return;
+    }
+
+    if (countdownRemainingMs <= 0) {
+      const totalSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
+      countdownDeadlineRef.current = null;
+      setCountdownRemainingMs(0);
+      setTimer({ running: true, remaining: totalSeconds });
+      setBrushingPhase("running");
+      lastPlaybackTickRef.current = playbackSecondsRef.current;
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      const remaining = Math.max(0, (countdownDeadlineRef.current || 0) - Date.now());
+      setCountdownRemainingMs((previous) => (Math.abs(previous - remaining) < 20 ? previous : remaining));
+    }, 100);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [bpmData?.totalBrushingSeconds, brushDurationSeconds, brushingPhase, countdownRemainingMs]);
+
+  useEffect(() => {
     if (!bpmData?.searchBpm || (workflowStep !== "music" && brushingPhase !== "running")) {
       return;
     }
@@ -597,7 +631,6 @@ function App() {
     if (remaining <= 0) {
       trackEvent("brushing_completed");
       setBrushingPhase("complete");
-      setPlayerCommand((previous) => ({ type: "pause", nonce: previous.nonce + 1 }));
     }
   }, [timer.running, brushingPhase, brushingMusicElapsedSeconds, bpmData?.totalBrushingSeconds, brushDurationSeconds]);
 
@@ -630,6 +663,10 @@ function App() {
     setBrushingMusicElapsedSeconds((prev) => prev + delta);
   }
 
+  function handlePlaybackDurationChange(duration) {
+    setSongDurationSeconds(Number(duration) || 0);
+  }
+
   async function handleSelectSong(song) {
     trackEvent("song_selected", { title: song.title, artist: song.artist });
     setAutoRestoredBrushView(false);
@@ -641,6 +678,7 @@ function App() {
 
   async function handleSelectSongWithOptions(song, options = { autoplay: false }) {
     setSelectedSong(song);
+    setSongDurationSeconds(0);
     // Keep old playerData visible while loading new video
     if (!loading.player) {
       setLoading((prev) => ({ ...prev, player: true }));
@@ -679,18 +717,28 @@ function App() {
     const totalSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
     const shouldResume = Boolean(options.resumeFromPause);
     const shouldRestartVideo = Boolean(options.restartVideo);
+    const hasPendingCountdown = countdownRemainingMs > 0;
 
     if (shouldResume) {
-      lastPlaybackTickRef.current = playbackSeconds;
-      setTimer((previous) => ({ ...previous, running: true }));
+      if (hasPendingCountdown) {
+        countdownDeadlineRef.current = Date.now() + countdownRemainingMs;
+        setBrushingPhase("countdown");
+      } else {
+        lastPlaybackTickRef.current = playbackSeconds;
+        setTimer((previous) => ({ ...previous, running: true }));
+        setBrushingPhase("running");
+      }
     } else {
       setBrushingMusicElapsedSeconds(0);
       setPlaybackSeconds(shouldRestartVideo ? 0 : playbackSeconds);
       lastPlaybackTickRef.current = shouldRestartVideo ? 0 : playbackSeconds;
-      setTimer({ running: true, remaining: totalSeconds });
+      const startDelayMs = START_DELAY_SECONDS * 1000;
+      countdownDeadlineRef.current = Date.now() + startDelayMs;
+      setCountdownRemainingMs(startDelayMs);
+      setTimer({ running: false, remaining: totalSeconds });
+      setBrushingPhase("countdown");
     }
 
-    setBrushingPhase("running");
     issuePlayerCommand(shouldRestartVideo ? "restart" : "play");
 
     if (shouldResume) {
@@ -745,28 +793,52 @@ function App() {
   }
 
   function pauseBrushing() {
-    if (brushingPhase !== "running") {
+    if (brushingPhase !== "running" && brushingPhase !== "countdown") {
       return;
     }
 
     setTimer((previous) => ({ ...previous, running: false }));
     setBrushingPhase("paused");
     lastPlaybackTickRef.current = playbackSeconds;
+    if (brushingPhase === "countdown" && countdownDeadlineRef.current) {
+      setCountdownRemainingMs(Math.max(0, countdownDeadlineRef.current - Date.now()));
+      countdownDeadlineRef.current = null;
+    }
     issuePlayerCommand("pause");
   }
 
   function restartBrushing() {
     const totalSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
-    issuePlayerCommand("reset");
-    setPlaybackSeconds(0);
+    const remainingSongSeconds = songDurationSeconds > 0 ? Math.max(0, songDurationSeconds - playbackSeconds) : null;
+    const needsSongRestart = typeof remainingSongSeconds === "number" && remainingSongSeconds < totalSeconds + START_DELAY_SECONDS;
+    const confirmMessage = needsSongRestart
+      ? t("brushing.resetConfirmRestartSuggested", {
+          remaining: formatTime(Math.floor(remainingSongSeconds))
+        })
+      : t("brushing.resetConfirm");
+    const resetBrushOnly = typeof window === "undefined" ? true : window.confirm(confirmMessage);
+
+    if (!resetBrushOnly) {
+      issuePlayerCommand("restart");
+      setPlaybackSeconds(0);
+      lastPlaybackTickRef.current = 0;
+    } else if (needsSongRestart) {
+      setError(t("brushing.errors.songMayEndEarly", {
+        remaining: formatTime(Math.floor(remainingSongSeconds))
+      }));
+    }
+
     setBrushingMusicElapsedSeconds(0);
-    lastPlaybackTickRef.current = 0;
+    setCountdownRemainingMs(0);
+    countdownDeadlineRef.current = null;
     setTimer({ running: false, remaining: totalSeconds });
     setBrushingPhase("idle");
     queuedSongRef.current = null;
     setQueuedSongPreview(null);
     trackEvent("brushing_reset", { song_title: selectedSong?.title, song_artist: selectedSong?.artist, duration_seconds: totalSeconds });
-    setError("");
+    if (!needsSongRestart || !resetBrushOnly) {
+      setError("");
+    }
   }
 
   function handlePrimaryBrushAction() {
@@ -802,7 +874,7 @@ function App() {
   }
 
   function handleSongEnded() {
-    if (brushingPhase !== "running") {
+    if (brushingPhase !== "running" && brushingPhase !== "countdown") {
       return;
     }
 
@@ -839,6 +911,10 @@ function App() {
       return t("app.status.paused");
     }
 
+    if (brushingPhase === "countdown") {
+      return t("app.status.countdown");
+    }
+
     if (brushingPhase === "complete") {
       return t("app.status.complete");
     }
@@ -853,7 +929,7 @@ function App() {
   }
 
   const primaryBrushActionLabel =
-    brushingPhase === "running"
+    brushingPhase === "running" || brushingPhase === "countdown"
       ? t("brushing.pause")
       : brushingPhase === "paused"
         ? t("brushing.resume")
@@ -1103,7 +1179,7 @@ function App() {
               <select
                 value={brushDurationSeconds}
                 onChange={(event) => handleBrushDurationChange(Number(event.target.value))}
-                disabled={brushingPhase === "running"}
+                disabled={brushingPhase === "running" || brushingPhase === "countdown" || brushingPhase === "paused"}
               >
                 {BRUSH_DURATION_OPTIONS.map((option) => (
                   <option key={option} value={option}>
@@ -1154,6 +1230,7 @@ function App() {
             autoplayToken={autoplayToken}
             playbackCommand={playerCommand}
             onPlaybackTick={handlePlaybackTick}
+            onPlaybackDurationChange={handlePlaybackDurationChange}
             onSongEnded={handleSongEnded}
           >
             {device.isMobile && (
@@ -1196,6 +1273,7 @@ function App() {
             isMobile={device.isMobile}
             playbackSeconds={playbackSeconds}
             brushingMusicElapsedSeconds={brushingMusicElapsedSeconds}
+            startCountdownRemainingMs={countdownRemainingMs}
             brushingHand={brushingHand}
             hideIntro={device.isMobile && autoRestoredBrushView}
             onCueChange={setBrushControlCue}

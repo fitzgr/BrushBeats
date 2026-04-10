@@ -48,6 +48,7 @@
     "status": {
       "label": "Status: {{state}}",
       "idle": "Idle",
+      "countdown": "Starting soon",
       "paused": "Paused",
       "running": "Brushing in progress",
       "complete": "Session complete"
@@ -164,7 +165,7 @@
     "selectSong": "Select a song to start playback.",
     "noEmbed": "Could not find an embeddable video for {{title}}.",
     "restoredSession": "Restored from your last session",
-    "runningStatus": "Brushing controls can pause or restart the timer and video together.",
+    "runningStatus": "Brushing controls keep the video and brushing guide in sync when you pause or resume.",
     "loadingVideo": "Loading new video...",
     "frameAria": "{{title}} by {{artist}}"
   },
@@ -183,17 +184,21 @@
     "restart": "Restart",
     "again": "Brush Again ({{duration}})",
     "stop": "Reset Timer",
+    "resetConfirm": "Press OK to reset only the brushing timer and keep the current song position. Press Cancel to restart both the song and brushing timer from the beginning.",
+    "resetConfirmRestartSuggested": "Only {{remaining}} of the song is left. Press OK to reset only the brushing timer and keep the current song position. Press Cancel to restart both the song and brushing timer from the beginning.",
     "timerNote": "Timer and guide run independently from YouTube controls, but the pacing is recalculated for the selected brush time.",
     "readyTitle": "Ready to brush",
     "readyDetail": "Brush with your {{hand}} hand and follow the guide once playback is ready.",
     "errors": {
       "needsTeeth": "Enter at least one tooth before starting a brushing session.",
-      "needsPlayback": "Start playback first, then press Start Brushing to begin only the brush timer and guide."
+      "needsPlayback": "Start playback first, then press Start Brushing to begin only the brush timer and guide.",
+      "songMayEndEarly": "Only {{remaining}} of the song is left, so you may want to restart the track for a full brush."
     },
     "guide": {
       "title": "Brush Map",
       "introMobile": "Follow the marker tooth-by-tooth. Transition buffers are built into the same {{minutes}}-minute session.",
       "introDesktop": "Brush all tooth surfaces evenly for the full {{minutes}}-minute brushing time. Hold the bristles at a 45-degree angle toward the gumline and use gentle motions to clean away from the gums, ensuring each quadrant is covered without extending the recommended brushing time.",
+      "countdownCallout": "Get your brush in position. Brushing starts in {{seconds}}s.",
       "handOrientation": "Hand Orientation",
       "leftView": "Left-handed view",
       "rightView": "Right-handed view",
@@ -201,6 +206,8 @@
       "activeOrientation": "Animated brush tracks {{label}} and shows the gum-away stroke for that quadrant.",
       "idleOrientation": "Align your {{hand}} hand to the highlighted quadrant, then start the session.",
       "mouthMapAria": "Dynamic tooth brushing map",
+      "startLabel": "Start In",
+      "switchLabel": "Switch In",
       "sessionLabel": "Session",
       "legendAria": "Brush guide legend",
       "legendFront": "Front tooth face",
@@ -223,6 +230,8 @@
     "cue": {
       "completeTitle": "Brushing complete",
       "completeDetail": "All sections are done. Restart when you are ready for another pass.",
+      "countdownTitle": "Get ready",
+      "countdownDetail": "Move into position. Brushing starts in {{seconds}}s.",
       "pausedTitle": "Paused",
       "pausedDetail": "Tap Resume to continue from the same tooth and video position.",
       "readyTitle": "Ready to brush",

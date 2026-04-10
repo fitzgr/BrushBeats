@@ -9,6 +9,7 @@ const MIN_BRUSHING_SECONDS = 60;
 const MAX_BRUSHING_SECONDS = 300;
 const TOOTH_SURFACES_PER_TOOTH = 2;
 const BEATS_PER_TOOTH = 4;
+const TRANSITION_BUFFER_SECONDS = 1;
 
 function getMaturityScore(totalTeeth) {
   return clamp((Number(totalTeeth) - 1) / 31, 0, 1);
@@ -47,7 +48,7 @@ function calculateBpm({ top = 16, bottom = 16, totalBrushingSeconds = DEFAULT_BR
   const totalToothActions = totalTeeth * TOOTH_SURFACES_PER_TOOTH;
   const maturityScore = getMaturityScore(totalTeeth);
   const detectedStage = describeTeethStage(totalTeeth);
-  const transitionBufferSeconds = Number((0.75 + (1 - maturityScore) * 0.5).toFixed(2));
+  const transitionBufferSeconds = TRANSITION_BUFFER_SECONDS;
   const brushingSegments = createBrushingSegments(safeTop, safeBottom);
   const totalTransitions = Math.max(0, brushingSegments.length - 1);
   const totalTransitionSeconds = Number((totalTransitions * transitionBufferSeconds).toFixed(2));
