@@ -66,6 +66,8 @@
     "routine": {
       "ariaLabel": "Hoja de ruta de cuidado dental",
       "title": "Cuidado dental completo",
+      "expand": "Ampliar hoja de ruta",
+      "collapse": "Reducir hoja de ruta",
       "available": "Disponible ahora",
       "comingSoon": "Proximamente",
       "brushing": {

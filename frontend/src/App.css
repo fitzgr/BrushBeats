@@ -151,6 +151,10 @@
 }
 
 .care-routine-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
   margin-bottom: 0.7rem;
 }
 
@@ -160,6 +164,21 @@
 
 .care-routine-header strong {
   color: #5f4724;
+}
+
+.care-routine-toggle {
+  border: 1px solid rgba(16, 33, 37, 0.14);
+  background: rgba(255, 255, 255, 0.74);
+  color: #5b676a;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  padding: 0.42rem 0.72rem;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
 .care-routine-grid {
@@ -2717,6 +2736,15 @@ select {
 }
 
 @media (max-width: 520px) {
+  .care-routine-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .care-routine-toggle {
+    align-self: flex-start;
+  }
+
   .care-routine-grid {
     grid-template-columns: 1fr;
   }

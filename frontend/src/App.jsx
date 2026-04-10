@@ -186,8 +186,10 @@ function App() {
 
     return supportedLanguageOptions.find((option) => option.value !== "en")?.value || "es";
   }, [i18n.resolvedLanguage, supportedLanguageOptions]);
+  const isReturningVisitor = compactRoutineRef.current;
+  const [isRoutineExpanded, setIsRoutineExpanded] = useState(!isReturningVisitor);
   const hideRestoredReadyCue = device.isMobile && autoRestoredBrushView && (!brushControlCue || brushControlCue.kind === "ready");
-  const showCompactRoutine = compactRoutineRef.current;
+  const showCompactRoutine = isReturningVisitor && !isRoutineExpanded;
 
   useEffect(() => {
     if (device.isMobile && appView === "workshop") {
@@ -218,6 +220,12 @@ function App() {
   useEffect(() => {
     playbackSecondsRef.current = playbackSeconds;
   }, [playbackSeconds]);
+
+  useEffect(() => {
+    if (isReturningVisitor && workflowStep === "brush") {
+      setIsRoutineExpanded(false);
+    }
+  }, [isReturningVisitor, workflowStep]);
 
   function applySavedSession(session) {
     if (!session) {
@@ -472,6 +480,12 @@ function App() {
       restoredSessionRef.current = null;
     }
 
+    if (autoRestoredBrushView && workflowStep === "brush") {
+      return () => {
+        cancelled = true;
+      };
+    }
+
     async function loadBpm() {
       try {
         setLoading((prev) => ({ ...prev, bpm: true }));
@@ -497,7 +511,7 @@ function App() {
     return () => {
       cancelled = true;
     };
-  }, [values, brushDurationSeconds]);
+  }, [autoRestoredBrushView, brushDurationSeconds, values, workflowStep]);
 
   useEffect(() => {
     if (timer.running || brushingPhase === "paused" || brushingPhase === "complete") {
@@ -1016,6 +1030,15 @@ function App() {
       <section className={`care-routine-strip${showCompactRoutine ? " compact" : ""}`} aria-label={t("app.routine.ariaLabel")}>
         <div className="care-routine-header">
           <strong>{t("app.routine.title")}</strong>
+          {isReturningVisitor && (
+            <button
+              type="button"
+              className="care-routine-toggle"
+              onClick={() => setIsRoutineExpanded((current) => !current)}
+            >
+              {isRoutineExpanded ? t("app.routine.collapse") : t("app.routine.expand")}
+            </button>
+          )}
         </div>
         {showCompactRoutine ? (
           <div className="care-routine-compact-layout">

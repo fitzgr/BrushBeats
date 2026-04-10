@@ -66,6 +66,8 @@
     "routine": {
       "ariaLabel": "Dental care roadmap",
       "title": "Complete dental care",
+      "expand": "Expand roadmap",
+      "collapse": "Collapse roadmap",
       "available": "Available now",
       "comingSoon": "Coming soon",
       "brushing": {

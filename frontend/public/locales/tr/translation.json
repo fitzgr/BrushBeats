@@ -66,6 +66,8 @@
     "routine": {
       "ariaLabel": "Ağız bakımı yol haritası",
       "title": "Tam diş bakımı",
+      "expand": "Yol haritasını genişlet",
+      "collapse": "Yol haritasını daralt",
       "available": "Şimdi kullanılabilir",
       "comingSoon": "Yakında",
       "brushing": {
