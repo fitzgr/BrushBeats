@@ -157,6 +157,8 @@ function App() {
   const lastPlaybackTickRef = useRef(null);
   const playbackSecondsRef = useRef(0);
   const countdownDeadlineRef = useRef(null);
+  const playOnCountdownEndRef = useRef(false);
+  const compactRoutineRef = useRef(storageBannerDismissed || storageConsent !== "unknown");
   const preferencesHydratedRef = useRef(false);
   const repeatSessionBootstrapRef = useRef(false);
   const restoredSessionRef = useRef(null);
@@ -185,6 +187,7 @@ function App() {
     return supportedLanguageOptions.find((option) => option.value !== "en")?.value || "es";
   }, [i18n.resolvedLanguage, supportedLanguageOptions]);
   const hideRestoredReadyCue = device.isMobile && autoRestoredBrushView && (!brushControlCue || brushControlCue.kind === "ready");
+  const showCompactRoutine = compactRoutineRef.current;
 
   useEffect(() => {
     if (device.isMobile && appView === "workshop") {
@@ -523,6 +526,10 @@ function App() {
       setTimer({ running: true, remaining: totalSeconds });
       setBrushingPhase("running");
       lastPlaybackTickRef.current = playbackSecondsRef.current;
+      if (playOnCountdownEndRef.current) {
+        playOnCountdownEndRef.current = false;
+        issuePlayerCommand("play");
+      }
       return;
     }
 
@@ -739,7 +746,17 @@ function App() {
       setBrushingPhase("countdown");
     }
 
-    issuePlayerCommand(shouldRestartVideo ? "restart" : "play");
+    if (shouldResume) {
+      if (!hasPendingCountdown || !playOnCountdownEndRef.current) {
+        issuePlayerCommand("play");
+      }
+    } else if (shouldRestartVideo) {
+      playOnCountdownEndRef.current = true;
+      issuePlayerCommand("reset");
+    } else {
+      playOnCountdownEndRef.current = false;
+      issuePlayerCommand("play");
+    }
 
     if (shouldResume) {
       trackEvent("brushing_resumed", { song_title: selectedSong?.title, song_artist: selectedSong?.artist, remaining_seconds: timer.remaining });
@@ -819,7 +836,7 @@ function App() {
     const resetBrushOnly = typeof window === "undefined" ? true : window.confirm(confirmMessage);
 
     if (!resetBrushOnly) {
-      issuePlayerCommand("restart");
+      issuePlayerCommand("reset");
       setPlaybackSeconds(0);
       lastPlaybackTickRef.current = 0;
     } else if (needsSongRestart) {
@@ -831,6 +848,7 @@ function App() {
     setBrushingMusicElapsedSeconds(0);
     setCountdownRemainingMs(0);
     countdownDeadlineRef.current = null;
+    playOnCountdownEndRef.current = false;
     setTimer({ running: false, remaining: totalSeconds });
     setBrushingPhase("idle");
     queuedSongRef.current = null;
@@ -995,27 +1013,41 @@ function App() {
           </button>
       </nav>
 
-      <section className="care-routine-strip" aria-label={t("app.routine.ariaLabel")}>
+      <section className={`care-routine-strip${showCompactRoutine ? " compact" : ""}`} aria-label={t("app.routine.ariaLabel")}>
         <div className="care-routine-header">
           <strong>{t("app.routine.title")}</strong>
         </div>
-        <div className="care-routine-grid">
-          <article className="care-routine-card active">
-            <span className="care-routine-badge">{t("app.routine.available")}</span>
-            <strong>{t("app.routine.brushing.title")}</strong>
-            <p>{t("app.routine.brushing.description")}</p>
-          </article>
-          <article className="care-routine-card coming-soon" aria-disabled="true">
-            <span className="care-routine-badge">{t("app.routine.comingSoon")}</span>
-            <strong>{t("app.routine.flossing.title")}</strong>
-            <p>{t("app.routine.flossing.description")}</p>
-          </article>
-          <article className="care-routine-card coming-soon" aria-disabled="true">
-            <span className="care-routine-badge">{t("app.routine.comingSoon")}</span>
-            <strong>{t("app.routine.waterPicking.title")}</strong>
-            <p>{t("app.routine.waterPicking.description")}</p>
-          </article>
-        </div>
+        {showCompactRoutine ? (
+          <div className="care-routine-compact-layout">
+            <article className="care-routine-card active compact-primary">
+              <span className="care-routine-badge">{t("app.routine.available")}</span>
+              <strong>{t("app.routine.brushing.title")}</strong>
+              <p>{t("app.routine.brushing.description")}</p>
+            </article>
+            <div className="care-routine-mini-list" aria-label={t("app.routine.ariaLabel")}>
+              <span className="care-routine-mini-pill">{t("app.routine.flossing.title")} · {t("app.routine.comingSoon")}</span>
+              <span className="care-routine-mini-pill">{t("app.routine.waterPicking.title")} · {t("app.routine.comingSoon")}</span>
+            </div>
+          </div>
+        ) : (
+          <div className="care-routine-grid">
+            <article className="care-routine-card active">
+              <span className="care-routine-badge">{t("app.routine.available")}</span>
+              <strong>{t("app.routine.brushing.title")}</strong>
+              <p>{t("app.routine.brushing.description")}</p>
+            </article>
+            <article className="care-routine-card coming-soon" aria-disabled="true">
+              <span className="care-routine-badge">{t("app.routine.comingSoon")}</span>
+              <strong>{t("app.routine.flossing.title")}</strong>
+              <p>{t("app.routine.flossing.description")}</p>
+            </article>
+            <article className="care-routine-card coming-soon" aria-disabled="true">
+              <span className="care-routine-badge">{t("app.routine.comingSoon")}</span>
+              <strong>{t("app.routine.waterPicking.title")}</strong>
+              <p>{t("app.routine.waterPicking.description")}</p>
+            </article>
+          </div>
+        )}
       </section>
 
       {languageFallbackState.needsSupportedLanguageChoice && (
@@ -1273,6 +1305,7 @@ function App() {
             isMobile={device.isMobile}
             playbackSeconds={playbackSeconds}
             brushingMusicElapsedSeconds={brushingMusicElapsedSeconds}
+            startCountdownTotalMs={START_DELAY_SECONDS * 1000}
             startCountdownRemainingMs={countdownRemainingMs}
             brushingHand={brushingHand}
             hideIntro={device.isMobile && autoRestoredBrushView}

@@ -171,12 +171,9 @@ function Player({
     }
 
     if (playbackCommand.type === "restart") {
-      if (videoId && playerRef.current.loadVideoById) {
-        playerRef.current.loadVideoById(videoId, 0);
-      } else {
-        playerRef.current.seekTo?.(0, true);
-        playerRef.current.playVideo?.();
-      }
+      stopTickTimer();
+      playerRef.current.seekTo?.(0, true);
+      playerRef.current.playVideo?.();
       onPlaybackTickRef.current?.(0);
       return;
     }

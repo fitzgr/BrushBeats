@@ -146,8 +146,16 @@
   background: linear-gradient(135deg, rgba(255, 252, 246, 0.96), rgba(243, 239, 231, 0.94));
 }
 
+.care-routine-strip.compact {
+  padding: 0.7rem 0.8rem;
+}
+
 .care-routine-header {
   margin-bottom: 0.7rem;
+}
+
+.care-routine-strip.compact .care-routine-header {
+  margin-bottom: 0.45rem;
 }
 
 .care-routine-header strong {
@@ -158,6 +166,13 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.7rem;
+}
+
+.care-routine-compact-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(240px, 0.95fr);
+  gap: 0.65rem;
+  align-items: stretch;
 }
 
 .care-routine-card {
@@ -189,6 +204,17 @@
   border-color: rgba(202, 95, 22, 0.24);
 }
 
+.care-routine-card.compact-primary {
+  padding: 0.75rem 0.85rem;
+  align-content: center;
+}
+
+.care-routine-card.compact-primary p {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
 .care-routine-badge {
   display: inline-flex;
   justify-self: start;
@@ -205,6 +231,28 @@
 .care-routine-card.active .care-routine-badge {
   background: rgba(202, 95, 22, 0.12);
   color: #8a4716;
+}
+
+.care-routine-mini-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+}
+
+.care-routine-mini-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(16, 33, 37, 0.12);
+  background: rgba(255, 255, 255, 0.76);
+  color: #5b676a;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .language-simulator-card {
@@ -2506,11 +2554,34 @@ select {
   font-size: 34px;
   fill: #ffffff;
   font-weight: 800;
+  paint-order: stroke fill;
+  stroke: rgba(3, 13, 30, 0.38);
+  stroke-width: 1.6px;
+}
+
+.map-score.countdown {
+  filter: drop-shadow(0 0 14px rgba(255, 234, 163, 0.3));
+  letter-spacing: 0.03em;
+}
+
+.map-score-whole {
+  font-size: 34px;
+}
+
+.map-score-fraction {
+  font-size: 23px;
+  font-weight: 900;
 }
 
 .map-score-label {
   font-size: 12px;
   fill: #d7e6ff;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.map-score-label.countdown {
+  font-weight: 800;
 }
 
 .guide-callout {
@@ -2648,6 +2719,19 @@ select {
 @media (max-width: 520px) {
   .care-routine-grid {
     grid-template-columns: 1fr;
+  }
+
+  .care-routine-compact-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .care-routine-mini-list {
+    padding-top: 0;
+  }
+
+  .care-routine-mini-pill {
+    width: 100%;
+    justify-content: center;
   }
 
   .language-simulator-control {

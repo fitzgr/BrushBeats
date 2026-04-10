@@ -322,7 +322,38 @@ function formatTenths(seconds) {
   return Math.max(0, seconds).toFixed(1);
 }
 
-function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, playbackSeconds, brushingMusicElapsedSeconds, startCountdownRemainingMs = 0, brushingHand, hideIntro = false, onCueChange }) {
+function mixColor(start, end, amount) {
+  return start.map((channel, index) => Math.round(channel + (end[index] - channel) * clampNumber(amount, 0, 1)));
+}
+
+function toRgb(channels) {
+  return `rgb(${channels[0]} ${channels[1]} ${channels[2]})`;
+}
+
+function getCountdownSignal(remainingMs, totalMs) {
+  const safeTotalMs = Math.max(1, Number(totalMs) || 0);
+  const progress = clampNumber(1 - (Number(remainingMs) || 0) / safeTotalMs, 0, 1);
+  const red = [239, 68, 68];
+  const yellow = [250, 204, 21];
+  const green = [34, 197, 94];
+  const warmWhite = [255, 252, 245];
+  const coolWhite = [240, 255, 245];
+  const base = progress < 0.5
+    ? mixColor(red, yellow, progress / 0.5)
+    : mixColor(yellow, green, (progress - 0.5) / 0.5);
+  const accent = mixColor(base, [255, 255, 255], 0.18);
+  const label = progress < 0.5
+    ? mixColor(warmWhite, [255, 244, 184], progress / 0.5)
+    : mixColor([255, 244, 184], coolWhite, (progress - 0.5) / 0.5);
+
+  return {
+    primary: toRgb(base),
+    accent: toRgb(accent),
+    label: toRgb(label)
+  };
+}
+
+function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, playbackSeconds, brushingMusicElapsedSeconds, startCountdownTotalMs = 5000, startCountdownRemainingMs = 0, brushingHand, hideIntro = false, onCueChange }) {
   const { t } = useTranslation();
   const totalSeconds = Number(bpmData?.totalBrushingSeconds || 120);
   const topTeeth = Number(values?.top || 16);
@@ -355,9 +386,11 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
   const activeToothProgress = activeToothEntry
     ? clampNumber((elapsedSeconds - activeToothEntry.startsAt) / Math.max(0.001, activeToothEntry.endsAt - activeToothEntry.startsAt), 0, 1)
     : 0;
-  const progress = toothEntries.length > 0
-    ? Math.min(100, ((completedToothEntries + activeToothProgress) / toothEntries.length) * 100)
-    : 0;
+  const progress = brushingPhase === "complete"
+    ? 100
+    : toothEntries.length > 0
+      ? Math.min(100, ((completedToothEntries + activeToothProgress) / toothEntries.length) * 100)
+      : 0;
   const orientationLabel = activeEntry?.type === "transition" ? activeEntry.toLabel : activeToothEntry?.label;
   const activeSide = getLabelSide(orientationLabel);
   const activeJaw = getLabelJaw(orientationLabel);
@@ -609,6 +642,8 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
     : activeEntry?.type === "transition"
       ? formatTenths(transitionCountdownSeconds)
       : `${Math.round(progress)}%`;
+  const countdownSignal = getCountdownSignal(startCountdownRemainingMs, startCountdownTotalMs);
+  const [countdownWhole = "0", countdownFraction = "0"] = centerValue.split(".");
   const handOrientationText = brushFacingDirection
     ? t("brushing.guide.handOrientationCompact", {
         hand: t(`common.hands.${brushingHand}`),
@@ -819,8 +854,23 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
 
           {bottomPoints.map((point, index) => renderTooth(point, "bottom", bottomToothChart[index], index))}
 
-          <text x="180" y="216" textAnchor="middle" className="map-score">{centerValue}</text>
-          <text x="180" y="238" textAnchor="middle" className="map-score-label">{centerLabel}</text>
+          {brushingPhase === "countdown" ? (
+            <text x="180" y="216" textAnchor="middle" className="map-score countdown">
+              <tspan className="map-score-whole" style={{ fill: countdownSignal.primary }}>{countdownWhole}</tspan>
+              <tspan className="map-score-fraction" style={{ fill: countdownSignal.accent }}>{`.${countdownFraction}`}</tspan>
+            </text>
+          ) : (
+            <text x="180" y="216" textAnchor="middle" className="map-score">{centerValue}</text>
+          )}
+          <text
+            x="180"
+            y="238"
+            textAnchor="middle"
+            className={`map-score-label${brushingPhase === "countdown" ? " countdown" : ""}`}
+            style={brushingPhase === "countdown" ? { fill: countdownSignal.label } : undefined}
+          >
+            {centerLabel}
+          </text>
         </svg>
       </div>
 
