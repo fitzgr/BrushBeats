@@ -67,6 +67,10 @@ export function getYoutubeVideo({ title, artist }) {
   return request(`/api/youtube?${params.toString()}`);
 }
 
+export function getGeoCountry() {
+  return request("/api/geo/country");
+}
+
 export function getAdminLocale(language, password) {
   return requestWithOptions(`/api/admin/locales/${encodeURIComponent(language)}`, {
     headers: {

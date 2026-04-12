@@ -87,7 +87,9 @@
     "lastSession": {
       "summary": "Son oturum: {{artist}} tarafından {{title}}, üstte {{top}} diş, altta {{bottom}} diş, fırçalama süresi {{duration}}."
     },
-    "success": "Harika iş, {{duration}} temizlik tamamlandı. Daha güçlü dişler ve daha sağlıklı diş etleri için bu alışkanlığı her gün sürdür."
+    "success": "Harika iş, {{duration}} temizlik tamamlandı. Daha güçlü dişler ve daha sağlıklı diş etleri için bu alışkanlığı her gün sürdür.",
+    "successAgeGroups": "Yaşa göre ayrılmış pekiştirme grupları: {{count}}",
+    "geoDebug": "Geo hata ayıklama: {{country}} ({{countryCode}}) | IP {{ip}} | kaynak {{source}}"
   },
   "settings": {
     "language": "Dil",
@@ -210,7 +212,10 @@
       "mouthMapAria": "Dinamik diş fırçalama haritası",
       "startLabel": "Başlangıç",
       "switchLabel": "Geçiş",
+      "actionLabel": "Eylem",
       "sessionLabel": "Oturum",
+      "brushNowLabel": "Şimdi fırçala",
+      "cleanShineLabel": "Parla",
       "legendAria": "Fırçalama rehberi açıklaması",
       "legendFront": "Ön diş yüzeyi",
       "legendBack": "Arka diş yüzeyi",
@@ -222,6 +227,8 @@
       "activeCurrentCallout": "Şimdi {{label}} bölgesini {{toothLabel}} üzerinde fırçalayın, {{size}} içinde {{position}}. diş. {{seconds}} sn sonra ilerleyin.",
       "handOrientationCompact": "{{hand}} elinizi kullanın ve fırçayı {{direction}} çevirin.",
       "transitionCallout": "{{fromLabel}} konumundan {{toLabel}} konumuna geçiş. {{seconds}} sn sonra devam edin.",
+      "switchHandCallout": "Elinizi şimdi değiştirin.",
+      "rotateCallout": "Fırça açısını şimdi döndürün.",
       "activeCalloutMobile": "{{label}}, {{position}}/{{size}}. diş. {{seconds}} sn sonra ilerleyin.",
       "activeCalloutDesktop": "Şimdi {{label}} bölgesini fırçalayın, {{size}} içinde {{position}}. diş. Şarkı hedefi yaklaşık {{bpm}} BPM. {{seconds}} sn sonra ilerleyin.{{transitionNotice}}",
       "transitionNotice": " {{seconds}} sn sonra geçiş.",
@@ -244,6 +251,10 @@
       "sideSwitchDetail": "Ağzın {{fromSide}} tarafından {{toSide}} tarafına geçin. Fırça {{hand}} elinizde kalsın ve erişimi ayarlayın.",
       "transitionTitle": "Geçiş aralığı",
       "transitionDetail": "{{fromLabel}} konumundan {{toLabel}} konumuna geçiş. {{seconds}} sn sonra devam edin.",
+      "switchHandTitle": "Elini değiştir",
+      "switchHandDetail": "Bir sonraki bölüm için {{hand}} elinizdeki tutuşu şimdi değiştirin.",
+      "rotateTitle": "Döndür",
+      "rotateDetail": "Fırça açısını döndürün ve yumuşak hareketlerle devam edin.",
       "activeTitle": "{{label}} bölgesini fırçala",
       "activeDetail": "{{size}} içinde {{position}}. diş. Fırça {{hand}} elinizde kalsın ve {{seconds}} sn sonra ilerleyin."
     },
@@ -274,6 +285,11 @@
     "motions": {
       "top": "Diş etinden uzağa doğru aşağı fırçala",
       "bottom": "Diş etinden uzağa doğru yukarı fırçala"
+    },
+    "switchPrompts": {
+      "switchHand": "Elini değiştir",
+      "rotate": "Döndür",
+      "transition": "Geçiş"
     },
     "technique": "{{quadrant}}: {{motion}} hareketini {{hand}} elinizle yapın.",
     "toothChart": {

@@ -6,7 +6,8 @@ import Player from "./components/Player";
 import BrushingGuide from "./components/BrushingGuide";
 import TranslationWorkshop from "./components/TranslationWorkshop";
 import { getLanguageFallbackInfo, setPreferredSupportedLanguage } from "./i18n.ts";
-import { getBpm, getSongs, getYoutubeVideo } from "./api/client";
+import { getBpm, getGeoCountry, getSongs, getYoutubeVideo } from "./api/client";
+import { buildReinforcementPool, getAgeMessageGroupCount, pickReinforcementMessage } from "./lib/reinforcementMessages";
 import {
   analyticsEnabled,
   getAnalyticsConsentStatus,
@@ -151,6 +152,8 @@ function App() {
   const [queuedSongPreview, setQueuedSongPreview] = useState(null);
   const [playerCommand, setPlayerCommand] = useState({ type: "idle", nonce: 0 });
   const [autoRestoredBrushView, setAutoRestoredBrushView] = useState(false);
+  const [geoCountry, setGeoCountry] = useState(null);
+  const [completionMessage, setCompletionMessage] = useState("");
   const seenSongsByQueryRef = useRef(new Map());
   const playedSongsRef = useRef(new Set());
   const queuedSongRef = useRef(null);
@@ -162,6 +165,7 @@ function App() {
   const preferencesHydratedRef = useRef(false);
   const repeatSessionBootstrapRef = useRef(false);
   const restoredSessionRef = useRef(null);
+  const lastCompletionMessageRef = useRef("");
   const analyticsAvailable = useMemo(() => analyticsEnabled(), []);
   const device = useDeviceContext();
   const totalTeeth = values.top + values.bottom;
@@ -190,6 +194,51 @@ function App() {
   const [isRoutineExpanded, setIsRoutineExpanded] = useState(!isReturningVisitor);
   const hideRestoredReadyCue = device.isMobile && autoRestoredBrushView && (!brushControlCue || brushControlCue.kind === "ready");
   const showCompactRoutine = isReturningVisitor && !isRoutineExpanded;
+  const reinforcementPool = useMemo(
+    () => buildReinforcementPool(ageEstimate?.phase, totalTeeth),
+    [ageEstimate?.phase, totalTeeth]
+  );
+  const ageGroupCount = getAgeMessageGroupCount();
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchGeoCountry() {
+      try {
+        const response = await getGeoCountry();
+        if (isMounted) {
+          setGeoCountry(response);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setGeoCountry({
+            ok: false,
+            ip: "unknown",
+            country: "Unknown",
+            countryCode: "--",
+            source: "error",
+            detail: err?.message || "lookup failed"
+          });
+        }
+      }
+    }
+
+    void fetchGeoCountry();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (brushingPhase !== "complete") {
+      return;
+    }
+
+    const nextMessage = pickReinforcementMessage(reinforcementPool, lastCompletionMessageRef.current);
+    lastCompletionMessageRef.current = nextMessage;
+    setCompletionMessage(nextMessage);
+  }, [brushingPhase, reinforcementPool]);
 
   useEffect(() => {
     if (device.isMobile && appView === "workshop") {
@@ -981,6 +1030,14 @@ function App() {
         <p>{subtitle}</p>
         <p className={`state-chip ${brushingPhase}`}>{t("app.status.label", { state: phaseLabel })}</p>
         <p className={`mode-chip ${device.mode}`}>{device.isMobile ? t("common.layouts.mobile") : t("common.layouts.desktop")}</p>
+        <p className="geo-debug-chip" aria-live="polite">
+          {t("app.geoDebug", {
+            country: geoCountry?.country || "Unknown",
+            countryCode: geoCountry?.countryCode || "--",
+            ip: geoCountry?.ip || "unknown",
+            source: geoCountry?.source || "pending"
+          })}
+        </p>
         {!device.isMobile && (
           <div className="header-utility-row">
             <button
@@ -1266,7 +1323,9 @@ function App() {
                 </div>
                 {brushingPhase === "complete" && (
                   <section className="success-banner brush-success-banner" aria-live="polite">
-                    {t("app.success", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) })}
+                    <span className="sparkle-stars" aria-hidden="true">✦ ✧ ✦</span>
+                    <p>{completionMessage || t("app.success", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) })}</p>
+                    <small>{t("app.successAgeGroups", { count: ageGroupCount })}</small>
                   </section>
                 )}
                 <p className="timer-note">{t("brushing.timerNote")}</p>
@@ -1312,7 +1371,9 @@ function App() {
               </div>
               {brushingPhase === "complete" && (
                 <section className="success-banner brush-success-banner" aria-live="polite">
-                  {t("app.success", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) })}
+                  <span className="sparkle-stars" aria-hidden="true">✦ ✧ ✦</span>
+                  <p>{completionMessage || t("app.success", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) })}</p>
+                  <small>{t("app.successAgeGroups", { count: ageGroupCount })}</small>
                 </section>
               )}
               </>
@@ -1333,6 +1394,7 @@ function App() {
             brushingHand={brushingHand}
             hideIntro={device.isMobile && autoRestoredBrushView}
             onCueChange={setBrushControlCue}
+            completionMessage={completionMessage}
           />
         </section>
       )}

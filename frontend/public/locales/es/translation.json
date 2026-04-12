@@ -87,7 +87,9 @@
     "lastSession": {
       "summary": "Ultima sesion: {{title}} de {{artist}}, {{top}} dientes arriba, {{bottom}} abajo y {{duration}} de cepillado."
     },
-    "success": "Muy bien. Terminaste tu limpieza de {{duration}}. Mantener este habito todos los dias ayuda a fortalecer los dientes y cuidar las encias."
+    "success": "Muy bien. Terminaste tu limpieza de {{duration}}. Mantener este habito todos los dias ayuda a fortalecer los dientes y cuidar las encias.",
+    "successAgeGroups": "Grupos de refuerzo por edad: {{count}}",
+    "geoDebug": "Depuracion geo: {{country}} ({{countryCode}}) | IP {{ip}} | fuente {{source}}"
   },
   "settings": {
     "language": "Idioma",
@@ -210,7 +212,10 @@
       "mouthMapAria": "Mapa dinamico de cepillado dental",
       "startLabel": "Empieza en",
       "switchLabel": "Cambia en",
+      "actionLabel": "Accion",
       "sessionLabel": "Sesion",
+      "brushNowLabel": "Cepilla ahora",
+      "cleanShineLabel": "Brilla",
       "legendAria": "Leyenda de la guia de cepillado",
       "legendFront": "Cara frontal del diente",
       "legendBack": "Cara posterior del diente",
@@ -222,6 +227,8 @@
       "activeCurrentCallout": "Cepilla {{label}} ahora en {{toothLabel}}, diente {{position}} de {{size}}. Cambia en {{seconds}} s.",
       "handOrientationCompact": "Usa tu mano {{hand}} y apunta el cepillo hacia el {{direction}}.",
       "transitionCallout": "Transicion de {{fromLabel}} a {{toLabel}}. Reanuda el cepillado en {{seconds}} s.",
+      "switchHandCallout": "Cambia tu mano ahora.",
+      "rotateCallout": "Gira ahora el angulo del cepillo.",
       "activeCalloutMobile": "{{label}}, diente {{position}}/{{size}}. Cambia en {{seconds}} s.",
       "activeCalloutDesktop": "Cepilla {{label}} ahora, diente {{position}} de {{size}}. La meta de la cancion es ~{{bpm}} BPM. Cambia en {{seconds}} s.{{transitionNotice}}",
       "transitionNotice": " Transicion en {{seconds}} s.",
@@ -244,6 +251,10 @@
       "sideSwitchDetail": "Pasa del lado {{fromSide}} al lado {{toSide}} de la boca. Mantén el cepillo en tu mano {{hand}} y ajusta el alcance.",
       "transitionTitle": "Pausa de transicion",
       "transitionDetail": "Transicion de {{fromLabel}} a {{toLabel}}. Reanuda en {{seconds}} s.",
+      "switchHandTitle": "Cambia tu mano",
+      "switchHandDetail": "Cambia ahora el agarre con tu mano {{hand}} para la siguiente zona.",
+      "rotateTitle": "Gira",
+      "rotateDetail": "Gira el angulo del cepillo y continua con movimientos suaves.",
       "activeTitle": "Cepilla {{label}}",
       "activeDetail": "Diente {{position}} de {{size}}. Mantén el cepillo en tu mano {{hand}} y cambia en {{seconds}} s."
     },
@@ -274,6 +285,11 @@
     "motions": {
       "top": "Cepilla hacia abajo alejandote de la encia",
       "bottom": "Cepilla hacia arriba alejandote de la encia"
+    },
+    "switchPrompts": {
+      "switchHand": "Cambia tu mano",
+      "rotate": "Gira",
+      "transition": "Transicion"
     },
     "technique": "{{quadrant}}: {{motion}} con tu mano {{hand}}.",
     "toothChart": {

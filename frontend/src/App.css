@@ -127,6 +127,18 @@
   color: #40545a;
 }
 
+.geo-debug-chip {
+  margin: 0.4rem 0 0;
+  display: inline-flex;
+  padding: 0.3rem 0.62rem;
+  border-radius: 999px;
+  border: 1px dashed rgba(16, 33, 37, 0.26);
+  background: rgba(255, 255, 255, 0.52);
+  color: #1f3b53;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
 .workflow-tabs {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2578,6 +2590,11 @@ select {
   stroke-width: 1.6px;
 }
 
+.map-score.word {
+  font-size: 16px;
+  letter-spacing: 0.03em;
+}
+
 .map-score.countdown {
   filter: drop-shadow(0 0 14px rgba(255, 234, 163, 0.3));
   letter-spacing: 0.03em;
@@ -2610,6 +2627,11 @@ select {
   background: #f6efe3;
   border: 1px solid rgba(16, 33, 37, 0.12);
   font-weight: 700;
+}
+
+.guide-callout.complete {
+  background: linear-gradient(135deg, #fff8e8, #ebf8ef);
+  border-color: rgba(36, 116, 70, 0.24);
 }
 
 .brush-hand-orientation {
@@ -2888,6 +2910,40 @@ select {
   background: linear-gradient(130deg, rgba(183, 224, 197, 0.5), rgba(255, 249, 239, 0.9));
   padding: 0.95rem 1rem;
   font-weight: 700;
+}
+
+.success-banner p {
+  margin: 0;
+}
+
+.success-banner small {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  color: #2f5f45;
+}
+
+.sparkle-stars {
+  display: inline-block;
+  margin-bottom: 0.35rem;
+  color: #b68524;
+  letter-spacing: 0.2rem;
+  animation: sparklePulse 1.4s ease-in-out infinite;
+}
+
+@keyframes sparklePulse {
+  0% {
+    transform: translateY(0) scale(0.96);
+    opacity: 0.65;
+  }
+  50% {
+    transform: translateY(-1px) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(0.96);
+    opacity: 0.65;
+  }
 }
 
 .credit-strip {

@@ -210,6 +210,28 @@ function buildSegments(topTeeth, bottomTeeth) {
 function buildTimeline(segments, secondsPerTooth, transitionBufferSeconds) {
   const timeline = [];
   let cursor = 0;
+  const transitionCount = Math.max(0, segments.length - 1);
+
+  function buildTransitionPrompt(order) {
+    if (order === 1 || order === transitionCount) {
+      return {
+        cue: "switchHand",
+        seconds: 1
+      };
+    }
+
+    if (order === 2 || order === 4) {
+      return {
+        cue: "rotate",
+        seconds: 0.75
+      };
+    }
+
+    return {
+      cue: "transition",
+      seconds: transitionBufferSeconds
+    };
+  }
 
   segments.forEach((segment, segmentIndex) => {
     segment.mapIndices.forEach((mapIndex, toothIndex) => {
@@ -229,15 +251,20 @@ function buildTimeline(segments, secondsPerTooth, transitionBufferSeconds) {
     });
 
     if (segmentIndex < segments.length - 1) {
+      const transitionOrder = segmentIndex + 1;
+      const transitionPrompt = buildTransitionPrompt(transitionOrder);
+
       timeline.push({
         type: "transition",
         key: `transition-${segment.key}`,
         fromLabel: segment.label,
         toLabel: segments[segmentIndex + 1].label,
+        transitionOrder,
+        transitionCue: transitionPrompt.cue,
         startsAt: cursor,
-        endsAt: cursor + transitionBufferSeconds
+        endsAt: cursor + transitionPrompt.seconds
       });
-      cursor += transitionBufferSeconds;
+      cursor += transitionPrompt.seconds;
     }
   });
 
@@ -353,7 +380,7 @@ function getCountdownSignal(remainingMs, totalMs) {
   };
 }
 
-function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, playbackSeconds, brushingMusicElapsedSeconds, startCountdownTotalMs = 5000, startCountdownRemainingMs = 0, brushingHand, hideIntro = false, onCueChange }) {
+function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, playbackSeconds, brushingMusicElapsedSeconds, startCountdownTotalMs = 5000, startCountdownRemainingMs = 0, brushingHand, hideIntro = false, onCueChange, completionMessage = "" }) {
   const { t } = useTranslation();
   const totalSeconds = Number(bpmData?.totalBrushingSeconds || 120);
   const topTeeth = Number(values?.top || 16);
@@ -453,6 +480,26 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
     }
 
     if (activeEntry?.type === "transition") {
+      if (activeEntry.transitionCue === "switchHand") {
+        onCueChange({
+          kind: "side-switch",
+          title: t("brushing.cue.switchHandTitle"),
+          detail: t("brushing.cue.switchHandDetail", {
+            hand: t(`common.hands.${brushingHand}`)
+          })
+        });
+        return;
+      }
+
+      if (activeEntry.transitionCue === "rotate") {
+        onCueChange({
+          kind: "transition",
+          title: t("brushing.cue.rotateTitle"),
+          detail: t("brushing.cue.rotateDetail")
+        });
+        return;
+      }
+
       const fromRight = activeEntry.fromLabel.includes("Right");
       const toRight = activeEntry.toLabel.includes("Right");
       const fromTop = activeEntry.fromLabel.includes("Top");
@@ -612,11 +659,15 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
     ? t("brushing.guide.countdownCallout", { seconds: formatTenths(startCountdownRemainingMs / 1000) })
     : brushingPhase === "running"
     ? activeEntry?.type === "transition"
-      ? t("brushing.guide.transitionCallout", {
-          fromLabel: getSegmentLabel(t, activeEntry.fromLabel),
-          toLabel: getSegmentLabel(t, activeEntry.toLabel),
-          seconds: formatTenths(transitionCountdownSeconds)
-        })
+      ? activeEntry.transitionCue === "switchHand"
+        ? t("brushing.guide.switchHandCallout")
+        : activeEntry.transitionCue === "rotate"
+          ? t("brushing.guide.rotateCallout")
+          : t("brushing.guide.transitionCallout", {
+              fromLabel: getSegmentLabel(t, activeEntry.fromLabel),
+              toLabel: getSegmentLabel(t, activeEntry.toLabel),
+              seconds: formatTenths(transitionCountdownSeconds)
+            })
       : t("brushing.guide.activeCurrentCallout", {
           label: getSegmentLabel(t, activeToothEntry?.label),
           toothLabel: getToothLabel(t, activeToothMeta),
@@ -635,13 +686,15 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
   const centerLabel = brushingPhase === "countdown"
     ? t("brushing.guide.startLabel")
     : activeEntry?.type === "transition"
-      ? t("brushing.guide.switchLabel")
+      ? t("brushing.guide.actionLabel")
       : t("brushing.guide.sessionLabel");
   const centerValue = brushingPhase === "countdown"
     ? formatTenths(startCountdownRemainingMs / 1000)
     : activeEntry?.type === "transition"
-      ? formatTenths(transitionCountdownSeconds)
-      : `${Math.round(progress)}%`;
+      ? t(`brushing.switchPrompts.${activeEntry.transitionCue || "transition"}`)
+      : brushingPhase === "complete"
+        ? t("brushing.guide.cleanShineLabel")
+        : t("brushing.guide.brushNowLabel");
   const countdownSignal = getCountdownSignal(startCountdownRemainingMs, startCountdownTotalMs);
   const [countdownWhole = "0", countdownFraction = "0"] = centerValue.split(".");
   const handOrientationText = brushFacingDirection
@@ -860,7 +913,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
               <tspan className="map-score-fraction" style={{ fill: countdownSignal.accent }}>{`.${countdownFraction}`}</tspan>
             </text>
           ) : (
-            <text x="180" y="216" textAnchor="middle" className="map-score">{centerValue}</text>
+            <text x="180" y="216" textAnchor="middle" className="map-score word">{centerValue}</text>
           )}
           <text
             x="180"
@@ -892,7 +945,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
           </div>
         </div>
       )}
-      {guideStatusText && <p className="guide-callout">{guideStatusText}</p>}
+      {guideStatusText && <p className={`guide-callout${brushingPhase === "complete" ? " complete" : ""}`}>{brushingPhase === "complete" && completionMessage ? completionMessage : guideStatusText}</p>}
       {inactiveGuideText && <p className="guide-callout">{inactiveGuideText}</p>}
 
     </section>

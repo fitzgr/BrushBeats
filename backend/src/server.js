@@ -10,9 +10,12 @@ const bpmRoute = require("./routes/bpm");
 const songsRoute = require("./routes/songs");
 const youtubeRoute = require("./routes/youtube");
 const adminLocalesRoute = require("./routes/adminLocales");
+const geoRoute = require("./routes/geo");
 
 const app = express();
 const port = Number(process.env.PORT || 4000);
+
+app.set("trust proxy", true);
 
 app.use(cors());
 app.use(express.json());
@@ -34,6 +37,7 @@ app.use("/api/bpm", bpmRoute);
 app.use("/api/songs", songsRoute);
 app.use("/api/youtube", youtubeRoute);
 app.use("/api/admin/locales", adminLocalesRoute);
+app.use("/api/geo", geoRoute);
 
 app.use((error, _req, res, _next) => {
   console.error(error);

@@ -87,7 +87,9 @@
     "lastSession": {
       "summary": "Last session: {{title}} by {{artist}}, {{top}} top teeth, {{bottom}} bottom teeth, {{duration}} brush time."
     },
-    "success": "Great work, your {{duration}} clean is complete. Keep this habit daily for stronger teeth and healthier gums."
+    "success": "Great work, your {{duration}} clean is complete. Keep this habit daily for stronger teeth and healthier gums.",
+    "successAgeGroups": "Age-separated reinforcement groups: {{count}}",
+    "geoDebug": "Geo debug: {{country}} ({{countryCode}}) | IP {{ip}} | source {{source}}"
   },
   "settings": {
     "language": "Language",
@@ -210,7 +212,10 @@
       "mouthMapAria": "Dynamic tooth brushing map",
       "startLabel": "Start In",
       "switchLabel": "Switch In",
+      "actionLabel": "Action",
       "sessionLabel": "Session",
+      "brushNowLabel": "Brush now",
+      "cleanShineLabel": "Shine",
       "legendAria": "Brush guide legend",
       "legendFront": "Front tooth face",
       "legendBack": "Back tooth face",
@@ -222,6 +227,8 @@
       "activeCurrentCallout": "Brush {{label}} now on {{toothLabel}}, tooth {{position}} of {{size}}. Move in {{seconds}}s.",
       "handOrientationCompact": "Use your {{hand}} hand and point the brush toward the {{direction}} side.",
       "transitionCallout": "Transition from {{fromLabel}} to {{toLabel}}. Resume brushing in {{seconds}}s.",
+      "switchHandCallout": "Switch your hand now.",
+      "rotateCallout": "Rotate your brush angle now.",
       "activeCalloutMobile": "{{label}}, tooth {{position}}/{{size}}. Move in {{seconds}}s.",
       "activeCalloutDesktop": "Brush {{label}} now, tooth {{position}} of {{size}}. Song target is ~{{bpm}} BPM. Move in {{seconds}}s.{{transitionNotice}}",
       "transitionNotice": " Transition in {{seconds}}s.",
@@ -244,6 +251,10 @@
       "sideSwitchDetail": "Move from the {{fromSide}} side to the {{toSide}} side of the mouth. Keep the brush in your {{hand}} hand and adjust your reach.",
       "transitionTitle": "Transition buffer",
       "transitionDetail": "Transition from {{fromLabel}} to {{toLabel}}. Resume in {{seconds}}s.",
+      "switchHandTitle": "Switch your hand",
+      "switchHandDetail": "Switch your {{hand}} hand grip now and get ready for the next section.",
+      "rotateTitle": "Rotate",
+      "rotateDetail": "Rotate the brush angle and continue with gentle strokes.",
       "activeTitle": "Brush {{label}}",
       "activeDetail": "Tooth {{position}} of {{size}}. Keep the brush in your {{hand}} hand and move in {{seconds}}s."
     },
@@ -274,6 +285,11 @@
     "motions": {
       "top": "Brush down away from the gums",
       "bottom": "Brush up away from the gums"
+    },
+    "switchPrompts": {
+      "switchHand": "Switch your hand",
+      "rotate": "Rotate",
+      "transition": "Transition"
     },
     "technique": "{{quadrant}}: {{motion}} with your {{hand}} hand."
     ,"toothChart": {
