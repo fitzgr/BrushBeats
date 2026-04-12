@@ -739,7 +739,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
       ? ""
     : activeEntry?.type === "transition"
       ? t("brushing.guide.actionLabel")
-      : t("brushing.guide.sessionLabel");
+      : `${Math.round(progress)}%`;
   const centerValue = brushingPhase === "countdown"
     ? formatTenths(startCountdownRemainingMs / 1000)
     : activeEntry?.type === "transition"
@@ -978,7 +978,14 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
               ))}
             </text>
           ) : (
-            <text x="180" y="216" textAnchor="middle" className="map-score word">{centerValue}</text>
+            <text
+              x="180"
+              y="216"
+              textAnchor="middle"
+              className={`map-score word${activeEntry?.type === "transition" ? " orientation-emphasis" : ""}`}
+            >
+              {centerValue}
+            </text>
           )}
           {centerLabel && (
             <text
@@ -989,11 +996,6 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
               style={brushingPhase === "countdown" ? { fill: countdownSignal.label } : undefined}
             >
               {centerLabel}
-            </text>
-          )}
-          {!activeEntry?.type && brushingPhase !== "countdown" && brushingPhase !== "complete" && (
-            <text x="180" y="252" textAnchor="middle" className="map-score-progress-mini">
-              {`${Math.round(progress)}%`}
             </text>
           )}
         </svg>
