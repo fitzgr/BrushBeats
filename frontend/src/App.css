@@ -425,29 +425,39 @@
   color: var(--ink);
   font: inherit;
   font-weight: 700;
+  border-radius: 12px;
+  padding: 0.55rem 0.4rem;
+  cursor: pointer;
+}
+
 .version-history-view {
   display: grid;
   gap: 1rem;
 }
+
 .version-history-header {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
   align-items: flex-start;
 }
+
 .version-history-list {
   display: grid;
   gap: 0.75rem;
 }
+
 .version-history-card {
   padding: 0.9rem 1rem;
   border-radius: 14px;
   border: 1px solid rgba(16, 33, 37, 0.14);
   background: linear-gradient(135deg, rgba(255, 252, 246, 0.96), rgba(241, 247, 251, 0.92));
 }
+
 .version-history-card p {
   margin: 0.35rem 0 0;
 }
+
 .version-history-meta {
   display: flex;
   gap: 0.65rem;
@@ -456,9 +466,24 @@
   color: #35546d;
   font-size: 0.85rem;
 }
-  border-radius: 12px;
-  padding: 0.55rem 0.4rem;
-  cursor: pointer;
+
+.version-history-source {
+  border: 1px solid rgba(53, 84, 109, 0.28);
+  border-radius: 999px;
+  padding: 0.08rem 0.45rem;
+  font-weight: 700;
+  font-size: 0.72rem;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.version-history-commits {
+  margin-top: 0.2rem;
+}
+
+.version-history-commits p {
+  margin: 0.2rem 0 0;
+  color: #35546d;
+  font-size: 0.82rem;
 }
 
 .workflow-tab.active {

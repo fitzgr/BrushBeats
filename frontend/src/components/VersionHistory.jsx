@@ -16,6 +16,14 @@ function formatHistoryDate(value) {
   }).format(date);
 }
 
+function getSourceTag(entry) {
+  if (entry?.kind === "push") {
+    return "GitHub Push";
+  }
+
+  return "Git Commit";
+}
+
 function VersionHistory({ onExit }) {
   const { t } = useTranslation();
 
@@ -34,12 +42,22 @@ function VersionHistory({ onExit }) {
 
       <div className="version-history-list">
         {versionHistory.map((entry) => (
-          <article key={entry.sha} className="version-history-card">
+          <article key={entry.id || entry.sha} className="version-history-card">
             <div className="version-history-meta">
               <strong>{formatHistoryDate(entry.date)}</strong>
               <span>#{entry.shortSha}</span>
+              <span className="version-history-source">{getSourceTag(entry)}</span>
             </div>
             <p>{entry.subject}</p>
+            {Array.isArray(entry.commits) && entry.commits.length > 0 ? (
+              <div className="version-history-commits">
+                {entry.commits.map((commit) => (
+                  <p key={`${entry.id}-${commit.sha || commit.shortSha}`}>
+                    #{commit.shortSha}: {commit.message}
+                  </p>
+                ))}
+              </div>
+            ) : null}
           </article>
         ))}
       </div>

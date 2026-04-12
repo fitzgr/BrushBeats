@@ -1,92 +1,422 @@
 [
   {
+    "id": "push-10483660444",
+    "kind": "push",
+    "source": "github-push",
+    "sha": "7223810e4092a810e0674cde5602fa61a840df4a",
+    "shortSha": "7223810",
+    "timestamp": "2026-04-12T13:44:20Z",
+    "date": "2026-04-12",
+    "subject": "Push by fitzgr to main",
+    "commits": []
+  },
+  {
+    "id": "commit-7223810e4092a810e0674cde5602fa61a840df4a",
+    "kind": "commit",
+    "source": "git-log",
+    "sha": "7223810e4092a810e0674cde5602fa61a840df4a",
+    "shortSha": "7223810",
+    "timestamp": "2026-04-12T09:44:17-04:00",
+    "date": "2026-04-12",
+    "subject": "Add version history page and ad-aware brushing start flow"
+  },
+  {
+    "id": "push-10482679287",
+    "kind": "push",
+    "source": "github-push",
     "sha": "1574bea639b0e6aebaff17544fa60cdc797610fc",
     "shortSha": "1574bea",
+    "timestamp": "2026-04-12T12:56:38Z",
+    "date": "2026-04-12",
+    "subject": "Push by fitzgr to main",
+    "commits": []
+  },
+  {
+    "id": "commit-1574bea639b0e6aebaff17544fa60cdc797610fc",
+    "kind": "commit",
+    "source": "git-log",
+    "sha": "1574bea639b0e6aebaff17544fa60cdc797610fc",
+    "shortSha": "1574bea",
+    "timestamp": "2026-04-12T08:56:36-04:00",
     "date": "2026-04-12",
     "subject": "Add cookie-stored favorites with music-step queue from stored picks"
   },
   {
+    "id": "push-10482533731",
+    "kind": "push",
+    "source": "github-push",
     "sha": "602d2419bd21ebee744725735677cf22d126fada",
     "shortSha": "602d241",
+    "timestamp": "2026-04-12T12:49:16Z",
+    "date": "2026-04-12",
+    "subject": "Push by fitzgr to main",
+    "commits": []
+  },
+  {
+    "id": "commit-602d2419bd21ebee744725735677cf22d126fada",
+    "kind": "commit",
+    "source": "git-log",
+    "sha": "602d2419bd21ebee744725735677cf22d126fada",
+    "shortSha": "602d241",
+    "timestamp": "2026-04-12T08:49:15-04:00",
     "date": "2026-04-12",
     "subject": "Replace session label with percent complete in brush map"
   },
   {
+    "id": "push-10482492752",
+    "kind": "push",
+    "source": "github-push",
     "sha": "149357d7ac574f9dfc4bbb7c83144d313963a106",
     "shortSha": "149357d",
+    "timestamp": "2026-04-12T12:47:09Z",
+    "date": "2026-04-12",
+    "subject": "Push by fitzgr to main",
+    "commits": []
+  },
+  {
+    "id": "commit-149357d7ac574f9dfc4bbb7c83144d313963a106",
+    "kind": "commit",
+    "source": "git-log",
+    "sha": "149357d7ac574f9dfc4bbb7c83144d313963a106",
+    "shortSha": "149357d",
+    "timestamp": "2026-04-12T08:47:08-04:00",
     "date": "2026-04-12",
     "subject": "Show short commit id beside top BrushBeats label"
   },
   {
+    "id": "push-10482391563",
+    "kind": "push",
+    "source": "github-push",
     "sha": "226ea679c4ac28c485775deb23730e0d2f32e5a6",
     "shortSha": "226ea67",
+    "timestamp": "2026-04-12T12:42:09Z",
+    "date": "2026-04-12",
+    "subject": "Push by fitzgr to main",
+    "commits": []
+  },
+  {
+    "id": "commit-226ea679c4ac28c485775deb23730e0d2f32e5a6",
+    "kind": "commit",
+    "source": "git-log",
+    "sha": "226ea679c4ac28c485775deb23730e0d2f32e5a6",
+    "shortSha": "226ea67",
+    "timestamp": "2026-04-12T08:42:07-04:00",
     "date": "2026-04-12",
     "subject": "Improve brush-map transition orientation and in-map progress cues"
   },
   {
+    "id": "push-10482265067",
+    "kind": "push",
+    "source": "github-push",
     "sha": "1bd081f417cdd5e1670fba1b34518f6aa9440b52",
     "shortSha": "1bd081f",
+    "timestamp": "2026-04-12T12:35:57Z",
+    "date": "2026-04-12",
+    "subject": "Push by fitzgr to main",
+    "commits": []
+  },
+  {
+    "id": "commit-1bd081f417cdd5e1670fba1b34518f6aa9440b52",
+    "kind": "commit",
+    "source": "git-log",
+    "sha": "1bd081f417cdd5e1670fba1b34518f6aa9440b52",
+    "shortSha": "1bd081f",
+    "timestamp": "2026-04-12T08:35:55-04:00",
     "date": "2026-04-12",
     "subject": "Add GetSongBPM query debug chip in music step"
   },
   {
+    "id": "push-10482243519",
+    "kind": "push",
+    "source": "github-push",
     "sha": "abbb0c53d53fd3ba627c351d1ad76592de6efdf4",
     "shortSha": "abbb0c5",
+    "timestamp": "2026-04-12T12:34:55Z",
+    "date": "2026-04-12",
+    "subject": "Push by fitzgr to main",
+    "commits": []
+  },
+  {
+    "id": "commit-abbb0c53d53fd3ba627c351d1ad76592de6efdf4",
+    "kind": "commit",
+    "source": "git-log",
+    "sha": "abbb0c53d53fd3ba627c351d1ad76592de6efdf4",
+    "shortSha": "abbb0c5",
+    "timestamp": "2026-04-12T08:34:50-04:00",
     "date": "2026-04-12",
     "subject": "Personalize GetSongBPM query with locale and age context"
   },
   {
+    "id": "push-10481996282",
+    "kind": "push",
+    "source": "github-push",
     "sha": "aff23f9e9efb395bd9d807be6cbdeab8fb760e0c",
     "shortSha": "aff23f9",
+    "timestamp": "2026-04-12T12:22:06Z",
+    "date": "2026-04-12",
+    "subject": "Push by fitzgr to main",
+    "commits": []
+  },
+  {
+    "id": "commit-aff23f9e9efb395bd9d807be6cbdeab8fb760e0c",
+    "kind": "commit",
+    "source": "git-log",
+    "sha": "aff23f9e9efb395bd9d807be6cbdeab8fb760e0c",
+    "shortSha": "aff23f9",
+    "timestamp": "2026-04-12T08:22:02-04:00",
     "date": "2026-04-12",
     "subject": "Add localized age-aware YouTube query and ranking pipeline"
   },
   {
+    "id": "push-10481833711",
+    "kind": "push",
+    "source": "github-push",
     "sha": "aa00cb9a65a4dc26801b17bfd44d7ad5cb712537",
     "shortSha": "aa00cb9",
+    "timestamp": "2026-04-12T12:13:13Z",
+    "date": "2026-04-12",
+    "subject": "Push by fitzgr to main",
+    "commits": []
+  },
+  {
+    "id": "commit-aa00cb9a65a4dc26801b17bfd44d7ad5cb712537",
+    "kind": "commit",
+    "source": "git-log",
+    "sha": "aa00cb9a65a4dc26801b17bfd44d7ad5cb712537",
+    "shortSha": "aa00cb9",
+    "timestamp": "2026-04-12T08:13:08-04:00",
     "date": "2026-04-12",
     "subject": "Add switch cues, age-based completion messages, and geo country debug"
   },
   {
+    "id": "push-10427951016",
+    "kind": "push",
+    "source": "github-push",
     "sha": "1e71f2d089c5c6d7057640f95b4c7a7441c93ca1",
     "shortSha": "1e71f2d",
+    "timestamp": "2026-04-10T14:49:25Z",
+    "date": "2026-04-10",
+    "subject": "Push by fitzgr to main",
+    "commits": []
+  },
+  {
+    "id": "commit-1e71f2d089c5c6d7057640f95b4c7a7441c93ca1",
+    "kind": "commit",
+    "source": "git-log",
+    "sha": "1e71f2d089c5c6d7057640f95b4c7a7441c93ca1",
+    "shortSha": "1e71f2d",
+    "timestamp": "2026-04-10T10:49:19-04:00",
     "date": "2026-04-10",
     "subject": "Reduce restored-session backend wakeups"
   },
   {
+    "id": "push-10427685882",
+    "kind": "push",
+    "source": "github-push",
     "sha": "44e26afb6cda06e16a0ca47cd73707274f4c272c",
     "shortSha": "44e26af",
+    "timestamp": "2026-04-10T14:42:36Z",
+    "date": "2026-04-10",
+    "subject": "Push by fitzgr to main",
+    "commits": []
+  },
+  {
+    "id": "commit-44e26afb6cda06e16a0ca47cd73707274f4c272c",
+    "kind": "commit",
+    "source": "git-log",
+    "sha": "44e26afb6cda06e16a0ca47cd73707274f4c272c",
+    "shortSha": "44e26af",
+    "timestamp": "2026-04-10T10:42:29-04:00",
     "date": "2026-04-10",
     "subject": "Refine repeat brushing and returning visit UI"
   },
   {
+    "id": "push-10422067935",
+    "kind": "push",
+    "source": "github-push",
     "sha": "5f3b09f53185796f3b7d9d7c7ba10d8c35d7ac95",
     "shortSha": "5f3b09f",
+    "timestamp": "2026-04-10T12:15:39Z",
+    "date": "2026-04-10",
+    "subject": "Push by fitzgr to main",
+    "commits": []
+  },
+  {
+    "id": "commit-5f3b09f53185796f3b7d9d7c7ba10d8c35d7ac95",
+    "kind": "commit",
+    "source": "git-log",
+    "sha": "5f3b09f53185796f3b7d9d7c7ba10d8c35d7ac95",
+    "shortSha": "5f3b09f",
+    "timestamp": "2026-04-10T08:15:26-04:00",
     "date": "2026-04-10",
     "subject": "Add brushing countdown and reset flow"
   },
   {
+    "id": "push-10261702974",
+    "kind": "push",
+    "source": "github-push",
     "sha": "ac543b1824b7315f9e3048097abe02a3a344d8f1",
     "shortSha": "ac543b1",
+    "timestamp": "2026-04-06T23:18:34Z",
+    "date": "2026-04-06",
+    "subject": "Push by fitzgr to main",
+    "commits": []
+  },
+  {
+    "id": "commit-ac543b1824b7315f9e3048097abe02a3a344d8f1",
+    "kind": "commit",
+    "source": "git-log",
+    "sha": "ac543b1824b7315f9e3048097abe02a3a344d8f1",
+    "shortSha": "ac543b1",
+    "timestamp": "2026-04-06T19:18:32-04:00",
     "date": "2026-04-06",
     "subject": "Enlarge tooth favicon"
   },
   {
+    "id": "push-10261207203",
+    "kind": "push",
+    "source": "github-push",
     "sha": "bbde8d44564b8723f871c1f250a633347d360c0d",
     "shortSha": "bbde8d4",
+    "timestamp": "2026-04-06T22:57:40Z",
+    "date": "2026-04-06",
+    "subject": "Push by fitzgr to main",
+    "commits": []
+  },
+  {
+    "id": "commit-bbde8d44564b8723f871c1f250a633347d360c0d",
+    "kind": "commit",
+    "source": "git-log",
+    "sha": "bbde8d44564b8723f871c1f250a633347d360c0d",
+    "shortSha": "bbde8d4",
+    "timestamp": "2026-04-06T18:57:38-04:00",
     "date": "2026-04-06",
     "subject": "Simplify compact favicon"
   },
   {
+    "id": "push-10260971681",
+    "kind": "push",
+    "source": "github-push",
     "sha": "d8b20c1e19958ddbef74b2d929d290801bde41e2",
     "shortSha": "d8b20c1",
+    "timestamp": "2026-04-06T22:48:24Z",
+    "date": "2026-04-06",
+    "subject": "Push by fitzgr to main",
+    "commits": []
+  },
+  {
+    "id": "commit-d8b20c1e19958ddbef74b2d929d290801bde41e2",
+    "kind": "commit",
+    "source": "git-log",
+    "sha": "d8b20c1e19958ddbef74b2d929d290801bde41e2",
+    "shortSha": "d8b20c1",
+    "timestamp": "2026-04-06T18:48:23-04:00",
     "date": "2026-04-06",
     "subject": "Refresh favicon options"
   },
   {
+    "id": "push-10258845992",
+    "kind": "push",
+    "source": "github-push",
     "sha": "46c4868503a66ea19b038806d9eabf297092e618",
     "shortSha": "46c4868",
+    "timestamp": "2026-04-06T21:30:17Z",
+    "date": "2026-04-06",
+    "subject": "Push by fitzgr to main",
+    "commits": []
+  },
+  {
+    "id": "commit-46c4868503a66ea19b038806d9eabf297092e618",
+    "kind": "commit",
+    "source": "git-log",
+    "sha": "46c4868503a66ea19b038806d9eabf297092e618",
+    "shortSha": "46c4868",
+    "timestamp": "2026-04-06T17:30:16-04:00",
     "date": "2026-04-06",
     "subject": "Resume brushing from paused state"
+  },
+  {
+    "id": "push-10258567588",
+    "kind": "push",
+    "source": "github-push",
+    "sha": "a289c1f65f4699388a1f1118c0b348b32ac4e468",
+    "shortSha": "a289c1f",
+    "timestamp": "2026-04-06T21:20:41Z",
+    "date": "2026-04-06",
+    "subject": "Push by fitzgr to main",
+    "commits": []
+  },
+  {
+    "id": "commit-a289c1f65f4699388a1f1118c0b348b32ac4e468",
+    "kind": "commit",
+    "source": "git-log",
+    "sha": "a289c1f65f4699388a1f1118c0b348b32ac4e468",
+    "shortSha": "a289c1f",
+    "timestamp": "2026-04-06T17:20:40-04:00",
+    "date": "2026-04-06",
+    "subject": "Hide restored mobile ready cue"
+  },
+  {
+    "id": "push-10258459773",
+    "kind": "push",
+    "source": "github-push",
+    "sha": "94956bddd30465fefa868a02467497ed693b38ee",
+    "shortSha": "94956bd",
+    "timestamp": "2026-04-06T21:17:24Z",
+    "date": "2026-04-06",
+    "subject": "Push by fitzgr to main",
+    "commits": []
+  },
+  {
+    "id": "commit-94956bddd30465fefa868a02467497ed693b38ee",
+    "kind": "commit",
+    "source": "git-log",
+    "sha": "94956bddd30465fefa868a02467497ed693b38ee",
+    "shortSha": "94956bd",
+    "timestamp": "2026-04-06T17:17:22-04:00",
+    "date": "2026-04-06",
+    "subject": "Tighten mobile brush flow layout"
+  },
+  {
+    "id": "push-10258165211",
+    "kind": "push",
+    "source": "github-push",
+    "sha": "5f7f3ae87431f18ef87e4ce07727569c2bc43c1c",
+    "shortSha": "5f7f3ae",
+    "timestamp": "2026-04-06T21:07:42Z",
+    "date": "2026-04-06",
+    "subject": "Push by fitzgr to main",
+    "commits": []
+  },
+  {
+    "id": "commit-5f7f3ae87431f18ef87e4ce07727569c2bc43c1c",
+    "kind": "commit",
+    "source": "git-log",
+    "sha": "5f7f3ae87431f18ef87e4ce07727569c2bc43c1c",
+    "shortSha": "5f7f3ae",
+    "timestamp": "2026-04-06T17:07:36-04:00",
+    "date": "2026-04-06",
+    "subject": "Reorder mobile brush flow layout"
+  },
+  {
+    "id": "push-10257997142",
+    "kind": "push",
+    "source": "github-push",
+    "sha": "f855f8884ed1de441d6f3f7c03160c2ed59c92bd",
+    "shortSha": "f855f88",
+    "timestamp": "2026-04-06T21:02:16Z",
+    "date": "2026-04-06",
+    "subject": "Push by fitzgr to main",
+    "commits": []
+  },
+  {
+    "id": "commit-f855f8884ed1de441d6f3f7c03160c2ed59c92bd",
+    "kind": "commit",
+    "source": "git-log",
+    "sha": "f855f8884ed1de441d6f3f7c03160c2ed59c92bd",
+    "shortSha": "f855f88",
+    "timestamp": "2026-04-06T17:02:08-04:00",
+    "date": "2026-04-06",
+    "subject": "Simplify brush flow controls and layout"
   }
 ]

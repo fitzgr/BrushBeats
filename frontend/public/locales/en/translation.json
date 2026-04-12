@@ -96,7 +96,7 @@
   "history": {
     "eyebrow": "Version History",
     "title": "Recent Updates",
-    "intro": "Recent git pushes with dates and the main change that landed in each one.",
+    "intro": "Recent GitHub pushes and git commits with dates and the main change in each entry.",
     "backToApp": "Back to BrushBeats"
   },
   "settings": {

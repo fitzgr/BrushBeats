@@ -96,7 +96,7 @@
   "history": {
     "eyebrow": "Surum gecmisi",
     "title": "Son guncellemeler",
-    "intro": "Son git gonderimlerini tarihleri ve her birindeki ana degisiklikle birlikte goruntuleyin.",
+    "intro": "Son GitHub gonderimlerini ve git commitlerini tarih ve her kayittaki ana degisiklikle goruntuleyin.",
     "backToApp": "BrushBeats uygulamasina don"
   },
   "settings": {
