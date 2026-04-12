@@ -18,9 +18,17 @@ function SongList({
   onCommitAcousticness,
   onKeywordChange,
   onSelectSong,
-  onRegenerate
+  onRegenerate,
+  favorites = [],
+  onToggleFavorite
 }) {
   const { t } = useTranslation();
+
+  function toSongKey(song) {
+    return `${(song?.title || "").trim().toLowerCase()}::${(song?.artist || "").trim().toLowerCase()}`;
+  }
+
+  const favoriteKeySet = new Set((favorites || []).map((song) => toSongKey(song)));
 
   function handleRangeCommit(commitHandler) {
     return (event) => {
@@ -106,6 +114,13 @@ function SongList({
             </div>
             <div>
               <span className="song-bpm">{t("music.songBpm", { bpm: song.bpm })}</span>
+              <button
+                type="button"
+                className={`favorite-btn${favoriteKeySet.has(toSongKey(song)) ? " active" : ""}`}
+                onClick={() => onToggleFavorite?.(song)}
+              >
+                {favoriteKeySet.has(toSongKey(song)) ? t("music.favorites.saved") : t("music.favorites.save")}
+              </button>
               <button type="button" onClick={() => onSelectSong(song)}>
                 {t("common.buttons.queue")}
               </button>

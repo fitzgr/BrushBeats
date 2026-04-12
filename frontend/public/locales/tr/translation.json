@@ -158,7 +158,14 @@
     "loading": "Şarkılar yükleniyor...",
     "empty": "Bu BPM aralığında henüz şarkı bulunamadı.",
     "exhausted": "Bu havuzdaki tüm şarkıları gördünüz. Yeni bir havuz için anahtar kelimeyi veya toleransı değiştirin ya da tekrar yenileyin.",
-    "songBpm": "{{bpm}} BPM"
+    "songBpm": "{{bpm}} BPM",
+    "favorites": {
+      "title": "Kaydedilen secimler",
+      "lastSession": "Son oturum: {{artist}} tarafından {{title}}",
+      "save": "Kaydet",
+      "saved": "Kaydedildi",
+      "remove": "Kaldir"
+    }
   },
   "player": {
     "titleDesktop": "Gömülü Oynatıcı",

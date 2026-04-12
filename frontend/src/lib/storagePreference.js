@@ -2,7 +2,9 @@ const STORAGE_CONSENT_KEY = "brushbeats_storage_consent";
 const STORAGE_BANNER_DISMISSED_KEY = "brushbeats_storage_banner_dismissed";
 const LAST_SESSION_KEY = "brushbeats_last_session_v1";
 const PREFERENCES_KEY = "brushbeats_preferences_v1";
+const FAVORITE_SONGS_KEY = "brushbeats_favorite_songs_v1";
 const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 180;
+const MAX_FAVORITE_SONGS = 25;
 
 const CONSENT_STATUS = {
   granted: "granted",
@@ -170,6 +172,48 @@ function normalizeLastSession(parsed) {
   };
 }
 
+function normalizeSong(song) {
+  if (!song || typeof song !== "object") {
+    return null;
+  }
+
+  if (typeof song.title !== "string" || typeof song.artist !== "string") {
+    return null;
+  }
+
+  return {
+    title: song.title,
+    artist: song.artist,
+    bpm: Number.isFinite(Number(song.bpm)) ? Number(song.bpm) : undefined,
+    savedAt: Number.isFinite(Number(song.savedAt)) ? Number(song.savedAt) : Date.now()
+  };
+}
+
+function songKey(song) {
+  return `${(song?.title || "").trim().toLowerCase()}::${(song?.artist || "").trim().toLowerCase()}`;
+}
+
+function normalizeFavoriteSongs(parsed) {
+  if (!Array.isArray(parsed)) {
+    return [];
+  }
+
+  const unique = new Map();
+
+  for (const item of parsed) {
+    const normalized = normalizeSong(item);
+    if (!normalized) {
+      continue;
+    }
+
+    unique.set(songKey(normalized), normalized);
+  }
+
+  return [...unique.values()]
+    .sort((left, right) => (Number(right.savedAt) || 0) - (Number(left.savedAt) || 0))
+    .slice(0, MAX_FAVORITE_SONGS);
+}
+
 function normalizePreferences(parsed) {
   if (!parsed || typeof parsed !== "object") {
     return null;
@@ -299,6 +343,56 @@ export function saveStoredPreferences(preferences) {
 
 export function clearStoredPreferences() {
   removeStoredValue(PREFERENCES_KEY);
+}
+
+export function loadFavoriteSongs() {
+  try {
+    const raw = readStoredValue(FAVORITE_SONGS_KEY);
+    if (!raw) {
+      return [];
+    }
+
+    return normalizeFavoriteSongs(JSON.parse(raw));
+  } catch {
+    return [];
+  }
+}
+
+export function saveFavoriteSongs(songs) {
+  const normalized = normalizeFavoriteSongs(songs);
+
+  try {
+    writeStoredValue(FAVORITE_SONGS_KEY, JSON.stringify(normalized));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function addFavoriteSong(song) {
+  const normalized = normalizeSong(song);
+  if (!normalized) {
+    return false;
+  }
+
+  const existing = loadFavoriteSongs();
+  const existingWithoutSong = existing.filter((item) => songKey(item) !== songKey(normalized));
+  return saveFavoriteSongs([{ ...normalized, savedAt: Date.now() }, ...existingWithoutSong]);
+}
+
+export function removeFavoriteSong(song) {
+  const normalized = normalizeSong(song);
+  if (!normalized) {
+    return false;
+  }
+
+  const existing = loadFavoriteSongs();
+  const filtered = existing.filter((item) => songKey(item) !== songKey(normalized));
+  return saveFavoriteSongs(filtered);
+}
+
+export function clearFavoriteSongs() {
+  removeStoredValue(FAVORITE_SONGS_KEY);
 }
 
 export function loadLastBrushedSong() {

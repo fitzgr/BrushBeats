@@ -16,12 +16,16 @@ import {
   trackEvent
 } from "./lib/analytics";
 import {
+  addFavoriteSong,
+  clearFavoriteSongs,
   clearStoredPreferences,
   clearLastSession,
   getStorageConsentStatus,
   isStorageBannerDismissed,
+  loadFavoriteSongs,
   loadLastSession,
   loadStoredPreferences,
+  removeFavoriteSong,
   saveLastSession,
   saveStoredPreferences,
   setStorageBannerDismissed,
@@ -156,6 +160,7 @@ function App() {
   const [geoCountry, setGeoCountry] = useState(null);
   const [completionMessage, setCompletionMessage] = useState("");
   const [songsDebugInfo, setSongsDebugInfo] = useState(null);
+  const [favoriteSongs, setFavoriteSongs] = useState([]);
   const seenSongsByQueryRef = useRef(new Map());
   const playedSongsRef = useRef(new Set());
   const queuedSongRef = useRef(null);
@@ -312,6 +317,7 @@ function App() {
     if (storageConsent === "granted") {
       const savedPreferences = loadStoredPreferences();
       const savedSession = loadLastSession();
+      const savedFavorites = loadFavoriteSongs();
 
       if (savedPreferences) {
         applySavedSession(savedPreferences);
@@ -322,6 +328,7 @@ function App() {
       restoredSessionRef.current = savedSession;
       setBpmData(savedSession?.bpmSnapshot || null);
       setLastSession(savedSession);
+      setFavoriteSongs(savedFavorites);
       preferencesHydratedRef.current = true;
       return;
     }
@@ -335,6 +342,7 @@ function App() {
     repeatSessionBootstrapRef.current = false;
     restoredSessionRef.current = null;
     setLastSession(null);
+    setFavoriteSongs([]);
     setBpmData(null);
     setAutoRestoredBrushView(false);
   }, [storageConsent]);
@@ -387,7 +395,9 @@ function App() {
     setStorageConsentState(nextStatus);
     clearStoredPreferences();
     clearLastSession();
+    clearFavoriteSongs();
     setLastSession(null);
+    setFavoriteSongs([]);
   }
 
   function handleDismissStorageBanner() {
@@ -427,6 +437,37 @@ function App() {
       artist: lastSession.song.artist,
       duration_seconds: lastSession.brushDurationSeconds
     });
+  }
+
+  async function handleQueueStoredSong(song, source = "favorites") {
+    if (!song?.title || !song?.artist) {
+      return;
+    }
+
+    await handleSelectSong(song);
+    trackEvent("stored_song_queued", {
+      source,
+      title: song.title,
+      artist: song.artist
+    });
+  }
+
+  function handleToggleFavoriteSong(song) {
+    if (storageConsent !== "granted") {
+      return;
+    }
+
+    const key = `${(song?.title || "").trim().toLowerCase()}::${(song?.artist || "").trim().toLowerCase()}`;
+    const exists = favoriteSongs.some((item) => `${(item?.title || "").trim().toLowerCase()}::${(item?.artist || "").trim().toLowerCase()}` === key);
+
+    if (exists) {
+      removeFavoriteSong(song);
+      setFavoriteSongs((current) => current.filter((item) => `${(item?.title || "").trim().toLowerCase()}::${(item?.artist || "").trim().toLowerCase()}` !== key));
+      return;
+    }
+
+    addFavoriteSong(song);
+    setFavoriteSongs((current) => [{ ...song, savedAt: Date.now() }, ...current.filter((item) => `${(item?.title || "").trim().toLowerCase()}::${(item?.artist || "").trim().toLowerCase()}` !== key)].slice(0, 25));
   }
 
   function openPrivacyModal() {
@@ -763,6 +804,10 @@ function App() {
     setWorkflowStep("brush");
     queuedSongRef.current = null;
     setQueuedSongPreview(null);
+    if (storageConsent === "granted") {
+      addFavoriteSong(song);
+      setFavoriteSongs((current) => [{ ...song, savedAt: Date.now() }, ...current.filter((item) => toSongKey(item) !== toSongKey(song))].slice(0, 25));
+    }
     return handleSelectSongWithOptions(song, { autoplay: false });
   }
 
@@ -1264,6 +1309,26 @@ function App() {
 
       {workflowStep === "music" && (
         <section className={`layout-grid ${device.isMobile ? "mobile-mode" : "desktop-mode desktop-step-layout"}`}>
+          {storageConsent === "granted" && (lastSession?.song || favoriteSongs.length > 0) && (
+            <section className="stored-picks-panel" aria-live="polite">
+              <strong>{t("music.favorites.title")}</strong>
+              {lastSession?.song && (
+                <div className="stored-pick-row">
+                  <span>{t("music.favorites.lastSession", { title: lastSession.song.title, artist: lastSession.song.artist })}</span>
+                  <button type="button" className="action-btn secondary" onClick={() => handleQueueStoredSong(lastSession.song, "lastSession")}>{t("common.buttons.queue")}</button>
+                </div>
+              )}
+              {favoriteSongs.slice(0, 8).map((song) => (
+                <div key={`${song.title}-${song.artist}`} className="stored-pick-row">
+                  <span>{song.title} - {song.artist}</span>
+                  <div className="stored-pick-actions">
+                    <button type="button" className="action-btn secondary" onClick={() => handleQueueStoredSong(song, "favorites")}>{t("common.buttons.queue")}</button>
+                    <button type="button" className="action-btn secondary" onClick={() => handleToggleFavoriteSong(song)}>{t("music.favorites.remove")}</button>
+                  </div>
+                </div>
+              ))}
+            </section>
+          )}
           {songsDebugInfo?.queryUsed && (
             <section className="music-debug-chip" aria-live="polite">
               <strong>GetSongBPM debug</strong>
@@ -1297,6 +1362,8 @@ function App() {
             onKeywordChange={setKeyword}
             onSelectSong={handleSelectSong}
             onRegenerate={regenerateSongs}
+            favorites={favoriteSongs}
+            onToggleFavorite={handleToggleFavoriteSong}
           />
         </section>
       )}

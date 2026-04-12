@@ -158,7 +158,14 @@
     "loading": "Loading songs...",
     "empty": "No songs found at this BPM range yet.",
     "exhausted": "You've already seen all songs in this current pool. Change keyword/tolerance or regenerate again for a fresh pool.",
-    "songBpm": "{{bpm}} BPM"
+    "songBpm": "{{bpm}} BPM",
+    "favorites": {
+      "title": "Stored picks",
+      "lastSession": "Last session: {{title}} by {{artist}}",
+      "save": "Save",
+      "saved": "Saved",
+      "remove": "Remove"
+    }
   },
   "player": {
     "titleDesktop": "Embedded Player",

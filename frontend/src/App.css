@@ -175,6 +175,54 @@
   word-break: break-word;
 }
 
+.stored-picks-panel {
+  margin: 0 0 0.8rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  border: 1px solid rgba(16, 33, 37, 0.14);
+  background: rgba(255, 252, 246, 0.95);
+  grid-column: 1 / -1;
+}
+
+.stored-picks-panel strong {
+  display: block;
+  margin-bottom: 0.45rem;
+}
+
+.stored-pick-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin: 0.3rem 0;
+}
+
+.stored-pick-row span {
+  font-size: 0.86rem;
+  color: #1f3850;
+}
+
+.stored-pick-actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.favorite-btn {
+  border: 1px solid rgba(16, 33, 37, 0.2);
+  background: #fff;
+  color: #2b4452;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.35rem 0.55rem;
+}
+
+.favorite-btn.active {
+  background: #e9f6ed;
+  border-color: rgba(42, 121, 76, 0.3);
+  color: #2a794c;
+}
+
 .workflow-tabs {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

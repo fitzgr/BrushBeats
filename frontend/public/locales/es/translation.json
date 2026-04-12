@@ -158,7 +158,14 @@
     "loading": "Cargando canciones...",
     "empty": "Aun no se encontraron canciones en este rango de BPM.",
     "exhausted": "Ya viste todas las canciones de este conjunto actual. Cambia la palabra clave, la tolerancia o regenera otra vez para obtener un conjunto nuevo.",
-    "songBpm": "{{bpm}} BPM"
+    "songBpm": "{{bpm}} BPM",
+    "favorites": {
+      "title": "Selecciones guardadas",
+      "lastSession": "Ultima sesion: {{title}} de {{artist}}",
+      "save": "Guardar",
+      "saved": "Guardada",
+      "remove": "Quitar"
+    }
   },
   "player": {
     "titleDesktop": "Reproductor integrado",
