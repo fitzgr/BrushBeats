@@ -155,6 +155,7 @@ function App() {
   const [autoRestoredBrushView, setAutoRestoredBrushView] = useState(false);
   const [geoCountry, setGeoCountry] = useState(null);
   const [completionMessage, setCompletionMessage] = useState("");
+  const [songsDebugInfo, setSongsDebugInfo] = useState(null);
   const seenSongsByQueryRef = useRef(new Map());
   const playedSongsRef = useRef(new Set());
   const queuedSongRef = useRef(null);
@@ -648,6 +649,14 @@ function App() {
 
         if (!cancelled) {
           setSongs(unseenSongs);
+          setSongsDebugInfo({
+            source: result.source,
+            queryUsed: result.queryUsed,
+            contextUsed: result.contextUsed,
+            geoSource: result.geoSource,
+            fetchedCount: fetchedSongs.length,
+            shownCount: unseenSongs.length
+          });
           setIsSongPoolExhausted(fetchedSongs.length > 0 && unseenSongs.length === 0);
           setError("");
         }
@@ -655,6 +664,7 @@ function App() {
         if (!cancelled) {
           setError(err.message);
           setSongs([]);
+          setSongsDebugInfo(null);
           setIsSongPoolExhausted(false);
         }
       } finally {
@@ -1249,6 +1259,20 @@ function App() {
 
       {workflowStep === "music" && (
         <section className={`layout-grid ${device.isMobile ? "mobile-mode" : "desktop-mode desktop-step-layout"}`}>
+          {songsDebugInfo?.queryUsed && (
+            <section className="music-debug-chip" aria-live="polite">
+              <strong>GetSongBPM debug</strong>
+              <p>
+                source={songsDebugInfo.source || "unknown"} | geo={songsDebugInfo.geoSource || "unknown"} | country={songsDebugInfo.contextUsed?.countryCode || "--"} | lang={songsDebugInfo.contextUsed?.browserLanguage || "--"} | age={songsDebugInfo.contextUsed?.ageBucket || "--"}
+              </p>
+              <p>
+                q={songsDebugInfo.queryUsed}
+              </p>
+              <p>
+                songs fetched={songsDebugInfo.fetchedCount ?? 0}, shown={songsDebugInfo.shownCount ?? 0}
+              </p>
+            </section>
+          )}
           <SongList
             brusherProfile={detectedBrusherProfile}
             songs={songs}
