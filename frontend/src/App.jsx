@@ -29,6 +29,7 @@ import {
 } from "./lib/storagePreference";
 import { estimateAgeFromTeethFull } from "./lib/teethAge";
 import { useDeviceContext } from "./lib/deviceContext";
+import { buildUserMusicContext } from "./lib/userMusicContext";
 import "./App.css";
 
 const DEFAULT_VALUES = { top: 16, bottom: 16 };
@@ -755,7 +756,18 @@ function App() {
     }
 
     try {
-      const video = await getYoutubeVideo({ title: song.title, artist: song.artist });
+      const userMusicContext = buildUserMusicContext({
+        countryCode: geoCountry?.countryCode,
+        targetBpm: Number(song?.bpm || bpmData?.searchBpm || 120),
+        toothCount: totalTeeth,
+        genreHint: keyword
+      });
+
+      const video = await getYoutubeVideo({
+        title: song.title,
+        artist: song.artist,
+        ...userMusicContext
+      });
       setPlayerData(video);
 
       if (options.autoplay && video?.embedUrl) {
