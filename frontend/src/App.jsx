@@ -617,6 +617,12 @@ function App() {
     async function loadSongs() {
       try {
         setLoading((prev) => ({ ...prev, songs: true }));
+        const userMusicContext = buildUserMusicContext({
+          countryCode: geoCountry?.countryCode,
+          targetBpm: Number(bpmData.searchBpm || 120),
+          toothCount: totalTeeth,
+          genreHint: keyword
+        });
         const result = await getSongs({
           bpm: bpmData.searchBpm,
           tolerance: songFilters.tolerance,
@@ -624,7 +630,10 @@ function App() {
           acousticness: songFilters.acousticness,
           totalTeeth,
           keyword,
-          seed: songRefreshSeed
+          seed: songRefreshSeed,
+          browserLanguage: userMusicContext.browserLanguage,
+          countryCode: userMusicContext.countryCode,
+          genreHint: userMusicContext.genreHint
         });
         const queryKey = `${totalTeeth}:${Math.round(bpmData.searchBpm)}:${songFilters.tolerance}:${songFilters.danceability}:${songFilters.acousticness}:${keyword.trim().toLowerCase()}`;
         const seenForQuery = seenSongsByQueryRef.current.get(queryKey) || new Set();
@@ -660,7 +669,7 @@ function App() {
       cancelled = true;
       window.clearTimeout(timeout);
     };
-  }, [bpmData?.searchBpm, brushingPhase, keyword, songFilters, songRefreshSeed, totalTeeth, workflowStep]);
+  }, [bpmData?.searchBpm, brushingPhase, geoCountry?.countryCode, keyword, songFilters, songRefreshSeed, totalTeeth, workflowStep]);
 
   function updateDraftSongFilter(key, value) {
     setDraftSongFilters((prev) => ({ ...prev, [key]: value }));

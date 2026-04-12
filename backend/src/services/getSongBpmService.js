@@ -1,5 +1,6 @@
 const axios = require("axios");
 const { describeTeethStage } = require("../utils/teethAge");
+const { buildGetSongBpmQuery, buildSongSearchContext } = require("./getSongBpmQueryBuilder");
 
 const seedSongs = [
   { title: "Shake It Off", artist: "Taylor Swift", bpm: 160 },
@@ -221,9 +222,28 @@ function fallbackSongs(targetBpm, tolerance, keyword, profilePreference) {
   return rankSongsByProfile(songs, profilePreference).slice(0, 25);
 }
 
-async function fetchSongsByBpm({ bpm, tolerance = 5, danceability = 50, acousticness = 50, totalTeeth = 32, keyword = "", limit = 25 }) {
+async function fetchSongsByBpm({
+  bpm,
+  tolerance = 5,
+  danceability = 50,
+  acousticness = 50,
+  totalTeeth = 32,
+  keyword = "",
+  limit = 25,
+  browserLanguage = "en-US",
+  countryCode = "US",
+  genreHint = ""
+}) {
   const targetBpm = Number(bpm);
   const safeTolerance = Math.max(1, Math.min(20, Number(tolerance) || 5));
+  const songSearchContext = buildSongSearchContext({
+    browserLanguage,
+    countryCode,
+    toothCount: totalTeeth,
+    targetBpm,
+    genreHint
+  });
+  const enrichedQuery = buildGetSongBpmQuery(songSearchContext, keyword);
   const profilePreference = {
     danceability: normalizePreference(danceability),
     acousticness: normalizePreference(acousticness),
@@ -235,6 +255,8 @@ async function fetchSongsByBpm({ bpm, tolerance = 5, danceability = 50, acoustic
   if (!apiKey) {
     return {
       source: "fallback",
+      queryUsed: enrichedQuery,
+      contextUsed: songSearchContext,
       songs: fallbackSongs(targetBpm, safeTolerance, keyword, profilePreference)
     };
   }
@@ -246,7 +268,7 @@ async function fetchSongsByBpm({ bpm, tolerance = 5, danceability = 50, acoustic
         bpm: targetBpm,
         type: "both",
         limit,
-        q: keyword || undefined
+        q: enrichedQuery || keyword || undefined
       },
       timeout: 8000
     });
@@ -259,7 +281,12 @@ async function fetchSongsByBpm({ bpm, tolerance = 5, danceability = 50, acoustic
 
     if (songs.length === 0) {
       songs = fallbackSongs(targetBpm, safeTolerance, keyword, profilePreference);
-      return { source: "fallback", songs };
+      return {
+        source: "fallback",
+        queryUsed: enrichedQuery,
+        contextUsed: songSearchContext,
+        songs
+      };
     }
 
     songs = songs
@@ -273,11 +300,15 @@ async function fetchSongsByBpm({ bpm, tolerance = 5, danceability = 50, acoustic
 
     return {
       source: "getsongbpm",
+      queryUsed: enrichedQuery,
+      contextUsed: songSearchContext,
       songs
     };
   } catch (error) {
     return {
       source: "fallback",
+      queryUsed: enrichedQuery,
+      contextUsed: songSearchContext,
       songs: fallbackSongs(targetBpm, safeTolerance, keyword, profilePreference),
       warning: "GetSongBPM lookup failed; serving local fallback songs."
     };

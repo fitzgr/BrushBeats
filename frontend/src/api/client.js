@@ -48,7 +48,7 @@ export function getBpm({ top, bottom, duration }) {
   return request(`/api/bpm?${params.toString()}`);
 }
 
-export function getSongs({ bpm, tolerance, danceability, acousticness, totalTeeth, keyword, seed = 0 }) {
+export function getSongs({ bpm, tolerance, danceability, acousticness, totalTeeth, keyword, seed = 0, browserLanguage, countryCode, genreHint }) {
   const params = new URLSearchParams({
     bpm: String(Math.round(bpm)),
     tolerance: String(tolerance),
@@ -56,7 +56,10 @@ export function getSongs({ bpm, tolerance, danceability, acousticness, totalTeet
     acousticness: String(acousticness),
     totalTeeth: String(totalTeeth ?? 32),
     q: keyword || "",
-    seed: String(seed)
+    seed: String(seed),
+    browserLanguage: browserLanguage || "",
+    countryCode: countryCode || "",
+    genreHint: genreHint || ""
   });
 
   return request(`/api/songs?${params.toString()}`);
