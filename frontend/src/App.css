@@ -2617,6 +2617,14 @@ select {
   letter-spacing: 0.03em;
 }
 
+.map-score.complete-message {
+  font-size: 11px;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  stroke: rgba(3, 13, 30, 0.3);
+  stroke-width: 1px;
+}
+
 .map-score.countdown {
   filter: drop-shadow(0 0 14px rgba(255, 234, 163, 0.3));
   letter-spacing: 0.03em;
@@ -2636,6 +2644,13 @@ select {
   fill: #d7e6ff;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.map-score-progress-mini {
+  font-size: 10px;
+  fill: #e9f1ff;
+  letter-spacing: 0.04em;
+  font-weight: 700;
 }
 
 .map-score-label.countdown {

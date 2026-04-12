@@ -345,6 +345,43 @@ function getBounceRadiusForPhase(phase) {
   return 5.2 + (6.4 - 5.2) * normalized;
 }
 
+function splitMessageIntoLines(message, maxLineLength = 24, maxLines = 3) {
+  const words = String(message || "").trim().split(/\s+/).filter(Boolean);
+  if (!words.length) {
+    return [];
+  }
+
+  const lines = [];
+  let current = "";
+
+  for (const word of words) {
+    const next = current ? `${current} ${word}` : word;
+
+    if (next.length <= maxLineLength) {
+      current = next;
+      continue;
+    }
+
+    if (current) {
+      lines.push(current);
+      current = word;
+    } else {
+      lines.push(word.slice(0, maxLineLength));
+      current = word.slice(maxLineLength);
+    }
+
+    if (lines.length >= maxLines) {
+      break;
+    }
+  }
+
+  if (lines.length < maxLines && current) {
+    lines.push(current);
+  }
+
+  return lines.slice(0, maxLines);
+}
+
 function formatTenths(seconds) {
   return Math.max(0, seconds).toFixed(1);
 }
@@ -655,14 +692,27 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
         ? "right"
         : "left"
     : null;
+  const transitionFromSide = activeEntry?.type === "transition" ? getLabelSide(activeEntry.fromLabel) : null;
+  const transitionToSide = activeEntry?.type === "transition" ? getLabelSide(activeEntry.toLabel) : null;
+  const transitionFromJaw = activeEntry?.type === "transition" ? getLabelJaw(activeEntry.fromLabel) : null;
+  const transitionToJaw = activeEntry?.type === "transition" ? getLabelJaw(activeEntry.toLabel) : null;
+  const transitionDirection = transitionFromSide && transitionToSide && transitionFromSide !== transitionToSide
+    ? `${t(`brushing.side.${transitionFromSide}`)} -> ${t(`brushing.side.${transitionToSide}`)}`
+    : transitionFromJaw && transitionToJaw && transitionFromJaw !== transitionToJaw
+      ? `${t(`brushing.jaw.${transitionFromJaw}`)} -> ${t(`brushing.jaw.${transitionToJaw}`)}`
+      : null;
   const guideStatusText = brushingPhase === "countdown"
     ? t("brushing.guide.countdownCallout", { seconds: formatTenths(startCountdownRemainingMs / 1000) })
     : brushingPhase === "running"
     ? activeEntry?.type === "transition"
       ? activeEntry.transitionCue === "switchHand"
-        ? t("brushing.guide.switchHandCallout")
+        ? transitionDirection
+          ? `${t("brushing.guide.switchHandCallout")} ${transitionDirection}.`
+          : t("brushing.guide.switchHandCallout")
         : activeEntry.transitionCue === "rotate"
-          ? t("brushing.guide.rotateCallout")
+          ? transitionDirection
+            ? `${t("brushing.guide.rotateCallout")} ${transitionDirection}.`
+            : t("brushing.guide.rotateCallout")
           : t("brushing.guide.transitionCallout", {
               fromLabel: getSegmentLabel(t, activeEntry.fromLabel),
               toLabel: getSegmentLabel(t, activeEntry.toLabel),
@@ -685,16 +735,25 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
     : "";
   const centerLabel = brushingPhase === "countdown"
     ? t("brushing.guide.startLabel")
+    : brushingPhase === "complete"
+      ? ""
     : activeEntry?.type === "transition"
       ? t("brushing.guide.actionLabel")
       : t("brushing.guide.sessionLabel");
   const centerValue = brushingPhase === "countdown"
     ? formatTenths(startCountdownRemainingMs / 1000)
     : activeEntry?.type === "transition"
-      ? t(`brushing.switchPrompts.${activeEntry.transitionCue || "transition"}`)
+      ? activeEntry.transitionCue === "rotate" && transitionDirection
+        ? `${t("brushing.switchPrompts.rotate")}: ${transitionDirection}`
+        : activeEntry.transitionCue === "transition" && transitionDirection
+          ? `${t("brushing.switchPrompts.transition")}: ${transitionDirection}`
+          : t(`brushing.switchPrompts.${activeEntry.transitionCue || "transition"}`)
       : brushingPhase === "complete"
         ? t("brushing.guide.cleanShineLabel")
         : t("brushing.guide.brushNowLabel");
+  const completionLines = brushingPhase === "complete" && completionMessage
+    ? splitMessageIntoLines(completionMessage, 24, 3)
+    : [];
   const countdownSignal = getCountdownSignal(startCountdownRemainingMs, startCountdownTotalMs);
   const [countdownWhole = "0", countdownFraction = "0"] = centerValue.split(".");
   const handOrientationText = brushFacingDirection
@@ -912,18 +971,31 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
               <tspan className="map-score-whole" style={{ fill: countdownSignal.primary }}>{countdownWhole}</tspan>
               <tspan className="map-score-fraction" style={{ fill: countdownSignal.accent }}>{`.${countdownFraction}`}</tspan>
             </text>
+          ) : brushingPhase === "complete" && completionLines.length > 0 ? (
+            <text x="180" y="206" textAnchor="middle" className="map-score complete-message">
+              {completionLines.map((line, index) => (
+                <tspan key={`${line}-${index}`} x="180" dy={index === 0 ? 0 : 14}>{line}</tspan>
+              ))}
+            </text>
           ) : (
             <text x="180" y="216" textAnchor="middle" className="map-score word">{centerValue}</text>
           )}
-          <text
-            x="180"
-            y="238"
-            textAnchor="middle"
-            className={`map-score-label${brushingPhase === "countdown" ? " countdown" : ""}`}
-            style={brushingPhase === "countdown" ? { fill: countdownSignal.label } : undefined}
-          >
-            {centerLabel}
-          </text>
+          {centerLabel && (
+            <text
+              x="180"
+              y="238"
+              textAnchor="middle"
+              className={`map-score-label${brushingPhase === "countdown" ? " countdown" : ""}`}
+              style={brushingPhase === "countdown" ? { fill: countdownSignal.label } : undefined}
+            >
+              {centerLabel}
+            </text>
+          )}
+          {!activeEntry?.type && brushingPhase !== "countdown" && brushingPhase !== "complete" && (
+            <text x="180" y="252" textAnchor="middle" className="map-score-progress-mini">
+              {`${Math.round(progress)}%`}
+            </text>
+          )}
         </svg>
       </div>
 
@@ -945,7 +1017,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
           </div>
         </div>
       )}
-      {guideStatusText && <p className={`guide-callout${brushingPhase === "complete" ? " complete" : ""}`}>{brushingPhase === "complete" && completionMessage ? completionMessage : guideStatusText}</p>}
+      {guideStatusText && !(brushingPhase === "complete" && completionMessage) && <p className={`guide-callout${brushingPhase === "complete" ? " complete" : ""}`}>{guideStatusText}</p>}
       {inactiveGuideText && <p className="guide-callout">{inactiveGuideText}</p>}
 
     </section>
