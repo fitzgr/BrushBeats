@@ -20,7 +20,8 @@
       "leftHand": "Sol El",
       "rightHand": "Sağ El",
       "resetTimer": "Zamanlayıcıyı Sıfırla",
-      "privacyPolicy": "Gizlilik Politikası"
+      "privacyPolicy": "Gizlilik Politikası",
+      "versionHistory": "Surum Gecmisi"
     },
     "states": {
       "on": "Açık",
@@ -48,6 +49,7 @@
     "status": {
       "label": "Durum: {{state}}",
       "idle": "Boşta",
+      "awaitingPlayback": "Oynatma bekleniyor",
       "countdown": "Birazdan başlıyor",
       "paused": "Duraklatıldı",
       "running": "Fırçalama devam ediyor",
@@ -90,6 +92,12 @@
     "success": "Harika iş, {{duration}} temizlik tamamlandı. Daha güçlü dişler ve daha sağlıklı diş etleri için bu alışkanlığı her gün sürdür.",
     "successAgeGroups": "Yaşa göre ayrılmış pekiştirme grupları: {{count}}",
     "geoDebug": "Geo hata ayıklama: {{country}} ({{countryCode}}) | IP {{ip}} | kaynak {{source}}"
+  },
+  "history": {
+    "eyebrow": "Surum gecmisi",
+    "title": "Son guncellemeler",
+    "intro": "Son git gonderimlerini tarihleri ve her birindeki ana degisiklikle birlikte goruntuleyin.",
+    "backToApp": "BrushBeats uygulamasina don"
   },
   "settings": {
     "language": "Dil",
@@ -240,6 +248,7 @@
       "activeCalloutDesktop": "Şimdi {{label}} bölgesini fırçalayın, {{size}} içinde {{position}}. diş. Şarkı hedefi yaklaşık {{bpm}} BPM. {{seconds}} sn sonra ilerleyin.{{transitionNotice}}",
       "transitionNotice": " {{seconds}} sn sonra geçiş.",
       "pausedCallout": "Duraklatıldı. Aynı noktadan devam etmek için Devam Et'e basın.",
+      "awaitingPlaybackCallout": "Reklamların bitmesi veya atlanması bekleniyor. Şarkı başlayınca fırçalama başlayacak.",
       "inactiveCallout": "Canlı diş rehberini başlatmak için Fırçalamayı Başlat'a basın.",
       "completeCallout": "Tüm dişler fırçalandı. İyi tutarlılık."
     },
@@ -250,6 +259,8 @@
       "countdownDetail": "Pozisyon alın. Fırçalama {{seconds}} sn içinde başlıyor.",
       "pausedTitle": "Duraklatıldı",
       "pausedDetail": "Aynı dişten ve video konumundan devam etmek için Devam Et'e basın.",
+      "awaitingPlaybackTitle": "Oynatma bekleniyor",
+      "awaitingPlaybackDetail": "Reklamlar bitince veya atlanınca ve şarkı başlayınca fırçalama başlayacak.",
       "readyTitle": "Fırçalamaya hazır",
       "readyDetail": "{{hand}} elinizi kullanın, reklamlar bitsin veya geçilsin, sonra zamanlayıcıyı başlatın.",
       "halfwayTitle": "Yarı geçişi",

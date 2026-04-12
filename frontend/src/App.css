@@ -425,6 +425,37 @@
   color: var(--ink);
   font: inherit;
   font-weight: 700;
+.version-history-view {
+  display: grid;
+  gap: 1rem;
+}
+.version-history-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+.version-history-list {
+  display: grid;
+  gap: 0.75rem;
+}
+.version-history-card {
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(16, 33, 37, 0.14);
+  background: linear-gradient(135deg, rgba(255, 252, 246, 0.96), rgba(241, 247, 251, 0.92));
+}
+.version-history-card p {
+  margin: 0.35rem 0 0;
+}
+.version-history-meta {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  align-items: center;
+  color: #35546d;
+  font-size: 0.85rem;
+}
   border-radius: 12px;
   padding: 0.55rem 0.4rem;
   cursor: pointer;
@@ -3121,22 +3152,6 @@ select {
   margin-top: 0.8rem;
   display: flex;
   justify-content: flex-end;
-}
-
-.version-info {
-  font-size: 0.8rem;
-  color: var(--ink);
-  opacity: 0.6;
-  margin-top: 0.4rem;
-}
-
-.version-info code {
-  font-family: "Courier New", monospace;
-  font-size: 0.85em;
-  padding: 0.2rem 0.4rem;
-  background: rgba(16, 33, 37, 0.06);
-  border-radius: 4px;
-  letter-spacing: 0.05em;
 }
 
 @keyframes rise {

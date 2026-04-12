@@ -20,7 +20,8 @@
       "leftHand": "Mano izquierda",
       "rightHand": "Mano derecha",
       "resetTimer": "Reiniciar temporizador",
-      "privacyPolicy": "Politica de privacidad"
+      "privacyPolicy": "Politica de privacidad",
+      "versionHistory": "Historial de versiones"
     },
     "states": {
       "on": "Activado",
@@ -48,6 +49,7 @@
     "status": {
       "label": "Estado: {{state}}",
       "idle": "En espera",
+      "awaitingPlayback": "Esperando reproduccion",
       "countdown": "Empieza enseguida",
       "paused": "En pausa",
       "running": "Cepillado en progreso",
@@ -90,6 +92,12 @@
     "success": "Muy bien. Terminaste tu limpieza de {{duration}}. Mantener este habito todos los dias ayuda a fortalecer los dientes y cuidar las encias.",
     "successAgeGroups": "Grupos de refuerzo por edad: {{count}}",
     "geoDebug": "Depuracion geo: {{country}} ({{countryCode}}) | IP {{ip}} | fuente {{source}}"
+  },
+  "history": {
+    "eyebrow": "Historial de versiones",
+    "title": "Actualizaciones recientes",
+    "intro": "Cambios recientes enviados a git con fecha y el cambio principal de cada uno.",
+    "backToApp": "Volver a BrushBeats"
   },
   "settings": {
     "language": "Idioma",
@@ -240,6 +248,7 @@
       "activeCalloutDesktop": "Cepilla {{label}} ahora, diente {{position}} de {{size}}. La meta de la cancion es ~{{bpm}} BPM. Cambia en {{seconds}} s.{{transitionNotice}}",
       "transitionNotice": " Transicion en {{seconds}} s.",
       "pausedCallout": "En pausa. Presiona Reanudar para continuar desde el mismo punto.",
+      "awaitingPlaybackCallout": "Esperando a que los anuncios terminen o se omitan. El cepillado empezara cuando comience la cancion.",
       "inactiveCallout": "Presiona Empezar cepillado para iniciar la guia dental en vivo.",
       "completeCallout": "Todos los dientes fueron cepillados. Buena constancia."
     },
@@ -250,6 +259,8 @@
       "countdownDetail": "Colocate en posicion. El cepillado empieza en {{seconds}} s.",
       "pausedTitle": "En pausa",
       "pausedDetail": "Presiona Reanudar para continuar desde el mismo diente y posicion del video.",
+      "awaitingPlaybackTitle": "Esperando reproduccion",
+      "awaitingPlaybackDetail": "El cepillado comenzara cuando los anuncios terminen o se omitan y empiece la cancion.",
       "readyTitle": "Listo para cepillarte",
       "readyDetail": "Usa tu mano {{hand}}, espera a que cualquier anuncio termine o se omita, y luego inicia el temporizador.",
       "halfwayTitle": "Cambio de mitad",

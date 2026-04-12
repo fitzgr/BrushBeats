@@ -5,6 +5,7 @@ import SongList from "./components/SongList";
 import Player from "./components/Player";
 import BrushingGuide from "./components/BrushingGuide";
 import TranslationWorkshop from "./components/TranslationWorkshop";
+import VersionHistory from "./components/VersionHistory";
 import { getLanguageFallbackInfo, setPreferredSupportedLanguage } from "./i18n.ts";
 import { getBpm, getGeoCountry, getSongs, getYoutubeVideo } from "./api/client";
 import { buildReinforcementPool, getAgeMessageGroupCount, pickReinforcementMessage } from "./lib/reinforcementMessages";
@@ -122,7 +123,8 @@ function App() {
       return "brush";
     }
 
-    return new URLSearchParams(window.location.search).get("mode") === "workshop" ? "workshop" : "brush";
+    const mode = new URLSearchParams(window.location.search).get("mode");
+    return mode === "workshop" || mode === "history" ? mode : "brush";
   });
   const [values, setValues] = useState(DEFAULT_VALUES);
   const [bpmData, setBpmData] = useState(null);
@@ -262,6 +264,8 @@ function App() {
 
     if (!device.isMobile && appView === "workshop") {
       url.searchParams.set("mode", "workshop");
+    } else if (appView === "history") {
+      url.searchParams.set("mode", "history");
     } else {
       url.searchParams.delete("mode");
     }
@@ -480,6 +484,15 @@ function App() {
 
   function closePrivacyModal() {
     setActiveModal(null);
+  }
+
+  function beginBrushingCountdown() {
+    const totalSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
+    const startDelayMs = START_DELAY_SECONDS * 1000;
+    countdownDeadlineRef.current = Date.now() + startDelayMs;
+    setCountdownRemainingMs(startDelayMs);
+    setTimer({ running: false, remaining: totalSeconds });
+    setBrushingPhase("countdown");
   }
 
   function toSongKey(song) {
@@ -772,6 +785,12 @@ function App() {
   function handlePlaybackTick(seconds) {
     setPlaybackSeconds(seconds);
 
+    if (brushingPhase === "awaitingPlayback" && seconds > 0) {
+      beginBrushingCountdown();
+      lastPlaybackTickRef.current = seconds;
+      return;
+    }
+
     if (brushingPhase !== "running") {
       lastPlaybackTickRef.current = seconds;
       return;
@@ -878,11 +897,13 @@ function App() {
       setBrushingMusicElapsedSeconds(0);
       setPlaybackSeconds(shouldRestartVideo ? 0 : playbackSeconds);
       lastPlaybackTickRef.current = shouldRestartVideo ? 0 : playbackSeconds;
-      const startDelayMs = START_DELAY_SECONDS * 1000;
-      countdownDeadlineRef.current = Date.now() + startDelayMs;
-      setCountdownRemainingMs(startDelayMs);
       setTimer({ running: false, remaining: totalSeconds });
-      setBrushingPhase("countdown");
+
+      if ((shouldRestartVideo ? 0 : playbackSeconds) > 0) {
+        beginBrushingCountdown();
+      } else {
+        setBrushingPhase("awaitingPlayback");
+      }
     }
 
     if (shouldResume) {
@@ -890,8 +911,8 @@ function App() {
         issuePlayerCommand("play");
       }
     } else if (shouldRestartVideo) {
-      playOnCountdownEndRef.current = true;
-      issuePlayerCommand("reset");
+      playOnCountdownEndRef.current = false;
+      issuePlayerCommand("restart");
     } else {
       playOnCountdownEndRef.current = false;
       issuePlayerCommand("play");
@@ -949,7 +970,7 @@ function App() {
   }
 
   function pauseBrushing() {
-    if (brushingPhase !== "running" && brushingPhase !== "countdown") {
+    if (brushingPhase !== "running" && brushingPhase !== "countdown" && brushingPhase !== "awaitingPlayback") {
       return;
     }
 
@@ -999,7 +1020,7 @@ function App() {
   }
 
   function handlePrimaryBrushAction() {
-    if (brushingPhase === "running") {
+    if (brushingPhase === "running" || brushingPhase === "awaitingPlayback") {
       pauseBrushing();
       return;
     }
@@ -1064,6 +1085,10 @@ function App() {
       return t("app.status.running");
     }
 
+    if (brushingPhase === "awaitingPlayback") {
+      return t("app.status.awaitingPlayback");
+    }
+
     if (brushingPhase === "paused") {
       return t("app.status.paused");
     }
@@ -1086,7 +1111,7 @@ function App() {
   }
 
   const primaryBrushActionLabel =
-    brushingPhase === "running" || brushingPhase === "countdown"
+    brushingPhase === "running" || brushingPhase === "countdown" || brushingPhase === "awaitingPlayback"
       ? t("brushing.pause")
       : brushingPhase === "paused"
         ? t("brushing.resume")
@@ -1095,7 +1120,6 @@ function App() {
           : t("brushing.start", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) });
 
   const showTopConsentNotices = workflowStep === "teeth";
-  const showLastSessionBanner = workflowStep === "music";
 
   return (
     <main className={`app-shell ${device.isMobile ? "mobile-shell" : "desktop-shell"}${appView === "workshop" && !device.isMobile ? " workshop-shell" : ""}`}>
@@ -1124,9 +1148,9 @@ function App() {
             <button
               type="button"
               className="header-utility-btn"
-              onClick={() => setAppView((current) => (current === "workshop" ? "brush" : "workshop"))}
+              onClick={() => setAppView((current) => (current === "workshop" || current === "history" ? "brush" : "workshop"))}
             >
-              {appView === "workshop" ? "Return to brushing flow" : "Open translation workshop"}
+              {appView === "workshop" || appView === "history" ? "Return to brushing flow" : "Open translation workshop"}
             </button>
           </div>
         )}
@@ -1139,6 +1163,8 @@ function App() {
           languageOptions={supportedLanguageOptions}
           onExit={() => setAppView("brush")}
         />
+      ) : appView === "history" ? (
+        <VersionHistory onExit={() => setAppView("brush")} />
       ) : (
         <>
       <nav className={`workflow-tabs ${device.isMobile ? "mobile-workflow-tabs" : "desktop-workflow-tabs"}`} aria-label={t("app.workflow.ariaLabel")}>
@@ -1271,21 +1297,6 @@ function App() {
               {t("common.buttons.dismiss")}
             </button>
           </div>
-        </section>
-      )}
-
-      {showLastSessionBanner && lastSession?.song && storageConsent === "granted" && (
-        <section className="last-song-banner" aria-live="polite">
-          <p>{t("app.lastSession.summary", {
-            title: lastSession.song.title,
-            artist: lastSession.song.artist,
-            top: lastSession.values.top,
-            bottom: lastSession.values.bottom,
-            duration: formatTime(lastSession.brushDurationSeconds)
-          })}</p>
-          <button type="button" className="action-btn secondary" onClick={handleRepeatLastSession}>
-            {t("common.buttons.repeatLastSession")}
-          </button>
         </section>
       )}
 
@@ -1466,7 +1477,7 @@ function App() {
           >
             {device.isMobile && (
               <>
-              {!hideRestoredReadyCue && (
+              {!hideRestoredReadyCue && brushControlCue?.kind !== "complete" && (
                 <div className={`brush-cue-card${brushControlCue?.kind ? ` ${brushControlCue.kind}` : ""}`} aria-live="polite">
                   <strong>{brushControlCue?.title || t("brushing.readyTitle")}</strong>
                   {(brushControlCue?.detail || !brushControlCue)
@@ -1556,12 +1567,10 @@ function App() {
           <button type="button" className="privacy-toggle" onClick={openStorageInfoModal}>
             {t("common.buttons.storageNotice")}
           </button>
+          <button type="button" className="privacy-toggle" onClick={() => setAppView("history")}>
+            {t("common.buttons.versionHistory")}
+          </button>
         </div>
-        {import.meta.env.VITE_GIT_SHA && (
-          <p className="version-info">
-            <code>v{import.meta.env.VITE_GIT_SHA.substring(0, 7)}</code>
-          </p>
-        )}
       </footer>
 
       {activeModal && (

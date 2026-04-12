@@ -507,6 +507,15 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
       return;
     }
 
+    if (brushingPhase === "awaitingPlayback") {
+      onCueChange({
+        kind: "awaitingPlayback",
+        title: t("brushing.cue.awaitingPlaybackTitle"),
+        detail: t("brushing.cue.awaitingPlaybackDetail")
+      });
+      return;
+    }
+
     if (!timer.running) {
       onCueChange({
         kind: "ready",
@@ -703,6 +712,8 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
       : null;
   const guideStatusText = brushingPhase === "countdown"
     ? t("brushing.guide.countdownCallout", { seconds: formatTenths(startCountdownRemainingMs / 1000) })
+    : brushingPhase === "awaitingPlayback"
+      ? t("brushing.guide.awaitingPlaybackCallout")
     : brushingPhase === "running"
     ? activeEntry?.type === "transition"
       ? activeEntry.transitionCue === "switchHand"

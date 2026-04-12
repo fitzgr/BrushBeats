@@ -20,7 +20,8 @@
       "leftHand": "Left Hand",
       "rightHand": "Right Hand",
       "resetTimer": "Reset Timer",
-      "privacyPolicy": "Privacy Policy"
+      "privacyPolicy": "Privacy Policy",
+      "versionHistory": "Version History"
     },
     "states": {
       "on": "On",
@@ -48,6 +49,7 @@
     "status": {
       "label": "Status: {{state}}",
       "idle": "Idle",
+      "awaitingPlayback": "Waiting for playback",
       "countdown": "Starting soon",
       "paused": "Paused",
       "running": "Brushing in progress",
@@ -90,6 +92,12 @@
     "success": "Great work, your {{duration}} clean is complete. Keep this habit daily for stronger teeth and healthier gums.",
     "successAgeGroups": "Age-separated reinforcement groups: {{count}}",
     "geoDebug": "Geo debug: {{country}} ({{countryCode}}) | IP {{ip}} | source {{source}}"
+  },
+  "history": {
+    "eyebrow": "Version History",
+    "title": "Recent Updates",
+    "intro": "Recent git pushes with dates and the main change that landed in each one.",
+    "backToApp": "Back to BrushBeats"
   },
   "settings": {
     "language": "Language",
@@ -240,6 +248,7 @@
       "activeCalloutDesktop": "Brush {{label}} now, tooth {{position}} of {{size}}. Song target is ~{{bpm}} BPM. Move in {{seconds}}s.{{transitionNotice}}",
       "transitionNotice": " Transition in {{seconds}}s.",
       "pausedCallout": "Paused. Tap Resume to continue from the same spot.",
+      "awaitingPlaybackCallout": "Waiting for ads to finish or be skipped. Brushing will start once the song begins.",
       "inactiveCallout": "Press Start Brushing to begin live tooth guidance.",
       "completeCallout": "All teeth brushed. Nice consistency."
     },
@@ -250,6 +259,8 @@
       "countdownDetail": "Move into position. Brushing starts in {{seconds}}s.",
       "pausedTitle": "Paused",
       "pausedDetail": "Tap Resume to continue from the same tooth and video position.",
+      "awaitingPlaybackTitle": "Waiting for playback",
+      "awaitingPlaybackDetail": "Brushing will start once ads finish or are skipped and the song begins.",
       "readyTitle": "Ready to brush",
       "readyDetail": "Use your {{hand}} hand, wait for any ads to finish or be skipped, then start the timer.",
       "halfwayTitle": "Halfway switch",
