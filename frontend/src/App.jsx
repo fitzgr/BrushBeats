@@ -1056,7 +1056,12 @@ function App() {
     <main className={`app-shell ${device.isMobile ? "mobile-shell" : "desktop-shell"}${appView === "workshop" && !device.isMobile ? " workshop-shell" : ""}`}>
       {!(appView === "workshop" && !device.isMobile) && (
       <header className="app-header">
-        <p className="eyebrow">{t("app.eyebrow")}</p>
+        <p className="eyebrow">
+          <span>{t("app.eyebrow")}</span>
+          {import.meta.env.VITE_GIT_SHA && (
+            <span className="top-commit-id" aria-label="Build commit id">#{import.meta.env.VITE_GIT_SHA.substring(0, 7)}</span>
+          )}
+        </p>
         <h1>{device.isMobile ? t("app.title.mobile") : t("app.title.desktop")}</h1>
         <p>{subtitle}</p>
         <p className={`state-chip ${brushingPhase}`}>{t("app.status.label", { state: phaseLabel })}</p>
