@@ -154,6 +154,7 @@ function App() {
   const [activeModal, setActiveModal] = useState(null);
   const [workflowStep, setWorkflowStep] = useState("teeth");
   const [brushingHand, setBrushingHand] = useState("right");
+  const [brushType, setBrushType] = useState("manual");
   const [brushDurationSeconds, setBrushDurationSeconds] = useState(DEFAULT_BRUSH_DURATION_SECONDS);
   const [brushControlCue, setBrushControlCue] = useState(null);
   const [queuedSongPreview, setQueuedSongPreview] = useState(null);
@@ -204,8 +205,8 @@ function App() {
   const hideRestoredReadyCue = device.isMobile && autoRestoredBrushView && (!brushControlCue || brushControlCue.kind === "ready");
   const showCompactRoutine = isReturningVisitor && !isRoutineExpanded;
   const reinforcementPool = useMemo(
-    () => buildReinforcementPool(ageEstimate?.phase, totalTeeth),
-    [ageEstimate?.phase, totalTeeth]
+    () => buildReinforcementPool(ageEstimate?.phase, totalTeeth, brushType),
+    [ageEstimate?.phase, brushType, totalTeeth]
   );
   const ageGroupCount = getAgeMessageGroupCount();
 
@@ -297,6 +298,7 @@ function App() {
     setDraftSongFilters(session.filters);
     setKeyword(session.keyword || "");
     setBrushingHand(session.brushingHand || "right");
+    setBrushType(session.brushType || "manual");
     setBrushDurationSeconds(session.brushDurationSeconds || DEFAULT_BRUSH_DURATION_SECONDS);
   }
 
@@ -361,10 +363,11 @@ function App() {
       filters: songFilters,
       keyword,
       brushingHand,
+      brushType,
       brushDurationSeconds,
       savedAt: Date.now()
     });
-  }, [brushDurationSeconds, brushingHand, keyword, songFilters, storageConsent, values]);
+  }, [brushDurationSeconds, brushingHand, brushType, keyword, songFilters, storageConsent, values]);
 
   useEffect(() => {
     if (storageConsent !== "granted" || repeatSessionBootstrapRef.current || !lastSession?.song) {
@@ -949,6 +952,7 @@ function App() {
         filters: songFilters,
         keyword,
         brushingHand,
+        brushType,
         brushDurationSeconds,
         savedAt: Date.now()
       };
@@ -958,6 +962,7 @@ function App() {
         filters: songFilters,
         keyword,
         brushingHand,
+        brushType,
         brushDurationSeconds,
         savedAt: sessionToSave.savedAt
       });
@@ -1384,15 +1389,31 @@ function App() {
           <section className={`card brush-actions-card ${device.isMobile ? "" : "desktop-step-card"}`.trim()}>
             <h2>{t("brushing.controlsTitle")}</h2>
             <p>{t("brushing.controlsIntro")}</p>
+            <div className="brush-type-picker" role="group" aria-label={t("brushing.brushType")}>
+              <span className="profile-summary-label">{t("brushing.brushType")}</span>
+              <div className="brush-hand-actions">
+                <button
+                  type="button"
+                  className={`brush-hand-btn${brushType === "manual" ? " active" : ""}`}
+                  onClick={() => setBrushType("manual")}
+                >
+                  {t("brushing.brushTypeManual")}
+                </button>
+                <button
+                  type="button"
+                  className={`brush-hand-btn${brushType === "electric" ? " active" : ""}`}
+                  onClick={() => setBrushType("electric")}
+                >
+                  {t("brushing.brushTypeElectric")}
+                </button>
+              </div>
+            </div>
             {selectedSong && (
               <>
                 <p className="brush-selected-song">{t("brushing.selectedSong", { title: selectedSong.title, artist: selectedSong.artist })}</p>
                 {queuedSongPreview && brushingPhase === "running" && (
                   <p className="brush-next-song">{t("brushing.upNext", { title: queuedSongPreview.title, artist: queuedSongPreview.artist })}</p>
                 )}
-                <button type="button" className="action-btn secondary" onClick={goToMusicStep}>
-                  {t("common.buttons.changeMusic")}
-                </button>
               </>
             )}
             <div className="brush-hand-picker" role="group" aria-label={t("brushing.handPreference")}>
@@ -1520,6 +1541,7 @@ function App() {
             startCountdownTotalMs={START_DELAY_SECONDS * 1000}
             startCountdownRemainingMs={countdownRemainingMs}
             brushingHand={brushingHand}
+            brushType={brushType}
             hideIntro={device.isMobile && autoRestoredBrushView}
             onCueChange={setBrushControlCue}
             completionMessage={completionMessage}

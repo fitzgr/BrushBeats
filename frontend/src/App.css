@@ -1754,6 +1754,12 @@
   margin: 0.7rem 0 0.9rem;
 }
 
+.brush-type-picker {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.7rem 0 0.9rem;
+}
+
 .brush-duration-picker {
   margin: 0 0 0.9rem;
 }
@@ -2788,6 +2794,23 @@ select {
 .guide-callout.complete {
   background: linear-gradient(135deg, #fff8e8, #ebf8ef);
   border-color: rgba(36, 116, 70, 0.24);
+}
+
+.guide-technique-tip {
+  margin-top: 0.65rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(184, 219, 229, 0.35), rgba(183, 224, 197, 0.28));
+  border: 1px solid rgba(59, 121, 109, 0.22);
+  font-size: 0.82rem;
+  color: #244f44;
+  line-height: 1.45;
+  animation: tip-fade-in 600ms ease-out;
+}
+
+@keyframes tip-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .brush-hand-orientation {

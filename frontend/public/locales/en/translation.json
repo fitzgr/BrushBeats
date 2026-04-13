@@ -78,11 +78,11 @@
       },
       "flossing": {
         "title": "Flossing",
-        "description": "Daily floss guidance and timing will be added next."
+        "description": "Floss once daily by hugging each tooth in a C-shape, sliding below the gumline, and using clean floss sections between teeth."
       },
       "waterPicking": {
         "title": "Water Picking",
-        "description": "Water flosser routines and pressure guidance are planned."
+        "description": "Use a warm-water irrigator at low to medium pressure, trace the gumline at 90 degrees, and pause between teeth for 1-2 seconds."
       }
     },
     "languageFallbackNotice": "This language is not available yet. Showing English.",
@@ -191,6 +191,9 @@
   "brushing": {
     "controlsTitle": "Brushing Controls",
     "controlsIntro": "Wait until any ads are played or skipped, then start brushing so the timing stays aligned.",
+    "brushType": "Brush type",
+    "brushTypeManual": "Manual",
+    "brushTypeElectric": "Electric",
     "selectedSong": "Selected: {{title}} by {{artist}}",
     "upNext": "Up next: {{title}} by {{artist}}",
     "handPreference": "Brushing hand",

@@ -1,5 +1,26 @@
 [
   {
+    "id": "push-10489817936",
+    "kind": "push",
+    "source": "github-push",
+    "sha": "467ee99dffd4093e1a931bdafcc459f3dfb46989",
+    "shortSha": "467ee99",
+    "timestamp": "2026-04-12T18:36:23Z",
+    "date": "2026-04-12",
+    "subject": "Push by fitzgr to main",
+    "commits": []
+  },
+  {
+    "id": "commit-467ee99dffd4093e1a931bdafcc459f3dfb46989",
+    "kind": "commit",
+    "source": "git-log",
+    "sha": "467ee99dffd4093e1a931bdafcc459f3dfb46989",
+    "shortSha": "467ee99",
+    "timestamp": "2026-04-12T14:36:21-04:00",
+    "date": "2026-04-12",
+    "subject": "Merge GitHub push events with git commit history for ongoing version tracking"
+  },
+  {
     "id": "push-10483660444",
     "kind": "push",
     "source": "github-push",
@@ -397,26 +418,5 @@
     "timestamp": "2026-04-06T17:07:36-04:00",
     "date": "2026-04-06",
     "subject": "Reorder mobile brush flow layout"
-  },
-  {
-    "id": "push-10257997142",
-    "kind": "push",
-    "source": "github-push",
-    "sha": "f855f8884ed1de441d6f3f7c03160c2ed59c92bd",
-    "shortSha": "f855f88",
-    "timestamp": "2026-04-06T21:02:16Z",
-    "date": "2026-04-06",
-    "subject": "Push by fitzgr to main",
-    "commits": []
-  },
-  {
-    "id": "commit-f855f8884ed1de441d6f3f7c03160c2ed59c92bd",
-    "kind": "commit",
-    "source": "git-log",
-    "sha": "f855f8884ed1de441d6f3f7c03160c2ed59c92bd",
-    "shortSha": "f855f88",
-    "timestamp": "2026-04-06T17:02:08-04:00",
-    "date": "2026-04-06",
-    "subject": "Simplify brush flow controls and layout"
   }
 ]

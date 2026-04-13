@@ -78,11 +78,11 @@
       },
       "flossing": {
         "title": "Diş İpi",
-        "description": "Günlük diş ipi rehberi ve zamanlama daha sonra eklenecek."
+        "description": "Gunde bir kez dis ipi kullanin; her disi C seklinde sarin, dis eti cizgisinin altina nazikce inin ve her aralikta temiz ip bolumu kullanin."
       },
       "waterPicking": {
         "title": "Ağız Duşu",
-        "description": "Ağız duşu rutinleri ve basınç rehberi planlanıyor."
+        "description": "Ilik suyu dusuk-orta basincla kullanin, ucunu dis eti cizgisine 90 derece tutun ve dis aralarinda 1-2 saniye duraklayin."
       }
     },
     "languageFallbackNotice": "Bu dil henüz mevcut değil. İngilizce gösteriliyor.",
@@ -191,6 +191,9 @@
   "brushing": {
     "controlsTitle": "Fırçalama Kontrolleri",
     "controlsIntro": "Reklamlar bittikten veya geçildikten sonra fırçalamaya başlayın ki zamanlama uyumlu kalsın.",
+    "brushType": "Firca tipi",
+    "brushTypeManual": "Manuel",
+    "brushTypeElectric": "Elektrikli",
     "selectedSong": "Seçilen: {{artist}} tarafından {{title}}",
     "upNext": "Sıradaki: {{artist}} tarafından {{title}}",
     "handPreference": "Fırçalama eli",

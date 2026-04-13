@@ -1,5 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getBrushTechniqueTips } from "../lib/reinforcementMessages";
 
 function toRadians(degrees) {
   return (degrees * Math.PI) / 180;
@@ -417,7 +418,7 @@ function getCountdownSignal(remainingMs, totalMs) {
   };
 }
 
-function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, playbackSeconds, brushingMusicElapsedSeconds, startCountdownTotalMs = 5000, startCountdownRemainingMs = 0, brushingHand, hideIntro = false, onCueChange, completionMessage = "" }) {
+function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, playbackSeconds, brushingMusicElapsedSeconds, startCountdownTotalMs = 5000, startCountdownRemainingMs = 0, brushingHand, brushType = "manual", hideIntro = false, onCueChange, completionMessage = "" }) {
   const { t } = useTranslation();
   const totalSeconds = Number(bpmData?.totalBrushingSeconds || 120);
   const topTeeth = Number(values?.top || 16);
@@ -474,6 +475,35 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
     : null;
   const mapCenter = { x: 180, y: 214 };
   const mapCenterRadius = 42;
+  const agePhase = useMemo(() => {
+    const total = topTeeth + bottomTeeth;
+    if (total <= 4) return "infant";
+    if (total <= 12) return "toddler";
+    if (total <= 20) return "primary";
+    if (total <= 28) return "mixed";
+    return "adult";
+  }, [topTeeth, bottomTeeth]);
+  const tips = useMemo(() => getBrushTechniqueTips(brushType, agePhase), [brushType, agePhase]);
+  const [activeTip, setActiveTip] = useState("");
+  const tipIndexRef = useRef(0);
+
+  useEffect(() => {
+    if (brushingPhase !== "running") {
+      return;
+    }
+
+    // Show first tip immediately when brushing begins
+    setActiveTip(tips[tipIndexRef.current % tips.length] || "");
+
+    const interval = window.setInterval(() => {
+      tipIndexRef.current += 1;
+      setActiveTip(tips[tipIndexRef.current % tips.length] || "");
+    }, 18000); // rotate every 18 seconds
+
+    return () => {
+      window.clearInterval(interval);
+    };
+  }, [brushingPhase, tips]);
 
   useEffect(() => {
     if (!onCueChange) {
@@ -1032,6 +1062,9 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
       )}
       {guideStatusText && !(brushingPhase === "complete" && completionMessage) && <p className={`guide-callout${brushingPhase === "complete" ? " complete" : ""}`}>{guideStatusText}</p>}
       {inactiveGuideText && <p className="guide-callout">{inactiveGuideText}</p>}
+      {brushingPhase === "running" && activeTip && (
+        <p className="guide-technique-tip" aria-live="polite">{activeTip}</p>
+      )}
 
     </section>
   );

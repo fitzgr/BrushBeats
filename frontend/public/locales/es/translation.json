@@ -78,11 +78,11 @@
       },
       "flossing": {
         "title": "Hilo dental",
-        "description": "La guia diaria de uso de hilo dental y su temporizacion se agregaran despues."
+        "description": "Usa hilo una vez al dia formando una C alrededor de cada diente, entrando suavemente bajo la encia y usando un tramo limpio en cada espacio."
       },
       "waterPicking": {
         "title": "Irrigador dental",
-        "description": "Se planean rutinas de irrigador y guia de presion."
+        "description": "Usa agua tibia con presion baja a media, apunta a 90 grados hacia la linea de la encia y detente 1-2 segundos entre dientes."
       }
     },
     "languageFallbackNotice": "Este idioma todavia no esta disponible. Mostrando ingles.",
@@ -191,6 +191,9 @@
   "brushing": {
     "controlsTitle": "Controles de cepillado",
     "controlsIntro": "Espera a que cualquier anuncio termine o se pueda omitir y, despues, empieza a cepillarte para mantener el tiempo alineado.",
+    "brushType": "Tipo de cepillo",
+    "brushTypeManual": "Manual",
+    "brushTypeElectric": "Electrico",
     "selectedSong": "Seleccionada: {{title}} de {{artist}}",
     "upNext": "Siguiente: {{title}} de {{artist}}",
     "handPreference": "Mano para cepillarse",
