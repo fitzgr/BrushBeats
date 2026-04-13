@@ -53,6 +53,7 @@ const BRUSH_TECHNIQUE_TIPS = {
     infant: [
       "Let the oscillating head do the work — just guide it slowly tooth by tooth.",
       "Hold the head at the gumline and pause one to two seconds per tooth.",
+      "Lift the head off each tooth before moving to the next — don't drag it across.",
       "A child-sized oscillating head protects growing enamel.",
       "Electric brushes remove 21% more plaque than manual for young brushers.",
       "Use a rice-grain of fluoride paste — the motor doesn't need more.",
@@ -62,6 +63,7 @@ const BRUSH_TECHNIQUE_TIPS = {
       "Pause for a full beat on each tooth surface — the head cleans while you wait.",
       "Guide, don't scrub: the oscillation does the stroke; you do the steering.",
       "Angle the head 45° to the gumline and then move slowly to the next tooth.",
+      "Lift the brush off each tooth before advancing — sliding across skips the contact zone.",
       "Electric brushes need less pressure — pressing hard risks gum irritation.",
       "After molars, tilt the head to reach the back chewing surface fully.",
       "Clean the inner surfaces with the same tooth-by-tooth slow glide."
@@ -69,6 +71,7 @@ const BRUSH_TECHNIQUE_TIPS = {
     primary: [
       "No scrubbing needed — place the head and let the motor run for two seconds.",
       "A built-in two-minute timer is a strong habit anchor at this age.",
+      "Lift off each tooth cleanly before moving on — don't sweep or drag across.",
       "Press the trigger surface to gauge pressure — barely any is ideal.",
       "Electric heads reach the gumline more consistently than short manual strokes.",
       "Move the head from gum to tooth tip in a slow guide rather than a stroke.",
@@ -77,6 +80,7 @@ const BRUSH_TECHNIQUE_TIPS = {
     mixed: [
       "Oscillating heads reach between teeth and into grooves of new molars well.",
       "Slow the glide over erupting molars — rough surfaces trap bristles briefly.",
+      "Lift the head between teeth rather than pushing it across — lifting cleans the contact point.",
       "Four quadrants at 30 seconds each aligns with most built-in timers.",
       "Light grip and a slow drift get better contact than pressing.",
       "New permanent enamel is porous at first — consistent technique hardens it.",
@@ -85,6 +89,7 @@ const BRUSH_TECHNIQUE_TIPS = {
     adult: [
       "Oscillating-rotating heads outperform sonic in plaque removal per clinical trials.",
       "Guide at 45° to gumline, pause two seconds per tooth, then advance.",
+      "Lift off each tooth before moving to the next — dragging spreads plaque instead of removing it.",
       "No scrubbing motion — the head oscillates, your hand just glides slowly.",
       "Pressure sensors on most rechargeable heads prevent gum recession.",
       "Round heads work inner lower front teeth better than manual can.",
