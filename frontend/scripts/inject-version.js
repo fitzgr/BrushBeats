@@ -154,8 +154,66 @@ async function getGitHubPushHistory(owner, repo, limit) {
   }
 }
 
+function getCommitsInRange(fromSha, toSha) {
+  if (!toSha) return [];
+  const range = fromSha ? `${fromSha}..${toSha}` : `${toSha}~1..${toSha}`;
+  const raw = runGit(
+    `git log --date=iso-strict --pretty=format:"%H|%h|%ad|%s" ${range}`,
+    ''
+  );
+
+  if (!raw) return [];
+
+  return raw
+    .split('\n')
+    .filter(Boolean)
+    .map((line) => {
+      const [sha, shortSha, timestamp, subject] = line.split('|');
+      return { sha, shortSha, timestamp, message: subject || '' };
+    });
+}
+
+function enrichPushesWithGitLog(pushHistory, commitHistory) {
+  if (pushHistory.length === 0) return pushHistory;
+
+  const sorted = [...pushHistory].sort(
+    (a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp)
+  );
+
+  for (let i = 0; i < sorted.length; i++) {
+    const push = sorted[i];
+    const prevPush = sorted[i + 1];
+    const rangeCommits = getCommitsInRange(prevPush?.sha || '', push.sha);
+
+    if (rangeCommits.length > 0) {
+      push.commits = rangeCommits.map((c) => ({
+        sha: c.sha,
+        shortSha: c.shortSha,
+        message: c.message
+      }));
+      push.subject =
+        rangeCommits.length === 1
+          ? rangeCommits[0].message
+          : `${rangeCommits.length} commits pushed`;
+    } else {
+      // Fall back to matching commit from git log by SHA
+      const match = commitHistory.find((c) => c.sha === push.sha);
+      if (match) {
+        push.subject = match.subject;
+        push.commits = [{ sha: match.sha, shortSha: match.shortSha, message: match.subject }];
+      }
+    }
+  }
+
+  return sorted;
+}
+
 function mergeHistory(pushHistory, commitHistory, limit) {
-  return [...pushHistory, ...commitHistory]
+  // Remove commit entries whose SHA is already represented by a push entry
+  const pushShas = new Set(pushHistory.map((p) => p.sha).filter(Boolean));
+  const filteredCommits = commitHistory.filter((c) => !pushShas.has(c.sha));
+
+  return [...pushHistory, ...filteredCommits]
     .sort((a, b) => {
       const aTime = Date.parse(a.timestamp || a.date || 0);
       const bTime = Date.parse(b.timestamp || b.date || 0);
@@ -174,7 +232,8 @@ async function main() {
     const repo = process.env.VITE_GITHUB_REPO || remoteRepo?.name;
 
     const commitHistory = getGitCommitHistory(DEFAULT_HISTORY_LIMIT);
-    const pushHistory = await getGitHubPushHistory(owner, repo, Math.floor(DEFAULT_HISTORY_LIMIT / 2));
+    const rawPushHistory = await getGitHubPushHistory(owner, repo, Math.floor(DEFAULT_HISTORY_LIMIT / 2));
+    const pushHistory = enrichPushesWithGitLog(rawPushHistory, commitHistory);
     const mergedHistory = mergeHistory(pushHistory, commitHistory, DEFAULT_HISTORY_LIMIT);
 
     const envContent = `VITE_GIT_SHA=${gitSha}\n`;

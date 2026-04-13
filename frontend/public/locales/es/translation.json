@@ -193,7 +193,7 @@
     "controlsIntro": "Espera a que cualquier anuncio termine o se pueda omitir y, despues, empieza a cepillarte para mantener el tiempo alineado.",
     "brushType": "Tipo de cepillo",
     "brushTypeManual": "Manual",
-    "brushTypeElectric": "Electrico",
+    "brushTypeElectric": "Electric",
     "selectedSong": "Seleccionada: {{title}} de {{artist}}",
     "upNext": "Siguiente: {{title}} de {{artist}}",
     "handPreference": "Mano para cepillarse",
