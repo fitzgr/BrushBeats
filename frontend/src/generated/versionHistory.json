@@ -1,5 +1,22 @@
 [
   {
+    "id": "push-10520301498",
+    "kind": "push",
+    "source": "github-push",
+    "sha": "038977ced69e3e12d084b5ac654aa9f7f8871990",
+    "shortSha": "038977c",
+    "timestamp": "2026-04-13T13:47:23Z",
+    "date": "2026-04-13",
+    "subject": "Show commit messages in push history entries; use Manual/Electric labels in all locales",
+    "commits": [
+      {
+        "sha": "038977ced69e3e12d084b5ac654aa9f7f8871990",
+        "shortSha": "038977c",
+        "message": "Show commit messages in push history entries; use Manual/Electric labels in all locales"
+      }
+    ]
+  },
+  {
     "id": "push-10518736589",
     "kind": "push",
     "source": "github-push",
@@ -323,21 +340,14 @@
     ]
   },
   {
-    "id": "push-10258459773",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-94956bddd30465fefa868a02467497ed693b38ee",
+    "kind": "commit",
+    "source": "git-log",
     "sha": "94956bddd30465fefa868a02467497ed693b38ee",
     "shortSha": "94956bd",
-    "timestamp": "2026-04-06T21:17:24Z",
+    "timestamp": "2026-04-06T17:17:22-04:00",
     "date": "2026-04-06",
-    "subject": "Tighten mobile brush flow layout",
-    "commits": [
-      {
-        "sha": "94956bddd30465fefa868a02467497ed693b38ee",
-        "shortSha": "94956bd",
-        "message": "Tighten mobile brush flow layout"
-      }
-    ]
+    "subject": "Tighten mobile brush flow layout"
   },
   {
     "id": "commit-5f7f3ae87431f18ef87e4ce07727569c2bc43c1c",
@@ -528,15 +538,5 @@
     "timestamp": "2026-04-02T07:06:58-04:00",
     "date": "2026-04-02",
     "subject": "Add mobile 3-step workflow tabs for teeth, music, and brushing"
-  },
-  {
-    "id": "commit-fcf83e5243ce02cde099a03f0d814e4277872a00",
-    "kind": "commit",
-    "source": "git-log",
-    "sha": "fcf83e5243ce02cde099a03f0d814e4277872a00",
-    "shortSha": "fcf83e5",
-    "timestamp": "2026-04-02T06:58:06-04:00",
-    "date": "2026-04-02",
-    "subject": "Add device-aware mobile and desktop UI modes"
   }
 ]

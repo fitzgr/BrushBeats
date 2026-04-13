@@ -155,6 +155,7 @@ function App() {
   const [workflowStep, setWorkflowStep] = useState("teeth");
   const [brushingHand, setBrushingHand] = useState("right");
   const [brushType, setBrushType] = useState("manual");
+  const [expandedRoutineCard, setExpandedRoutineCard] = useState(null);
   const [brushDurationSeconds, setBrushDurationSeconds] = useState(DEFAULT_BRUSH_DURATION_SECONDS);
   const [brushControlCue, setBrushControlCue] = useState(null);
   const [queuedSongPreview, setQueuedSongPreview] = useState(null);
@@ -1217,9 +1218,35 @@ function App() {
               <p>{t("app.routine.brushing.description")}</p>
             </article>
             <div className="care-routine-mini-list" aria-label={t("app.routine.ariaLabel")}>
-              <span className="care-routine-mini-pill">{t("app.routine.flossing.title")} · {t("app.routine.comingSoon")}</span>
-              <span className="care-routine-mini-pill">{t("app.routine.waterPicking.title")} · {t("app.routine.comingSoon")}</span>
+              <button
+                type="button"
+                className={`care-routine-mini-pill${expandedRoutineCard === "flossing" ? " active" : ""}`}
+                onClick={() => setExpandedRoutineCard((c) => (c === "flossing" ? null : "flossing"))}
+              >
+                {t("app.routine.flossing.title")}
+              </button>
+              <button
+                type="button"
+                className={`care-routine-mini-pill${expandedRoutineCard === "waterPicking" ? " active" : ""}`}
+                onClick={() => setExpandedRoutineCard((c) => (c === "waterPicking" ? null : "waterPicking"))}
+              >
+                {t("app.routine.waterPicking.title")}
+              </button>
             </div>
+            {expandedRoutineCard === "flossing" && (
+              <article className="care-routine-card best-practice care-routine-expanded">
+                <span className="care-routine-badge">{t("app.routine.bestPractice")}</span>
+                <strong>{t("app.routine.flossing.title")}</strong>
+                <p>{t("app.routine.flossing.description")}</p>
+              </article>
+            )}
+            {expandedRoutineCard === "waterPicking" && (
+              <article className="care-routine-card best-practice care-routine-expanded">
+                <span className="care-routine-badge">{t("app.routine.bestPractice")}</span>
+                <strong>{t("app.routine.waterPicking.title")}</strong>
+                <p>{t("app.routine.waterPicking.description")}</p>
+              </article>
+            )}
           </div>
         ) : (
           <div className="care-routine-grid">
@@ -1228,13 +1255,13 @@ function App() {
               <strong>{t("app.routine.brushing.title")}</strong>
               <p>{t("app.routine.brushing.description")}</p>
             </article>
-            <article className="care-routine-card coming-soon" aria-disabled="true">
-              <span className="care-routine-badge">{t("app.routine.comingSoon")}</span>
+            <article className="care-routine-card best-practice">
+              <span className="care-routine-badge">{t("app.routine.bestPractice")}</span>
               <strong>{t("app.routine.flossing.title")}</strong>
               <p>{t("app.routine.flossing.description")}</p>
             </article>
-            <article className="care-routine-card coming-soon" aria-disabled="true">
-              <span className="care-routine-badge">{t("app.routine.comingSoon")}</span>
+            <article className="care-routine-card best-practice">
+              <span className="care-routine-badge">{t("app.routine.bestPractice")}</span>
               <strong>{t("app.routine.waterPicking.title")}</strong>
               <p>{t("app.routine.waterPicking.description")}</p>
             </article>

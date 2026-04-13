@@ -319,6 +319,32 @@
   border-color: rgba(202, 95, 22, 0.24);
 }
 
+.care-routine-card.best-practice {
+  background: linear-gradient(145deg, rgba(220, 245, 238, 0.96), rgba(240, 252, 248, 0.98));
+  border-color: rgba(66, 184, 154, 0.3);
+}
+
+.care-routine-card.best-practice .care-routine-badge {
+  background: rgba(66, 184, 154, 0.15);
+  color: #1e7a5e;
+}
+
+.care-routine-expanded {
+  margin-top: 0.5rem;
+}
+
+.care-routine-mini-pill {
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.care-routine-mini-pill.active {
+  background: rgba(220, 245, 238, 0.9);
+  border-color: rgba(66, 184, 154, 0.4);
+  color: #1e7a5e;
+}
+
 .care-routine-card.compact-primary {
   padding: 0.75rem 0.85rem;
   align-content: center;
