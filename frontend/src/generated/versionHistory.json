@@ -1,5 +1,22 @@
 [
   {
+    "id": "push-10526597643",
+    "kind": "push",
+    "source": "github-push",
+    "sha": "7c1184fb676e8773c3b133b1d50a8ac3f044792b",
+    "shortSha": "7c1184f",
+    "timestamp": "2026-04-13T16:19:06Z",
+    "date": "2026-04-13",
+    "subject": "Add lift-between-teeth coaching tip to all electric brush age phases",
+    "commits": [
+      {
+        "sha": "7c1184fb676e8773c3b133b1d50a8ac3f044792b",
+        "shortSha": "7c1184f",
+        "message": "Add lift-between-teeth coaching tip to all electric brush age phases"
+      }
+    ]
+  },
+  {
     "id": "push-10524746069",
     "kind": "push",
     "source": "github-push",
@@ -659,23 +676,6 @@
         "sha": "69ee2f5411aed8cae7f0c51156760165dc0b6d43",
         "shortSha": "69ee2f5",
         "message": "Add randomized song vibe preference sliders"
-      }
-    ]
-  },
-  {
-    "id": "push-10125027640",
-    "kind": "push",
-    "source": "github-push",
-    "sha": "1cd826273b778a8b42f2628fe548acea294b0d52",
-    "shortSha": "1cd8262",
-    "timestamp": "2026-04-02T15:23:47Z",
-    "date": "2026-04-02",
-    "subject": "Refine backend loading status copy",
-    "commits": [
-      {
-        "sha": "1cd826273b778a8b42f2628fe548acea294b0d52",
-        "shortSha": "1cd8262",
-        "message": "Refine backend loading status copy"
       }
     ]
   }
