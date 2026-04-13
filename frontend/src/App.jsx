@@ -452,6 +452,8 @@ function App() {
       return;
     }
 
+    setAppView("brush");
+    setWorkflowStep("music");
     await handleSelectSong(song);
     trackEvent("stored_song_queued", {
       source,
@@ -824,7 +826,7 @@ function App() {
   async function handleSelectSong(song) {
     trackEvent("song_selected", { title: song.title, artist: song.artist });
     setAutoRestoredBrushView(false);
-    setWorkflowStep("brush");
+    setWorkflowStep("music");
     queuedSongRef.current = null;
     setQueuedSongPreview(null);
     if (storageConsent === "granted") {

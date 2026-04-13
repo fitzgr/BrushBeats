@@ -1,5 +1,22 @@
 [
   {
+    "id": "push-10520790090",
+    "kind": "push",
+    "source": "github-push",
+    "sha": "bd8709258ea5ff973ebf894da9718eed8925100e",
+    "shortSha": "bd87092",
+    "timestamp": "2026-04-13T13:58:47Z",
+    "date": "2026-04-13",
+    "subject": "Activate flossing and water-picking cards with best-practice content and teal styling",
+    "commits": [
+      {
+        "sha": "bd8709258ea5ff973ebf894da9718eed8925100e",
+        "shortSha": "bd87092",
+        "message": "Activate flossing and water-picking cards with best-practice content and teal styling"
+      }
+    ]
+  },
+  {
     "id": "push-10520301498",
     "kind": "push",
     "source": "github-push",
@@ -340,203 +357,326 @@
     ]
   },
   {
-    "id": "commit-94956bddd30465fefa868a02467497ed693b38ee",
-    "kind": "commit",
-    "source": "git-log",
+    "id": "push-10258459773",
+    "kind": "push",
+    "source": "github-push",
     "sha": "94956bddd30465fefa868a02467497ed693b38ee",
     "shortSha": "94956bd",
-    "timestamp": "2026-04-06T17:17:22-04:00",
+    "timestamp": "2026-04-06T21:17:24Z",
     "date": "2026-04-06",
-    "subject": "Tighten mobile brush flow layout"
+    "subject": "Tighten mobile brush flow layout",
+    "commits": [
+      {
+        "sha": "94956bddd30465fefa868a02467497ed693b38ee",
+        "shortSha": "94956bd",
+        "message": "Tighten mobile brush flow layout"
+      }
+    ]
   },
   {
-    "id": "commit-5f7f3ae87431f18ef87e4ce07727569c2bc43c1c",
-    "kind": "commit",
-    "source": "git-log",
+    "id": "push-10258165211",
+    "kind": "push",
+    "source": "github-push",
     "sha": "5f7f3ae87431f18ef87e4ce07727569c2bc43c1c",
     "shortSha": "5f7f3ae",
-    "timestamp": "2026-04-06T17:07:36-04:00",
+    "timestamp": "2026-04-06T21:07:42Z",
     "date": "2026-04-06",
-    "subject": "Reorder mobile brush flow layout"
+    "subject": "Reorder mobile brush flow layout",
+    "commits": [
+      {
+        "sha": "5f7f3ae87431f18ef87e4ce07727569c2bc43c1c",
+        "shortSha": "5f7f3ae",
+        "message": "Reorder mobile brush flow layout"
+      }
+    ]
   },
   {
-    "id": "commit-f855f8884ed1de441d6f3f7c03160c2ed59c92bd",
-    "kind": "commit",
-    "source": "git-log",
+    "id": "push-10257997142",
+    "kind": "push",
+    "source": "github-push",
     "sha": "f855f8884ed1de441d6f3f7c03160c2ed59c92bd",
     "shortSha": "f855f88",
-    "timestamp": "2026-04-06T17:02:08-04:00",
+    "timestamp": "2026-04-06T21:02:16Z",
     "date": "2026-04-06",
-    "subject": "Simplify brush flow controls and layout"
+    "subject": "Simplify brush flow controls and layout",
+    "commits": [
+      {
+        "sha": "f855f8884ed1de441d6f3f7c03160c2ed59c92bd",
+        "shortSha": "f855f88",
+        "message": "Simplify brush flow controls and layout"
+      }
+    ]
   },
   {
-    "id": "commit-8d855acb0c8e2a81a175c3a99ff04c8e2028554c",
-    "kind": "commit",
-    "source": "git-log",
+    "id": "push-10237972031",
+    "kind": "push",
+    "source": "github-push",
     "sha": "8d855acb0c8e2a81a175c3a99ff04c8e2028554c",
     "shortSha": "8d855ac",
-    "timestamp": "2026-04-06T06:45:59-04:00",
+    "timestamp": "2026-04-06T10:46:10Z",
     "date": "2026-04-06",
-    "subject": "Refine brush map timing and layout"
+    "subject": "Refine brush map timing and layout",
+    "commits": [
+      {
+        "sha": "8d855acb0c8e2a81a175c3a99ff04c8e2028554c",
+        "shortSha": "8d855ac",
+        "message": "Refine brush map timing and layout"
+      }
+    ]
   },
   {
-    "id": "commit-e17b879a8deaeaf0960e337c4664995d8fffb95a",
-    "kind": "commit",
-    "source": "git-log",
+    "id": "push-10213916566",
+    "kind": "push",
+    "source": "github-push",
     "sha": "e17b879a8deaeaf0960e337c4664995d8fffb95a",
     "shortSha": "e17b879",
-    "timestamp": "2026-04-05T11:05:41-04:00",
+    "timestamp": "2026-04-05T15:05:44Z",
     "date": "2026-04-05",
-    "subject": "Add translation workshop and brushing flow improvements"
+    "subject": "Add translation workshop and brushing flow improvements",
+    "commits": [
+      {
+        "sha": "e17b879a8deaeaf0960e337c4664995d8fffb95a",
+        "shortSha": "e17b879",
+        "message": "Add translation workshop and brushing flow improvements"
+      }
+    ]
   },
   {
-    "id": "commit-31964a1e80048bc2a0c9b30e0326a99b7d90e44a",
-    "kind": "commit",
-    "source": "git-log",
+    "id": "push-10185908924",
+    "kind": "push",
+    "source": "github-push",
     "sha": "31964a1e80048bc2a0c9b30e0326a99b7d90e44a",
     "shortSha": "31964a1",
-    "timestamp": "2026-04-04T06:56:21-04:00",
+    "timestamp": "2026-04-04T10:56:29Z",
     "date": "2026-04-04",
-    "subject": "Add detailed storage notice modal"
+    "subject": "Add detailed storage notice modal",
+    "commits": [
+      {
+        "sha": "31964a1e80048bc2a0c9b30e0326a99b7d90e44a",
+        "shortSha": "31964a1",
+        "message": "Add detailed storage notice modal"
+      }
+    ]
   },
   {
-    "id": "commit-129182ac43ad7c28c9211890bd4c3f8600b4d36f",
-    "kind": "commit",
-    "source": "git-log",
+    "id": "push-10185864595",
+    "kind": "push",
+    "source": "github-push",
     "sha": "129182ac43ad7c28c9211890bd4c3f8600b4d36f",
     "shortSha": "129182a",
-    "timestamp": "2026-04-04T06:53:32-04:00",
+    "timestamp": "2026-04-04T10:53:39Z",
     "date": "2026-04-04",
-    "subject": "Add Spanish support and improve brushing guidance"
+    "subject": "Add Spanish support and improve brushing guidance",
+    "commits": [
+      {
+        "sha": "129182ac43ad7c28c9211890bd4c3f8600b4d36f",
+        "shortSha": "129182a",
+        "message": "Add Spanish support and improve brushing guidance"
+      }
+    ]
   },
   {
-    "id": "commit-c4cc55830e83615edef91b66baf77193c9c85bc7",
-    "kind": "commit",
-    "source": "git-log",
+    "id": "push-10164874470",
+    "kind": "push",
+    "source": "github-push",
     "sha": "c4cc55830e83615edef91b66baf77193c9c85bc7",
     "shortSha": "c4cc558",
-    "timestamp": "2026-04-03T12:47:14-04:00",
+    "timestamp": "2026-04-03T16:47:16Z",
     "date": "2026-04-03",
-    "subject": "Refine teeth step growth guidance"
+    "subject": "Refine teeth step growth guidance",
+    "commits": [
+      {
+        "sha": "c4cc55830e83615edef91b66baf77193c9c85bc7",
+        "shortSha": "c4cc558",
+        "message": "Refine teeth step growth guidance"
+      }
+    ]
   },
   {
-    "id": "commit-9b27578bd0821b5fea1aa1329d2cbc8da0691fb8",
-    "kind": "commit",
-    "source": "git-log",
+    "id": "push-10163226542",
+    "kind": "push",
+    "source": "github-push",
     "sha": "9b27578bd0821b5fea1aa1329d2cbc8da0691fb8",
     "shortSha": "9b27578",
-    "timestamp": "2026-04-03T11:48:59-04:00",
+    "timestamp": "2026-04-03T15:49:01Z",
     "date": "2026-04-03",
-    "subject": "Add teeth-to-age stage lookup"
+    "subject": "Add teeth-to-age stage lookup",
+    "commits": [
+      {
+        "sha": "9b27578bd0821b5fea1aa1329d2cbc8da0691fb8",
+        "shortSha": "9b27578",
+        "message": "Add teeth-to-age stage lookup"
+      }
+    ]
   },
   {
-    "id": "commit-c9225c894fb6ab39bd0b460683e4c9715c8c5a0f",
-    "kind": "commit",
-    "source": "git-log",
+    "id": "push-10158466043",
+    "kind": "push",
+    "source": "github-push",
     "sha": "c9225c894fb6ab39bd0b460683e4c9715c8c5a0f",
     "shortSha": "c9225c8",
-    "timestamp": "2026-04-03T09:08:33-04:00",
+    "timestamp": "2026-04-03T13:08:35Z",
     "date": "2026-04-03",
-    "subject": "Add transition-aware brushing timing"
+    "subject": "Add transition-aware brushing timing",
+    "commits": [
+      {
+        "sha": "c9225c894fb6ab39bd0b460683e4c9715c8c5a0f",
+        "shortSha": "c9225c8",
+        "message": "Add transition-aware brushing timing"
+      }
+    ]
   },
   {
-    "id": "commit-b689c7b25b92a9d0727c27cb45e2391dbf2cf385",
-    "kind": "commit",
-    "source": "git-log",
+    "id": "push-10158100664",
+    "kind": "push",
+    "source": "github-push",
     "sha": "b689c7b25b92a9d0727c27cb45e2391dbf2cf385",
     "shortSha": "b689c7b",
-    "timestamp": "2026-04-03T08:56:12-04:00",
+    "timestamp": "2026-04-03T12:56:14Z",
     "date": "2026-04-03",
-    "subject": "Add kids brushing mode and music bias"
+    "subject": "Add kids brushing mode and music bias",
+    "commits": [
+      {
+        "sha": "b689c7b25b92a9d0727c27cb45e2391dbf2cf385",
+        "shortSha": "b689c7b",
+        "message": "Add kids brushing mode and music bias"
+      }
+    ]
   },
   {
-    "id": "commit-6d5c4b5f8818e83f4db207517ef91c86279219ce",
-    "kind": "commit",
-    "source": "git-log",
+    "id": "push-10128319334",
+    "kind": "push",
+    "source": "github-push",
     "sha": "6d5c4b5f8818e83f4db207517ef91c86279219ce",
     "shortSha": "6d5c4b5",
-    "timestamp": "2026-04-02T12:56:52-04:00",
+    "timestamp": "2026-04-02T16:56:54Z",
     "date": "2026-04-02",
-    "subject": "Move teeth slider ticks into track"
+    "subject": "Move teeth slider ticks into track",
+    "commits": [
+      {
+        "sha": "6d5c4b5f8818e83f4db207517ef91c86279219ce",
+        "shortSha": "6d5c4b5",
+        "message": "Move teeth slider ticks into track"
+      }
+    ]
   },
   {
-    "id": "commit-8b389d7cc2a76e63072bc4e00c4b19ac631df2d7",
-    "kind": "commit",
-    "source": "git-log",
+    "id": "push-10127380498",
+    "kind": "push",
+    "source": "github-push",
     "sha": "8b389d7cc2a76e63072bc4e00c4b19ac631df2d7",
     "shortSha": "8b389d7",
-    "timestamp": "2026-04-02T12:28:46-04:00",
+    "timestamp": "2026-04-02T16:28:48Z",
     "date": "2026-04-02",
-    "subject": "Add tick marks to teeth count sliders"
+    "subject": "Add tick marks to teeth count sliders",
+    "commits": [
+      {
+        "sha": "8b389d7cc2a76e63072bc4e00c4b19ac631df2d7",
+        "shortSha": "8b389d7",
+        "message": "Add tick marks to teeth count sliders"
+      }
+    ]
   },
   {
-    "id": "commit-99b957dcc21cc86cbc5c77306469820018711c1b",
-    "kind": "commit",
-    "source": "git-log",
+    "id": "push-10127216185",
+    "kind": "push",
+    "source": "github-push",
     "sha": "99b957dcc21cc86cbc5c77306469820018711c1b",
     "shortSha": "99b957d",
-    "timestamp": "2026-04-02T12:24:16-04:00",
+    "timestamp": "2026-04-02T16:24:18Z",
     "date": "2026-04-02",
-    "subject": "Refine desktop step layout sizing"
+    "subject": "Refine desktop step layout sizing",
+    "commits": [
+      {
+        "sha": "99b957dcc21cc86cbc5c77306469820018711c1b",
+        "shortSha": "99b957d",
+        "message": "Refine desktop step layout sizing"
+      }
+    ]
   },
   {
-    "id": "commit-3e279eb28ecccc1f3eeb72091f0540a3b92038c2",
-    "kind": "commit",
-    "source": "git-log",
+    "id": "push-10126160451",
+    "kind": "push",
+    "source": "github-push",
     "sha": "3e279eb28ecccc1f3eeb72091f0540a3b92038c2",
     "shortSha": "3e279eb",
-    "timestamp": "2026-04-02T11:54:54-04:00",
+    "timestamp": "2026-04-02T15:54:56Z",
     "date": "2026-04-02",
-    "subject": "Align desktop workflow with step-based flow"
+    "subject": "Align desktop workflow with step-based flow",
+    "commits": [
+      {
+        "sha": "3e279eb28ecccc1f3eeb72091f0540a3b92038c2",
+        "shortSha": "3e279eb",
+        "message": "Align desktop workflow with step-based flow"
+      }
+    ]
   },
   {
-    "id": "commit-5df1a0032eb77d54117f6ab811eb962b83946ad0",
-    "kind": "commit",
-    "source": "git-log",
+    "id": "push-10125774835",
+    "kind": "push",
+    "source": "github-push",
     "sha": "5df1a0032eb77d54117f6ab811eb962b83946ad0",
     "shortSha": "5df1a00",
-    "timestamp": "2026-04-02T11:44:11-04:00",
+    "timestamp": "2026-04-02T15:44:13Z",
     "date": "2026-04-02",
-    "subject": "Delay song filter fetch until slider release"
+    "subject": "Delay song filter fetch until slider release",
+    "commits": [
+      {
+        "sha": "5df1a0032eb77d54117f6ab811eb962b83946ad0",
+        "shortSha": "5df1a00",
+        "message": "Delay song filter fetch until slider release"
+      }
+    ]
   },
   {
-    "id": "commit-69ee2f5411aed8cae7f0c51156760165dc0b6d43",
-    "kind": "commit",
-    "source": "git-log",
+    "id": "push-10125677825",
+    "kind": "push",
+    "source": "github-push",
     "sha": "69ee2f5411aed8cae7f0c51156760165dc0b6d43",
     "shortSha": "69ee2f5",
-    "timestamp": "2026-04-02T11:41:30-04:00",
+    "timestamp": "2026-04-02T15:41:32Z",
     "date": "2026-04-02",
-    "subject": "Add randomized song vibe preference sliders"
+    "subject": "Add randomized song vibe preference sliders",
+    "commits": [
+      {
+        "sha": "69ee2f5411aed8cae7f0c51156760165dc0b6d43",
+        "shortSha": "69ee2f5",
+        "message": "Add randomized song vibe preference sliders"
+      }
+    ]
   },
   {
-    "id": "commit-1cd826273b778a8b42f2628fe548acea294b0d52",
-    "kind": "commit",
-    "source": "git-log",
+    "id": "push-10125027640",
+    "kind": "push",
+    "source": "github-push",
     "sha": "1cd826273b778a8b42f2628fe548acea294b0d52",
     "shortSha": "1cd8262",
-    "timestamp": "2026-04-02T11:23:45-04:00",
+    "timestamp": "2026-04-02T15:23:47Z",
     "date": "2026-04-02",
-    "subject": "Refine backend loading status copy"
+    "subject": "Refine backend loading status copy",
+    "commits": [
+      {
+        "sha": "1cd826273b778a8b42f2628fe548acea294b0d52",
+        "shortSha": "1cd8262",
+        "message": "Refine backend loading status copy"
+      }
+    ]
   },
   {
-    "id": "commit-14762ad42628b38aa8c331d7799a4264ea8aac0a",
-    "kind": "commit",
-    "source": "git-log",
+    "id": "push-10118412038",
+    "kind": "push",
+    "source": "github-push",
     "sha": "14762ad42628b38aa8c331d7799a4264ea8aac0a",
     "shortSha": "14762ad",
-    "timestamp": "2026-04-02T08:35:25-04:00",
+    "timestamp": "2026-04-02T12:35:27Z",
     "date": "2026-04-02",
-    "subject": "Auto-advance to brush tab on mobile when song selected"
-  },
-  {
-    "id": "commit-45b7af54de3bab52e0d2527df07d79b35a1e9013",
-    "kind": "commit",
-    "source": "git-log",
-    "sha": "45b7af54de3bab52e0d2527df07d79b35a1e9013",
-    "shortSha": "45b7af5",
-    "timestamp": "2026-04-02T07:06:58-04:00",
-    "date": "2026-04-02",
-    "subject": "Add mobile 3-step workflow tabs for teeth, music, and brushing"
+    "subject": "Auto-advance to brush tab on mobile when song selected",
+    "commits": [
+      {
+        "sha": "14762ad42628b38aa8c331d7799a4264ea8aac0a",
+        "shortSha": "14762ad",
+        "message": "Auto-advance to brush tab on mobile when song selected"
+      }
+    ]
   }
 ]

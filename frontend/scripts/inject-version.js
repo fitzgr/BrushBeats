@@ -9,6 +9,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DEFAULT_HISTORY_LIMIT = 40;
+const COMMIT_SCAN_LIMIT = 400;
+const PUSH_SCAN_LIMIT = 100;
 
 function runGit(command, fallback = '') {
   try {
@@ -173,6 +175,29 @@ function getCommitsInRange(fromSha, toSha) {
     });
 }
 
+function getCommitBySha(sha) {
+  if (!sha) {
+    return null;
+  }
+
+  const raw = runGit(
+    `git show -s --date=iso-strict --pretty=format:"%H|%h|%ad|%s" ${sha}`,
+    ''
+  );
+
+  if (!raw) {
+    return null;
+  }
+
+  const [fullSha, shortSha, timestamp, subject] = raw.split('|');
+  return {
+    sha: fullSha,
+    shortSha,
+    timestamp,
+    message: subject || ''
+  };
+}
+
 function enrichPushesWithGitLog(pushHistory, commitHistory) {
   if (pushHistory.length === 0) return pushHistory;
 
@@ -201,6 +226,16 @@ function enrichPushesWithGitLog(pushHistory, commitHistory) {
       if (match) {
         push.subject = match.subject;
         push.commits = [{ sha: match.sha, shortSha: match.shortSha, message: match.subject }];
+      } else {
+        const shaMatch = getCommitBySha(push.sha);
+        if (shaMatch) {
+          push.subject = shaMatch.message;
+          push.commits = [{
+            sha: shaMatch.sha,
+            shortSha: shaMatch.shortSha,
+            message: shaMatch.message
+          }];
+        }
       }
     }
   }
@@ -231,8 +266,8 @@ async function main() {
     const owner = process.env.VITE_GITHUB_OWNER || remoteRepo?.owner;
     const repo = process.env.VITE_GITHUB_REPO || remoteRepo?.name;
 
-    const commitHistory = getGitCommitHistory(DEFAULT_HISTORY_LIMIT);
-    const rawPushHistory = await getGitHubPushHistory(owner, repo, Math.floor(DEFAULT_HISTORY_LIMIT / 2));
+    const commitHistory = getGitCommitHistory(COMMIT_SCAN_LIMIT);
+    const rawPushHistory = await getGitHubPushHistory(owner, repo, PUSH_SCAN_LIMIT);
     const pushHistory = enrichPushesWithGitLog(rawPushHistory, commitHistory);
     const mergedHistory = mergeHistory(pushHistory, commitHistory, DEFAULT_HISTORY_LIMIT);
 
