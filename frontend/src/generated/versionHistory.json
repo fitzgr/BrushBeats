@@ -1,5 +1,15 @@
 [
   {
+    "id": "commit-f0cc761640841a35df51f5f7af2495c8f1bf9db7",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "f0cc761640841a35df51f5f7af2495c8f1bf9db7",
+    "shortSha": "f0cc761",
+    "timestamp": "2026-04-14T04:49:33-04:00",
+    "date": "2026-04-14",
+    "subject": "Fix English locale JSON so fallback language text renders correctly"
+  },
+  {
     "id": "commit-2fa42720d387166ed940b77b47a9b09a9e4256ef",
     "kind": "commit",
     "source": "git-history",

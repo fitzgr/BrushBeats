@@ -1,20 +1,34 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="BrushBeats compact favicon">
-	<defs>
-		<linearGradient id="compact-bg" x1="0" y1="0" x2="1" y2="1">
-			<stop offset="0%" stop-color="#79d5bf" />
-			<stop offset="100%" stop-color="#42b89a" />
-		</linearGradient>
-		<filter id="compact-shadow" x="-20%" y="-20%" width="140%" height="140%">
-			<feDropShadow dx="0" dy="1.8" stdDeviation="1.4" flood-color="#1d6e59" flood-opacity="0.28" />
-		</filter>
-	</defs>
+<svg width="64" height="64" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="BrushBeats compact favicon">
+  <defs>
+    <linearGradient id="bgGradientCompact" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C8FFF2"/>
+      <stop offset="100%" stop-color="#7DEFD2"/>
+    </linearGradient>
 
-	<rect x="0" y="0" width="64" height="64" rx="14" fill="url(#compact-bg)" />
+    <linearGradient id="noteGradientCompact" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0C4A5B"/>
+      <stop offset="100%" stop-color="#083344"/>
+    </linearGradient>
 
-	<path
-		d="M11.5 11.7c3.4-2.9 8.2-4.5 13.1-4.5 3.2 0 6.4.7 9.1 2 2.7-1.3 5.9-2 9.3-2 5.3 0 10.2 1.7 13.6 4.7 1.4 1.3 2.2 3.1 2.2 5.1 0 3.3-.6 6.2-1.8 8.8-1.3 2.9-3 5.3-4.6 7.7-1.6 2.4-2.6 5-3 8l-.5 4c-.3 2.8-2.7 4.9-5.5 4.9-2.3 0-4.4-1.4-5.3-3.6l-1.6-4c-.4-1-1.3-1.6-2.4-1.6s-1.9.6-2.4 1.6l-1.6 4c-.9 2.2-3 3.6-5.3 3.6-2.9 0-5.2-2.1-5.5-4.9l-.5-4c-.4-3-1.4-5.6-3-8-1.6-2.3-3.3-4.8-4.6-7.7-1.2-2.7-1.8-5.6-1.8-8.8 0-2 .8-3.8 2.3-5.1z"
-		fill="#ffffff"
-		filter="url(#compact-shadow)"
-		transform="translate(-2.4 -2.5) scale(1.09)"
-	/>
+    <filter id="shadowCompact" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000000" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <rect x="8" y="8" width="240" height="240" rx="52" fill="url(#bgGradientCompact)"/>
+
+  <path
+    d="M128 40 C112 40 98 35 84 35 C68 35 56 41 48 52 C40 63 36 77 36 94 C36 114 41 134 50 154 C58 171 66 188 72 204 C78 220 87 232 100 232 C112 232 120 220 124 202 C126 193 127 186 128 178 C129 186 130 193 132 202 C136 220 144 232 156 232 C169 232 178 220 184 204 C190 188 198 171 206 154 C215 134 220 114 220 94 C220 77 216 63 208 52 C200 41 188 35 172 35 C158 35 144 40 128 40 Z"
+    fill="#FFFFFF"
+    filter="url(#shadowCompact)"
+  />
+
+  <g transform="translate(-12,0)">
+    <ellipse cx="116" cy="154" rx="21" ry="16" fill="url(#noteGradientCompact)"/>
+    <rect x="133" y="68" width="12" height="94" rx="6" fill="url(#noteGradientCompact)"/>
+    <path
+      d="M139 70 C158 70 174 65 188 56 C192 53 196 55 196 61 L196 82 C182 91 164 96 139 97 Z"
+      fill="url(#noteGradientCompact)"
+    />
+  </g>
 </svg>
