@@ -1,5 +1,15 @@
 [
   {
+    "id": "commit-2fa42720d387166ed940b77b47a9b09a9e4256ef",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "2fa42720d387166ed940b77b47a9b09a9e4256ef",
+    "shortSha": "2fa4272",
+    "timestamp": "2026-04-14T04:41:20-04:00",
+    "date": "2026-04-14",
+    "subject": "Switch version history to full git changelog and refine desktop flow"
+  },
+  {
     "id": "commit-64306cd2af056fb703b738bf327159235d1191f7",
     "kind": "commit",
     "source": "git-history",
