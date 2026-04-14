@@ -97,8 +97,15 @@
   },
   "history": {
     "eyebrow": "Surum gecmisi",
-    "title": "Son guncellemeler",
-    "intro": "Tarihleriyle birlikte son proje gecmisini ve her kayittaki ana degisikligi goruntuleyin.",
+    "title": "Surumler ve etkinlik",
+    "intro": "Bu zaman cizelgesi, surum ozetlerini ve son gelistirme etkinligini tek yerde gosterir.",
+    "releaseHistory": "Surum gecmisi",
+    "developmentActivity": "Gelistirme etkinligi",
+    "developmentIntro": "Yerel zaman damgali son proje commitleri.",
+    "latestRelease": "Son surum",
+    "releaseSnapshot": "Surum ozeti",
+    "noReleaseHistory": "Henuz surum gecmisi yok.",
+    "noDevelopmentActivity": "Henuz son gelistirme etkinligi yok.",
     "backToApp": "BrushBeats uygulamasina don"
   },
   "settings": {

@@ -97,8 +97,15 @@
   },
   "history": {
     "eyebrow": "Version History",
-    "title": "Recent Updates",
-    "intro": "Recent project history with dates and the main change in each entry.",
+    "title": "Versions and Activity",
+    "intro": "This timeline shows release snapshots and recent development activity in one place.",
+    "releaseHistory": "Release History",
+    "developmentActivity": "Development Activity",
+    "developmentIntro": "Recent project commits with local-time stamps.",
+    "latestRelease": "Latest release",
+    "releaseSnapshot": "Release snapshot",
+    "noReleaseHistory": "No release history available yet.",
+    "noDevelopmentActivity": "No recent development activity available.",
     "backToApp": "Back to BrushBeats"
   },
   "settings": {

@@ -19,7 +19,7 @@ function runGit(command, fallback = '') {
 
 function getGitCommitHistory(limit) {
   const raw = runGit(
-    `git log --date=iso-strict --pretty=format:"%H|%h|%ad|%s" -${limit}`,
+    `git log --date=iso-strict --pretty=format:"%H|%h|%ad|%an|%s" -${limit}`,
     ''
   );
 
@@ -31,7 +31,8 @@ function getGitCommitHistory(limit) {
     .split('\n')
     .filter(Boolean)
     .map((line) => {
-      const [sha, shortSha, timestamp, subject] = line.split('|');
+      const [sha, shortSha, timestamp, author, ...subjectParts] = line.split('|');
+      const subject = subjectParts.join('|');
       return {
         id: `commit-${sha}`,
         kind: 'commit',
@@ -40,6 +41,7 @@ function getGitCommitHistory(limit) {
         shortSha,
         timestamp,
         date: String(timestamp || '').slice(0, 10),
+        author: author || 'BrushBeats',
         subject
       };
     });

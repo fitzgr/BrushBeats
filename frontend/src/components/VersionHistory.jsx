@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import versionHistory from "../generated/versionHistory.json";
 
@@ -6,30 +7,68 @@ function formatHistoryDate(value) {
     return "";
   }
 
-  const [year, month, day] = String(value).split("-");
-  const date = new Date(Number(year), Number(month) - 1, Number(day));
-
   return new Intl.DateTimeFormat(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric"
-  }).format(date);
+    dateStyle: "medium"
+  }).format(new Date(value));
 }
 
-function getSourceTag(entry) {
-  if (entry?.kind === "push") {
-    return "Release Push";
+function formatHistoryDateTime(value) {
+  if (!value) {
+    return "";
   }
 
-  if (entry?.source === "git-history" || entry?.kind === "commit") {
-    return "Project Update";
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short"
+  }).format(new Date(value));
+}
+
+function normalizeHistoryEntries(historyData) {
+  if (Array.isArray(historyData)) {
+    return historyData;
   }
 
-  return "Update";
+  if (Array.isArray(historyData?.developmentActivity)) {
+    return historyData.developmentActivity;
+  }
+
+  return [];
+}
+
+function buildReleaseHistory(entries, t) {
+  const groupedByDate = new Map();
+
+  entries.forEach((entry) => {
+    const dateKey = entry?.date || String(entry?.timestamp || "").slice(0, 10);
+    if (!dateKey) {
+      return;
+    }
+
+    if (!groupedByDate.has(dateKey)) {
+      groupedByDate.set(dateKey, []);
+    }
+
+    groupedByDate.get(dateKey).push(entry);
+  });
+
+  return [...groupedByDate.entries()].slice(0, 10).map(([dateKey, items], index) => {
+    const combinedSubjects = items.map((item) => item.subject || "").join(" ");
+    const versionMatch = combinedSubjects.match(/\bv\d+(?:\.\d+){1,2}\b/i);
+
+    return {
+      id: dateKey,
+      version: versionMatch?.[0] || (index === 0 ? t("history.latestRelease") : t("history.releaseSnapshot")),
+      releasedAt: items[0]?.timestamp || dateKey,
+      notes: items.slice(0, 4).map((item) => item.subject)
+    };
+  });
 }
 
 function VersionHistory({ onExit }) {
   const { t } = useTranslation();
+  const entries = useMemo(() => normalizeHistoryEntries(versionHistory), []);
+  const releaseHistory = useMemo(() => buildReleaseHistory(entries, t), [entries, t]);
+  const developmentActivity = useMemo(() => entries.slice(0, 18), [entries]);
 
   return (
     <section className="version-history-view card">
@@ -44,26 +83,47 @@ function VersionHistory({ onExit }) {
         </button>
       </div>
 
-      <div className="version-history-list">
-        {versionHistory.map((entry) => (
-          <article key={entry.id || entry.sha} className="version-history-card">
-            <div className="version-history-meta">
-              <strong>{formatHistoryDate(entry.date)}</strong>
-              <span>#{entry.shortSha}</span>
-              <span className="version-history-source">{getSourceTag(entry)}</span>
-            </div>
-            <p>{entry.subject}</p>
-            {Array.isArray(entry.commits) && entry.commits.length > 0 ? (
-              <div className="version-history-commits">
-                {entry.commits.map((commit) => (
-                  <p key={`${entry.id}-${commit.sha || commit.shortSha}`}>
-                    #{commit.shortSha}: {commit.message}
-                  </p>
-                ))}
-              </div>
-            ) : null}
-          </article>
-        ))}
+      <div className="version-history-grid">
+        <section className="version-history-column">
+          <h3>{t("history.releaseHistory")}</h3>
+          <div className="timeline-list">
+            {releaseHistory.length > 0 ? (
+              releaseHistory.map((release) => (
+                <article key={release.id} className="timeline-item">
+                  <div className="timeline-item-header">
+                    <span className="timeline-item-title">{release.version}</span>
+                    <span className="timeline-item-meta">{formatHistoryDate(release.releasedAt)}</span>
+                  </div>
+                  {release.notes.map((note) => (
+                    <p key={`${release.id}-${note}`} className="timeline-note">- {note}</p>
+                  ))}
+                </article>
+              ))
+            ) : (
+              <p className="timeline-empty">{t("history.noReleaseHistory")}</p>
+            )}
+          </div>
+        </section>
+
+        <section className="version-history-column">
+          <h3>{t("history.developmentActivity")}</h3>
+          <p className="timeline-help">{t("history.developmentIntro")}</p>
+          <div className="timeline-list">
+            {developmentActivity.length > 0 ? (
+              developmentActivity.map((entry) => (
+                <article key={entry.id || entry.sha} className="timeline-item">
+                  <div className="timeline-item-header">
+                    <span className="timeline-item-title">{entry.subject}</span>
+                    <span className="timeline-item-meta">{formatHistoryDateTime(entry.timestamp || entry.date)}</span>
+                  </div>
+                  <p className="timeline-item-meta">{entry.author || "BrushBeats"} · #{entry.shortSha}</p>
+                </article>
+              ))
+            ) : (
+              <p className="timeline-empty">{t("history.noDevelopmentActivity")}</p>
+            )}
+          </div>
+        </section>
       </div>
     </section>
   );

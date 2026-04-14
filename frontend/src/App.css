@@ -489,48 +489,78 @@
   align-items: flex-start;
 }
 
-.version-history-list {
+.version-history-grid {
   display: grid;
-  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
 }
 
-.version-history-card {
-  padding: 0.9rem 1rem;
-  border-radius: 14px;
-  border: 1px solid rgba(16, 33, 37, 0.14);
+.version-history-column {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.9rem 0.95rem;
+  border-radius: 16px;
+  border: 1px solid rgba(16, 33, 37, 0.12);
   background: linear-gradient(135deg, rgba(255, 252, 246, 0.96), rgba(241, 247, 251, 0.92));
 }
 
-.version-history-card p {
-  margin: 0.35rem 0 0;
+.version-history-column h3 {
+  margin: 0;
+  color: #2d4358;
 }
 
-.version-history-meta {
+.timeline-help {
+  margin: 0;
+  font-size: 0.84rem;
+  color: #5f7179;
+}
+
+.timeline-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.timeline-item {
+  padding: 0.8rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid rgba(16, 33, 37, 0.1);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.timeline-item-header {
   display: flex;
-  gap: 0.65rem;
-  flex-wrap: wrap;
-  align-items: center;
-  color: #35546d;
-  font-size: 0.85rem;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.8rem;
 }
 
-.version-history-source {
-  border: 1px solid rgba(53, 84, 109, 0.28);
-  border-radius: 999px;
-  padding: 0.08rem 0.45rem;
-  font-weight: 700;
-  font-size: 0.72rem;
-  background: rgba(255, 255, 255, 0.8);
+.timeline-item-title {
+  font-weight: 800;
+  color: #294054;
 }
 
-.version-history-commits {
-  margin-top: 0.2rem;
-}
-
-.version-history-commits p {
+.timeline-item-meta {
   margin: 0.2rem 0 0;
-  color: #35546d;
+  color: #5b6d76;
   font-size: 0.82rem;
+}
+
+.timeline-note {
+  margin: 0.35rem 0 0;
+  color: #4f6168;
+  font-size: 0.84rem;
+}
+
+.timeline-empty {
+  margin: 0;
+  color: #5f7179;
+  font-size: 0.84rem;
+}
+
+@media (max-width: 900px) {
+  .version-history-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .workflow-tab.active {

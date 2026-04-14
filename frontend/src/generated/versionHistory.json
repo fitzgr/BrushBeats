@@ -1,5 +1,16 @@
 [
   {
+    "id": "commit-0f3e95b6b3b8b5723f1cbe1a09a6affe5a604ab4",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "0f3e95b6b3b8b5723f1cbe1a09a6affe5a604ab4",
+    "shortSha": "0f3e95b",
+    "timestamp": "2026-04-14T06:35:32-04:00",
+    "date": "2026-04-14",
+    "author": "Grant Fitz",
+    "subject": "Rebase favicon assets on the new mint tooth-and-note SVG design"
+  },
+  {
     "id": "commit-f0cc761640841a35df51f5f7af2495c8f1bf9db7",
     "kind": "commit",
     "source": "git-history",
@@ -7,6 +18,7 @@
     "shortSha": "f0cc761",
     "timestamp": "2026-04-14T04:49:33-04:00",
     "date": "2026-04-14",
+    "author": "Grant Fitz",
     "subject": "Fix English locale JSON so fallback language text renders correctly"
   },
   {
@@ -17,6 +29,7 @@
     "shortSha": "2fa4272",
     "timestamp": "2026-04-14T04:41:20-04:00",
     "date": "2026-04-14",
+    "author": "Grant Fitz",
     "subject": "Switch version history to full git changelog and refine desktop flow"
   },
   {
@@ -27,6 +40,7 @@
     "shortSha": "64306cd",
     "timestamp": "2026-04-14T04:20:45-04:00",
     "date": "2026-04-14",
+    "author": "Grant Fitz",
     "subject": "Show queued stored pick state and use direct YouTube song matching"
   },
   {
@@ -37,6 +51,7 @@
     "shortSha": "2ccd0af",
     "timestamp": "2026-04-13T13:07:39-04:00",
     "date": "2026-04-13",
+    "author": "Grant Fitz",
     "subject": "Persist brushType in stored preferences and last session payloads"
   },
   {
@@ -47,6 +62,7 @@
     "shortSha": "7c1184f",
     "timestamp": "2026-04-13T12:19:04-04:00",
     "date": "2026-04-13",
+    "author": "Grant Fitz",
     "subject": "Add lift-between-teeth coaching tip to all electric brush age phases"
   },
   {
@@ -57,6 +73,7 @@
     "shortSha": "80cc282",
     "timestamp": "2026-04-13T11:30:44-04:00",
     "date": "2026-04-13",
+    "author": "Grant Fitz",
     "subject": "Keep music tab on queue and backfill specific comments for older push history"
   },
   {
@@ -67,6 +84,7 @@
     "shortSha": "bd87092",
     "timestamp": "2026-04-13T09:58:45-04:00",
     "date": "2026-04-13",
+    "author": "Grant Fitz",
     "subject": "Activate flossing and water-picking cards with best-practice content and teal styling"
   },
   {
@@ -77,6 +95,7 @@
     "shortSha": "038977c",
     "timestamp": "2026-04-13T09:47:21-04:00",
     "date": "2026-04-13",
+    "author": "Grant Fitz",
     "subject": "Show commit messages in push history entries; use Manual/Electric labels in all locales"
   },
   {
@@ -87,6 +106,7 @@
     "shortSha": "7b5c7ed",
     "timestamp": "2026-04-13T09:10:31-04:00",
     "date": "2026-04-13",
+    "author": "Grant Fitz",
     "subject": "Add brush-type coaching tips and strengthen mobile shortcut favicon contrast"
   },
   {
@@ -97,6 +117,7 @@
     "shortSha": "467ee99",
     "timestamp": "2026-04-12T14:36:21-04:00",
     "date": "2026-04-12",
+    "author": "Grant Fitz",
     "subject": "Merge GitHub push events with git commit history for ongoing version tracking"
   },
   {
@@ -107,6 +128,7 @@
     "shortSha": "7223810",
     "timestamp": "2026-04-12T09:44:17-04:00",
     "date": "2026-04-12",
+    "author": "Grant Fitz",
     "subject": "Add version history page and ad-aware brushing start flow"
   },
   {
@@ -117,6 +139,7 @@
     "shortSha": "1574bea",
     "timestamp": "2026-04-12T08:56:36-04:00",
     "date": "2026-04-12",
+    "author": "Grant Fitz",
     "subject": "Add cookie-stored favorites with music-step queue from stored picks"
   },
   {
@@ -127,6 +150,7 @@
     "shortSha": "602d241",
     "timestamp": "2026-04-12T08:49:15-04:00",
     "date": "2026-04-12",
+    "author": "Grant Fitz",
     "subject": "Replace session label with percent complete in brush map"
   },
   {
@@ -137,6 +161,7 @@
     "shortSha": "149357d",
     "timestamp": "2026-04-12T08:47:08-04:00",
     "date": "2026-04-12",
+    "author": "Grant Fitz",
     "subject": "Show short commit id beside top BrushBeats label"
   },
   {
@@ -147,6 +172,7 @@
     "shortSha": "226ea67",
     "timestamp": "2026-04-12T08:42:07-04:00",
     "date": "2026-04-12",
+    "author": "Grant Fitz",
     "subject": "Improve brush-map transition orientation and in-map progress cues"
   },
   {
@@ -157,6 +183,7 @@
     "shortSha": "1bd081f",
     "timestamp": "2026-04-12T08:35:55-04:00",
     "date": "2026-04-12",
+    "author": "Grant Fitz",
     "subject": "Add GetSongBPM query debug chip in music step"
   },
   {
@@ -167,6 +194,7 @@
     "shortSha": "abbb0c5",
     "timestamp": "2026-04-12T08:34:50-04:00",
     "date": "2026-04-12",
+    "author": "Grant Fitz",
     "subject": "Personalize GetSongBPM query with locale and age context"
   },
   {
@@ -177,6 +205,7 @@
     "shortSha": "aff23f9",
     "timestamp": "2026-04-12T08:22:02-04:00",
     "date": "2026-04-12",
+    "author": "Grant Fitz",
     "subject": "Add localized age-aware YouTube query and ranking pipeline"
   },
   {
@@ -187,6 +216,7 @@
     "shortSha": "aa00cb9",
     "timestamp": "2026-04-12T08:13:08-04:00",
     "date": "2026-04-12",
+    "author": "Grant Fitz",
     "subject": "Add switch cues, age-based completion messages, and geo country debug"
   },
   {
@@ -197,6 +227,7 @@
     "shortSha": "1e71f2d",
     "timestamp": "2026-04-10T10:49:19-04:00",
     "date": "2026-04-10",
+    "author": "Grant Fitz",
     "subject": "Reduce restored-session backend wakeups"
   },
   {
@@ -207,6 +238,7 @@
     "shortSha": "44e26af",
     "timestamp": "2026-04-10T10:42:29-04:00",
     "date": "2026-04-10",
+    "author": "Grant Fitz",
     "subject": "Refine repeat brushing and returning visit UI"
   },
   {
@@ -217,6 +249,7 @@
     "shortSha": "5f3b09f",
     "timestamp": "2026-04-10T08:15:26-04:00",
     "date": "2026-04-10",
+    "author": "Grant Fitz",
     "subject": "Add brushing countdown and reset flow"
   },
   {
@@ -227,6 +260,7 @@
     "shortSha": "ac543b1",
     "timestamp": "2026-04-06T19:18:32-04:00",
     "date": "2026-04-06",
+    "author": "Grant Fitz",
     "subject": "Enlarge tooth favicon"
   },
   {
@@ -237,6 +271,7 @@
     "shortSha": "bbde8d4",
     "timestamp": "2026-04-06T18:57:38-04:00",
     "date": "2026-04-06",
+    "author": "Grant Fitz",
     "subject": "Simplify compact favicon"
   },
   {
@@ -247,6 +282,7 @@
     "shortSha": "d8b20c1",
     "timestamp": "2026-04-06T18:48:23-04:00",
     "date": "2026-04-06",
+    "author": "Grant Fitz",
     "subject": "Refresh favicon options"
   },
   {
@@ -257,6 +293,7 @@
     "shortSha": "46c4868",
     "timestamp": "2026-04-06T17:30:16-04:00",
     "date": "2026-04-06",
+    "author": "Grant Fitz",
     "subject": "Resume brushing from paused state"
   },
   {
@@ -267,6 +304,7 @@
     "shortSha": "a289c1f",
     "timestamp": "2026-04-06T17:20:40-04:00",
     "date": "2026-04-06",
+    "author": "Grant Fitz",
     "subject": "Hide restored mobile ready cue"
   },
   {
@@ -277,6 +315,7 @@
     "shortSha": "94956bd",
     "timestamp": "2026-04-06T17:17:22-04:00",
     "date": "2026-04-06",
+    "author": "Grant Fitz",
     "subject": "Tighten mobile brush flow layout"
   },
   {
@@ -287,6 +326,7 @@
     "shortSha": "5f7f3ae",
     "timestamp": "2026-04-06T17:07:36-04:00",
     "date": "2026-04-06",
+    "author": "Grant Fitz",
     "subject": "Reorder mobile brush flow layout"
   },
   {
@@ -297,6 +337,7 @@
     "shortSha": "f855f88",
     "timestamp": "2026-04-06T17:02:08-04:00",
     "date": "2026-04-06",
+    "author": "Grant Fitz",
     "subject": "Simplify brush flow controls and layout"
   },
   {
@@ -307,6 +348,7 @@
     "shortSha": "8d855ac",
     "timestamp": "2026-04-06T06:45:59-04:00",
     "date": "2026-04-06",
+    "author": "Grant Fitz",
     "subject": "Refine brush map timing and layout"
   },
   {
@@ -317,6 +359,7 @@
     "shortSha": "e17b879",
     "timestamp": "2026-04-05T11:05:41-04:00",
     "date": "2026-04-05",
+    "author": "Grant Fitz",
     "subject": "Add translation workshop and brushing flow improvements"
   },
   {
@@ -327,6 +370,7 @@
     "shortSha": "31964a1",
     "timestamp": "2026-04-04T06:56:21-04:00",
     "date": "2026-04-04",
+    "author": "Grant Fitz",
     "subject": "Add detailed storage notice modal"
   },
   {
@@ -337,6 +381,7 @@
     "shortSha": "129182a",
     "timestamp": "2026-04-04T06:53:32-04:00",
     "date": "2026-04-04",
+    "author": "Grant Fitz",
     "subject": "Add Spanish support and improve brushing guidance"
   },
   {
@@ -347,6 +392,7 @@
     "shortSha": "c4cc558",
     "timestamp": "2026-04-03T12:47:14-04:00",
     "date": "2026-04-03",
+    "author": "Grant Fitz",
     "subject": "Refine teeth step growth guidance"
   },
   {
@@ -357,6 +403,7 @@
     "shortSha": "9b27578",
     "timestamp": "2026-04-03T11:48:59-04:00",
     "date": "2026-04-03",
+    "author": "Grant Fitz",
     "subject": "Add teeth-to-age stage lookup"
   },
   {
@@ -367,6 +414,7 @@
     "shortSha": "c9225c8",
     "timestamp": "2026-04-03T09:08:33-04:00",
     "date": "2026-04-03",
+    "author": "Grant Fitz",
     "subject": "Add transition-aware brushing timing"
   },
   {
@@ -377,6 +425,7 @@
     "shortSha": "b689c7b",
     "timestamp": "2026-04-03T08:56:12-04:00",
     "date": "2026-04-03",
+    "author": "Grant Fitz",
     "subject": "Add kids brushing mode and music bias"
   },
   {
@@ -387,6 +436,7 @@
     "shortSha": "6d5c4b5",
     "timestamp": "2026-04-02T12:56:52-04:00",
     "date": "2026-04-02",
+    "author": "Grant Fitz",
     "subject": "Move teeth slider ticks into track"
   },
   {
@@ -397,6 +447,7 @@
     "shortSha": "8b389d7",
     "timestamp": "2026-04-02T12:28:46-04:00",
     "date": "2026-04-02",
+    "author": "Grant Fitz",
     "subject": "Add tick marks to teeth count sliders"
   },
   {
@@ -407,6 +458,7 @@
     "shortSha": "99b957d",
     "timestamp": "2026-04-02T12:24:16-04:00",
     "date": "2026-04-02",
+    "author": "Grant Fitz",
     "subject": "Refine desktop step layout sizing"
   },
   {
@@ -417,6 +469,7 @@
     "shortSha": "3e279eb",
     "timestamp": "2026-04-02T11:54:54-04:00",
     "date": "2026-04-02",
+    "author": "Grant Fitz",
     "subject": "Align desktop workflow with step-based flow"
   },
   {
@@ -427,6 +480,7 @@
     "shortSha": "5df1a00",
     "timestamp": "2026-04-02T11:44:11-04:00",
     "date": "2026-04-02",
+    "author": "Grant Fitz",
     "subject": "Delay song filter fetch until slider release"
   },
   {
@@ -437,6 +491,7 @@
     "shortSha": "69ee2f5",
     "timestamp": "2026-04-02T11:41:30-04:00",
     "date": "2026-04-02",
+    "author": "Grant Fitz",
     "subject": "Add randomized song vibe preference sliders"
   },
   {
@@ -447,6 +502,7 @@
     "shortSha": "1cd8262",
     "timestamp": "2026-04-02T11:23:45-04:00",
     "date": "2026-04-02",
+    "author": "Grant Fitz",
     "subject": "Refine backend loading status copy"
   },
   {
@@ -457,6 +513,7 @@
     "shortSha": "14762ad",
     "timestamp": "2026-04-02T08:35:25-04:00",
     "date": "2026-04-02",
+    "author": "Grant Fitz",
     "subject": "Auto-advance to brush tab on mobile when song selected"
   },
   {
@@ -467,6 +524,7 @@
     "shortSha": "45b7af5",
     "timestamp": "2026-04-02T07:06:58-04:00",
     "date": "2026-04-02",
+    "author": "Grant Fitz",
     "subject": "Add mobile 3-step workflow tabs for teeth, music, and brushing"
   },
   {
@@ -477,6 +535,7 @@
     "shortSha": "fcf83e5",
     "timestamp": "2026-04-02T06:58:06-04:00",
     "date": "2026-04-02",
+    "author": "Grant Fitz",
     "subject": "Add device-aware mobile and desktop UI modes"
   },
   {
@@ -487,6 +546,7 @@
     "shortSha": "39fb122",
     "timestamp": "2026-04-02T04:49:43-04:00",
     "date": "2026-04-02",
+    "author": "Grant Fitz",
     "subject": "Ignore local .references workspace links"
   },
   {
@@ -497,6 +557,7 @@
     "shortSha": "0cc41fd",
     "timestamp": "2026-04-02T04:48:50-04:00",
     "date": "2026-04-02",
+    "author": "Grant Fitz",
     "subject": "Add storage consent notice and persist last brushed song"
   },
   {
@@ -507,6 +568,7 @@
     "shortSha": "61094fc",
     "timestamp": "2026-04-01T12:36:29-04:00",
     "date": "2026-04-01",
+    "author": "Grant Fitz",
     "subject": "Add in-app privacy policy modal with consent details"
   },
   {
@@ -517,6 +579,7 @@
     "shortSha": "da69147",
     "timestamp": "2026-04-01T12:33:29-04:00",
     "date": "2026-04-01",
+    "author": "Grant Fitz",
     "subject": "Add privacy consent controls to gate analytics tracking"
   },
   {
@@ -527,6 +590,7 @@
     "shortSha": "f6003ee",
     "timestamp": "2026-04-01T12:22:58-04:00",
     "date": "2026-04-01",
+    "author": "Grant Fitz",
     "subject": "Change restart action to timer reset without auto-start"
   },
   {
@@ -537,6 +601,7 @@
     "shortSha": "4c682b9",
     "timestamp": "2026-04-01T09:28:09-04:00",
     "date": "2026-04-01",
+    "author": "Grant Fitz",
     "subject": "Add GA4 analytics: init on mount, track bpm_calculated, song_selected, song_auto_queued, brushing_started, brushing_completed"
   },
   {
@@ -547,6 +612,7 @@
     "shortSha": "7e18332",
     "timestamp": "2026-04-01T09:17:26-04:00",
     "date": "2026-04-01",
+    "author": "Grant Fitz",
     "subject": "Sync tooth indicator to playback beats across pauses and song switches"
   },
   {
@@ -557,6 +623,7 @@
     "shortSha": "d3f6344",
     "timestamp": "2026-04-01T09:04:32-04:00",
     "date": "2026-04-01",
+    "author": "Grant Fitz",
     "subject": "Apply index credit cleanup and song pool exhaustion messaging"
   },
   {
@@ -567,6 +634,7 @@
     "shortSha": "f59d634",
     "timestamp": "2026-04-01T08:58:25-04:00",
     "date": "2026-04-01",
+    "author": "Grant Fitz",
     "subject": "Align brush timing with 2-surface per tooth formula"
   },
   {
@@ -577,6 +645,7 @@
     "shortSha": "84d4a92",
     "timestamp": "2026-04-01T08:41:52-04:00",
     "date": "2026-04-01",
+    "author": "Grant Fitz",
     "subject": "Fix BPM search math for fixed 2-minute brushing model"
   },
   {
@@ -587,6 +656,7 @@
     "shortSha": "81be994",
     "timestamp": "2026-04-01T08:08:39-04:00",
     "date": "2026-04-01",
+    "author": "Grant Fitz",
     "subject": "Show backend wake-up status during free-tier cold starts"
   },
   {
@@ -597,6 +667,7 @@
     "shortSha": "1620339",
     "timestamp": "2026-04-01T08:04:35-04:00",
     "date": "2026-04-01",
+    "author": "Grant Fitz",
     "subject": "Show front and back tooth surfaces whitening separately"
   },
   {
@@ -607,6 +678,7 @@
     "shortSha": "ffa28ce",
     "timestamp": "2026-04-01T07:53:44-04:00",
     "date": "2026-04-01",
+    "author": "Grant Fitz",
     "subject": "Teeth progress visual: dirty to white, hard-code 2:00 ADA brushing time, remove section selector"
   },
   {
@@ -617,6 +689,7 @@
     "shortSha": "eeca4b1",
     "timestamp": "2026-04-01T07:51:29-04:00",
     "date": "2026-04-01",
+    "author": "Grant Fitz",
     "subject": "Auto-play next song only during brushing, make section/total time dynamic"
   },
   {
@@ -627,6 +700,7 @@
     "shortSha": "3d58668",
     "timestamp": "2026-04-01T07:42:04-04:00",
     "date": "2026-04-01",
+    "author": "Grant Fitz",
     "subject": "Fix blank screen when switching songs by keeping iframe div in DOM"
   },
   {
@@ -637,6 +711,7 @@
     "shortSha": "c79997d",
     "timestamp": "2026-04-01T07:37:30-04:00",
     "date": "2026-04-01",
+    "author": "Grant Fitz",
     "subject": "Add git commit SHA display for version debugging"
   },
   {
@@ -647,6 +722,7 @@
     "shortSha": "30f4aeb",
     "timestamp": "2026-04-01T07:32:48-04:00",
     "date": "2026-04-01",
+    "author": "Grant Fitz",
     "subject": "Update timer format to m:ss and clarify brushing completeness label"
   },
   {
@@ -657,6 +733,7 @@
     "shortSha": "13e7e3e",
     "timestamp": "2026-04-01T06:48:10-04:00",
     "date": "2026-04-01",
+    "author": "Grant Fitz",
     "subject": "Beat-sync brush guide and improve song rotation diversity"
   },
   {
@@ -667,6 +744,7 @@
     "shortSha": "001b7fa",
     "timestamp": "2026-04-01T06:18:10-04:00",
     "date": "2026-04-01",
+    "author": "Grant Fitz",
     "subject": "Wire Render API and improve brushing guidance UX"
   },
   {
@@ -677,6 +755,7 @@
     "shortSha": "e1d92d2",
     "timestamp": "2026-03-31T21:18:01-04:00",
     "date": "2026-03-31",
+    "author": "Grant Fitz",
     "subject": "Add static GetSongBPM backlink to index.html for crawler visibility"
   },
   {
@@ -687,6 +766,7 @@
     "shortSha": "ffd70ac",
     "timestamp": "2026-03-31T21:16:20-04:00",
     "date": "2026-03-31",
+    "author": "Grant Fitz",
     "subject": "Fix BPM calculation: default 15s sections, matching 28-tooth=112BPM, 32-tooth=128BPM"
   },
   {
@@ -697,6 +777,7 @@
     "shortSha": "073f0ea",
     "timestamp": "2026-03-31T20:54:16-04:00",
     "date": "2026-03-31",
+    "author": "Grant Fitz",
     "subject": "Initial BrushBeats full-stack app with GitHub Pages deploy"
   },
   {
@@ -707,6 +788,7 @@
     "shortSha": "1bb25ad",
     "timestamp": "2026-03-31T20:23:04-04:00",
     "date": "2026-03-31",
+    "author": "Grant Fitz",
     "subject": "Initial commit"
   }
 ]
