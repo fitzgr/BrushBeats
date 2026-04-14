@@ -83,26 +83,31 @@ function buildQueryVariants(context, songTitle, songArtist) {
     .map((parts) => parts.filter(Boolean).join(" "));
 }
 
-function buildYoutubeSearchRequest(context, query) {
-  const primaryLanguage = getPrimaryLanguage(context.browserLanguage);
-
+function buildYoutubeSearchRequest(_context, query) {
   return {
     part: "snippet",
     type: "video",
     maxResults: 25,
     q: query,
-    regionCode: context.countryCode || undefined,
-    relevanceLanguage: YOUTUBE_LANGUAGE_MAP[primaryLanguage] || "en",
     videoEmbeddable: "true",
     videoSyndicated: "true",
-    videoDuration: "short",
-    safeSearch: context.ageBucket === "child" ? "strict" : "moderate"
+    safeSearch: "moderate"
   };
 }
 
 function buildYoutubeSearchRequests(context, songTitle, songArtist) {
-  const queries = buildQueryVariants(context, songTitle, songArtist);
-  return queries.map((query, index) => ({
+  const safeTitle = String(songTitle || "").trim();
+  const safeArtist = String(songArtist || "").trim();
+  const baseSong = [`"${safeArtist}"`, `"${safeTitle}"`].filter(Boolean).join(" ");
+  const queries = [
+    `${baseSong} official audio -live -karaoke -cover -remix`,
+    `${baseSong} official video -live -karaoke -cover -remix`,
+    `${baseSong} lyric -live -karaoke -cover`,
+    `${baseSong} clean audio -live -karaoke -cover`,
+    `${baseSong} audio -live -karaoke -cover -remix`
+  ];
+
+  return queries.slice(0, QUERY_VARIANT_COUNT).map((query, index) => ({
     label: `variant-${index + 1}`,
     query,
     params: buildYoutubeSearchRequest(context, query)

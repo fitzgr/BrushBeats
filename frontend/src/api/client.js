@@ -65,15 +65,10 @@ export function getSongs({ bpm, tolerance, danceability, acousticness, totalTeet
   return request(`/api/songs?${params.toString()}`);
 }
 
-export function getYoutubeVideo({ title, artist, browserLanguage, countryCode, targetBpm, toothCount, genreHint }) {
+export function getYoutubeVideo({ title, artist }) {
   const params = new URLSearchParams({
     title,
-    artist,
-    browserLanguage: browserLanguage || "",
-    countryCode: countryCode || "",
-    targetBpm: String(targetBpm ?? 120),
-    toothCount: String(toothCount ?? 32),
-    genreHint: genreHint || ""
+    artist
   });
   return request(`/api/youtube?${params.toString()}`);
 }

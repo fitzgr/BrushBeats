@@ -165,6 +165,7 @@ function App() {
   const [completionMessage, setCompletionMessage] = useState("");
   const [songsDebugInfo, setSongsDebugInfo] = useState(null);
   const [favoriteSongs, setFavoriteSongs] = useState([]);
+  const [queuedStoredSongKey, setQueuedStoredSongKey] = useState("");
   const seenSongsByQueryRef = useRef(new Map());
   const playedSongsRef = useRef(new Set());
   const queuedSongRef = useRef(null);
@@ -176,6 +177,7 @@ function App() {
   const preferencesHydratedRef = useRef(false);
   const repeatSessionBootstrapRef = useRef(false);
   const restoredSessionRef = useRef(null);
+  const latestVideoLookupRef = useRef(0);
   const lastCompletionMessageRef = useRef("");
   const analyticsAvailable = useMemo(() => analyticsEnabled(), []);
   const device = useDeviceContext();
@@ -454,7 +456,7 @@ function App() {
 
     setAppView("brush");
     setWorkflowStep("music");
-    await handleSelectSong(song);
+    await handleSelectSong(song, source);
     trackEvent("stored_song_queued", {
       source,
       title: song.title,
@@ -709,14 +711,15 @@ function App() {
 
         if (!cancelled) {
           setSongs(unseenSongs);
-          setSongsDebugInfo({
+          setSongsDebugInfo((previous) => ({
+            ...(previous || {}),
             source: result.source,
             queryUsed: result.queryUsed,
             contextUsed: result.contextUsed,
             geoSource: result.geoSource,
             fetchedCount: fetchedSongs.length,
             shownCount: unseenSongs.length
-          });
+          }));
           setIsSongPoolExhausted(fetchedSongs.length > 0 && unseenSongs.length === 0);
           setError("");
         }
@@ -823,20 +826,30 @@ function App() {
     setSongDurationSeconds(Number(duration) || 0);
   }
 
-  async function handleSelectSong(song) {
-    trackEvent("song_selected", { title: song.title, artist: song.artist });
+  async function handleSelectSong(song, source = "generated") {
+    trackEvent("song_selected", { title: song.title, artist: song.artist, source });
     setAutoRestoredBrushView(false);
     setWorkflowStep("music");
+    setQueuedStoredSongKey(source === "favorites" || source === "lastSession" ? toSongKey(song) : "");
+    setSongsDebugInfo((previous) => ({
+      ...(previous || {}),
+      selectionSource: source,
+      selectedTitle: song.title,
+      selectedArtist: song.artist,
+      youtubeQueryMode: "direct-title-artist"
+    }));
     queuedSongRef.current = null;
     setQueuedSongPreview(null);
     if (storageConsent === "granted") {
       addFavoriteSong(song);
       setFavoriteSongs((current) => [{ ...song, savedAt: Date.now() }, ...current.filter((item) => toSongKey(item) !== toSongKey(song))].slice(0, 25));
     }
-    return handleSelectSongWithOptions(song, { autoplay: false });
+    return handleSelectSongWithOptions(song, { autoplay: false, source });
   }
 
-  async function handleSelectSongWithOptions(song, options = { autoplay: false }) {
+  async function handleSelectSongWithOptions(song, options = { autoplay: false, source: "generated" }) {
+    const lookupId = latestVideoLookupRef.current + 1;
+    latestVideoLookupRef.current = lookupId;
     setSelectedSong(song);
     setSongDurationSeconds(0);
     // Keep old playerData visible while loading new video
@@ -845,19 +858,25 @@ function App() {
     }
 
     try {
-      const userMusicContext = buildUserMusicContext({
-        countryCode: geoCountry?.countryCode,
-        targetBpm: Number(song?.bpm || bpmData?.searchBpm || 120),
-        toothCount: totalTeeth,
-        genreHint: keyword
-      });
-
       const video = await getYoutubeVideo({
         title: song.title,
-        artist: song.artist,
-        ...userMusicContext
+        artist: song.artist
       });
+
+      if (lookupId !== latestVideoLookupRef.current) {
+        return null;
+      }
+
       setPlayerData(video);
+      setSongsDebugInfo((previous) => ({
+        ...(previous || {}),
+        selectionSource: options.source || previous?.selectionSource || "generated",
+        selectedTitle: song.title,
+        selectedArtist: song.artist,
+        youtubeMatchedTitle: video?.title || null,
+        youtubeMatchedChannel: video?.channelTitle || null,
+        youtubeQueryMode: "direct-title-artist"
+      }));
 
       if (options.autoplay && video?.embedUrl) {
         setAutoplayToken((prev) => prev + 1);
@@ -866,11 +885,16 @@ function App() {
       setError("");
       return video;
     } catch (err) {
+      if (lookupId !== latestVideoLookupRef.current) {
+        return null;
+      }
       setError(err.message);
       setPlayerData(null);
       return null;
     } finally {
-      setLoading((prev) => ({ ...prev, player: false }));
+      if (lookupId === latestVideoLookupRef.current) {
+        setLoading((prev) => ({ ...prev, player: false }));
+      }
     }
   }
 
@@ -1360,14 +1384,26 @@ function App() {
               {lastSession?.song && (
                 <div className="stored-pick-row">
                   <span>{t("music.favorites.lastSession", { title: lastSession.song.title, artist: lastSession.song.artist })}</span>
-                  <button type="button" className="action-btn secondary" onClick={() => handleQueueStoredSong(lastSession.song, "lastSession")}>{t("common.buttons.queue")}</button>
+                  <button
+                    type="button"
+                    className={`action-btn secondary${queuedStoredSongKey === toSongKey(lastSession.song) ? " is-queued" : ""}`}
+                    onClick={() => handleQueueStoredSong(lastSession.song, "lastSession")}
+                  >
+                    {queuedStoredSongKey === toSongKey(lastSession.song) ? t("common.buttons.queued") : t("common.buttons.queue")}
+                  </button>
                 </div>
               )}
               {favoriteSongs.slice(0, 8).map((song) => (
                 <div key={`${song.title}-${song.artist}`} className="stored-pick-row">
                   <span>{song.title} - {song.artist}</span>
                   <div className="stored-pick-actions">
-                    <button type="button" className="action-btn secondary" onClick={() => handleQueueStoredSong(song, "favorites")}>{t("common.buttons.queue")}</button>
+                    <button
+                      type="button"
+                      className={`action-btn secondary${queuedStoredSongKey === toSongKey(song) ? " is-queued" : ""}`}
+                      onClick={() => handleQueueStoredSong(song, "favorites")}
+                    >
+                      {queuedStoredSongKey === toSongKey(song) ? t("common.buttons.queued") : t("common.buttons.queue")}
+                    </button>
                     <button type="button" className="action-btn secondary" onClick={() => handleToggleFavoriteSong(song)}>{t("music.favorites.remove")}</button>
                   </div>
                 </div>
@@ -1376,7 +1412,13 @@ function App() {
           )}
           {songsDebugInfo?.queryUsed && (
             <section className="music-debug-chip" aria-live="polite">
-              <strong>GetSongBPM debug</strong>
+              <strong>GetSongBPM + selection debug</strong>
+              <p>
+                selected={songsDebugInfo.selectedTitle || selectedSong?.title || "--"} | artist={songsDebugInfo.selectedArtist || selectedSong?.artist || "--"} | source={songsDebugInfo.selectionSource || "generated"}
+              </p>
+              <p>
+                youtube match={songsDebugInfo.youtubeMatchedTitle || playerData?.title || "--"} | channel={songsDebugInfo.youtubeMatchedChannel || playerData?.channelTitle || "--"} | mode={songsDebugInfo.youtubeQueryMode || "direct-title-artist"}
+              </p>
               <p>
                 source={songsDebugInfo.source || "unknown"} | geo={songsDebugInfo.geoSource || "unknown"} | country={songsDebugInfo.contextUsed?.countryCode || "--"} | lang={songsDebugInfo.contextUsed?.browserLanguage || "--"} | age={songsDebugInfo.contextUsed?.ageBucket || "--"}
               </p>

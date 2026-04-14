@@ -31,44 +31,27 @@ function normalizeText(value) {
   return String(value || "").toLowerCase();
 }
 
-function scoreYoutubeCandidate(item, context, options = {}) {
+function scoreYoutubeCandidate(item, _context, options = {}) {
   const snippet = item?.snippet || {};
   const title = normalizeText(snippet.title);
   const description = normalizeText(snippet.description);
   const channel = normalizeText(snippet.channelTitle);
   const query = normalizeText(options.query);
-  const localeHints = (options.localeHints || []).map((entry) => normalizeText(entry));
-  const genreHint = normalizeText(context.genreHint);
-  const languagePrimary = normalizeText((context.browserLanguage || "en").split("-")[0]);
   const durationSeconds = Number(options.durationSeconds) || 0;
   const targetDurationSeconds = Math.max(60, Number(options.targetDurationSeconds) || 120);
 
   let score = 0;
 
   if (query && (title.includes(query) || description.includes(query))) {
-    score += 8;
+    score += 10;
   }
 
-  if (title.includes("official") || description.includes("official")) {
+  if (title.includes("official") || description.includes("official") || title.includes("audio")) {
     score += 6;
   }
 
   if (channel.includes("official") || channel.includes("vevo") || channel.includes("topic")) {
     score += 6;
-  }
-
-  if (genreHint && (title.includes(genreHint) || description.includes(genreHint))) {
-    score += 4;
-  }
-
-  for (const hint of localeHints) {
-    if (hint && (title.includes(hint) || description.includes(hint) || channel.includes(hint))) {
-      score += 3;
-    }
-  }
-
-  if (languagePrimary && (title.includes(languagePrimary) || description.includes(languagePrimary))) {
-    score += 2;
   }
 
   if (durationSeconds > 0) {
