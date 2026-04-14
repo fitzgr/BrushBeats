@@ -18,10 +18,14 @@ function formatHistoryDate(value) {
 
 function getSourceTag(entry) {
   if (entry?.kind === "push") {
-    return "GitHub Push";
+    return "Release Push";
   }
 
-  return "Git Commit";
+  if (entry?.source === "git-history" || entry?.kind === "commit") {
+    return "Project Update";
+  }
+
+  return "Update";
 }
 
 function VersionHistory({ onExit }) {

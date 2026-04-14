@@ -1,682 +1,692 @@
 [
   {
-    "id": "push-10528362462",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-64306cd2af056fb703b738bf327159235d1191f7",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "64306cd2af056fb703b738bf327159235d1191f7",
+    "shortSha": "64306cd",
+    "timestamp": "2026-04-14T04:20:45-04:00",
+    "date": "2026-04-14",
+    "subject": "Show queued stored pick state and use direct YouTube song matching"
+  },
+  {
+    "id": "commit-2ccd0afad638c457dc717aa2563cfde1e033d907",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "2ccd0afad638c457dc717aa2563cfde1e033d907",
     "shortSha": "2ccd0af",
-    "timestamp": "2026-04-13T17:07:40Z",
+    "timestamp": "2026-04-13T13:07:39-04:00",
     "date": "2026-04-13",
-    "subject": "Persist brushType in stored preferences and last session payloads",
-    "commits": [
-      {
-        "sha": "2ccd0afad638c457dc717aa2563cfde1e033d907",
-        "shortSha": "2ccd0af",
-        "message": "Persist brushType in stored preferences and last session payloads"
-      }
-    ]
+    "subject": "Persist brushType in stored preferences and last session payloads"
   },
   {
-    "id": "push-10526597643",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-7c1184fb676e8773c3b133b1d50a8ac3f044792b",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "7c1184fb676e8773c3b133b1d50a8ac3f044792b",
     "shortSha": "7c1184f",
-    "timestamp": "2026-04-13T16:19:06Z",
+    "timestamp": "2026-04-13T12:19:04-04:00",
     "date": "2026-04-13",
-    "subject": "Add lift-between-teeth coaching tip to all electric brush age phases",
-    "commits": [
-      {
-        "sha": "7c1184fb676e8773c3b133b1d50a8ac3f044792b",
-        "shortSha": "7c1184f",
-        "message": "Add lift-between-teeth coaching tip to all electric brush age phases"
-      }
-    ]
+    "subject": "Add lift-between-teeth coaching tip to all electric brush age phases"
   },
   {
-    "id": "push-10524746069",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-80cc282fdbb821de4ba185869ba94720f6948deb",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "80cc282fdbb821de4ba185869ba94720f6948deb",
     "shortSha": "80cc282",
-    "timestamp": "2026-04-13T15:30:46Z",
+    "timestamp": "2026-04-13T11:30:44-04:00",
     "date": "2026-04-13",
-    "subject": "Keep music tab on queue and backfill specific comments for older push history",
-    "commits": [
-      {
-        "sha": "80cc282fdbb821de4ba185869ba94720f6948deb",
-        "shortSha": "80cc282",
-        "message": "Keep music tab on queue and backfill specific comments for older push history"
-      }
-    ]
+    "subject": "Keep music tab on queue and backfill specific comments for older push history"
   },
   {
-    "id": "push-10520790090",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-bd8709258ea5ff973ebf894da9718eed8925100e",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "bd8709258ea5ff973ebf894da9718eed8925100e",
     "shortSha": "bd87092",
-    "timestamp": "2026-04-13T13:58:47Z",
+    "timestamp": "2026-04-13T09:58:45-04:00",
     "date": "2026-04-13",
-    "subject": "Activate flossing and water-picking cards with best-practice content and teal styling",
-    "commits": [
-      {
-        "sha": "bd8709258ea5ff973ebf894da9718eed8925100e",
-        "shortSha": "bd87092",
-        "message": "Activate flossing and water-picking cards with best-practice content and teal styling"
-      }
-    ]
+    "subject": "Activate flossing and water-picking cards with best-practice content and teal styling"
   },
   {
-    "id": "push-10520301498",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-038977ced69e3e12d084b5ac654aa9f7f8871990",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "038977ced69e3e12d084b5ac654aa9f7f8871990",
     "shortSha": "038977c",
-    "timestamp": "2026-04-13T13:47:23Z",
+    "timestamp": "2026-04-13T09:47:21-04:00",
     "date": "2026-04-13",
-    "subject": "Show commit messages in push history entries; use Manual/Electric labels in all locales",
-    "commits": [
-      {
-        "sha": "038977ced69e3e12d084b5ac654aa9f7f8871990",
-        "shortSha": "038977c",
-        "message": "Show commit messages in push history entries; use Manual/Electric labels in all locales"
-      }
-    ]
+    "subject": "Show commit messages in push history entries; use Manual/Electric labels in all locales"
   },
   {
-    "id": "push-10518736589",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-7b5c7edf90b3f218734c5f44d010961844a72565",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "7b5c7edf90b3f218734c5f44d010961844a72565",
     "shortSha": "7b5c7ed",
-    "timestamp": "2026-04-13T13:10:33Z",
+    "timestamp": "2026-04-13T09:10:31-04:00",
     "date": "2026-04-13",
-    "subject": "Add brush-type coaching tips and strengthen mobile shortcut favicon contrast",
-    "commits": [
-      {
-        "sha": "7b5c7edf90b3f218734c5f44d010961844a72565",
-        "shortSha": "7b5c7ed",
-        "message": "Add brush-type coaching tips and strengthen mobile shortcut favicon contrast"
-      }
-    ]
+    "subject": "Add brush-type coaching tips and strengthen mobile shortcut favicon contrast"
   },
   {
-    "id": "push-10489817936",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-467ee99dffd4093e1a931bdafcc459f3dfb46989",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "467ee99dffd4093e1a931bdafcc459f3dfb46989",
     "shortSha": "467ee99",
-    "timestamp": "2026-04-12T18:36:23Z",
+    "timestamp": "2026-04-12T14:36:21-04:00",
     "date": "2026-04-12",
-    "subject": "Merge GitHub push events with git commit history for ongoing version tracking",
-    "commits": [
-      {
-        "sha": "467ee99dffd4093e1a931bdafcc459f3dfb46989",
-        "shortSha": "467ee99",
-        "message": "Merge GitHub push events with git commit history for ongoing version tracking"
-      }
-    ]
+    "subject": "Merge GitHub push events with git commit history for ongoing version tracking"
   },
   {
-    "id": "push-10483660444",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-7223810e4092a810e0674cde5602fa61a840df4a",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "7223810e4092a810e0674cde5602fa61a840df4a",
     "shortSha": "7223810",
-    "timestamp": "2026-04-12T13:44:20Z",
+    "timestamp": "2026-04-12T09:44:17-04:00",
     "date": "2026-04-12",
-    "subject": "Add version history page and ad-aware brushing start flow",
-    "commits": [
-      {
-        "sha": "7223810e4092a810e0674cde5602fa61a840df4a",
-        "shortSha": "7223810",
-        "message": "Add version history page and ad-aware brushing start flow"
-      }
-    ]
+    "subject": "Add version history page and ad-aware brushing start flow"
   },
   {
-    "id": "push-10482679287",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-1574bea639b0e6aebaff17544fa60cdc797610fc",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "1574bea639b0e6aebaff17544fa60cdc797610fc",
     "shortSha": "1574bea",
-    "timestamp": "2026-04-12T12:56:38Z",
+    "timestamp": "2026-04-12T08:56:36-04:00",
     "date": "2026-04-12",
-    "subject": "Add cookie-stored favorites with music-step queue from stored picks",
-    "commits": [
-      {
-        "sha": "1574bea639b0e6aebaff17544fa60cdc797610fc",
-        "shortSha": "1574bea",
-        "message": "Add cookie-stored favorites with music-step queue from stored picks"
-      }
-    ]
+    "subject": "Add cookie-stored favorites with music-step queue from stored picks"
   },
   {
-    "id": "push-10482533731",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-602d2419bd21ebee744725735677cf22d126fada",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "602d2419bd21ebee744725735677cf22d126fada",
     "shortSha": "602d241",
-    "timestamp": "2026-04-12T12:49:16Z",
+    "timestamp": "2026-04-12T08:49:15-04:00",
     "date": "2026-04-12",
-    "subject": "Replace session label with percent complete in brush map",
-    "commits": [
-      {
-        "sha": "602d2419bd21ebee744725735677cf22d126fada",
-        "shortSha": "602d241",
-        "message": "Replace session label with percent complete in brush map"
-      }
-    ]
+    "subject": "Replace session label with percent complete in brush map"
   },
   {
-    "id": "push-10482492752",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-149357d7ac574f9dfc4bbb7c83144d313963a106",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "149357d7ac574f9dfc4bbb7c83144d313963a106",
     "shortSha": "149357d",
-    "timestamp": "2026-04-12T12:47:09Z",
+    "timestamp": "2026-04-12T08:47:08-04:00",
     "date": "2026-04-12",
-    "subject": "Show short commit id beside top BrushBeats label",
-    "commits": [
-      {
-        "sha": "149357d7ac574f9dfc4bbb7c83144d313963a106",
-        "shortSha": "149357d",
-        "message": "Show short commit id beside top BrushBeats label"
-      }
-    ]
+    "subject": "Show short commit id beside top BrushBeats label"
   },
   {
-    "id": "push-10482391563",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-226ea679c4ac28c485775deb23730e0d2f32e5a6",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "226ea679c4ac28c485775deb23730e0d2f32e5a6",
     "shortSha": "226ea67",
-    "timestamp": "2026-04-12T12:42:09Z",
+    "timestamp": "2026-04-12T08:42:07-04:00",
     "date": "2026-04-12",
-    "subject": "Improve brush-map transition orientation and in-map progress cues",
-    "commits": [
-      {
-        "sha": "226ea679c4ac28c485775deb23730e0d2f32e5a6",
-        "shortSha": "226ea67",
-        "message": "Improve brush-map transition orientation and in-map progress cues"
-      }
-    ]
+    "subject": "Improve brush-map transition orientation and in-map progress cues"
   },
   {
-    "id": "push-10482265067",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-1bd081f417cdd5e1670fba1b34518f6aa9440b52",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "1bd081f417cdd5e1670fba1b34518f6aa9440b52",
     "shortSha": "1bd081f",
-    "timestamp": "2026-04-12T12:35:57Z",
+    "timestamp": "2026-04-12T08:35:55-04:00",
     "date": "2026-04-12",
-    "subject": "Add GetSongBPM query debug chip in music step",
-    "commits": [
-      {
-        "sha": "1bd081f417cdd5e1670fba1b34518f6aa9440b52",
-        "shortSha": "1bd081f",
-        "message": "Add GetSongBPM query debug chip in music step"
-      }
-    ]
+    "subject": "Add GetSongBPM query debug chip in music step"
   },
   {
-    "id": "push-10482243519",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-abbb0c53d53fd3ba627c351d1ad76592de6efdf4",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "abbb0c53d53fd3ba627c351d1ad76592de6efdf4",
     "shortSha": "abbb0c5",
-    "timestamp": "2026-04-12T12:34:55Z",
+    "timestamp": "2026-04-12T08:34:50-04:00",
     "date": "2026-04-12",
-    "subject": "Personalize GetSongBPM query with locale and age context",
-    "commits": [
-      {
-        "sha": "abbb0c53d53fd3ba627c351d1ad76592de6efdf4",
-        "shortSha": "abbb0c5",
-        "message": "Personalize GetSongBPM query with locale and age context"
-      }
-    ]
+    "subject": "Personalize GetSongBPM query with locale and age context"
   },
   {
-    "id": "push-10481996282",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-aff23f9e9efb395bd9d807be6cbdeab8fb760e0c",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "aff23f9e9efb395bd9d807be6cbdeab8fb760e0c",
     "shortSha": "aff23f9",
-    "timestamp": "2026-04-12T12:22:06Z",
+    "timestamp": "2026-04-12T08:22:02-04:00",
     "date": "2026-04-12",
-    "subject": "Add localized age-aware YouTube query and ranking pipeline",
-    "commits": [
-      {
-        "sha": "aff23f9e9efb395bd9d807be6cbdeab8fb760e0c",
-        "shortSha": "aff23f9",
-        "message": "Add localized age-aware YouTube query and ranking pipeline"
-      }
-    ]
+    "subject": "Add localized age-aware YouTube query and ranking pipeline"
   },
   {
-    "id": "push-10481833711",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-aa00cb9a65a4dc26801b17bfd44d7ad5cb712537",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "aa00cb9a65a4dc26801b17bfd44d7ad5cb712537",
     "shortSha": "aa00cb9",
-    "timestamp": "2026-04-12T12:13:13Z",
+    "timestamp": "2026-04-12T08:13:08-04:00",
     "date": "2026-04-12",
-    "subject": "Add switch cues, age-based completion messages, and geo country debug",
-    "commits": [
-      {
-        "sha": "aa00cb9a65a4dc26801b17bfd44d7ad5cb712537",
-        "shortSha": "aa00cb9",
-        "message": "Add switch cues, age-based completion messages, and geo country debug"
-      }
-    ]
+    "subject": "Add switch cues, age-based completion messages, and geo country debug"
   },
   {
-    "id": "push-10427951016",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-1e71f2d089c5c6d7057640f95b4c7a7441c93ca1",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "1e71f2d089c5c6d7057640f95b4c7a7441c93ca1",
     "shortSha": "1e71f2d",
-    "timestamp": "2026-04-10T14:49:25Z",
+    "timestamp": "2026-04-10T10:49:19-04:00",
     "date": "2026-04-10",
-    "subject": "Reduce restored-session backend wakeups",
-    "commits": [
-      {
-        "sha": "1e71f2d089c5c6d7057640f95b4c7a7441c93ca1",
-        "shortSha": "1e71f2d",
-        "message": "Reduce restored-session backend wakeups"
-      }
-    ]
+    "subject": "Reduce restored-session backend wakeups"
   },
   {
-    "id": "push-10427685882",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-44e26afb6cda06e16a0ca47cd73707274f4c272c",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "44e26afb6cda06e16a0ca47cd73707274f4c272c",
     "shortSha": "44e26af",
-    "timestamp": "2026-04-10T14:42:36Z",
+    "timestamp": "2026-04-10T10:42:29-04:00",
     "date": "2026-04-10",
-    "subject": "Refine repeat brushing and returning visit UI",
-    "commits": [
-      {
-        "sha": "44e26afb6cda06e16a0ca47cd73707274f4c272c",
-        "shortSha": "44e26af",
-        "message": "Refine repeat brushing and returning visit UI"
-      }
-    ]
+    "subject": "Refine repeat brushing and returning visit UI"
   },
   {
-    "id": "push-10422067935",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-5f3b09f53185796f3b7d9d7c7ba10d8c35d7ac95",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "5f3b09f53185796f3b7d9d7c7ba10d8c35d7ac95",
     "shortSha": "5f3b09f",
-    "timestamp": "2026-04-10T12:15:39Z",
+    "timestamp": "2026-04-10T08:15:26-04:00",
     "date": "2026-04-10",
-    "subject": "Add brushing countdown and reset flow",
-    "commits": [
-      {
-        "sha": "5f3b09f53185796f3b7d9d7c7ba10d8c35d7ac95",
-        "shortSha": "5f3b09f",
-        "message": "Add brushing countdown and reset flow"
-      }
-    ]
+    "subject": "Add brushing countdown and reset flow"
   },
   {
-    "id": "push-10261702974",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-ac543b1824b7315f9e3048097abe02a3a344d8f1",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "ac543b1824b7315f9e3048097abe02a3a344d8f1",
     "shortSha": "ac543b1",
-    "timestamp": "2026-04-06T23:18:34Z",
+    "timestamp": "2026-04-06T19:18:32-04:00",
     "date": "2026-04-06",
-    "subject": "Enlarge tooth favicon",
-    "commits": [
-      {
-        "sha": "ac543b1824b7315f9e3048097abe02a3a344d8f1",
-        "shortSha": "ac543b1",
-        "message": "Enlarge tooth favicon"
-      }
-    ]
+    "subject": "Enlarge tooth favicon"
   },
   {
-    "id": "push-10261207203",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-bbde8d44564b8723f871c1f250a633347d360c0d",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "bbde8d44564b8723f871c1f250a633347d360c0d",
     "shortSha": "bbde8d4",
-    "timestamp": "2026-04-06T22:57:40Z",
+    "timestamp": "2026-04-06T18:57:38-04:00",
     "date": "2026-04-06",
-    "subject": "Simplify compact favicon",
-    "commits": [
-      {
-        "sha": "bbde8d44564b8723f871c1f250a633347d360c0d",
-        "shortSha": "bbde8d4",
-        "message": "Simplify compact favicon"
-      }
-    ]
+    "subject": "Simplify compact favicon"
   },
   {
-    "id": "push-10260971681",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-d8b20c1e19958ddbef74b2d929d290801bde41e2",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "d8b20c1e19958ddbef74b2d929d290801bde41e2",
     "shortSha": "d8b20c1",
-    "timestamp": "2026-04-06T22:48:24Z",
+    "timestamp": "2026-04-06T18:48:23-04:00",
     "date": "2026-04-06",
-    "subject": "Refresh favicon options",
-    "commits": [
-      {
-        "sha": "d8b20c1e19958ddbef74b2d929d290801bde41e2",
-        "shortSha": "d8b20c1",
-        "message": "Refresh favicon options"
-      }
-    ]
+    "subject": "Refresh favicon options"
   },
   {
-    "id": "push-10258845992",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-46c4868503a66ea19b038806d9eabf297092e618",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "46c4868503a66ea19b038806d9eabf297092e618",
     "shortSha": "46c4868",
-    "timestamp": "2026-04-06T21:30:17Z",
+    "timestamp": "2026-04-06T17:30:16-04:00",
     "date": "2026-04-06",
-    "subject": "Resume brushing from paused state",
-    "commits": [
-      {
-        "sha": "46c4868503a66ea19b038806d9eabf297092e618",
-        "shortSha": "46c4868",
-        "message": "Resume brushing from paused state"
-      }
-    ]
+    "subject": "Resume brushing from paused state"
   },
   {
-    "id": "push-10258567588",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-a289c1f65f4699388a1f1118c0b348b32ac4e468",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "a289c1f65f4699388a1f1118c0b348b32ac4e468",
     "shortSha": "a289c1f",
-    "timestamp": "2026-04-06T21:20:41Z",
+    "timestamp": "2026-04-06T17:20:40-04:00",
     "date": "2026-04-06",
-    "subject": "Hide restored mobile ready cue",
-    "commits": [
-      {
-        "sha": "a289c1f65f4699388a1f1118c0b348b32ac4e468",
-        "shortSha": "a289c1f",
-        "message": "Hide restored mobile ready cue"
-      }
-    ]
+    "subject": "Hide restored mobile ready cue"
   },
   {
-    "id": "push-10258459773",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-94956bddd30465fefa868a02467497ed693b38ee",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "94956bddd30465fefa868a02467497ed693b38ee",
     "shortSha": "94956bd",
-    "timestamp": "2026-04-06T21:17:24Z",
+    "timestamp": "2026-04-06T17:17:22-04:00",
     "date": "2026-04-06",
-    "subject": "Tighten mobile brush flow layout",
-    "commits": [
-      {
-        "sha": "94956bddd30465fefa868a02467497ed693b38ee",
-        "shortSha": "94956bd",
-        "message": "Tighten mobile brush flow layout"
-      }
-    ]
+    "subject": "Tighten mobile brush flow layout"
   },
   {
-    "id": "push-10258165211",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-5f7f3ae87431f18ef87e4ce07727569c2bc43c1c",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "5f7f3ae87431f18ef87e4ce07727569c2bc43c1c",
     "shortSha": "5f7f3ae",
-    "timestamp": "2026-04-06T21:07:42Z",
+    "timestamp": "2026-04-06T17:07:36-04:00",
     "date": "2026-04-06",
-    "subject": "Reorder mobile brush flow layout",
-    "commits": [
-      {
-        "sha": "5f7f3ae87431f18ef87e4ce07727569c2bc43c1c",
-        "shortSha": "5f7f3ae",
-        "message": "Reorder mobile brush flow layout"
-      }
-    ]
+    "subject": "Reorder mobile brush flow layout"
   },
   {
-    "id": "push-10257997142",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-f855f8884ed1de441d6f3f7c03160c2ed59c92bd",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "f855f8884ed1de441d6f3f7c03160c2ed59c92bd",
     "shortSha": "f855f88",
-    "timestamp": "2026-04-06T21:02:16Z",
+    "timestamp": "2026-04-06T17:02:08-04:00",
     "date": "2026-04-06",
-    "subject": "Simplify brush flow controls and layout",
-    "commits": [
-      {
-        "sha": "f855f8884ed1de441d6f3f7c03160c2ed59c92bd",
-        "shortSha": "f855f88",
-        "message": "Simplify brush flow controls and layout"
-      }
-    ]
+    "subject": "Simplify brush flow controls and layout"
   },
   {
-    "id": "push-10237972031",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-8d855acb0c8e2a81a175c3a99ff04c8e2028554c",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "8d855acb0c8e2a81a175c3a99ff04c8e2028554c",
     "shortSha": "8d855ac",
-    "timestamp": "2026-04-06T10:46:10Z",
+    "timestamp": "2026-04-06T06:45:59-04:00",
     "date": "2026-04-06",
-    "subject": "Refine brush map timing and layout",
-    "commits": [
-      {
-        "sha": "8d855acb0c8e2a81a175c3a99ff04c8e2028554c",
-        "shortSha": "8d855ac",
-        "message": "Refine brush map timing and layout"
-      }
-    ]
+    "subject": "Refine brush map timing and layout"
   },
   {
-    "id": "push-10213916566",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-e17b879a8deaeaf0960e337c4664995d8fffb95a",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "e17b879a8deaeaf0960e337c4664995d8fffb95a",
     "shortSha": "e17b879",
-    "timestamp": "2026-04-05T15:05:44Z",
+    "timestamp": "2026-04-05T11:05:41-04:00",
     "date": "2026-04-05",
-    "subject": "Add translation workshop and brushing flow improvements",
-    "commits": [
-      {
-        "sha": "e17b879a8deaeaf0960e337c4664995d8fffb95a",
-        "shortSha": "e17b879",
-        "message": "Add translation workshop and brushing flow improvements"
-      }
-    ]
+    "subject": "Add translation workshop and brushing flow improvements"
   },
   {
-    "id": "push-10185908924",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-31964a1e80048bc2a0c9b30e0326a99b7d90e44a",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "31964a1e80048bc2a0c9b30e0326a99b7d90e44a",
     "shortSha": "31964a1",
-    "timestamp": "2026-04-04T10:56:29Z",
+    "timestamp": "2026-04-04T06:56:21-04:00",
     "date": "2026-04-04",
-    "subject": "Add detailed storage notice modal",
-    "commits": [
-      {
-        "sha": "31964a1e80048bc2a0c9b30e0326a99b7d90e44a",
-        "shortSha": "31964a1",
-        "message": "Add detailed storage notice modal"
-      }
-    ]
+    "subject": "Add detailed storage notice modal"
   },
   {
-    "id": "push-10185864595",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-129182ac43ad7c28c9211890bd4c3f8600b4d36f",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "129182ac43ad7c28c9211890bd4c3f8600b4d36f",
     "shortSha": "129182a",
-    "timestamp": "2026-04-04T10:53:39Z",
+    "timestamp": "2026-04-04T06:53:32-04:00",
     "date": "2026-04-04",
-    "subject": "Add Spanish support and improve brushing guidance",
-    "commits": [
-      {
-        "sha": "129182ac43ad7c28c9211890bd4c3f8600b4d36f",
-        "shortSha": "129182a",
-        "message": "Add Spanish support and improve brushing guidance"
-      }
-    ]
+    "subject": "Add Spanish support and improve brushing guidance"
   },
   {
-    "id": "push-10164874470",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-c4cc55830e83615edef91b66baf77193c9c85bc7",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "c4cc55830e83615edef91b66baf77193c9c85bc7",
     "shortSha": "c4cc558",
-    "timestamp": "2026-04-03T16:47:16Z",
+    "timestamp": "2026-04-03T12:47:14-04:00",
     "date": "2026-04-03",
-    "subject": "Refine teeth step growth guidance",
-    "commits": [
-      {
-        "sha": "c4cc55830e83615edef91b66baf77193c9c85bc7",
-        "shortSha": "c4cc558",
-        "message": "Refine teeth step growth guidance"
-      }
-    ]
+    "subject": "Refine teeth step growth guidance"
   },
   {
-    "id": "push-10163226542",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-9b27578bd0821b5fea1aa1329d2cbc8da0691fb8",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "9b27578bd0821b5fea1aa1329d2cbc8da0691fb8",
     "shortSha": "9b27578",
-    "timestamp": "2026-04-03T15:49:01Z",
+    "timestamp": "2026-04-03T11:48:59-04:00",
     "date": "2026-04-03",
-    "subject": "Add teeth-to-age stage lookup",
-    "commits": [
-      {
-        "sha": "9b27578bd0821b5fea1aa1329d2cbc8da0691fb8",
-        "shortSha": "9b27578",
-        "message": "Add teeth-to-age stage lookup"
-      }
-    ]
+    "subject": "Add teeth-to-age stage lookup"
   },
   {
-    "id": "push-10158466043",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-c9225c894fb6ab39bd0b460683e4c9715c8c5a0f",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "c9225c894fb6ab39bd0b460683e4c9715c8c5a0f",
     "shortSha": "c9225c8",
-    "timestamp": "2026-04-03T13:08:35Z",
+    "timestamp": "2026-04-03T09:08:33-04:00",
     "date": "2026-04-03",
-    "subject": "Add transition-aware brushing timing",
-    "commits": [
-      {
-        "sha": "c9225c894fb6ab39bd0b460683e4c9715c8c5a0f",
-        "shortSha": "c9225c8",
-        "message": "Add transition-aware brushing timing"
-      }
-    ]
+    "subject": "Add transition-aware brushing timing"
   },
   {
-    "id": "push-10158100664",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-b689c7b25b92a9d0727c27cb45e2391dbf2cf385",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "b689c7b25b92a9d0727c27cb45e2391dbf2cf385",
     "shortSha": "b689c7b",
-    "timestamp": "2026-04-03T12:56:14Z",
+    "timestamp": "2026-04-03T08:56:12-04:00",
     "date": "2026-04-03",
-    "subject": "Add kids brushing mode and music bias",
-    "commits": [
-      {
-        "sha": "b689c7b25b92a9d0727c27cb45e2391dbf2cf385",
-        "shortSha": "b689c7b",
-        "message": "Add kids brushing mode and music bias"
-      }
-    ]
+    "subject": "Add kids brushing mode and music bias"
   },
   {
-    "id": "push-10128319334",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-6d5c4b5f8818e83f4db207517ef91c86279219ce",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "6d5c4b5f8818e83f4db207517ef91c86279219ce",
     "shortSha": "6d5c4b5",
-    "timestamp": "2026-04-02T16:56:54Z",
+    "timestamp": "2026-04-02T12:56:52-04:00",
     "date": "2026-04-02",
-    "subject": "Move teeth slider ticks into track",
-    "commits": [
-      {
-        "sha": "6d5c4b5f8818e83f4db207517ef91c86279219ce",
-        "shortSha": "6d5c4b5",
-        "message": "Move teeth slider ticks into track"
-      }
-    ]
+    "subject": "Move teeth slider ticks into track"
   },
   {
-    "id": "push-10127380498",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-8b389d7cc2a76e63072bc4e00c4b19ac631df2d7",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "8b389d7cc2a76e63072bc4e00c4b19ac631df2d7",
     "shortSha": "8b389d7",
-    "timestamp": "2026-04-02T16:28:48Z",
+    "timestamp": "2026-04-02T12:28:46-04:00",
     "date": "2026-04-02",
-    "subject": "Add tick marks to teeth count sliders",
-    "commits": [
-      {
-        "sha": "8b389d7cc2a76e63072bc4e00c4b19ac631df2d7",
-        "shortSha": "8b389d7",
-        "message": "Add tick marks to teeth count sliders"
-      }
-    ]
+    "subject": "Add tick marks to teeth count sliders"
   },
   {
-    "id": "push-10127216185",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-99b957dcc21cc86cbc5c77306469820018711c1b",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "99b957dcc21cc86cbc5c77306469820018711c1b",
     "shortSha": "99b957d",
-    "timestamp": "2026-04-02T16:24:18Z",
+    "timestamp": "2026-04-02T12:24:16-04:00",
     "date": "2026-04-02",
-    "subject": "Refine desktop step layout sizing",
-    "commits": [
-      {
-        "sha": "99b957dcc21cc86cbc5c77306469820018711c1b",
-        "shortSha": "99b957d",
-        "message": "Refine desktop step layout sizing"
-      }
-    ]
+    "subject": "Refine desktop step layout sizing"
   },
   {
-    "id": "push-10126160451",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-3e279eb28ecccc1f3eeb72091f0540a3b92038c2",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "3e279eb28ecccc1f3eeb72091f0540a3b92038c2",
     "shortSha": "3e279eb",
-    "timestamp": "2026-04-02T15:54:56Z",
+    "timestamp": "2026-04-02T11:54:54-04:00",
     "date": "2026-04-02",
-    "subject": "Align desktop workflow with step-based flow",
-    "commits": [
-      {
-        "sha": "3e279eb28ecccc1f3eeb72091f0540a3b92038c2",
-        "shortSha": "3e279eb",
-        "message": "Align desktop workflow with step-based flow"
-      }
-    ]
+    "subject": "Align desktop workflow with step-based flow"
   },
   {
-    "id": "push-10125774835",
-    "kind": "push",
-    "source": "github-push",
+    "id": "commit-5df1a0032eb77d54117f6ab811eb962b83946ad0",
+    "kind": "commit",
+    "source": "git-history",
     "sha": "5df1a0032eb77d54117f6ab811eb962b83946ad0",
     "shortSha": "5df1a00",
-    "timestamp": "2026-04-02T15:44:13Z",
+    "timestamp": "2026-04-02T11:44:11-04:00",
     "date": "2026-04-02",
-    "subject": "Delay song filter fetch until slider release",
-    "commits": [
-      {
-        "sha": "5df1a0032eb77d54117f6ab811eb962b83946ad0",
-        "shortSha": "5df1a00",
-        "message": "Delay song filter fetch until slider release"
-      }
-    ]
+    "subject": "Delay song filter fetch until slider release"
+  },
+  {
+    "id": "commit-69ee2f5411aed8cae7f0c51156760165dc0b6d43",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "69ee2f5411aed8cae7f0c51156760165dc0b6d43",
+    "shortSha": "69ee2f5",
+    "timestamp": "2026-04-02T11:41:30-04:00",
+    "date": "2026-04-02",
+    "subject": "Add randomized song vibe preference sliders"
+  },
+  {
+    "id": "commit-1cd826273b778a8b42f2628fe548acea294b0d52",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "1cd826273b778a8b42f2628fe548acea294b0d52",
+    "shortSha": "1cd8262",
+    "timestamp": "2026-04-02T11:23:45-04:00",
+    "date": "2026-04-02",
+    "subject": "Refine backend loading status copy"
+  },
+  {
+    "id": "commit-14762ad42628b38aa8c331d7799a4264ea8aac0a",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "14762ad42628b38aa8c331d7799a4264ea8aac0a",
+    "shortSha": "14762ad",
+    "timestamp": "2026-04-02T08:35:25-04:00",
+    "date": "2026-04-02",
+    "subject": "Auto-advance to brush tab on mobile when song selected"
+  },
+  {
+    "id": "commit-45b7af54de3bab52e0d2527df07d79b35a1e9013",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "45b7af54de3bab52e0d2527df07d79b35a1e9013",
+    "shortSha": "45b7af5",
+    "timestamp": "2026-04-02T07:06:58-04:00",
+    "date": "2026-04-02",
+    "subject": "Add mobile 3-step workflow tabs for teeth, music, and brushing"
+  },
+  {
+    "id": "commit-fcf83e5243ce02cde099a03f0d814e4277872a00",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "fcf83e5243ce02cde099a03f0d814e4277872a00",
+    "shortSha": "fcf83e5",
+    "timestamp": "2026-04-02T06:58:06-04:00",
+    "date": "2026-04-02",
+    "subject": "Add device-aware mobile and desktop UI modes"
+  },
+  {
+    "id": "commit-39fb122e94279356d6c4aaaa9b6dfc630917931d",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "39fb122e94279356d6c4aaaa9b6dfc630917931d",
+    "shortSha": "39fb122",
+    "timestamp": "2026-04-02T04:49:43-04:00",
+    "date": "2026-04-02",
+    "subject": "Ignore local .references workspace links"
+  },
+  {
+    "id": "commit-0cc41fdd3cf7b865663493a89a50dcd8709fcbf4",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "0cc41fdd3cf7b865663493a89a50dcd8709fcbf4",
+    "shortSha": "0cc41fd",
+    "timestamp": "2026-04-02T04:48:50-04:00",
+    "date": "2026-04-02",
+    "subject": "Add storage consent notice and persist last brushed song"
+  },
+  {
+    "id": "commit-61094fc1bd1b52eeab4f70d46905cd10ac7e2c8b",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "61094fc1bd1b52eeab4f70d46905cd10ac7e2c8b",
+    "shortSha": "61094fc",
+    "timestamp": "2026-04-01T12:36:29-04:00",
+    "date": "2026-04-01",
+    "subject": "Add in-app privacy policy modal with consent details"
+  },
+  {
+    "id": "commit-da69147435ff6654d9e59218836fd0a3afab4f9c",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "da69147435ff6654d9e59218836fd0a3afab4f9c",
+    "shortSha": "da69147",
+    "timestamp": "2026-04-01T12:33:29-04:00",
+    "date": "2026-04-01",
+    "subject": "Add privacy consent controls to gate analytics tracking"
+  },
+  {
+    "id": "commit-f6003ee8892a1e82c821f4354747b0c239ca68de",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "f6003ee8892a1e82c821f4354747b0c239ca68de",
+    "shortSha": "f6003ee",
+    "timestamp": "2026-04-01T12:22:58-04:00",
+    "date": "2026-04-01",
+    "subject": "Change restart action to timer reset without auto-start"
+  },
+  {
+    "id": "commit-4c682b9c22cad262b2fe1fda95d2190d168cd824",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "4c682b9c22cad262b2fe1fda95d2190d168cd824",
+    "shortSha": "4c682b9",
+    "timestamp": "2026-04-01T09:28:09-04:00",
+    "date": "2026-04-01",
+    "subject": "Add GA4 analytics: init on mount, track bpm_calculated, song_selected, song_auto_queued, brushing_started, brushing_completed"
+  },
+  {
+    "id": "commit-7e183320fd71c31c9a302dcd9fc3475779ae9a5b",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "7e183320fd71c31c9a302dcd9fc3475779ae9a5b",
+    "shortSha": "7e18332",
+    "timestamp": "2026-04-01T09:17:26-04:00",
+    "date": "2026-04-01",
+    "subject": "Sync tooth indicator to playback beats across pauses and song switches"
+  },
+  {
+    "id": "commit-d3f6344a4b8d0f22e3ebd7372c9d5c829cde5f16",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "d3f6344a4b8d0f22e3ebd7372c9d5c829cde5f16",
+    "shortSha": "d3f6344",
+    "timestamp": "2026-04-01T09:04:32-04:00",
+    "date": "2026-04-01",
+    "subject": "Apply index credit cleanup and song pool exhaustion messaging"
+  },
+  {
+    "id": "commit-f59d63452a7b8b638994f06a37e05ecfc2635faf",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "f59d63452a7b8b638994f06a37e05ecfc2635faf",
+    "shortSha": "f59d634",
+    "timestamp": "2026-04-01T08:58:25-04:00",
+    "date": "2026-04-01",
+    "subject": "Align brush timing with 2-surface per tooth formula"
+  },
+  {
+    "id": "commit-84d4a92b9f4415d6001fd5c7d6fe556c8968fe18",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "84d4a92b9f4415d6001fd5c7d6fe556c8968fe18",
+    "shortSha": "84d4a92",
+    "timestamp": "2026-04-01T08:41:52-04:00",
+    "date": "2026-04-01",
+    "subject": "Fix BPM search math for fixed 2-minute brushing model"
+  },
+  {
+    "id": "commit-81be99438b02c11a559d86e8d6c6f75656730068",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "81be99438b02c11a559d86e8d6c6f75656730068",
+    "shortSha": "81be994",
+    "timestamp": "2026-04-01T08:08:39-04:00",
+    "date": "2026-04-01",
+    "subject": "Show backend wake-up status during free-tier cold starts"
+  },
+  {
+    "id": "commit-1620339dd89d047df731261ad881c010ded2994b",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "1620339dd89d047df731261ad881c010ded2994b",
+    "shortSha": "1620339",
+    "timestamp": "2026-04-01T08:04:35-04:00",
+    "date": "2026-04-01",
+    "subject": "Show front and back tooth surfaces whitening separately"
+  },
+  {
+    "id": "commit-ffa28cea656f3c9b927349828b04bfae40d57953",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "ffa28cea656f3c9b927349828b04bfae40d57953",
+    "shortSha": "ffa28ce",
+    "timestamp": "2026-04-01T07:53:44-04:00",
+    "date": "2026-04-01",
+    "subject": "Teeth progress visual: dirty to white, hard-code 2:00 ADA brushing time, remove section selector"
+  },
+  {
+    "id": "commit-eeca4b153cf5d34e4da03aad404230012fd3c34a",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "eeca4b153cf5d34e4da03aad404230012fd3c34a",
+    "shortSha": "eeca4b1",
+    "timestamp": "2026-04-01T07:51:29-04:00",
+    "date": "2026-04-01",
+    "subject": "Auto-play next song only during brushing, make section/total time dynamic"
+  },
+  {
+    "id": "commit-3d5866811f13ec822314cd3bab9f4904de015814",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "3d5866811f13ec822314cd3bab9f4904de015814",
+    "shortSha": "3d58668",
+    "timestamp": "2026-04-01T07:42:04-04:00",
+    "date": "2026-04-01",
+    "subject": "Fix blank screen when switching songs by keeping iframe div in DOM"
+  },
+  {
+    "id": "commit-c79997d80754dd1bc23a77c9f32aa72698cbb66a",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "c79997d80754dd1bc23a77c9f32aa72698cbb66a",
+    "shortSha": "c79997d",
+    "timestamp": "2026-04-01T07:37:30-04:00",
+    "date": "2026-04-01",
+    "subject": "Add git commit SHA display for version debugging"
+  },
+  {
+    "id": "commit-30f4aeb27ceb0fdb5aca3fcc5310625486fcbd6c",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "30f4aeb27ceb0fdb5aca3fcc5310625486fcbd6c",
+    "shortSha": "30f4aeb",
+    "timestamp": "2026-04-01T07:32:48-04:00",
+    "date": "2026-04-01",
+    "subject": "Update timer format to m:ss and clarify brushing completeness label"
+  },
+  {
+    "id": "commit-13e7e3ecbba921a33a4ab868b9c8bfc49437a602",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "13e7e3ecbba921a33a4ab868b9c8bfc49437a602",
+    "shortSha": "13e7e3e",
+    "timestamp": "2026-04-01T06:48:10-04:00",
+    "date": "2026-04-01",
+    "subject": "Beat-sync brush guide and improve song rotation diversity"
+  },
+  {
+    "id": "commit-001b7fa99c45ab5acced65bb7fdc5ed4d289d521",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "001b7fa99c45ab5acced65bb7fdc5ed4d289d521",
+    "shortSha": "001b7fa",
+    "timestamp": "2026-04-01T06:18:10-04:00",
+    "date": "2026-04-01",
+    "subject": "Wire Render API and improve brushing guidance UX"
+  },
+  {
+    "id": "commit-e1d92d2b66bf0607ed7e94ea0fca6d9f9c77c4d0",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "e1d92d2b66bf0607ed7e94ea0fca6d9f9c77c4d0",
+    "shortSha": "e1d92d2",
+    "timestamp": "2026-03-31T21:18:01-04:00",
+    "date": "2026-03-31",
+    "subject": "Add static GetSongBPM backlink to index.html for crawler visibility"
+  },
+  {
+    "id": "commit-ffd70ac84a1d2a7c854bfe74cf2a93d339677738",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "ffd70ac84a1d2a7c854bfe74cf2a93d339677738",
+    "shortSha": "ffd70ac",
+    "timestamp": "2026-03-31T21:16:20-04:00",
+    "date": "2026-03-31",
+    "subject": "Fix BPM calculation: default 15s sections, matching 28-tooth=112BPM, 32-tooth=128BPM"
+  },
+  {
+    "id": "commit-073f0ea36adc51284cefab232591e44e23ad9801",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "073f0ea36adc51284cefab232591e44e23ad9801",
+    "shortSha": "073f0ea",
+    "timestamp": "2026-03-31T20:54:16-04:00",
+    "date": "2026-03-31",
+    "subject": "Initial BrushBeats full-stack app with GitHub Pages deploy"
+  },
+  {
+    "id": "commit-1bb25add928cda6477586d6068ed83515bb73189",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "1bb25add928cda6477586d6068ed83515bb73189",
+    "shortSha": "1bb25ad",
+    "timestamp": "2026-03-31T20:23:04-04:00",
+    "date": "2026-03-31",
+    "subject": "Initial commit"
   }
 ]

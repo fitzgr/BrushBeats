@@ -25,7 +25,7 @@
 }
 
 .app-shell.desktop-shell {
-  width: min(1140px, 100% - 2rem);
+  width: min(1020px, 100% - 1.5rem);
 }
 
 .app-shell.workshop-shell {
@@ -240,6 +240,19 @@
 
 .desktop-workflow-tabs {
   margin-bottom: 1.2rem;
+}
+
+.desktop-shell .workflow-tabs,
+.desktop-shell .care-routine-strip,
+.desktop-shell .language-simulator-card,
+.desktop-shell .error-banner,
+.desktop-shell .info-banner,
+.desktop-shell .consent-banner,
+.desktop-shell .storage-banner,
+.desktop-shell .last-song-banner {
+  max-width: 860px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .care-routine-strip {
@@ -528,15 +541,19 @@
 
 .desktop-step-layout {
   grid-template-columns: repeat(12, 1fr);
+  align-items: start;
 }
 
 .desktop-step-layout .calculator,
-.desktop-step-layout .songs {
-  grid-column: span 12;
+.desktop-step-layout .songs,
+.desktop-step-layout .stored-picks-panel,
+.desktop-step-layout .music-debug-chip {
+  grid-column: 2 / span 10;
 }
 
 .desktop-brush-layout {
   grid-template-columns: repeat(12, 1fr);
+  align-items: start;
 }
 
 .error-banner {
@@ -1756,17 +1773,17 @@
 }
 
 .desktop-brush-layout .brush-actions-card {
-  grid-column: span 4;
-  order: 2;
-}
-
-.desktop-brush-layout .player {
-  grid-column: span 4;
+  grid-column: 2 / span 10;
   order: 1;
 }
 
+.desktop-brush-layout .player {
+  grid-column: 2 / span 10;
+  order: 2;
+}
+
 .desktop-brush-layout .guide {
-  grid-column: span 4;
+  grid-column: 2 / span 10;
   order: 3;
 }
 
@@ -2068,6 +2085,15 @@
 
 .desktop-step-layout .calculator {
   padding: 1.1rem;
+}
+
+.desktop-step-layout .songs,
+.desktop-brush-layout .brush-actions-card,
+.desktop-brush-layout .player,
+.desktop-brush-layout .guide {
+  max-width: 860px;
+  width: 100%;
+  justify-self: center;
 }
 
 .desktop-step-layout .calculator-overview {
