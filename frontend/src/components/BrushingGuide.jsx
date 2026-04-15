@@ -418,7 +418,7 @@ function getCountdownSignal(remainingMs, totalMs) {
   };
 }
 
-function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, playbackSeconds, brushingMusicElapsedSeconds, startCountdownTotalMs = 5000, startCountdownRemainingMs = 0, brushingHand, brushType = "manual", hideIntro = false, onCueChange, completionMessage = "" }) {
+function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, playbackSeconds, brushingMusicElapsedSeconds, startCountdownTotalMs = 5000, startCountdownRemainingMs = 0, brushingHand, brushType = "manual", hideIntro = false, onCueChange, completionMessage = "", brushControlCue, primaryBrushActionLabel, onPrimaryBrushAction, onRestartBrushing }) {
   const { t } = useTranslation();
   const totalSeconds = Number(bpmData?.totalBrushingSeconds || 120);
   const topTeeth = Number(values?.top || 16);
@@ -866,6 +866,29 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
             : t("brushing.guide.introDesktop", { minutes: formatMinutes(totalSeconds) })}
         </p>
       )}
+
+        {!isMobile && (
+          <div className="guide-top-controls">
+            <div className={`brush-cue-card${brushControlCue?.kind ? ` ${brushControlCue.kind}` : ""}`} aria-live="polite">
+              <strong>{brushControlCue?.title || t("brushing.readyTitle")}</strong>
+              {(brushControlCue?.detail || !brushControlCue)
+                ? <span>{brushControlCue?.detail || t("brushing.readyDetail", { hand: t(`common.hands.${brushingHand}`) })}</span>
+                : null}
+            </div>
+            <div className="session-actions guide-session-actions">
+              <button
+                type="button"
+                className="action-btn"
+                onClick={onPrimaryBrushAction}
+              >
+                {primaryBrushActionLabel}
+              </button>
+              <button type="button" className="action-btn secondary" onClick={onRestartBrushing}>
+                {t("brushing.stop")}
+              </button>
+            </div>
+          </div>
+        )}
 
 
       <div className="mouth-map" role="img" aria-label={t("brushing.guide.mouthMapAria")}>

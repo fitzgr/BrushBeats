@@ -1523,24 +1523,6 @@ function App() {
             </label>
             {!device.isMobile && (
               <>
-                <div className={`brush-cue-card${brushControlCue?.kind ? ` ${brushControlCue.kind}` : ""}`} aria-live="polite">
-                  <strong>{brushControlCue?.title || t("brushing.readyTitle")}</strong>
-                  {(brushControlCue?.detail || !brushControlCue)
-                    ? <span>{brushControlCue?.detail || t("brushing.readyDetail", { hand: t(`common.hands.${brushingHand}`) })}</span>
-                    : null}
-                </div>
-                <div className="session-actions">
-                  <button
-                    type="button"
-                    className="action-btn"
-                    onClick={handlePrimaryBrushAction}
-                  >
-                    {primaryBrushActionLabel}
-                  </button>
-                  <button type="button" className="action-btn secondary" onClick={restartBrushing}>
-                    {t("brushing.stop")}
-                  </button>
-                </div>
                 {brushingPhase === "complete" && (
                   <section className="success-banner brush-success-banner" aria-live="polite">
                     <span className="sparkle-stars" aria-hidden="true">✦ ✧ ✦</span>
@@ -1616,6 +1598,10 @@ function App() {
             hideIntro={device.isMobile && autoRestoredBrushView}
             onCueChange={setBrushControlCue}
             completionMessage={completionMessage}
+            brushControlCue={brushControlCue}
+            primaryBrushActionLabel={primaryBrushActionLabel}
+            onPrimaryBrushAction={handlePrimaryBrushAction}
+            onRestartBrushing={restartBrushing}
           />
         </section>
       )}

@@ -35,6 +35,22 @@ function normalizeHistoryEntries(historyData) {
   return [];
 }
 
+function summarizeReleaseNotes(items) {
+  const bodyBullets = items.flatMap((item) =>
+    String(item?.body || "")
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => line.replace(/^[-*]\s+/, ""))
+  );
+
+  if (bodyBullets.length > 0) {
+    return bodyBullets.slice(0, 4);
+  }
+
+  return items.slice(0, 4).map((item) => item.subject);
+}
+
 function buildReleaseHistory(entries, t) {
   const groupedByDate = new Map();
 
@@ -59,7 +75,7 @@ function buildReleaseHistory(entries, t) {
       id: dateKey,
       version: versionMatch?.[0] || (index === 0 ? t("history.latestRelease") : t("history.releaseSnapshot")),
       releasedAt: items[0]?.timestamp || dateKey,
-      notes: items.slice(0, 4).map((item) => item.subject)
+      notes: summarizeReleaseNotes(items)
     };
   });
 }

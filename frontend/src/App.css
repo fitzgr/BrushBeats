@@ -1845,6 +1845,16 @@
   margin: 0 0 0.9rem;
 }
 
+.guide-top-controls {
+  display: grid;
+  gap: 0.7rem;
+  margin-bottom: 0.8rem;
+}
+
+.guide-session-actions {
+  margin-bottom: 0.1rem;
+}
+
 .brush-duration-picker select {
   width: 100%;
   border: 1px solid rgba(16, 33, 37, 0.16);
