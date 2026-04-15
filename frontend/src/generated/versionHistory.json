@@ -1,5 +1,17 @@
 [
   {
+    "id": "commit-13c5fb9c39c000506ac7b3c32b3f583abf796874",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "13c5fb9c39c000506ac7b3c32b3f583abf796874",
+    "shortSha": "13c5fb9",
+    "timestamp": "2026-04-15T06:05:17-04:00",
+    "date": "2026-04-15",
+    "author": "Grant Fitz",
+    "subject": "Move desktop brush actions into guide and retain full commit details in history",
+    "body": ""
+  },
+  {
     "id": "commit-d5e7e6878ddf9e0f0fe9397c28ac1cbad5c091ea",
     "kind": "commit",
     "source": "git-history",
@@ -12,10 +24,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n0f3e95b6b3b8b5723f1cbe1a09a6affe5a604ab4",
+    "id": "commit-0f3e95b6b3b8b5723f1cbe1a09a6affe5a604ab4",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n0f3e95b6b3b8b5723f1cbe1a09a6affe5a604ab4",
+    "sha": "0f3e95b6b3b8b5723f1cbe1a09a6affe5a604ab4",
     "shortSha": "0f3e95b",
     "timestamp": "2026-04-14T06:35:32-04:00",
     "date": "2026-04-14",
@@ -24,10 +36,10 @@
     "body": ""
   },
   {
-    "id": "commit-\nf0cc761640841a35df51f5f7af2495c8f1bf9db7",
+    "id": "commit-f0cc761640841a35df51f5f7af2495c8f1bf9db7",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\nf0cc761640841a35df51f5f7af2495c8f1bf9db7",
+    "sha": "f0cc761640841a35df51f5f7af2495c8f1bf9db7",
     "shortSha": "f0cc761",
     "timestamp": "2026-04-14T04:49:33-04:00",
     "date": "2026-04-14",
@@ -36,10 +48,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n2fa42720d387166ed940b77b47a9b09a9e4256ef",
+    "id": "commit-2fa42720d387166ed940b77b47a9b09a9e4256ef",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n2fa42720d387166ed940b77b47a9b09a9e4256ef",
+    "sha": "2fa42720d387166ed940b77b47a9b09a9e4256ef",
     "shortSha": "2fa4272",
     "timestamp": "2026-04-14T04:41:20-04:00",
     "date": "2026-04-14",
@@ -48,10 +60,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n64306cd2af056fb703b738bf327159235d1191f7",
+    "id": "commit-64306cd2af056fb703b738bf327159235d1191f7",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n64306cd2af056fb703b738bf327159235d1191f7",
+    "sha": "64306cd2af056fb703b738bf327159235d1191f7",
     "shortSha": "64306cd",
     "timestamp": "2026-04-14T04:20:45-04:00",
     "date": "2026-04-14",
@@ -60,10 +72,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n2ccd0afad638c457dc717aa2563cfde1e033d907",
+    "id": "commit-2ccd0afad638c457dc717aa2563cfde1e033d907",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n2ccd0afad638c457dc717aa2563cfde1e033d907",
+    "sha": "2ccd0afad638c457dc717aa2563cfde1e033d907",
     "shortSha": "2ccd0af",
     "timestamp": "2026-04-13T13:07:39-04:00",
     "date": "2026-04-13",
@@ -72,10 +84,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n7c1184fb676e8773c3b133b1d50a8ac3f044792b",
+    "id": "commit-7c1184fb676e8773c3b133b1d50a8ac3f044792b",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n7c1184fb676e8773c3b133b1d50a8ac3f044792b",
+    "sha": "7c1184fb676e8773c3b133b1d50a8ac3f044792b",
     "shortSha": "7c1184f",
     "timestamp": "2026-04-13T12:19:04-04:00",
     "date": "2026-04-13",
@@ -84,10 +96,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n80cc282fdbb821de4ba185869ba94720f6948deb",
+    "id": "commit-80cc282fdbb821de4ba185869ba94720f6948deb",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n80cc282fdbb821de4ba185869ba94720f6948deb",
+    "sha": "80cc282fdbb821de4ba185869ba94720f6948deb",
     "shortSha": "80cc282",
     "timestamp": "2026-04-13T11:30:44-04:00",
     "date": "2026-04-13",
@@ -96,10 +108,10 @@
     "body": ""
   },
   {
-    "id": "commit-\nbd8709258ea5ff973ebf894da9718eed8925100e",
+    "id": "commit-bd8709258ea5ff973ebf894da9718eed8925100e",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\nbd8709258ea5ff973ebf894da9718eed8925100e",
+    "sha": "bd8709258ea5ff973ebf894da9718eed8925100e",
     "shortSha": "bd87092",
     "timestamp": "2026-04-13T09:58:45-04:00",
     "date": "2026-04-13",
@@ -108,10 +120,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n038977ced69e3e12d084b5ac654aa9f7f8871990",
+    "id": "commit-038977ced69e3e12d084b5ac654aa9f7f8871990",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n038977ced69e3e12d084b5ac654aa9f7f8871990",
+    "sha": "038977ced69e3e12d084b5ac654aa9f7f8871990",
     "shortSha": "038977c",
     "timestamp": "2026-04-13T09:47:21-04:00",
     "date": "2026-04-13",
@@ -120,10 +132,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n7b5c7edf90b3f218734c5f44d010961844a72565",
+    "id": "commit-7b5c7edf90b3f218734c5f44d010961844a72565",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n7b5c7edf90b3f218734c5f44d010961844a72565",
+    "sha": "7b5c7edf90b3f218734c5f44d010961844a72565",
     "shortSha": "7b5c7ed",
     "timestamp": "2026-04-13T09:10:31-04:00",
     "date": "2026-04-13",
@@ -132,10 +144,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n467ee99dffd4093e1a931bdafcc459f3dfb46989",
+    "id": "commit-467ee99dffd4093e1a931bdafcc459f3dfb46989",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n467ee99dffd4093e1a931bdafcc459f3dfb46989",
+    "sha": "467ee99dffd4093e1a931bdafcc459f3dfb46989",
     "shortSha": "467ee99",
     "timestamp": "2026-04-12T14:36:21-04:00",
     "date": "2026-04-12",
@@ -144,10 +156,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n7223810e4092a810e0674cde5602fa61a840df4a",
+    "id": "commit-7223810e4092a810e0674cde5602fa61a840df4a",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n7223810e4092a810e0674cde5602fa61a840df4a",
+    "sha": "7223810e4092a810e0674cde5602fa61a840df4a",
     "shortSha": "7223810",
     "timestamp": "2026-04-12T09:44:17-04:00",
     "date": "2026-04-12",
@@ -156,10 +168,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n1574bea639b0e6aebaff17544fa60cdc797610fc",
+    "id": "commit-1574bea639b0e6aebaff17544fa60cdc797610fc",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n1574bea639b0e6aebaff17544fa60cdc797610fc",
+    "sha": "1574bea639b0e6aebaff17544fa60cdc797610fc",
     "shortSha": "1574bea",
     "timestamp": "2026-04-12T08:56:36-04:00",
     "date": "2026-04-12",
@@ -168,10 +180,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n602d2419bd21ebee744725735677cf22d126fada",
+    "id": "commit-602d2419bd21ebee744725735677cf22d126fada",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n602d2419bd21ebee744725735677cf22d126fada",
+    "sha": "602d2419bd21ebee744725735677cf22d126fada",
     "shortSha": "602d241",
     "timestamp": "2026-04-12T08:49:15-04:00",
     "date": "2026-04-12",
@@ -180,10 +192,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n149357d7ac574f9dfc4bbb7c83144d313963a106",
+    "id": "commit-149357d7ac574f9dfc4bbb7c83144d313963a106",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n149357d7ac574f9dfc4bbb7c83144d313963a106",
+    "sha": "149357d7ac574f9dfc4bbb7c83144d313963a106",
     "shortSha": "149357d",
     "timestamp": "2026-04-12T08:47:08-04:00",
     "date": "2026-04-12",
@@ -192,10 +204,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n226ea679c4ac28c485775deb23730e0d2f32e5a6",
+    "id": "commit-226ea679c4ac28c485775deb23730e0d2f32e5a6",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n226ea679c4ac28c485775deb23730e0d2f32e5a6",
+    "sha": "226ea679c4ac28c485775deb23730e0d2f32e5a6",
     "shortSha": "226ea67",
     "timestamp": "2026-04-12T08:42:07-04:00",
     "date": "2026-04-12",
@@ -204,10 +216,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n1bd081f417cdd5e1670fba1b34518f6aa9440b52",
+    "id": "commit-1bd081f417cdd5e1670fba1b34518f6aa9440b52",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n1bd081f417cdd5e1670fba1b34518f6aa9440b52",
+    "sha": "1bd081f417cdd5e1670fba1b34518f6aa9440b52",
     "shortSha": "1bd081f",
     "timestamp": "2026-04-12T08:35:55-04:00",
     "date": "2026-04-12",
@@ -216,10 +228,10 @@
     "body": ""
   },
   {
-    "id": "commit-\nabbb0c53d53fd3ba627c351d1ad76592de6efdf4",
+    "id": "commit-abbb0c53d53fd3ba627c351d1ad76592de6efdf4",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\nabbb0c53d53fd3ba627c351d1ad76592de6efdf4",
+    "sha": "abbb0c53d53fd3ba627c351d1ad76592de6efdf4",
     "shortSha": "abbb0c5",
     "timestamp": "2026-04-12T08:34:50-04:00",
     "date": "2026-04-12",
@@ -228,10 +240,10 @@
     "body": ""
   },
   {
-    "id": "commit-\naff23f9e9efb395bd9d807be6cbdeab8fb760e0c",
+    "id": "commit-aff23f9e9efb395bd9d807be6cbdeab8fb760e0c",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\naff23f9e9efb395bd9d807be6cbdeab8fb760e0c",
+    "sha": "aff23f9e9efb395bd9d807be6cbdeab8fb760e0c",
     "shortSha": "aff23f9",
     "timestamp": "2026-04-12T08:22:02-04:00",
     "date": "2026-04-12",
@@ -240,10 +252,10 @@
     "body": ""
   },
   {
-    "id": "commit-\naa00cb9a65a4dc26801b17bfd44d7ad5cb712537",
+    "id": "commit-aa00cb9a65a4dc26801b17bfd44d7ad5cb712537",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\naa00cb9a65a4dc26801b17bfd44d7ad5cb712537",
+    "sha": "aa00cb9a65a4dc26801b17bfd44d7ad5cb712537",
     "shortSha": "aa00cb9",
     "timestamp": "2026-04-12T08:13:08-04:00",
     "date": "2026-04-12",
@@ -252,10 +264,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n1e71f2d089c5c6d7057640f95b4c7a7441c93ca1",
+    "id": "commit-1e71f2d089c5c6d7057640f95b4c7a7441c93ca1",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n1e71f2d089c5c6d7057640f95b4c7a7441c93ca1",
+    "sha": "1e71f2d089c5c6d7057640f95b4c7a7441c93ca1",
     "shortSha": "1e71f2d",
     "timestamp": "2026-04-10T10:49:19-04:00",
     "date": "2026-04-10",
@@ -264,10 +276,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n44e26afb6cda06e16a0ca47cd73707274f4c272c",
+    "id": "commit-44e26afb6cda06e16a0ca47cd73707274f4c272c",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n44e26afb6cda06e16a0ca47cd73707274f4c272c",
+    "sha": "44e26afb6cda06e16a0ca47cd73707274f4c272c",
     "shortSha": "44e26af",
     "timestamp": "2026-04-10T10:42:29-04:00",
     "date": "2026-04-10",
@@ -276,10 +288,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n5f3b09f53185796f3b7d9d7c7ba10d8c35d7ac95",
+    "id": "commit-5f3b09f53185796f3b7d9d7c7ba10d8c35d7ac95",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n5f3b09f53185796f3b7d9d7c7ba10d8c35d7ac95",
+    "sha": "5f3b09f53185796f3b7d9d7c7ba10d8c35d7ac95",
     "shortSha": "5f3b09f",
     "timestamp": "2026-04-10T08:15:26-04:00",
     "date": "2026-04-10",
@@ -288,10 +300,10 @@
     "body": ""
   },
   {
-    "id": "commit-\nac543b1824b7315f9e3048097abe02a3a344d8f1",
+    "id": "commit-ac543b1824b7315f9e3048097abe02a3a344d8f1",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\nac543b1824b7315f9e3048097abe02a3a344d8f1",
+    "sha": "ac543b1824b7315f9e3048097abe02a3a344d8f1",
     "shortSha": "ac543b1",
     "timestamp": "2026-04-06T19:18:32-04:00",
     "date": "2026-04-06",
@@ -300,10 +312,10 @@
     "body": ""
   },
   {
-    "id": "commit-\nbbde8d44564b8723f871c1f250a633347d360c0d",
+    "id": "commit-bbde8d44564b8723f871c1f250a633347d360c0d",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\nbbde8d44564b8723f871c1f250a633347d360c0d",
+    "sha": "bbde8d44564b8723f871c1f250a633347d360c0d",
     "shortSha": "bbde8d4",
     "timestamp": "2026-04-06T18:57:38-04:00",
     "date": "2026-04-06",
@@ -312,10 +324,10 @@
     "body": ""
   },
   {
-    "id": "commit-\nd8b20c1e19958ddbef74b2d929d290801bde41e2",
+    "id": "commit-d8b20c1e19958ddbef74b2d929d290801bde41e2",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\nd8b20c1e19958ddbef74b2d929d290801bde41e2",
+    "sha": "d8b20c1e19958ddbef74b2d929d290801bde41e2",
     "shortSha": "d8b20c1",
     "timestamp": "2026-04-06T18:48:23-04:00",
     "date": "2026-04-06",
@@ -324,10 +336,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n46c4868503a66ea19b038806d9eabf297092e618",
+    "id": "commit-46c4868503a66ea19b038806d9eabf297092e618",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n46c4868503a66ea19b038806d9eabf297092e618",
+    "sha": "46c4868503a66ea19b038806d9eabf297092e618",
     "shortSha": "46c4868",
     "timestamp": "2026-04-06T17:30:16-04:00",
     "date": "2026-04-06",
@@ -336,10 +348,10 @@
     "body": ""
   },
   {
-    "id": "commit-\na289c1f65f4699388a1f1118c0b348b32ac4e468",
+    "id": "commit-a289c1f65f4699388a1f1118c0b348b32ac4e468",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\na289c1f65f4699388a1f1118c0b348b32ac4e468",
+    "sha": "a289c1f65f4699388a1f1118c0b348b32ac4e468",
     "shortSha": "a289c1f",
     "timestamp": "2026-04-06T17:20:40-04:00",
     "date": "2026-04-06",
@@ -348,10 +360,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n94956bddd30465fefa868a02467497ed693b38ee",
+    "id": "commit-94956bddd30465fefa868a02467497ed693b38ee",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n94956bddd30465fefa868a02467497ed693b38ee",
+    "sha": "94956bddd30465fefa868a02467497ed693b38ee",
     "shortSha": "94956bd",
     "timestamp": "2026-04-06T17:17:22-04:00",
     "date": "2026-04-06",
@@ -360,10 +372,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n5f7f3ae87431f18ef87e4ce07727569c2bc43c1c",
+    "id": "commit-5f7f3ae87431f18ef87e4ce07727569c2bc43c1c",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n5f7f3ae87431f18ef87e4ce07727569c2bc43c1c",
+    "sha": "5f7f3ae87431f18ef87e4ce07727569c2bc43c1c",
     "shortSha": "5f7f3ae",
     "timestamp": "2026-04-06T17:07:36-04:00",
     "date": "2026-04-06",
@@ -372,10 +384,10 @@
     "body": ""
   },
   {
-    "id": "commit-\nf855f8884ed1de441d6f3f7c03160c2ed59c92bd",
+    "id": "commit-f855f8884ed1de441d6f3f7c03160c2ed59c92bd",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\nf855f8884ed1de441d6f3f7c03160c2ed59c92bd",
+    "sha": "f855f8884ed1de441d6f3f7c03160c2ed59c92bd",
     "shortSha": "f855f88",
     "timestamp": "2026-04-06T17:02:08-04:00",
     "date": "2026-04-06",
@@ -384,10 +396,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n8d855acb0c8e2a81a175c3a99ff04c8e2028554c",
+    "id": "commit-8d855acb0c8e2a81a175c3a99ff04c8e2028554c",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n8d855acb0c8e2a81a175c3a99ff04c8e2028554c",
+    "sha": "8d855acb0c8e2a81a175c3a99ff04c8e2028554c",
     "shortSha": "8d855ac",
     "timestamp": "2026-04-06T06:45:59-04:00",
     "date": "2026-04-06",
@@ -396,10 +408,10 @@
     "body": ""
   },
   {
-    "id": "commit-\ne17b879a8deaeaf0960e337c4664995d8fffb95a",
+    "id": "commit-e17b879a8deaeaf0960e337c4664995d8fffb95a",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\ne17b879a8deaeaf0960e337c4664995d8fffb95a",
+    "sha": "e17b879a8deaeaf0960e337c4664995d8fffb95a",
     "shortSha": "e17b879",
     "timestamp": "2026-04-05T11:05:41-04:00",
     "date": "2026-04-05",
@@ -408,10 +420,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n31964a1e80048bc2a0c9b30e0326a99b7d90e44a",
+    "id": "commit-31964a1e80048bc2a0c9b30e0326a99b7d90e44a",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n31964a1e80048bc2a0c9b30e0326a99b7d90e44a",
+    "sha": "31964a1e80048bc2a0c9b30e0326a99b7d90e44a",
     "shortSha": "31964a1",
     "timestamp": "2026-04-04T06:56:21-04:00",
     "date": "2026-04-04",
@@ -420,10 +432,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n129182ac43ad7c28c9211890bd4c3f8600b4d36f",
+    "id": "commit-129182ac43ad7c28c9211890bd4c3f8600b4d36f",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n129182ac43ad7c28c9211890bd4c3f8600b4d36f",
+    "sha": "129182ac43ad7c28c9211890bd4c3f8600b4d36f",
     "shortSha": "129182a",
     "timestamp": "2026-04-04T06:53:32-04:00",
     "date": "2026-04-04",
@@ -432,10 +444,10 @@
     "body": ""
   },
   {
-    "id": "commit-\nc4cc55830e83615edef91b66baf77193c9c85bc7",
+    "id": "commit-c4cc55830e83615edef91b66baf77193c9c85bc7",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\nc4cc55830e83615edef91b66baf77193c9c85bc7",
+    "sha": "c4cc55830e83615edef91b66baf77193c9c85bc7",
     "shortSha": "c4cc558",
     "timestamp": "2026-04-03T12:47:14-04:00",
     "date": "2026-04-03",
@@ -444,10 +456,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n9b27578bd0821b5fea1aa1329d2cbc8da0691fb8",
+    "id": "commit-9b27578bd0821b5fea1aa1329d2cbc8da0691fb8",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n9b27578bd0821b5fea1aa1329d2cbc8da0691fb8",
+    "sha": "9b27578bd0821b5fea1aa1329d2cbc8da0691fb8",
     "shortSha": "9b27578",
     "timestamp": "2026-04-03T11:48:59-04:00",
     "date": "2026-04-03",
@@ -456,10 +468,10 @@
     "body": ""
   },
   {
-    "id": "commit-\nc9225c894fb6ab39bd0b460683e4c9715c8c5a0f",
+    "id": "commit-c9225c894fb6ab39bd0b460683e4c9715c8c5a0f",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\nc9225c894fb6ab39bd0b460683e4c9715c8c5a0f",
+    "sha": "c9225c894fb6ab39bd0b460683e4c9715c8c5a0f",
     "shortSha": "c9225c8",
     "timestamp": "2026-04-03T09:08:33-04:00",
     "date": "2026-04-03",
@@ -468,10 +480,10 @@
     "body": ""
   },
   {
-    "id": "commit-\nb689c7b25b92a9d0727c27cb45e2391dbf2cf385",
+    "id": "commit-b689c7b25b92a9d0727c27cb45e2391dbf2cf385",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\nb689c7b25b92a9d0727c27cb45e2391dbf2cf385",
+    "sha": "b689c7b25b92a9d0727c27cb45e2391dbf2cf385",
     "shortSha": "b689c7b",
     "timestamp": "2026-04-03T08:56:12-04:00",
     "date": "2026-04-03",
@@ -480,10 +492,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n6d5c4b5f8818e83f4db207517ef91c86279219ce",
+    "id": "commit-6d5c4b5f8818e83f4db207517ef91c86279219ce",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n6d5c4b5f8818e83f4db207517ef91c86279219ce",
+    "sha": "6d5c4b5f8818e83f4db207517ef91c86279219ce",
     "shortSha": "6d5c4b5",
     "timestamp": "2026-04-02T12:56:52-04:00",
     "date": "2026-04-02",
@@ -492,10 +504,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n8b389d7cc2a76e63072bc4e00c4b19ac631df2d7",
+    "id": "commit-8b389d7cc2a76e63072bc4e00c4b19ac631df2d7",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n8b389d7cc2a76e63072bc4e00c4b19ac631df2d7",
+    "sha": "8b389d7cc2a76e63072bc4e00c4b19ac631df2d7",
     "shortSha": "8b389d7",
     "timestamp": "2026-04-02T12:28:46-04:00",
     "date": "2026-04-02",
@@ -504,10 +516,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n99b957dcc21cc86cbc5c77306469820018711c1b",
+    "id": "commit-99b957dcc21cc86cbc5c77306469820018711c1b",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n99b957dcc21cc86cbc5c77306469820018711c1b",
+    "sha": "99b957dcc21cc86cbc5c77306469820018711c1b",
     "shortSha": "99b957d",
     "timestamp": "2026-04-02T12:24:16-04:00",
     "date": "2026-04-02",
@@ -516,10 +528,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n3e279eb28ecccc1f3eeb72091f0540a3b92038c2",
+    "id": "commit-3e279eb28ecccc1f3eeb72091f0540a3b92038c2",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n3e279eb28ecccc1f3eeb72091f0540a3b92038c2",
+    "sha": "3e279eb28ecccc1f3eeb72091f0540a3b92038c2",
     "shortSha": "3e279eb",
     "timestamp": "2026-04-02T11:54:54-04:00",
     "date": "2026-04-02",
@@ -528,10 +540,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n5df1a0032eb77d54117f6ab811eb962b83946ad0",
+    "id": "commit-5df1a0032eb77d54117f6ab811eb962b83946ad0",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n5df1a0032eb77d54117f6ab811eb962b83946ad0",
+    "sha": "5df1a0032eb77d54117f6ab811eb962b83946ad0",
     "shortSha": "5df1a00",
     "timestamp": "2026-04-02T11:44:11-04:00",
     "date": "2026-04-02",
@@ -540,10 +552,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n69ee2f5411aed8cae7f0c51156760165dc0b6d43",
+    "id": "commit-69ee2f5411aed8cae7f0c51156760165dc0b6d43",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n69ee2f5411aed8cae7f0c51156760165dc0b6d43",
+    "sha": "69ee2f5411aed8cae7f0c51156760165dc0b6d43",
     "shortSha": "69ee2f5",
     "timestamp": "2026-04-02T11:41:30-04:00",
     "date": "2026-04-02",
@@ -552,10 +564,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n1cd826273b778a8b42f2628fe548acea294b0d52",
+    "id": "commit-1cd826273b778a8b42f2628fe548acea294b0d52",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n1cd826273b778a8b42f2628fe548acea294b0d52",
+    "sha": "1cd826273b778a8b42f2628fe548acea294b0d52",
     "shortSha": "1cd8262",
     "timestamp": "2026-04-02T11:23:45-04:00",
     "date": "2026-04-02",
@@ -564,10 +576,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n14762ad42628b38aa8c331d7799a4264ea8aac0a",
+    "id": "commit-14762ad42628b38aa8c331d7799a4264ea8aac0a",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n14762ad42628b38aa8c331d7799a4264ea8aac0a",
+    "sha": "14762ad42628b38aa8c331d7799a4264ea8aac0a",
     "shortSha": "14762ad",
     "timestamp": "2026-04-02T08:35:25-04:00",
     "date": "2026-04-02",
@@ -576,10 +588,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n45b7af54de3bab52e0d2527df07d79b35a1e9013",
+    "id": "commit-45b7af54de3bab52e0d2527df07d79b35a1e9013",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n45b7af54de3bab52e0d2527df07d79b35a1e9013",
+    "sha": "45b7af54de3bab52e0d2527df07d79b35a1e9013",
     "shortSha": "45b7af5",
     "timestamp": "2026-04-02T07:06:58-04:00",
     "date": "2026-04-02",
@@ -588,10 +600,10 @@
     "body": ""
   },
   {
-    "id": "commit-\nfcf83e5243ce02cde099a03f0d814e4277872a00",
+    "id": "commit-fcf83e5243ce02cde099a03f0d814e4277872a00",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\nfcf83e5243ce02cde099a03f0d814e4277872a00",
+    "sha": "fcf83e5243ce02cde099a03f0d814e4277872a00",
     "shortSha": "fcf83e5",
     "timestamp": "2026-04-02T06:58:06-04:00",
     "date": "2026-04-02",
@@ -600,10 +612,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n39fb122e94279356d6c4aaaa9b6dfc630917931d",
+    "id": "commit-39fb122e94279356d6c4aaaa9b6dfc630917931d",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n39fb122e94279356d6c4aaaa9b6dfc630917931d",
+    "sha": "39fb122e94279356d6c4aaaa9b6dfc630917931d",
     "shortSha": "39fb122",
     "timestamp": "2026-04-02T04:49:43-04:00",
     "date": "2026-04-02",
@@ -612,10 +624,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n0cc41fdd3cf7b865663493a89a50dcd8709fcbf4",
+    "id": "commit-0cc41fdd3cf7b865663493a89a50dcd8709fcbf4",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n0cc41fdd3cf7b865663493a89a50dcd8709fcbf4",
+    "sha": "0cc41fdd3cf7b865663493a89a50dcd8709fcbf4",
     "shortSha": "0cc41fd",
     "timestamp": "2026-04-02T04:48:50-04:00",
     "date": "2026-04-02",
@@ -624,10 +636,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n61094fc1bd1b52eeab4f70d46905cd10ac7e2c8b",
+    "id": "commit-61094fc1bd1b52eeab4f70d46905cd10ac7e2c8b",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n61094fc1bd1b52eeab4f70d46905cd10ac7e2c8b",
+    "sha": "61094fc1bd1b52eeab4f70d46905cd10ac7e2c8b",
     "shortSha": "61094fc",
     "timestamp": "2026-04-01T12:36:29-04:00",
     "date": "2026-04-01",
@@ -636,10 +648,10 @@
     "body": ""
   },
   {
-    "id": "commit-\nda69147435ff6654d9e59218836fd0a3afab4f9c",
+    "id": "commit-da69147435ff6654d9e59218836fd0a3afab4f9c",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\nda69147435ff6654d9e59218836fd0a3afab4f9c",
+    "sha": "da69147435ff6654d9e59218836fd0a3afab4f9c",
     "shortSha": "da69147",
     "timestamp": "2026-04-01T12:33:29-04:00",
     "date": "2026-04-01",
@@ -648,10 +660,10 @@
     "body": ""
   },
   {
-    "id": "commit-\nf6003ee8892a1e82c821f4354747b0c239ca68de",
+    "id": "commit-f6003ee8892a1e82c821f4354747b0c239ca68de",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\nf6003ee8892a1e82c821f4354747b0c239ca68de",
+    "sha": "f6003ee8892a1e82c821f4354747b0c239ca68de",
     "shortSha": "f6003ee",
     "timestamp": "2026-04-01T12:22:58-04:00",
     "date": "2026-04-01",
@@ -660,10 +672,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n4c682b9c22cad262b2fe1fda95d2190d168cd824",
+    "id": "commit-4c682b9c22cad262b2fe1fda95d2190d168cd824",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n4c682b9c22cad262b2fe1fda95d2190d168cd824",
+    "sha": "4c682b9c22cad262b2fe1fda95d2190d168cd824",
     "shortSha": "4c682b9",
     "timestamp": "2026-04-01T09:28:09-04:00",
     "date": "2026-04-01",
@@ -672,10 +684,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n7e183320fd71c31c9a302dcd9fc3475779ae9a5b",
+    "id": "commit-7e183320fd71c31c9a302dcd9fc3475779ae9a5b",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n7e183320fd71c31c9a302dcd9fc3475779ae9a5b",
+    "sha": "7e183320fd71c31c9a302dcd9fc3475779ae9a5b",
     "shortSha": "7e18332",
     "timestamp": "2026-04-01T09:17:26-04:00",
     "date": "2026-04-01",
@@ -684,10 +696,10 @@
     "body": ""
   },
   {
-    "id": "commit-\nd3f6344a4b8d0f22e3ebd7372c9d5c829cde5f16",
+    "id": "commit-d3f6344a4b8d0f22e3ebd7372c9d5c829cde5f16",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\nd3f6344a4b8d0f22e3ebd7372c9d5c829cde5f16",
+    "sha": "d3f6344a4b8d0f22e3ebd7372c9d5c829cde5f16",
     "shortSha": "d3f6344",
     "timestamp": "2026-04-01T09:04:32-04:00",
     "date": "2026-04-01",
@@ -696,10 +708,10 @@
     "body": ""
   },
   {
-    "id": "commit-\nf59d63452a7b8b638994f06a37e05ecfc2635faf",
+    "id": "commit-f59d63452a7b8b638994f06a37e05ecfc2635faf",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\nf59d63452a7b8b638994f06a37e05ecfc2635faf",
+    "sha": "f59d63452a7b8b638994f06a37e05ecfc2635faf",
     "shortSha": "f59d634",
     "timestamp": "2026-04-01T08:58:25-04:00",
     "date": "2026-04-01",
@@ -708,10 +720,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n84d4a92b9f4415d6001fd5c7d6fe556c8968fe18",
+    "id": "commit-84d4a92b9f4415d6001fd5c7d6fe556c8968fe18",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n84d4a92b9f4415d6001fd5c7d6fe556c8968fe18",
+    "sha": "84d4a92b9f4415d6001fd5c7d6fe556c8968fe18",
     "shortSha": "84d4a92",
     "timestamp": "2026-04-01T08:41:52-04:00",
     "date": "2026-04-01",
@@ -720,10 +732,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n81be99438b02c11a559d86e8d6c6f75656730068",
+    "id": "commit-81be99438b02c11a559d86e8d6c6f75656730068",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n81be99438b02c11a559d86e8d6c6f75656730068",
+    "sha": "81be99438b02c11a559d86e8d6c6f75656730068",
     "shortSha": "81be994",
     "timestamp": "2026-04-01T08:08:39-04:00",
     "date": "2026-04-01",
@@ -732,10 +744,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n1620339dd89d047df731261ad881c010ded2994b",
+    "id": "commit-1620339dd89d047df731261ad881c010ded2994b",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n1620339dd89d047df731261ad881c010ded2994b",
+    "sha": "1620339dd89d047df731261ad881c010ded2994b",
     "shortSha": "1620339",
     "timestamp": "2026-04-01T08:04:35-04:00",
     "date": "2026-04-01",
@@ -744,10 +756,10 @@
     "body": ""
   },
   {
-    "id": "commit-\nffa28cea656f3c9b927349828b04bfae40d57953",
+    "id": "commit-ffa28cea656f3c9b927349828b04bfae40d57953",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\nffa28cea656f3c9b927349828b04bfae40d57953",
+    "sha": "ffa28cea656f3c9b927349828b04bfae40d57953",
     "shortSha": "ffa28ce",
     "timestamp": "2026-04-01T07:53:44-04:00",
     "date": "2026-04-01",
@@ -756,10 +768,10 @@
     "body": ""
   },
   {
-    "id": "commit-\neeca4b153cf5d34e4da03aad404230012fd3c34a",
+    "id": "commit-eeca4b153cf5d34e4da03aad404230012fd3c34a",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\neeca4b153cf5d34e4da03aad404230012fd3c34a",
+    "sha": "eeca4b153cf5d34e4da03aad404230012fd3c34a",
     "shortSha": "eeca4b1",
     "timestamp": "2026-04-01T07:51:29-04:00",
     "date": "2026-04-01",
@@ -768,10 +780,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n3d5866811f13ec822314cd3bab9f4904de015814",
+    "id": "commit-3d5866811f13ec822314cd3bab9f4904de015814",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n3d5866811f13ec822314cd3bab9f4904de015814",
+    "sha": "3d5866811f13ec822314cd3bab9f4904de015814",
     "shortSha": "3d58668",
     "timestamp": "2026-04-01T07:42:04-04:00",
     "date": "2026-04-01",
@@ -780,10 +792,10 @@
     "body": ""
   },
   {
-    "id": "commit-\nc79997d80754dd1bc23a77c9f32aa72698cbb66a",
+    "id": "commit-c79997d80754dd1bc23a77c9f32aa72698cbb66a",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\nc79997d80754dd1bc23a77c9f32aa72698cbb66a",
+    "sha": "c79997d80754dd1bc23a77c9f32aa72698cbb66a",
     "shortSha": "c79997d",
     "timestamp": "2026-04-01T07:37:30-04:00",
     "date": "2026-04-01",
@@ -792,10 +804,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n30f4aeb27ceb0fdb5aca3fcc5310625486fcbd6c",
+    "id": "commit-30f4aeb27ceb0fdb5aca3fcc5310625486fcbd6c",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n30f4aeb27ceb0fdb5aca3fcc5310625486fcbd6c",
+    "sha": "30f4aeb27ceb0fdb5aca3fcc5310625486fcbd6c",
     "shortSha": "30f4aeb",
     "timestamp": "2026-04-01T07:32:48-04:00",
     "date": "2026-04-01",
@@ -804,10 +816,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n13e7e3ecbba921a33a4ab868b9c8bfc49437a602",
+    "id": "commit-13e7e3ecbba921a33a4ab868b9c8bfc49437a602",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n13e7e3ecbba921a33a4ab868b9c8bfc49437a602",
+    "sha": "13e7e3ecbba921a33a4ab868b9c8bfc49437a602",
     "shortSha": "13e7e3e",
     "timestamp": "2026-04-01T06:48:10-04:00",
     "date": "2026-04-01",
@@ -816,10 +828,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n001b7fa99c45ab5acced65bb7fdc5ed4d289d521",
+    "id": "commit-001b7fa99c45ab5acced65bb7fdc5ed4d289d521",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n001b7fa99c45ab5acced65bb7fdc5ed4d289d521",
+    "sha": "001b7fa99c45ab5acced65bb7fdc5ed4d289d521",
     "shortSha": "001b7fa",
     "timestamp": "2026-04-01T06:18:10-04:00",
     "date": "2026-04-01",
@@ -828,10 +840,10 @@
     "body": ""
   },
   {
-    "id": "commit-\ne1d92d2b66bf0607ed7e94ea0fca6d9f9c77c4d0",
+    "id": "commit-e1d92d2b66bf0607ed7e94ea0fca6d9f9c77c4d0",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\ne1d92d2b66bf0607ed7e94ea0fca6d9f9c77c4d0",
+    "sha": "e1d92d2b66bf0607ed7e94ea0fca6d9f9c77c4d0",
     "shortSha": "e1d92d2",
     "timestamp": "2026-03-31T21:18:01-04:00",
     "date": "2026-03-31",
@@ -840,10 +852,10 @@
     "body": ""
   },
   {
-    "id": "commit-\nffd70ac84a1d2a7c854bfe74cf2a93d339677738",
+    "id": "commit-ffd70ac84a1d2a7c854bfe74cf2a93d339677738",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\nffd70ac84a1d2a7c854bfe74cf2a93d339677738",
+    "sha": "ffd70ac84a1d2a7c854bfe74cf2a93d339677738",
     "shortSha": "ffd70ac",
     "timestamp": "2026-03-31T21:16:20-04:00",
     "date": "2026-03-31",
@@ -852,10 +864,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n073f0ea36adc51284cefab232591e44e23ad9801",
+    "id": "commit-073f0ea36adc51284cefab232591e44e23ad9801",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n073f0ea36adc51284cefab232591e44e23ad9801",
+    "sha": "073f0ea36adc51284cefab232591e44e23ad9801",
     "shortSha": "073f0ea",
     "timestamp": "2026-03-31T20:54:16-04:00",
     "date": "2026-03-31",
@@ -864,10 +876,10 @@
     "body": ""
   },
   {
-    "id": "commit-\n1bb25add928cda6477586d6068ed83515bb73189",
+    "id": "commit-1bb25add928cda6477586d6068ed83515bb73189",
     "kind": "commit",
     "source": "git-history",
-    "sha": "\n1bb25add928cda6477586d6068ed83515bb73189",
+    "sha": "1bb25add928cda6477586d6068ed83515bb73189",
     "shortSha": "1bb25ad",
     "timestamp": "2026-03-31T20:23:04-04:00",
     "date": "2026-03-31",

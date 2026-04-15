@@ -2,6 +2,10 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import versionHistory from "../generated/versionHistory.json";
 
+function cleanHistoryText(value) {
+  return String(value || "").trim();
+}
+
 function formatHistoryDate(value) {
   if (!value) {
     return "";
@@ -24,12 +28,36 @@ function formatHistoryDateTime(value) {
 }
 
 function normalizeHistoryEntries(historyData) {
+  const normalizeEntry = (entry, index) => {
+    const sha = cleanHistoryText(entry?.sha);
+    const shortSha = cleanHistoryText(entry?.shortSha) || sha.slice(0, 7);
+    const timestamp = cleanHistoryText(entry?.timestamp);
+    const date = cleanHistoryText(entry?.date) || timestamp.slice(0, 10);
+    const subject = cleanHistoryText(entry?.subject);
+
+    if (!timestamp || !date || !subject) {
+      return null;
+    }
+
+    return {
+      ...entry,
+      id: cleanHistoryText(entry?.id) || sha || `history-entry-${index}`,
+      sha,
+      shortSha,
+      timestamp,
+      date,
+      author: cleanHistoryText(entry?.author) || "BrushBeats",
+      subject,
+      body: cleanHistoryText(entry?.body)
+    };
+  };
+
   if (Array.isArray(historyData)) {
-    return historyData;
+    return historyData.map(normalizeEntry).filter(Boolean);
   }
 
   if (Array.isArray(historyData?.developmentActivity)) {
-    return historyData.developmentActivity;
+    return historyData.developmentActivity.map(normalizeEntry).filter(Boolean);
   }
 
   return [];
@@ -67,7 +95,7 @@ function buildReleaseHistory(entries, t) {
     groupedByDate.get(dateKey).push(entry);
   });
 
-  return [...groupedByDate.entries()].slice(0, 10).map(([dateKey, items], index) => {
+  return [...groupedByDate.entries()].map(([dateKey, items], index) => {
     const combinedSubjects = items.map((item) => item.subject || "").join(" ");
     const versionMatch = combinedSubjects.match(/\bv\d+(?:\.\d+){1,2}\b/i);
 
@@ -84,7 +112,7 @@ function VersionHistory({ onExit }) {
   const { t } = useTranslation();
   const entries = useMemo(() => normalizeHistoryEntries(versionHistory), []);
   const releaseHistory = useMemo(() => buildReleaseHistory(entries, t), [entries, t]);
-  const developmentActivity = useMemo(() => entries.slice(0, 18), [entries]);
+  const developmentActivity = useMemo(() => entries, [entries]);
 
   return (
     <section className="version-history-view card">

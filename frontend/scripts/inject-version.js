@@ -29,9 +29,17 @@ function getGitCommitHistory(limit) {
 
   return raw
     .split('\x1e')
+    .map((entry) => entry.trim())
     .filter(Boolean)
     .map((entry) => {
-      const [sha, shortSha, timestamp, author, subject, body] = entry.split('\x1f');
+      const [sha, shortSha, timestamp, author, subject, body] = entry
+        .split('\x1f')
+        .map((value) => String(value || '').trim());
+
+      if (!sha || !timestamp || !subject) {
+        return null;
+      }
+
       return {
         id: `commit-${sha}`,
         kind: 'commit',
@@ -44,7 +52,8 @@ function getGitCommitHistory(limit) {
         subject,
         body: String(body || '').trim()
       };
-    });
+    })
+    .filter(Boolean);
 }
 
 function buildVersionHistory(limit) {
