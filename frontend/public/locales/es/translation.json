@@ -22,7 +22,11 @@
       "rightHand": "Mano derecha",
       "resetTimer": "Reiniciar temporizador",
       "privacyPolicy": "Politica de privacidad",
-      "versionHistory": "Historial de versiones"
+      "versionHistory": "Historial de versiones",
+      "householdSetup": "Configuracion del hogar",
+      "continueLater": "Continuar despues",
+      "addMember": "Agregar miembro",
+      "removeMember": "Quitar miembro"
     },
     "states": {
       "on": "Activado",
@@ -89,9 +93,40 @@
     },
     "languageFallbackNotice": "Este idioma todavia no esta disponible. Mostrando ingles.",
     "migration": {
-      "importedLegacyStorage": "Tus preferencias actuales de BrushBeats y la ultima sesion se importaron a la nueva base de datos local del hogar. El comportamiento actual de almacenamiento sigue activo durante esta transicion.",
-      "bootstrappedHousehold": "Se preparo una nueva base de datos local del hogar en este navegador para que las futuras funciones multiusuario, el historial y la migracion tengan una base estable.",
+      "importedLegacyStorage": "Tus preferencias actuales de BrushBeats y la ultima sesion se importaron a la nueva base de datos local del hogar. Este navegador ahora usa primero la nueva base de datos local y las cookies antiguas quedan solo como respaldo de compatibilidad.",
+      "bootstrappedHousehold": "Se preparo una nueva base de datos local del hogar en este navegador para que las futuras funciones multiusuario, el historial y la migracion tengan una base estable. Las cookies antiguas ahora quedan solo en modo de compatibilidad.",
       "failedLegacyStorage": "No se pudo completar la migracion de datos local. Tus datos actuales en cookies y almacenamiento local siguen activos."
+    },
+    "householdSetup": {
+      "ariaLabel": "Configuracion del hogar y revision de migracion",
+      "eyebrow": "Configuracion de la fase 2",
+      "title": "Configura este hogar local",
+      "reviewTitle": "Revisa los datos importados del hogar",
+      "intro": "Completa el primer perfil local del hogar para que las futuras sesiones, el historial y las funciones multiusuario tengan un propietario estable.",
+      "reviewIntro": "Tus preferencias importadas ya estan en la nueva base de datos local. Confirma los datos del hogar y del miembro principal antes de continuar.",
+      "inferredAge": "BrushBeats deduce actualmente: {{description}}",
+      "complete": "Guardar configuracion del hogar",
+      "saving": "Guardando configuracion del hogar...",
+      "saveFailed": "No se pudo guardar la configuracion local del hogar.",
+      "summary": {
+        "mode": "Modo: {{mode}}",
+        "review": "Revision de migracion",
+        "setup": "Configuracion inicial",
+        "teeth": "{{count}} dientes seleccionados",
+        "stage": "Etapa detectada: {{stage}}"
+      },
+      "additionalMembersTitle": "Miembros adicionales del hogar",
+      "memberLabel": "Miembro {{number}}",
+      "fields": {
+        "householdName": "Nombre del hogar",
+        "memberName": "Nombre del miembro principal",
+        "topTeeth": "Dientes superiores",
+        "bottomTeeth": "Dientes inferiores",
+        "brushingHand": "Mano de cepillado predeterminada",
+        "brushType": "Tipo de cepillo predeterminado",
+        "duration": "Duracion de cepillado predeterminada",
+        "keyword": "Palabra clave inicial para la musica"
+      }
     },
     "lastSession": {
       "summary": "Ultima sesion: {{title}} de {{artist}}, {{top}} dientes arriba, {{bottom}} abajo y {{duration}} de cepillado."
@@ -343,14 +378,14 @@
   },
   "privacy": {
     "analyticsMessage": "Ayuda a mejorar BrushBeats compartiendo analiticas anonimas de uso. Nunca enviamos texto escrito ni datos personales.",
-    "storageMessage": "BrushBeats puede guardar tu ultima sesion en el navegador (cookies/localStorage) para que repitas rapidamente la misma configuracion de cepillado la proxima vez.",
+    "storageMessage": "BrushBeats puede guardar tu ultima sesion en la base de datos local de este navegador para que repitas rapidamente la misma configuracion de cepillado la proxima vez.",
     "modalTitle": "Politica de privacidad",
     "modalBody1": "BrushBeats usa Google Analytics 4 solo cuando aceptas. Recopilamos eventos anonimos de uso para mejorar la app, como calculos de BPM, selecciones de canciones, inicios de cepillado, reinicios, finalizaciones y transiciones automáticas de cola.",
-    "modalBody2": "Tambien podemos guardar tu ultima sesion de cepillado en el almacenamiento del navegador (cookies/localStorage) solo cuando permites el almacenamiento. Esto te permite restaurar rapidamente la misma cancion, cantidad de dientes, filtros, mano de cepillado y duracion en tu proxima visita.",
+    "modalBody2": "Tambien podemos guardar tu ultima sesion de cepillado en la base de datos local de este navegador solo cuando permites el almacenamiento. Esto te permite restaurar rapidamente la misma cancion, cantidad de dientes, filtros, mano de cepillado y duracion en tu proxima visita.",
     "modalBody3": "No enviamos texto escrito en formularios, direcciones de correo, nombres, contrasenas ni informacion de pago. El almacenamiento relacionado con anuncios esta desactivado a menos que sea necesario para analiticas esenciales autorizadas por ti.",
     "modalBody4": "Tu eleccion de analiticas se guarda en este dispositivo y puedes cambiarla en cualquier momento usando los controles de Analiticas en el pie de pagina.",
     "storageModalTitle": "Aviso de almacenamiento",
-    "storageModalBody1": "Cuando permites el almacenamiento, BrushBeats guarda datos solo en tu navegador usando cookies y localStorage para poder recuperar tu configuracion en una visita futura.",
+    "storageModalBody1": "Cuando permites el almacenamiento, BrushBeats guarda datos solo en tu navegador usando una base de datos local y almacenamiento de compatibilidad limitado para poder recuperar tu configuracion en una visita futura.",
     "storageModalBody2": "Esos datos pueden incluir la cantidad de dientes, los filtros de descubrimiento de canciones, la busqueda por palabra clave, la mano elegida para cepillarte, la duracion seleccionada y la ultima cancion con la que empezaste a cepillarte.",
     "storageModalBody3": "Tambien se guarda el resumen de la ultima sesion para que Repetir la ultima sesion pueda restaurar mas rapido la cancion, la configuracion dental, los filtros, la mano preferida y la duracion del cepillado.",
     "storageModalBody4": "Esta informacion se queda en tu dispositivo, el servicio no la recopila, no es un sistema de inicio de sesion y solo se guarda localmente para ofrecer una experiencia mas fluida. Puedes borrarla en cualquier momento desactivando el almacenamiento desde los controles del pie de pagina."

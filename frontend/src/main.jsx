@@ -10,6 +10,16 @@ import { initializePhase2Migration } from './db/migrationService'
 async function bootstrapDatabase() {
   try {
     await initDB()
+
+    if (typeof window !== 'undefined') {
+      window.__brushbeatsDbStatus = {
+        ready: true,
+        mode: 'indexeddb-primary',
+        legacyCookieMode: 'read-only-compatibility'
+      }
+      window.dispatchEvent(new CustomEvent('brushbeats:db-status', { detail: window.__brushbeatsDbStatus }))
+    }
+
     const migrationStatus = await initializePhase2Migration()
 
     if (typeof window !== 'undefined') {
@@ -20,6 +30,13 @@ async function bootstrapDatabase() {
     console.warn('[BrushBeats DB] IndexedDB initialization failed; current cookie/localStorage flows remain active.', error)
 
     if (typeof window !== 'undefined') {
+      window.__brushbeatsDbStatus = {
+        ready: false,
+        mode: 'legacy-storage-fallback',
+        legacyCookieMode: 'read-write'
+      }
+      window.dispatchEvent(new CustomEvent('brushbeats:db-status', { detail: window.__brushbeatsDbStatus }))
+
       const migrationStatus = { kind: 'migration-failed', error: error?.message || 'Failed to initialize local database.' }
       window.__brushbeatsMigrationStatus = migrationStatus
       window.dispatchEvent(new CustomEvent('brushbeats:migration-status', { detail: migrationStatus }))

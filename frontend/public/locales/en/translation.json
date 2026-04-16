@@ -22,7 +22,11 @@
       "rightHand": "Right Hand",
       "resetTimer": "Reset Timer",
       "privacyPolicy": "Privacy Policy",
-      "versionHistory": "Version History"
+      "versionHistory": "Version History",
+      "householdSetup": "Household Setup",
+      "continueLater": "Continue Later",
+      "addMember": "Add Member",
+      "removeMember": "Remove Member"
     },
     "states": {
       "on": "On",
@@ -89,9 +93,40 @@
     },
     "languageFallbackNotice": "This language is not available yet. Showing English.",
     "migration": {
-      "importedLegacyStorage": "Imported your existing BrushBeats preferences and last session into the new local household database. Current storage behavior remains active during this transition.",
-      "bootstrappedHousehold": "Prepared a new local household database for this browser so future multi-user history and migration steps have a stable foundation.",
+      "importedLegacyStorage": "Imported your existing BrushBeats preferences and last session into the new local household database. This browser now uses the new local database first, while older cookies stay only as compatibility fallback.",
+      "bootstrappedHousehold": "Prepared a new local household database for this browser so future multi-user history and migration steps have a stable foundation. Older cookies now stay in compatibility mode only.",
       "failedLegacyStorage": "Could not complete the local data migration. Your current cookie and local storage data remains active."
+    },
+    "householdSetup": {
+      "ariaLabel": "Household setup and migration review",
+      "eyebrow": "Phase 2 setup",
+      "title": "Set up this local household",
+      "reviewTitle": "Review imported household details",
+      "intro": "Finish the first local household profile so future sessions, history, and multi-user features have a stable owner.",
+      "reviewIntro": "Your imported preferences were brought into the new local database. Confirm the household and primary brusher details before continuing.",
+      "inferredAge": "BrushBeats currently infers: {{description}}",
+      "complete": "Save household setup",
+      "saving": "Saving household setup...",
+      "saveFailed": "Could not save the local household setup.",
+      "summary": {
+        "mode": "Mode: {{mode}}",
+        "review": "Migration review",
+        "setup": "Initial setup",
+        "teeth": "{{count}} teeth selected",
+        "stage": "Detected stage: {{stage}}"
+      },
+      "additionalMembersTitle": "Additional household members",
+      "memberLabel": "Member {{number}}",
+      "fields": {
+        "householdName": "Household name",
+        "memberName": "Primary member name",
+        "topTeeth": "Top teeth",
+        "bottomTeeth": "Bottom teeth",
+        "brushingHand": "Default brushing hand",
+        "brushType": "Default brush type",
+        "duration": "Default brushing duration",
+        "keyword": "Starter music keyword"
+      }
     },
     "lastSession": {
       "summary": "Last session: {{title}} by {{artist}}, {{top}} top teeth, {{bottom}} bottom teeth, {{duration}} brush time."
@@ -343,14 +378,14 @@
   },
   "privacy": {
     "analyticsMessage": "Help improve BrushBeats by sharing anonymous usage analytics. We never send typed text or personal data.",
-    "storageMessage": "BrushBeats can store your last session in browser storage (cookies/localStorage) so you can quickly repeat the same brushing setup next time.",
+    "storageMessage": "BrushBeats can store your last session in this browser's local database so you can quickly repeat the same brushing setup next time.",
     "modalTitle": "Privacy Policy",
     "modalBody1": "BrushBeats uses Google Analytics 4 only when you opt in. We collect anonymous usage events to improve the app, such as BPM calculations, song selections, brushing starts, resets, completions, and auto-queue transitions.",
-    "modalBody2": "We may also store your last brushing session in browser storage (cookies/localStorage) only when you allow storage. This lets you quickly restore the same song, tooth counts, filters, brushing hand, and duration on your next visit.",
+    "modalBody2": "We may also store your last brushing session in this browser's local database only when you allow storage. This lets you quickly restore the same song, tooth counts, filters, brushing hand, and duration on your next visit.",
     "modalBody3": "We do not send typed form text, email addresses, names, passwords, or payment information. Ad-related storage is disabled unless required for core analytics consented by you.",
     "modalBody4": "Your analytics choice is stored on this device and you can change it at any time using the Analytics controls in the footer.",
     "storageModalTitle": "Storage Notice",
-    "storageModalBody1": "When you allow storage, BrushBeats saves data only in your browser using cookies and localStorage so your setup can be restored on a later visit.",
+    "storageModalBody1": "When you allow storage, BrushBeats saves data only in your browser using a local database plus limited compatibility storage so your setup can be restored on a later visit.",
     "storageModalBody2": "That stored data can include your tooth counts, song discovery filters, keyword search, selected brushing hand, selected brush duration, and the last song you started brushing with.",
     "storageModalBody3": "The storage also keeps the last session summary so Repeat Last Session can restore the song, teeth setup, filters, hand preference, and brush duration more quickly.",
     "storageModalBody4": "This information stays on your device, is not collected by the service, is not a login system, and is only stored locally to provide a more seamless interface. You can clear it at any time by turning storage off in the footer controls."

@@ -22,7 +22,11 @@
       "rightHand": "Sağ El",
       "resetTimer": "Zamanlayıcıyı Sıfırla",
       "privacyPolicy": "Gizlilik Politikası",
-      "versionHistory": "Surum Gecmisi"
+      "versionHistory": "Surum Gecmisi",
+      "householdSetup": "Hane Kurulumu",
+      "continueLater": "Daha Sonra Devam Et",
+      "addMember": "Uye Ekle",
+      "removeMember": "Uyeyi Kaldir"
     },
     "states": {
       "on": "Açık",
@@ -89,9 +93,40 @@
     },
     "languageFallbackNotice": "Bu dil henüz mevcut değil. İngilizce gösteriliyor.",
     "migration": {
-      "importedLegacyStorage": "Mevcut BrushBeats tercihlerin ve son oturumun yeni yerel hane veritabanina aktarıldı. Bu geçiş sırasında mevcut depolama davranışı çalışmaya devam eder.",
-      "bootstrappedHousehold": "Gelecekteki çok kullanıcılı geçmiş ve geçiş adımları için bu tarayıcıda yeni bir yerel hane veritabanı hazırlandı.",
+      "importedLegacyStorage": "Mevcut BrushBeats tercihlerin ve son oturumun yeni yerel hane veritabanina aktarıldı. Bu tarayıcı artık önce yeni yerel veritabanını kullanıyor ve eski çerezler yalnızca uyumluluk yedeği olarak kalıyor.",
+      "bootstrappedHousehold": "Gelecekteki çok kullanıcılı geçmiş ve geçiş adımları için bu tarayıcıda yeni bir yerel hane veritabanı hazırlandı. Eski çerezler artık yalnızca uyumluluk modunda tutuluyor.",
       "failedLegacyStorage": "Yerel veri geçişi tamamlanamadı. Mevcut çerez ve yerel depolama verilerin kullanılmaya devam ediyor."
+    },
+    "householdSetup": {
+      "ariaLabel": "Hane kurulumu ve gecis incelemesi",
+      "eyebrow": "Faz 2 kurulumu",
+      "title": "Bu yerel haneyi kur",
+      "reviewTitle": "Aktarılan hane ayrintilarini incele",
+      "intro": "Gelecekteki oturumlar, gecmis ve cok kullanicili ozellikler icin ilk yerel hane profilini tamamla.",
+      "reviewIntro": "Aktarilan tercihlerin yeni yerel veritabanina tasindi. Devam etmeden once hane ve birincil fircalayan bilgilerini onayla.",
+      "inferredAge": "BrushBeats su anda sunu cikariyor: {{description}}",
+      "complete": "Hane kurulumunu kaydet",
+      "saving": "Hane kurulumu kaydediliyor...",
+      "saveFailed": "Yerel hane kurulumu kaydedilemedi.",
+      "summary": {
+        "mode": "Mod: {{mode}}",
+        "review": "Gecis incelemesi",
+        "setup": "Ilk kurulum",
+        "teeth": "{{count}} dis secildi",
+        "stage": "Algilanan evre: {{stage}}"
+      },
+      "additionalMembersTitle": "Ek hane uyeleri",
+      "memberLabel": "Uye {{number}}",
+      "fields": {
+        "householdName": "Hane adi",
+        "memberName": "Birincil uye adi",
+        "topTeeth": "Ust disler",
+        "bottomTeeth": "Alt disler",
+        "brushingHand": "Varsayilan fircalama eli",
+        "brushType": "Varsayilan firca tipi",
+        "duration": "Varsayilan fircalama suresi",
+        "keyword": "Baslangic muzik anahtar sozcugu"
+      }
     },
     "lastSession": {
       "summary": "Son oturum: {{artist}} tarafından {{title}}, üstte {{top}} diş, altta {{bottom}} diş, fırçalama süresi {{duration}}."
@@ -343,14 +378,14 @@
   },
   "privacy": {
     "analyticsMessage": "Anonim kullanım analitiklerini paylaşarak BrushBeats'i geliştirmemize yardım edin. Yazılan metinleri veya kişisel verileri asla göndermeyiz.",
-    "storageMessage": "BrushBeats, aynı fırçalama düzenini bir sonraki ziyaretinizde hızlıca tekrarlayabilmeniz için son oturumunuzu tarayıcı depolamasında (cookies/localStorage) saklayabilir.",
+    "storageMessage": "BrushBeats, aynı fırçalama düzenini bir sonraki ziyaretinizde hızlıca tekrarlayabilmeniz için son oturumunuzu bu tarayıcının yerel veritabanında saklayabilir.",
     "modalTitle": "Gizlilik Politikası",
     "modalBody1": "BrushBeats, yalnızca izin verdiğinizde Google Analytics 4 kullanır. BPM hesaplamaları, şarkı seçimleri, fırçalama başlangıçları, sıfırlamalar, tamamlanmalar ve otomatik sıraya alma geçişleri gibi anonim kullanım olaylarını toplarız.",
-    "modalBody2": "Depolamaya izin verdiğinizde son fırçalama oturumunuzu tarayıcı depolamasında (cookies/localStorage) saklayabiliriz. Bu, bir sonraki ziyaretinizde aynı şarkıyı, diş sayılarını, filtreleri, fırçalama elini ve süreyi hızlıca geri yüklemenizi sağlar.",
+    "modalBody2": "Depolamaya izin verdiğinizde son fırçalama oturumunuzu bu tarayıcının yerel veritabanında saklayabiliriz. Bu, bir sonraki ziyaretinizde aynı şarkıyı, diş sayılarını, filtreleri, fırçalama elini ve süreyi hızlıca geri yüklemenizi sağlar.",
     "modalBody3": "Yazılan form metinlerini, e-posta adreslerini, isimleri, şifreleri veya ödeme bilgilerini göndermeyiz. Reklamla ilgili depolama, sizin izin verdiğiniz temel analitik için zorunlu olmadıkça kapalıdır.",
     "modalBody4": "Analitik tercihiniz bu cihazda saklanır ve alt bilgideki Analitik kontrollerinden istediğiniz zaman değiştirilebilir.",
     "storageModalTitle": "Depolama Bildirimi",
-    "storageModalBody1": "Depolamaya izin verdiğinizde BrushBeats, kurulumunuzun sonraki bir ziyarette geri yüklenebilmesi için verileri sadece tarayıcınızda cookies ve localStorage ile saklar.",
+    "storageModalBody1": "Depolamaya izin verdiğinizde BrushBeats, kurulumunuzun sonraki bir ziyarette geri yüklenebilmesi için verileri sadece tarayıcınızda yerel bir veritabanı ve sınırlı uyumluluk depolaması ile saklar.",
     "storageModalBody2": "Bu veriler diş sayılarınızı, şarkı keşif filtrelerinizi, anahtar kelime aramanızı, seçilen fırçalama elinizi, seçilen fırçalama süresini ve fırçalamaya başladığınız son şarkıyı içerebilir.",
     "storageModalBody3": "Ayrıca son oturum özeti de saklanır; böylece Son Oturumu Tekrarla, şarkıyı, diş düzenini, filtreleri, el tercihini ve fırçalama süresini daha hızlı geri getirebilir.",
     "storageModalBody4": "Bu bilgiler cihazınızda kalır, hizmet tarafından toplanmaz, bir oturum açma sistemi değildir ve sadece daha akıcı bir deneyim sağlamak için yerel olarak saklanır. Alt bilgide depolamayı kapatarak istediğiniz zaman temizleyebilirsiniz."

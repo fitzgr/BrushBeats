@@ -1,8 +1,20 @@
+import {
+  clearLegacyFavoriteSongsMirror,
+  clearLegacyLastSessionMirror,
+  clearLegacyPreferencesMirror,
+  syncLegacyFavoriteSongs,
+  syncLegacyLastSession,
+  syncLegacyPreferences,
+  syncLegacyStorageBannerDismissed,
+  syncLegacyStorageConsent
+} from "../db/legacyStorageMirror";
+
 const STORAGE_CONSENT_KEY = "brushbeats_storage_consent";
 const STORAGE_BANNER_DISMISSED_KEY = "brushbeats_storage_banner_dismissed";
 const LAST_SESSION_KEY = "brushbeats_last_session_v1";
 const PREFERENCES_KEY = "brushbeats_preferences_v1";
 const FAVORITE_SONGS_KEY = "brushbeats_favorite_songs_v1";
+
 const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 180;
 const MAX_FAVORITE_SONGS = 25;
 const LEGACY_STORAGE_KEYS = [
@@ -29,6 +41,18 @@ function canUseStorage() {
 
 function canUseCookies() {
   return typeof document !== "undefined";
+}
+
+function isIndexedDbPrimaryStorageActive() {
+  return typeof window !== "undefined" && window.__brushbeatsDbStatus?.ready === true;
+}
+
+function shouldWriteCompatibilityCookie() {
+  if (!canUseStorage()) {
+    return true;
+  }
+
+  return !isIndexedDbPrimaryStorageActive();
 }
 
 function readCookie(name) {
@@ -81,7 +105,12 @@ function writeStoredValue(key, value) {
     window.localStorage.setItem(key, value);
   }
 
-  writeCookie(key, value);
+  if (shouldWriteCompatibilityCookie()) {
+    writeCookie(key, value);
+    return;
+  }
+
+  removeCookie(key);
 }
 
 function removeStoredValue(key) {
@@ -268,6 +297,7 @@ export function setStorageConsent(granted) {
 
   const nextStatus = granted ? CONSENT_STATUS.granted : CONSENT_STATUS.denied;
   window.localStorage.setItem(STORAGE_CONSENT_KEY, nextStatus);
+  void syncLegacyStorageConsent(nextStatus);
   return nextStatus;
 }
 
@@ -286,10 +316,12 @@ export function setStorageBannerDismissed(dismissed) {
 
   if (dismissed) {
     window.localStorage.setItem(STORAGE_BANNER_DISMISSED_KEY, "true");
+    void syncLegacyStorageBannerDismissed(true);
     return;
   }
 
   window.localStorage.removeItem(STORAGE_BANNER_DISMISSED_KEY);
+  void syncLegacyStorageBannerDismissed(false);
 }
 
 export function loadLastSession() {
@@ -313,6 +345,7 @@ export function saveLastSession(session) {
 
   try {
     writeStoredValue(LAST_SESSION_KEY, JSON.stringify(normalized));
+    void syncLegacyLastSession(normalized);
     return true;
   } catch {
     return false;
@@ -321,6 +354,7 @@ export function saveLastSession(session) {
 
 export function clearLastSession() {
   removeStoredValue(LAST_SESSION_KEY);
+  void clearLegacyLastSessionMirror();
 }
 
 export function loadStoredPreferences() {
@@ -344,6 +378,7 @@ export function saveStoredPreferences(preferences) {
 
   try {
     writeStoredValue(PREFERENCES_KEY, JSON.stringify(normalized));
+    void syncLegacyPreferences(normalized);
     return true;
   } catch {
     return false;
@@ -352,6 +387,7 @@ export function saveStoredPreferences(preferences) {
 
 export function clearStoredPreferences() {
   removeStoredValue(PREFERENCES_KEY);
+  void clearLegacyPreferencesMirror();
 }
 
 export function loadFavoriteSongs() {
@@ -372,6 +408,7 @@ export function saveFavoriteSongs(songs) {
 
   try {
     writeStoredValue(FAVORITE_SONGS_KEY, JSON.stringify(normalized));
+    void syncLegacyFavoriteSongs(normalized);
     return true;
   } catch {
     return false;
@@ -402,6 +439,7 @@ export function removeFavoriteSong(song) {
 
 export function clearFavoriteSongs() {
   removeStoredValue(FAVORITE_SONGS_KEY);
+  void clearLegacyFavoriteSongsMirror();
 }
 
 export function loadLastBrushedSong() {
@@ -431,15 +469,20 @@ export function clearLastBrushedSong() {
 
 export function getLegacyStorageSnapshot() {
   const rawValues = Object.fromEntries(LEGACY_STORAGE_KEYS.map((key) => [key, readStoredValue(key)]));
+  const preferences = loadStoredPreferences();
+  const lastSession = loadLastSession();
+  const favoriteSongs = loadFavoriteSongs();
+  const hasImportableLegacyData = Boolean(preferences || lastSession || favoriteSongs.length > 0);
 
   return {
     hasLegacyData: Object.values(rawValues).some((value) => value !== null && value !== undefined && value !== ""),
+    hasImportableLegacyData,
     rawValues,
     consentStatus: getStorageConsentStatus(),
     storageBannerDismissed: isStorageBannerDismissed(),
-    preferences: loadStoredPreferences(),
-    lastSession: loadLastSession(),
-    favoriteSongs: loadFavoriteSongs()
+    preferences,
+    lastSession,
+    favoriteSongs
   };
 }
 

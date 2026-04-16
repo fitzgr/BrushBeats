@@ -4,8 +4,12 @@ import BPMCalculator from "./components/BPMCalculator";
 import SongList from "./components/SongList";
 import Player from "./components/Player";
 import BrushingGuide from "./components/BrushingGuide";
+import HouseholdSetupPanel from "./components/HouseholdSetupPanel";
 import TranslationWorkshop from "./components/TranslationWorkshop";
 import VersionHistory from "./components/VersionHistory";
+import { clearPersistedPhase2Data, loadPersistedAppState } from "./db/appStateService";
+import { initializePhase2Migration } from "./db/migrationService";
+import { completeHouseholdOnboarding, saveHouseholdOnboardingDraft, setHouseholdOnboardingUiDismissed } from "./db/householdSetupService";
 import { getLanguageFallbackInfo, setPreferredSupportedLanguage } from "./i18n.ts";
 import { getBpm, getGeoCountry, getSongs, getYoutubeVideo } from "./api/client";
 import { buildReinforcementPool, getAgeMessageGroupCount, pickReinforcementMessage } from "./lib/reinforcementMessages";
@@ -116,8 +120,50 @@ function buildLocalizedBrusherProfile(t, totalTeeth, ageEstimate) {
   };
 }
 
+function normalizeTeethDraftValue(value, fallback) {
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) {
+    return fallback;
+  }
+
+  return Math.min(16, Math.max(0, Math.round(numericValue)));
+}
+
+function buildHouseholdSetupDraft({ household, activeUser, onboardingDraft, userDefaults, migrationState }) {
+  const topTeethCount = normalizeTeethDraftValue(
+    onboardingDraft?.topTeethCount ?? activeUser?.topTeethCount ?? userDefaults?.values?.top,
+    16
+  );
+  const bottomTeethCount = normalizeTeethDraftValue(
+    onboardingDraft?.bottomTeethCount ?? activeUser?.bottomTeethCount ?? userDefaults?.values?.bottom,
+    16
+  );
+  const totalTeethCount = topTeethCount + bottomTeethCount;
+
+  return {
+    householdName: onboardingDraft?.householdName || household?.householdName || "BrushBeats Household",
+    memberName: onboardingDraft?.memberName || activeUser?.name || "Primary Brusher",
+    topTeethCount,
+    bottomTeethCount,
+    brushingHand: onboardingDraft?.brushingHand || userDefaults?.brushingHand || "right",
+    brushType: onboardingDraft?.brushType || userDefaults?.brushType || "manual",
+    brushDurationSeconds: Number(onboardingDraft?.brushDurationSeconds || userDefaults?.brushDurationSeconds || DEFAULT_BRUSH_DURATION_SECONDS),
+    keyword: onboardingDraft?.keyword || userDefaults?.keyword || "",
+    filters: onboardingDraft?.filters || userDefaults?.filters || createInitialSongPreferences(totalTeethCount),
+    additionalMembers: Array.isArray(onboardingDraft?.additionalMembers) ? onboardingDraft.additionalMembers : [],
+    reviewSource: onboardingDraft?.reviewSource || (migrationState?.completedAt ? "migration-review" : "bootstrap")
+  };
+}
+
 function App() {
   const { t, i18n } = useTranslation();
+  const [dbStatus, setDbStatus] = useState(() => {
+    if (typeof window === "undefined") {
+      return { ready: false, mode: "legacy-storage-fallback" };
+    }
+
+    return window.__brushbeatsDbStatus || { ready: false, mode: "legacy-storage-fallback" };
+  });
   const [migrationNotice, setMigrationNotice] = useState(() => {
     if (typeof window === "undefined") {
       return null;
@@ -172,6 +218,14 @@ function App() {
   const [completionMessage, setCompletionMessage] = useState("");
   const [songsDebugInfo, setSongsDebugInfo] = useState(null);
   const [favoriteSongs, setFavoriteSongs] = useState([]);
+  const [householdProfile, setHouseholdProfile] = useState(null);
+  const [activeHouseholdUser, setActiveHouseholdUser] = useState(null);
+  const [persistedMigrationState, setPersistedMigrationState] = useState(null);
+  const [householdOnboardingState, setHouseholdOnboardingState] = useState(null);
+  const [householdOnboardingUiState, setHouseholdOnboardingUiState] = useState(null);
+  const [householdSetupDraft, setHouseholdSetupDraft] = useState(null);
+  const [householdSetupSaving, setHouseholdSetupSaving] = useState(false);
+  const [persistedStateRevision, setPersistedStateRevision] = useState(0);
   const [queuedStoredSongKey, setQueuedStoredSongKey] = useState("");
   const seenSongsByQueryRef = useRef(new Map());
   const playedSongsRef = useRef(new Set());
@@ -186,6 +240,7 @@ function App() {
   const restoredSessionRef = useRef(null);
   const latestVideoLookupRef = useRef(0);
   const lastCompletionMessageRef = useRef("");
+  const trackedMigrationNoticeRef = useRef(null);
   const analyticsAvailable = useMemo(() => analyticsEnabled(), []);
   const device = useDeviceContext();
   const totalTeeth = values.top + values.bottom;
@@ -225,13 +280,33 @@ function App() {
       return undefined;
     }
 
+    function handleDbStatus(event) {
+      setDbStatus(event.detail || { ready: false, mode: "legacy-storage-fallback" });
+    }
+
     function handleMigrationStatus(event) {
       setMigrationNotice(event.detail || null);
     }
 
+    window.addEventListener("brushbeats:db-status", handleDbStatus);
     window.addEventListener("brushbeats:migration-status", handleMigrationStatus);
-    return () => window.removeEventListener("brushbeats:migration-status", handleMigrationStatus);
+    return () => {
+      window.removeEventListener("brushbeats:db-status", handleDbStatus);
+      window.removeEventListener("brushbeats:migration-status", handleMigrationStatus);
+    };
   }, []);
+
+  useEffect(() => {
+    if (!migrationNotice?.kind || trackedMigrationNoticeRef.current === migrationNotice.kind) {
+      return;
+    }
+
+    trackedMigrationNoticeRef.current = migrationNotice.kind;
+    trackEvent("phase2_migration_status", {
+      result: migrationNotice.kind,
+      has_error: migrationNotice.kind === "migration-failed"
+    });
+  }, [migrationNotice]);
 
   useEffect(() => {
     let isMounted = true;
@@ -343,38 +418,114 @@ function App() {
   }
 
   useEffect(() => {
-    if (storageConsent === "granted") {
-      const savedPreferences = loadStoredPreferences();
-      const savedSession = loadLastSession();
-      const savedFavorites = loadFavoriteSongs();
+    let cancelled = false;
 
-      if (savedPreferences) {
-        applySavedSession(savedPreferences);
-      } else if (savedSession) {
-        applySavedSession(savedSession);
+    async function hydratePersistedState() {
+      if (storageConsent === "granted") {
+        const fallbackState = {
+          storageConsent,
+          storageBannerDismissed,
+          preferences: loadStoredPreferences(),
+          lastSession: loadLastSession(),
+          favoriteSongs: loadFavoriteSongs()
+        };
+        const persistedState = dbStatus.ready
+          ? await loadPersistedAppState(fallbackState)
+          : {
+              ...fallbackState,
+              household: null,
+              activeUser: null,
+              migrationState: null,
+              onboardingState: null,
+              onboardingDraft: null,
+              userDefaults: null
+            };
+
+        if (cancelled) {
+          return;
+        }
+
+        if (persistedState.storageConsent && persistedState.storageConsent !== storageConsent) {
+          setStorageConsentState(persistedState.storageConsent);
+        }
+
+        if (typeof persistedState.storageBannerDismissed === "boolean" && persistedState.storageBannerDismissed !== storageBannerDismissed) {
+          setStorageBannerDismissedState(persistedState.storageBannerDismissed);
+        }
+
+        const savedPreferences = persistedState.userDefaults || persistedState.preferences;
+        const savedSession = persistedState.lastSession;
+        const savedFavorites = persistedState.favoriteSongs || [];
+
+        if (savedPreferences) {
+          applySavedSession(savedPreferences);
+        } else if (savedSession) {
+          applySavedSession(savedSession);
+        }
+
+        restoredSessionRef.current = savedSession;
+        setBpmData(savedSession?.bpmSnapshot || null);
+        setLastSession(savedSession);
+        setFavoriteSongs(savedFavorites);
+        setHouseholdProfile(persistedState.household || null);
+        setActiveHouseholdUser(persistedState.activeUser || null);
+        setPersistedMigrationState(persistedState.migrationState || null);
+        setHouseholdOnboardingState(persistedState.onboardingState || null);
+        setHouseholdOnboardingUiState(persistedState.onboardingUiState || null);
+        setHouseholdSetupDraft(
+          persistedState.household?.householdId && !persistedState.onboardingState?.completedAt
+            ? buildHouseholdSetupDraft({
+                household: persistedState.household,
+                activeUser: persistedState.activeUser,
+                onboardingDraft: persistedState.onboardingDraft,
+                userDefaults: persistedState.userDefaults || persistedState.preferences,
+                migrationState: persistedState.migrationState
+              })
+            : null
+        );
+        preferencesHydratedRef.current = true;
+        return;
       }
 
-      restoredSessionRef.current = savedSession;
-      setBpmData(savedSession?.bpmSnapshot || null);
-      setLastSession(savedSession);
-      setFavoriteSongs(savedFavorites);
-      preferencesHydratedRef.current = true;
+      if (storageConsent === "denied") {
+        clearStoredPreferences();
+        clearLastSession();
+      }
+
+      preferencesHydratedRef.current = false;
+      repeatSessionBootstrapRef.current = false;
+      restoredSessionRef.current = null;
+      setLastSession(null);
+      setFavoriteSongs([]);
+      setBpmData(null);
+      setAutoRestoredBrushView(false);
+      setHouseholdProfile(null);
+      setActiveHouseholdUser(null);
+      setPersistedMigrationState(null);
+      setHouseholdOnboardingState(null);
+      setHouseholdOnboardingUiState(null);
+      setHouseholdSetupDraft(null);
+    }
+
+    void hydratePersistedState();
+    return () => {
+      cancelled = true;
+    };
+  }, [dbStatus.ready, persistedStateRevision, storageBannerDismissed, storageConsent]);
+
+  useEffect(() => {
+    if (
+      storageConsent !== "granted" ||
+      !dbStatus.ready ||
+      !householdProfile?.householdId ||
+      !householdSetupDraft ||
+      householdOnboardingState?.completedAt
+    ) {
       return;
     }
 
-    if (storageConsent === "denied") {
-      clearStoredPreferences();
-      clearLastSession();
-    }
-
-    preferencesHydratedRef.current = false;
-    repeatSessionBootstrapRef.current = false;
-    restoredSessionRef.current = null;
-    setLastSession(null);
-    setFavoriteSongs([]);
-    setBpmData(null);
-    setAutoRestoredBrushView(false);
-  }, [storageConsent]);
+    void saveHouseholdOnboardingDraft(householdSetupDraft);
+  }, [dbStatus.ready, householdOnboardingState?.completedAt, householdProfile?.householdId, householdSetupDraft, storageConsent]);
 
   useEffect(() => {
     if (storageConsent !== "granted" || !preferencesHydratedRef.current) {
@@ -413,14 +564,30 @@ function App() {
     void handleSelectSongWithOptions(lastSession.song, { autoplay: false });
   }, [lastSession, storageConsent]);
 
-  function handleAllowStorage() {
+  async function handleAllowStorage() {
     const nextStatus = setStorageConsent(true);
     setStorageConsentState(nextStatus);
     setStorageBannerDismissed(false);
     setStorageBannerDismissedState(false);
+
+    if (!dbStatus.ready) {
+      return;
+    }
+
+    try {
+      const migrationStatus = await initializePhase2Migration();
+      if (typeof window !== "undefined") {
+        window.__brushbeatsMigrationStatus = migrationStatus;
+        window.dispatchEvent(new CustomEvent("brushbeats:migration-status", { detail: migrationStatus }));
+      }
+      setPersistedStateRevision((current) => current + 1);
+      setError("");
+    } catch (setupError) {
+      setError(setupError?.message || t("app.migration.failedLegacyStorage"));
+    }
   }
 
-  function handleDeclineStorage() {
+  async function handleDeclineStorage() {
     const nextStatus = setStorageConsent(false);
     setStorageConsentState(nextStatus);
     clearStoredPreferences();
@@ -428,6 +595,19 @@ function App() {
     clearFavoriteSongs();
     setLastSession(null);
     setFavoriteSongs([]);
+
+    if (!dbStatus.ready) {
+      return;
+    }
+
+    try {
+      await clearPersistedPhase2Data();
+      setPersistedStateRevision((current) => current + 1);
+      setMigrationNotice(null);
+      setError("");
+    } catch (clearError) {
+      setError(clearError?.message || t("app.householdSetup.saveFailed"));
+    }
   }
 
   function handleDismissStorageBanner() {
@@ -438,6 +618,159 @@ function App() {
   function handleShowStorageBanner() {
     setStorageBannerDismissed(false);
     setStorageBannerDismissedState(false);
+  }
+
+  function handleHouseholdSetupDraftChange(field, value) {
+    setHouseholdSetupDraft((current) => {
+      if (!current) {
+        return current;
+      }
+
+      if (field === "topTeethCount" || field === "bottomTeethCount") {
+        return {
+          ...current,
+          [field]: normalizeTeethDraftValue(value, current[field])
+        };
+      }
+
+      return {
+        ...current,
+        [field]: value
+      };
+    });
+  }
+
+  function handleAddHouseholdMember() {
+    setHouseholdSetupDraft((current) => {
+      if (!current) {
+        return current;
+      }
+
+      return {
+        ...current,
+        additionalMembers: [
+          ...(current.additionalMembers || []),
+          {
+            clientId: `member-${Date.now()}-${Math.random().toString(16).slice(2, 6)}`,
+            memberName: "",
+            topTeethCount: 16,
+            bottomTeethCount: 16
+          }
+        ].slice(0, 4)
+      };
+    });
+  }
+
+  function handleRemoveHouseholdMember(clientId) {
+    setHouseholdSetupDraft((current) => {
+      if (!current) {
+        return current;
+      }
+
+      return {
+        ...current,
+        additionalMembers: (current.additionalMembers || []).filter((member) => member.clientId !== clientId)
+      };
+    });
+  }
+
+  function handleAdditionalMemberChange(clientId, field, value) {
+    setHouseholdSetupDraft((current) => {
+      if (!current) {
+        return current;
+      }
+
+      return {
+        ...current,
+        additionalMembers: (current.additionalMembers || []).map((member) => {
+          if (member.clientId !== clientId) {
+            return member;
+          }
+
+          if (field === "topTeethCount" || field === "bottomTeethCount") {
+            return {
+              ...member,
+              [field]: normalizeTeethDraftValue(value, member[field])
+            };
+          }
+
+          return {
+            ...member,
+            [field]: value
+          };
+        })
+      };
+    });
+  }
+
+  async function handleDismissHouseholdSetup() {
+    setHouseholdOnboardingUiState({ dismissedAt: new Date().toISOString() });
+    await setHouseholdOnboardingUiDismissed(true);
+  }
+
+  async function handleReopenHouseholdSetup() {
+    if (!householdSetupDraft && householdProfile?.householdId) {
+      setHouseholdSetupDraft(
+        buildHouseholdSetupDraft({
+          household: householdProfile,
+          activeUser: activeHouseholdUser,
+          onboardingDraft: null,
+          userDefaults: {
+            values,
+            filters: songFilters,
+            keyword,
+            brushingHand,
+            brushType,
+            brushDurationSeconds
+          },
+          migrationState: persistedMigrationState
+        })
+      );
+    }
+
+    setHouseholdOnboardingUiState({ dismissedAt: null });
+    await setHouseholdOnboardingUiDismissed(false);
+    setWorkflowStep("teeth");
+  }
+
+  async function handleCompleteHouseholdSetup(event) {
+    event.preventDefault();
+
+    if (!householdProfile?.householdId || !householdSetupDraft) {
+      return;
+    }
+
+    setHouseholdSetupSaving(true);
+
+    try {
+      const result = await completeHouseholdOnboarding({
+        household: householdProfile,
+        activeUser: activeHouseholdUser,
+        draft: householdSetupDraft,
+        migrationState: persistedMigrationState
+      });
+
+      setHouseholdProfile(result.household);
+      setActiveHouseholdUser(result.user);
+      setHouseholdOnboardingState({
+        completedAt: new Date().toISOString(),
+        householdId: result.household.householdId,
+        userId: result.user.userId,
+        reviewSource: householdSetupDraft.reviewSource
+      });
+      setHouseholdOnboardingUiState({ dismissedAt: null });
+      setHouseholdSetupDraft(null);
+      applySavedSession(result.defaults);
+      saveStoredPreferences(result.defaults);
+      trackEvent("phase2_household_setup_completed", {
+        review_source: householdSetupDraft.reviewSource,
+        migration_review: householdSetupDraft.reviewSource === "migration-review"
+      });
+    } catch (setupError) {
+      setError(setupError?.message || t("app.householdSetup.saveFailed"));
+    } finally {
+      setHouseholdSetupSaving(false);
+    }
   }
 
   async function handlePreferredLanguageChange(nextLanguage) {
@@ -1172,6 +1505,14 @@ function App() {
           : t("brushing.start", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) });
 
   const showTopConsentNotices = workflowStep === "teeth";
+  const requiresHouseholdSetup =
+    appView === "brush" &&
+    storageConsent === "granted" &&
+    dbStatus.ready &&
+    householdProfile?.householdId &&
+    householdSetupDraft &&
+    !householdOnboardingUiState?.dismissedAt &&
+    !householdOnboardingState?.completedAt;
 
   return (
     <main className={`app-shell ${device.isMobile ? "mobile-shell" : "desktop-shell"}${appView === "workshop" && !device.isMobile ? " workshop-shell" : ""}`}>
@@ -1384,6 +1725,21 @@ function App() {
 
       {backendStatus && !error && <p className="info-banner">{backendStatus}</p>}
       {error && <p className="error-banner">{error}</p>}
+
+      {requiresHouseholdSetup && (
+        <HouseholdSetupPanel
+          t={t}
+          draft={householdSetupDraft}
+          saving={householdSetupSaving}
+          requiresMigrationReview={householdSetupDraft.reviewSource === "migration-review"}
+          onDraftChange={handleHouseholdSetupDraftChange}
+          onAdditionalMemberChange={handleAdditionalMemberChange}
+          onAddMember={handleAddHouseholdMember}
+          onRemoveMember={handleRemoveHouseholdMember}
+          onDismiss={handleDismissHouseholdSetup}
+          onSubmit={handleCompleteHouseholdSetup}
+        />
+      )}
 
       {workflowStep === "teeth" && (
         <section className={`layout-grid ${device.isMobile ? "mobile-mode" : "desktop-mode desktop-step-layout"}`}>
@@ -1665,6 +2021,11 @@ function App() {
           ) : (
             <button type="button" className="privacy-toggle" onClick={handleAllowStorage}>
               {t("common.buttons.turnOn")}
+            </button>
+          )}
+          {storageConsent === "granted" && dbStatus.ready && householdProfile?.householdId && !householdOnboardingState?.completedAt && (
+            <button type="button" className="privacy-toggle" onClick={handleReopenHouseholdSetup}>
+              {t("common.buttons.householdSetup")}
             </button>
           )}
           <button type="button" className="privacy-toggle" onClick={openStorageInfoModal}>

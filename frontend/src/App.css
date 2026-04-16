@@ -249,6 +249,7 @@
 .desktop-shell .info-banner,
 .desktop-shell .consent-banner,
 .desktop-shell .storage-banner,
+.desktop-shell .household-setup-panel,
 .desktop-shell .last-song-banner {
   max-width: 860px;
   margin-left: auto;
@@ -764,6 +765,118 @@
   background: #f4f2ff;
   border: 1px solid rgba(67, 57, 135, 0.24);
   color: #3e347e;
+}
+
+.household-setup-panel {
+  margin: 0 0 1rem;
+  padding: 1rem;
+  border-radius: 18px;
+  border: 1px solid rgba(16, 33, 37, 0.14);
+  background: linear-gradient(145deg, rgba(255, 252, 246, 0.96), rgba(240, 247, 244, 0.94));
+  box-shadow: 0 10px 30px rgba(16, 33, 37, 0.06);
+  display: grid;
+  gap: 0.9rem;
+}
+
+.household-setup-copy h2 {
+  margin: 0.15rem 0 0.35rem;
+}
+
+.household-setup-copy p {
+  margin: 0;
+}
+
+.household-setup-eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--accent-deep);
+}
+
+.household-setup-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.7rem;
+}
+
+.household-setup-summary span {
+  border-radius: 999px;
+  padding: 0.3rem 0.65rem;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(16, 33, 37, 0.12);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #36505a;
+}
+
+.household-setup-form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.household-setup-form label {
+  display: grid;
+  gap: 0.28rem;
+}
+
+.household-setup-form span,
+.household-setup-helper {
+  font-size: 0.8rem;
+  color: #486067;
+}
+
+.household-setup-form input,
+.household-setup-form select {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(16, 33, 37, 0.16);
+  background: rgba(255, 255, 255, 0.96);
+  padding: 0.68rem 0.78rem;
+  font: inherit;
+  color: var(--ink);
+}
+
+.household-setup-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.household-setup-helper {
+  margin: 0;
+}
+
+.household-members-section {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.household-members-header,
+.household-member-card-header,
+.household-setup-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.household-member-card {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.8rem;
+  border-radius: 14px;
+  border: 1px solid rgba(16, 33, 37, 0.12);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+@media (max-width: 720px) {
+  .household-setup-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .last-song-banner {

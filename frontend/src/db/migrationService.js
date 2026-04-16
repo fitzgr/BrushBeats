@@ -230,7 +230,7 @@ export async function initializePhase2Migration() {
     const snapshot = getLegacyStorageSnapshot();
     const migrationState = await getAppSetting(LEGACY_MIGRATION_SETTING_KEY);
 
-    if (snapshot.hasLegacyData && !migrationState?.value?.completedAt) {
+    if (snapshot.hasImportableLegacyData && !migrationState?.value?.completedAt) {
       const fingerprint = buildLegacyFingerprint(snapshot);
       const existingFingerprint = await getAppSetting(LEGACY_FINGERPRINT_SETTING_KEY);
       if (existingFingerprint?.value === fingerprint) {
@@ -261,7 +261,7 @@ export async function initializePhase2Migration() {
     }
 
     const bootstrapResult = await ensureDefaultHouseholdAndUser();
-    if (migrationState?.value?.completedAt || !snapshot.hasLegacyData) {
+    if (migrationState?.value?.completedAt || !snapshot.hasImportableLegacyData) {
       return bootstrapResult.action === "bootstrapped"
         ? {
             kind: "bootstrapped-household",

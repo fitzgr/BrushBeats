@@ -114,6 +114,23 @@ export async function getHousehold(householdId) {
   return households[0] || null;
 }
 
+export async function updateHousehold(householdId, updates = {}) {
+  const existingHousehold = await getHousehold(householdId);
+  if (!existingHousehold) {
+    throw new Error(`Household not found: ${householdId}`);
+  }
+
+  const updatedHousehold = {
+    ...existingHousehold,
+    ...updates,
+    householdId: existingHousehold.householdId,
+    updatedAt: nowIso()
+  };
+
+  await putItem(STORE_NAMES.household, updatedHousehold);
+  return updatedHousehold;
+}
+
 export async function createUser(input = {}) {
   const baseFields = buildSyncFields();
   const user = {
