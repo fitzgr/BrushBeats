@@ -1,3 +1,5 @@
+import AchievementBadgeList from "./AchievementBadgeList";
+
 export default function ProgressDashboardPanel({ t, dashboard, activeUserName, filters, onFilterChange, onLogActivity }) {
   if (!dashboard) {
     return null;
@@ -49,7 +51,25 @@ export default function ProgressDashboardPanel({ t, dashboard, activeUserName, f
           <strong>{dashboard.totals.monthlySessions}</strong>
           <span>{t("app.progressDashboard.stats.monthlySessions")}</span>
         </article>
+        <article className="progress-dashboard-stat-card">
+          <strong>{dashboard.progression.currentLevel}</strong>
+          <span>{t("app.progressDashboard.stats.level")}</span>
+        </article>
       </div>
+
+      <section className="progress-dashboard-level-card">
+        <strong>{t("app.progressDashboard.levelTitle", { level: dashboard.progression.currentLevel })}</strong>
+        <span>{t("app.progressDashboard.levelSummary", { points: dashboard.progression.points, next: dashboard.progression.nextLevelPoints })}</span>
+        <div className="progress-dashboard-level-track" aria-hidden="true">
+          <span className="progress-dashboard-level-fill" style={{ width: `${dashboard.progression.progressPercent}%` }} />
+        </div>
+      </section>
+
+      <AchievementBadgeList
+        t={t}
+        achievements={dashboard.recentAchievements}
+        title={t("app.progressDashboard.achievementsTitle")}
+      />
 
       <div className="progress-dashboard-quick-actions">
         <strong>{t("app.progressDashboard.quickActionsTitle")}</strong>

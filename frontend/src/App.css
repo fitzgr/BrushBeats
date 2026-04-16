@@ -913,6 +913,79 @@
   font-size: 0.82rem;
 }
 
+.progress-dashboard-level-card {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.8rem 0.9rem;
+  border-radius: 14px;
+  border: 1px solid rgba(16, 33, 37, 0.1);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.progress-dashboard-level-track {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(16, 33, 37, 0.08);
+  overflow: hidden;
+}
+
+.progress-dashboard-level-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #1e7a5e, #79c3aa);
+}
+
+.achievement-badge-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.achievement-badge-list.compact {
+  margin-top: 0.45rem;
+}
+
+.achievement-badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.55rem;
+}
+
+.achievement-badge-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.55rem;
+  align-items: start;
+  padding: 0.75rem 0.8rem;
+  border-radius: 14px;
+  border: 1px solid rgba(202, 95, 22, 0.2);
+  background: linear-gradient(145deg, rgba(255, 244, 225, 0.96), rgba(255, 251, 244, 0.98));
+}
+
+.achievement-badge-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 999px;
+  background: rgba(202, 95, 22, 0.12);
+  color: #8a4716;
+  font-size: 1rem;
+}
+
+.achievement-badge-card strong,
+.achievement-badge-card span {
+  display: block;
+}
+
+.achievement-badge-card span {
+  margin-top: 0.12rem;
+  color: #5b6d76;
+  font-size: 0.8rem;
+}
+
 .progress-dashboard-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

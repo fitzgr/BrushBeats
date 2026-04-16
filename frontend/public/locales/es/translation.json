@@ -170,8 +170,12 @@
         "totalSessions": "Sesiones registradas",
         "completionRate": "Tasa de finalizacion",
         "streak": "Racha actual",
-        "monthlySessions": "Ultimos 30 dias"
+        "monthlySessions": "Ultimos 30 dias",
+        "level": "Nivel"
       },
+      "levelTitle": "Progreso del nivel {{level}}",
+      "levelSummary": "{{points}} puntos ganados. El siguiente nivel llega en {{next}} puntos.",
+      "achievementsTitle": "Insignias recientes",
       "recentSessionsTitle": "Sesiones recientes",
       "activityTypes": {
         "brushing": "Sesion de cepillado",
@@ -193,6 +197,36 @@
       },
       "noSessions": "Todavia no hay sesiones registradas para este filtro.",
       "noToothHistory": "Todavia no se registraron cambios dentales."
+    },
+    "achievements": {
+      "ariaLabel": "Logros e insignias",
+      "unlockedTitle": "Nuevas insignias desbloqueadas",
+      "types": {
+        "first-session": {
+          "title": "Primera sesion",
+          "description": "Completaste la primera rutina registrada."
+        },
+        "streak-3": {
+          "title": "Racha de 3 dias",
+          "description": "Completaste rutinas durante tres dias seguidos."
+        },
+        "streak-7": {
+          "title": "Racha de 7 dias",
+          "description": "Mantuviste la constancia durante una semana completa."
+        },
+        "ten-sessions": {
+          "title": "10 sesiones",
+          "description": "Registraste diez rutinas completadas."
+        },
+        "routine-mix": {
+          "title": "Mezcla de rutinas",
+          "description": "Completaste cepillado, hilo dental e irrigador."
+        },
+        "stage-transition": {
+          "title": "Hito de crecimiento",
+          "description": "Llegaste a una nueva etapa de desarrollo dental."
+        }
+      }
     },
     "householdManagement": {
       "ariaLabel": "Configuracion del hogar y gestion de miembros",

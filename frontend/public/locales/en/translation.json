@@ -170,8 +170,12 @@
         "totalSessions": "Tracked sessions",
         "completionRate": "Completion rate",
         "streak": "Current streak",
-        "monthlySessions": "Last 30 days"
+        "monthlySessions": "Last 30 days",
+        "level": "Level"
       },
+      "levelTitle": "Level {{level}} progress",
+      "levelSummary": "{{points}} points earned. Next level at {{next}} points.",
+      "achievementsTitle": "Recent badges",
       "activityTypes": {
         "brushing": "Brushing session",
         "flossing": "Flossing session",
@@ -193,6 +197,36 @@
       },
       "noSessions": "No tracked sessions yet for this filter.",
       "noToothHistory": "No tooth history has been recorded yet."
+    },
+    "achievements": {
+      "ariaLabel": "Achievements and badges",
+      "unlockedTitle": "New badges unlocked",
+      "types": {
+        "first-session": {
+          "title": "First Session",
+          "description": "Finished the first tracked routine."
+        },
+        "streak-3": {
+          "title": "3-Day Streak",
+          "description": "Completed routines across three straight days."
+        },
+        "streak-7": {
+          "title": "7-Day Streak",
+          "description": "Stayed consistent for a full week."
+        },
+        "ten-sessions": {
+          "title": "10 Sessions",
+          "description": "Tracked ten completed routines."
+        },
+        "routine-mix": {
+          "title": "Routine Mix",
+          "description": "Completed brushing, flossing, and water-picking."
+        },
+        "stage-transition": {
+          "title": "Growth Milestone",
+          "description": "Reached a new dental development stage."
+        }
+      }
     },
     "householdManagement": {
       "ariaLabel": "Household settings and member management",

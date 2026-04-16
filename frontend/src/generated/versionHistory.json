@@ -1,5 +1,17 @@
 [
   {
+    "id": "commit-aeb6491231f2cf7dbd6560e3a695f812bde44f2f",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "aeb6491231f2cf7dbd6560e3a695f812bde44f2f",
+    "shortSha": "aeb6491",
+    "timestamp": "2026-04-16T14:46:05-04:00",
+    "date": "2026-04-16",
+    "author": "Grant Fitz",
+    "subject": "Complete Phase 3 household management flows",
+    "body": ""
+  },
+  {
     "id": "commit-dbb2a4c4bc9b69cff7a35a77204fff6315dbf24e",
     "kind": "commit",
     "source": "git-history",

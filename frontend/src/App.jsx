@@ -7,11 +7,13 @@ import BrushingGuide from "./components/BrushingGuide";
 import HouseholdSetupPanel from "./components/HouseholdSetupPanel";
 import HouseholdOverviewPanel from "./components/HouseholdOverviewPanel";
 import HouseholdManagementPanel from "./components/HouseholdManagementPanel";
+import AchievementBadgeList from "./components/AchievementBadgeList";
 import ProgressDashboardPanel from "./components/ProgressDashboardPanel";
 import TranslationWorkshop from "./components/TranslationWorkshop";
 import VersionHistory from "./components/VersionHistory";
 import { clearPersistedPhase2Data, loadPersistedAppState } from "./db/appStateService";
 import { loadHouseholdOverview, switchActiveHouseholdUser } from "./db/householdOverviewService";
+import { awardAchievementsForUser } from "./db/achievementEngineService";
 import { archiveHouseholdMember, loadHouseholdManagement, removeHouseholdMember, restoreHouseholdMember, saveHouseholdMember, saveHouseholdSettings } from "./db/householdManagementService";
 import { initializePhase2Migration } from "./db/migrationService";
 import { loadUserProgressDashboard } from "./db/progressDashboardService";
@@ -232,6 +234,7 @@ function App() {
   const [householdManagement, setHouseholdManagement] = useState(null);
   const [householdManagementSaving, setHouseholdManagementSaving] = useState(false);
   const [progressDashboard, setProgressDashboard] = useState(null);
+  const [recentUnlockedAchievements, setRecentUnlockedAchievements] = useState([]);
   const [progressDashboardFilters, setProgressDashboardFilters] = useState({ timeRange: "30d", activityType: "all" });
   const [persistedMigrationState, setPersistedMigrationState] = useState(null);
   const [householdOnboardingState, setHouseholdOnboardingState] = useState(null);
@@ -542,6 +545,7 @@ function App() {
       setActiveHouseholdUser(null);
       setHouseholdOverview(null);
       setProgressDashboard(null);
+      setRecentUnlockedAchievements([]);
       setPersistedMigrationState(null);
       setHouseholdOnboardingState(null);
       setHouseholdOnboardingUiState(null);
@@ -710,6 +714,10 @@ function App() {
         newToothStage: nextSnapshot.stage,
         reason: "phase3-progress-tracking"
       });
+      const unlockedAchievements = await awardAchievementsForUser(activeHouseholdUser.userId, householdProfile?.householdId);
+      if (unlockedAchievements.length > 0) {
+        setRecentUnlockedAchievements((current) => [...unlockedAchievements, ...current].slice(0, 4));
+      }
       setPersistedStateRevision((current) => current + 1);
     })().catch((trackingError) => {
       setError(trackingError?.message || t("app.householdSetup.saveFailed"));
@@ -798,7 +806,7 @@ function App() {
     loggedCompletedSessionRef.current = completionKey;
 
     void (async () => {
-      await createBrushingSession({
+      const createdSession = await createBrushingSession({
         userId: activeHouseholdUser.userId,
         householdId: householdProfile.householdId,
         sessionType: "brushing",
@@ -816,6 +824,10 @@ function App() {
         completed: true,
         source: "phase3-progress-dashboard"
       });
+      const unlockedAchievements = await awardAchievementsForUser(activeHouseholdUser.userId, householdProfile.householdId, {
+        relatedSessionId: createdSession.sessionId
+      });
+      setRecentUnlockedAchievements(unlockedAchievements);
       setPersistedStateRevision((current) => current + 1);
     })().catch((sessionError) => {
       setError(sessionError?.message || t("app.householdSetup.saveFailed"));
@@ -856,6 +868,7 @@ function App() {
     setHouseholdManagement(null);
     setHouseholdOverview(null);
     setProgressDashboard(null);
+    setRecentUnlockedAchievements([]);
 
     if (!dbStatus.ready) {
       return;
@@ -1209,7 +1222,7 @@ function App() {
     try {
       const now = new Date().toISOString();
       const durationSeconds = durationByType[sessionType] || 60;
-      await createBrushingSession({
+      const createdSession = await createBrushingSession({
         userId: activeHouseholdUser.userId,
         householdId: householdProfile.householdId,
         sessionType,
@@ -1224,6 +1237,12 @@ function App() {
         completed: true,
         source: "phase3-quick-log"
       });
+      const unlockedAchievements = await awardAchievementsForUser(activeHouseholdUser.userId, householdProfile.householdId, {
+        relatedSessionId: createdSession.sessionId
+      });
+      if (unlockedAchievements.length > 0) {
+        setRecentUnlockedAchievements(unlockedAchievements);
+      }
       setPersistedStateRevision((current) => current + 1);
       trackEvent("phase3_activity_logged", { session_type: sessionType });
       setError("");
@@ -1265,6 +1284,7 @@ function App() {
   setHouseholdManagement(await loadHouseholdManagement(householdProfile.householdId));
       setActiveHouseholdUser(nextActiveUser);
   setProgressDashboard(await loadUserProgressDashboard(userId, progressDashboardFilters));
+      setRecentUnlockedAchievements([]);
       setLastSession(scopedState.lastSession || null);
       setFavoriteSongs(scopedState.favoriteSongs || []);
       setBpmData(scopedState.lastSession?.bpmSnapshot || null);
@@ -1791,6 +1811,7 @@ function App() {
 
     sessionStartedAtRef.current = new Date().toISOString();
     loggedCompletedSessionRef.current = null;
+    setRecentUnlockedAchievements([]);
 
     markSongAsPlayed(selectedSong);
 
@@ -2451,6 +2472,12 @@ function App() {
                     <span className="sparkle-stars" aria-hidden="true">✦ ✧ ✦</span>
                     <p>{completionMessage || t("app.success", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) })}</p>
                     <small>{t("app.successAgeGroups", { count: ageGroupCount })}</small>
+                    <AchievementBadgeList
+                      t={t}
+                      achievements={recentUnlockedAchievements}
+                      title={recentUnlockedAchievements.length > 0 ? t("app.achievements.unlockedTitle") : undefined}
+                      compact
+                    />
                   </section>
                 )}
                 <p className="timer-note">{t("brushing.timerNote")}</p>
@@ -2499,6 +2526,12 @@ function App() {
                   <span className="sparkle-stars" aria-hidden="true">✦ ✧ ✦</span>
                   <p>{completionMessage || t("app.success", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) })}</p>
                   <small>{t("app.successAgeGroups", { count: ageGroupCount })}</small>
+                  <AchievementBadgeList
+                    t={t}
+                    achievements={recentUnlockedAchievements}
+                    title={recentUnlockedAchievements.length > 0 ? t("app.achievements.unlockedTitle") : undefined}
+                    compact
+                  />
                 </section>
               )}
               </>

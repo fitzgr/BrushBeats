@@ -510,8 +510,12 @@
       "unknown": {
         "label": "Bilinmeyen Aşama",
         "description": "Diş yaş tahmini yok"
-      },
+        "monthlySessions": "Son 30 gun",
+        "level": "Seviye"
       "infant": "Bebek Dişleri",
+      "levelTitle": "Seviye {{level}} ilerlemesi",
+      "levelSummary": "{{points}} puan kazanildi. Sonraki seviye {{next}} puanda.",
+      "achievementsTitle": "Son rozetler",
       "toddler": "Küçük Çocuk Dişleri",
       "primary": "Süt Dişleri",
       "mixed": "Karışık Dişlenme",
@@ -533,3 +537,34 @@
     }
   }
 }
+
+    "achievements": {
+      "ariaLabel": "Basarilar ve rozetler",
+      "unlockedTitle": "Yeni rozetler acildi",
+      "types": {
+        "first-session": {
+          "title": "Ilk Oturum",
+          "description": "Ilk izlenen rutini tamamladin."
+        },
+        "streak-3": {
+          "title": "3 Gunluk Seri",
+          "description": "Uc gun ust uste rutin tamamlandi."
+        },
+        "streak-7": {
+          "title": "7 Gunluk Seri",
+          "description": "Bir hafta boyunca duzen korundu."
+        },
+        "ten-sessions": {
+          "title": "10 Oturum",
+          "description": "On tamamlanmis rutin izlendi."
+        },
+        "routine-mix": {
+          "title": "Rutin Karisimi",
+          "description": "Fircalama, dis ipi ve agiz dusu tamamlandi."
+        },
+        "stage-transition": {
+          "title": "Buyume Donum Noktasi",
+          "description": "Yeni bir dis gelisim evresine ulasildi."
+        }
+      }
+    },
