@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import RoadmapSection from "./RoadmapSection";
 import versionHistory from "../generated/versionHistory.json";
 
 function cleanHistoryText(value) {
@@ -173,6 +174,8 @@ function VersionHistory({ onExit }) {
           </div>
         </section>
       </div>
+
+      <RoadmapSection />
     </section>
   );
 }

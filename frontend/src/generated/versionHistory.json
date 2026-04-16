@@ -1,5 +1,17 @@
 [
   {
+    "id": "commit-a0fdc9314bdf64194b54d0691bd186e8e0eb9127",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "a0fdc9314bdf64194b54d0691bd186e8e0eb9127",
+    "shortSha": "a0fdc93",
+    "timestamp": "2026-04-16T06:12:21-04:00",
+    "date": "2026-04-16",
+    "author": "Grant Fitz",
+    "subject": "Show history dates only and add release versions",
+    "body": ""
+  },
+  {
     "id": "commit-d6255167a40e96ea301bbe147b6ed29c6a25d6a0",
     "kind": "commit",
     "source": "git-history",

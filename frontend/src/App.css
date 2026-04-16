@@ -557,9 +557,120 @@
   font-size: 0.84rem;
 }
 
+.roadmap-view {
+  display: grid;
+  gap: 1rem;
+}
+
+.roadmap-header-card,
+.roadmap-card,
+.roadmap-phase-card {
+  padding: 1rem 1.05rem;
+  border-radius: 18px;
+  border: 1px solid rgba(16, 33, 37, 0.12);
+  background: linear-gradient(145deg, rgba(255, 251, 244, 0.98), rgba(239, 246, 250, 0.94));
+}
+
+.roadmap-header-card h3,
+.roadmap-card h4,
+.roadmap-phase-card h4,
+.roadmap-group h5 {
+  margin: 0;
+  color: #294054;
+}
+
+.roadmap-header-card p:last-child,
+.roadmap-summary,
+.roadmap-dependency-note {
+  margin: 0;
+  color: #50626a;
+}
+
+.roadmap-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.roadmap-grid-secondary {
+  align-items: start;
+}
+
+.roadmap-order-list,
+.roadmap-list {
+  margin: 0.7rem 0 0;
+  padding-left: 1.1rem;
+  color: #42555d;
+}
+
+.roadmap-list ul {
+  margin-top: 0.45rem;
+}
+
+.roadmap-order-list li,
+.roadmap-list li {
+  margin: 0.4rem 0;
+  line-height: 1.5;
+}
+
+.roadmap-phase-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.roadmap-phase-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  align-items: flex-start;
+}
+
+.roadmap-priority-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(41, 64, 84, 0.14);
+  color: #355064;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.roadmap-summary {
+  margin-top: 0.55rem;
+}
+
+.roadmap-groups {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 0.9rem;
+}
+
+.roadmap-group {
+  padding: 0.85rem 0.9rem;
+  border-radius: 14px;
+  border: 1px solid rgba(16, 33, 37, 0.1);
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.roadmap-dependency-note {
+  margin-top: 0.9rem;
+  font-size: 0.88rem;
+}
+
 @media (max-width: 900px) {
   .version-history-grid {
     grid-template-columns: 1fr;
+  }
+
+  .roadmap-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .roadmap-phase-header {
+    flex-direction: column;
   }
 }
 
