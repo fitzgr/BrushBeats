@@ -3,10 +3,10 @@ export const ROADMAP_DATA = {
   description:
     "Brush Beats is transitioning from cookie-based local storage to IndexedDB so the app can support richer household data, multi-user household profiles, longitudinal brushing and flossing history, developmental tooth tracking, gamification, and future backend/cloud sync.",
   buildOrder: [
-    "Phase 1 MVP: IndexedDB foundation and migration framework",
-    "Phase 2 MVP: Cookie import flow and household onboarding",
-    "Phase 3: Multi-user household management, session logging, tooth history, and dashboards",
-    "Phase 4: Gamification, achievements, and encouragement systems",
+    "Phase 1 MVP: IndexedDB foundation and migration framework (completed)",
+    "Phase 2 MVP: Cookie import flow and household onboarding (completed)",
+    "Phase 3: Multi-user household management, session logging, tooth history, and dashboards (completed)",
+    "Phase 4: Gamification, achievements, and encouragement systems (completed)",
     "Phase 5: Sync-ready backend compatibility and subscription placeholders",
     "Ongoing: Testing, admin tooling, analytics, and backup/export support"
   ],
@@ -21,6 +21,8 @@ export const ROADMAP_DATA = {
       id: "phase-1",
       eyebrow: "Phase 1 MVP",
       title: "IndexedDB Foundation",
+      status: "completed",
+      statusLabel: "Completed",
       priority: "Highest priority",
       summary:
         "Establish the local data platform before expanding product behavior. This phase should produce a stable storage layer that can survive future migrations, richer local data, and eventual sync.",
@@ -82,6 +84,8 @@ export const ROADMAP_DATA = {
       id: "phase-2",
       eyebrow: "Phase 2 MVP",
       title: "Cookie to IndexedDB Migration and Household Onboarding",
+      status: "completed",
+      statusLabel: "Completed",
       priority: "High priority",
       summary: "Move existing users forward without data loss, then establish the first household-aware setup flow.",
       groups: [
@@ -150,6 +154,8 @@ export const ROADMAP_DATA = {
       id: "phase-3",
       eyebrow: "Phase 3",
       title: "Household Management, Tracking, and Progress Views",
+      status: "completed",
+      statusLabel: "Completed",
       priority: "Core product phase",
       summary:
         "After the data foundation exists, ship the household workflows and persistent tracking that make Brush Beats feel like a family app instead of a single-session tool.",
@@ -227,6 +233,8 @@ export const ROADMAP_DATA = {
       id: "phase-4",
       eyebrow: "Phase 4",
       title: "Gamification and Encouragement Systems",
+      status: "completed",
+      statusLabel: "Completed",
       priority: "Build after stable tracking",
       summary:
         "Gamification should sit on top of reliable session data. Build rules and rewards only after logging quality is trustworthy.",
@@ -280,6 +288,8 @@ export const ROADMAP_DATA = {
       id: "phase-5",
       eyebrow: "Phase 5",
       title: "Backend and Cloud Sync Readiness",
+      status: "planned",
+      statusLabel: "Planned",
       priority: "Later phase",
       summary:
         "Prepare the local-first model for future accounts, subscriptions, and multi-device sync without overbuilding backend code prematurely.",
@@ -405,7 +415,16 @@ export function buildRoadmapMarkdown() {
   });
 
   ROADMAP_PHASES.forEach((phase) => {
-    lines.push("", `## ${phase.eyebrow}: ${phase.title}`, "", `Priority: ${phase.priority}`, "", phase.summary, "");
+    lines.push(
+      "",
+      `## ${phase.eyebrow}: ${phase.title}`,
+      "",
+      `Status: ${phase.statusLabel || "Planned"}`,
+      `Priority: ${phase.priority}`,
+      "",
+      phase.summary,
+      ""
+    );
 
     phase.groups.forEach((group) => {
       lines.push(`### ${group.title}`, "");

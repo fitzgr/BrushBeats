@@ -78,7 +78,10 @@ function RoadmapSection() {
                 <p className="eyebrow">{phase.eyebrow}</p>
                 <h4>{phase.title}</h4>
               </div>
-              <span className="roadmap-priority-chip">{phase.priority}</span>
+              <div className="roadmap-phase-chips">
+                <span className={`roadmap-status-chip ${phase.status || "planned"}`}>{phase.statusLabel || "Planned"}</span>
+                <span className="roadmap-priority-chip">{phase.priority}</span>
+              </div>
             </div>
             <p className="roadmap-summary">{phase.summary}</p>
             <div className="roadmap-groups">

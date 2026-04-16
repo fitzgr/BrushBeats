@@ -1,5 +1,17 @@
 [
   {
+    "id": "commit-cd977003677bcdd551fc7ac743ddcfdbd04403d4",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "cd977003677bcdd551fc7ac743ddcfdbd04403d4",
+    "shortSha": "cd97700",
+    "timestamp": "2026-04-16T19:10:18-04:00",
+    "date": "2026-04-16",
+    "author": "Grant Fitz",
+    "subject": "Restore brush map tracker visibility",
+    "body": ""
+  },
+  {
     "id": "commit-0ccc58764f872f00bfd6611da2bc942d06b6d7d7",
     "kind": "commit",
     "source": "git-history",

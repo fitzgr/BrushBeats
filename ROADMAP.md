@@ -4,10 +4,10 @@ Brush Beats is transitioning from cookie-based local storage to IndexedDB so the
 
 ## Suggested Build Order
 
-1. Phase 1 MVP: IndexedDB foundation and migration framework
-2. Phase 2 MVP: Cookie import flow and household onboarding
-3. Phase 3: Multi-user household management, session logging, tooth history, and dashboards
-4. Phase 4: Gamification, achievements, and encouragement systems
+1. Phase 1 MVP: IndexedDB foundation and migration framework (completed)
+2. Phase 2 MVP: Cookie import flow and household onboarding (completed)
+3. Phase 3: Multi-user household management, session logging, tooth history, and dashboards (completed)
+4. Phase 4: Gamification, achievements, and encouragement systems (completed)
 5. Phase 5: Sync-ready backend compatibility and subscription placeholders
 6. Ongoing: Testing, admin tooling, analytics, and backup/export support
 
@@ -20,6 +20,7 @@ Brush Beats is transitioning from cookie-based local storage to IndexedDB so the
 
 ## Phase 1 MVP: IndexedDB Foundation
 
+Status: Completed
 Priority: Highest priority
 
 Establish the local data platform before expanding product behavior. This phase should produce a stable storage layer that can survive future migrations, richer local data, and eventual sync.
@@ -55,6 +56,7 @@ Dependencies / Notes: No downstream features should ship on IndexedDB until sche
 
 ## Phase 2 MVP: Cookie to IndexedDB Migration and Household Onboarding
 
+Status: Completed
 Priority: High priority
 
 Move existing users forward without data loss, then establish the first household-aware setup flow.
@@ -94,6 +96,7 @@ Dependencies / Notes: Depends on Phase 1 database services and migration registr
 
 ## Phase 3: Household Management, Tracking, and Progress Views
 
+Status: Completed
 Priority: Core product phase
 
 After the data foundation exists, ship the household workflows and persistent tracking that make Brush Beats feel like a family app instead of a single-session tool.
@@ -137,6 +140,7 @@ Dependencies / Notes: Requires user IDs, household scoping, and session reposito
 
 ## Phase 4: Gamification and Encouragement Systems
 
+Status: Completed
 Priority: Build after stable tracking
 
 Gamification should sit on top of reliable session data. Build rules and rewards only after logging quality is trustworthy.
@@ -168,6 +172,7 @@ Dependencies / Notes: Achievement rules should read from stable session summarie
 
 ## Phase 5: Backend and Cloud Sync Readiness
 
+Status: Planned
 Priority: Later phase
 
 Prepare the local-first model for future accounts, subscriptions, and multi-device sync without overbuilding backend code prematurely.

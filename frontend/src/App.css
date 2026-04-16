@@ -662,6 +662,36 @@
   align-items: flex-start;
 }
 
+.roadmap-phase-chips {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.roadmap-status-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid rgba(16, 33, 37, 0.14);
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.roadmap-status-chip.completed {
+  background: rgba(220, 245, 238, 0.96);
+  border-color: rgba(66, 184, 154, 0.32);
+  color: #1e7a5e;
+}
+
+.roadmap-status-chip.planned {
+  background: rgba(255, 248, 235, 0.96);
+  border-color: rgba(202, 95, 22, 0.22);
+  color: #8a4716;
+}
+
 .roadmap-priority-chip {
   display: inline-flex;
   align-items: center;
@@ -708,6 +738,10 @@
 
   .roadmap-phase-header {
     flex-direction: column;
+  }
+
+  .roadmap-phase-chips {
+    justify-content: flex-start;
   }
 }
 
