@@ -249,6 +249,7 @@
 .desktop-shell .info-banner,
 .desktop-shell .consent-banner,
 .desktop-shell .storage-banner,
+.desktop-shell .household-overview-panel,
 .desktop-shell .household-setup-panel,
 .desktop-shell .last-song-banner {
   max-width: 860px;
@@ -776,6 +777,90 @@
   box-shadow: 0 10px 30px rgba(16, 33, 37, 0.06);
   display: grid;
   gap: 0.9rem;
+}
+
+.household-overview-panel {
+  margin: 0 0 1rem;
+  padding: 1rem;
+  border-radius: 18px;
+  border: 1px solid rgba(16, 33, 37, 0.14);
+  background: linear-gradient(145deg, rgba(245, 252, 249, 0.96), rgba(255, 251, 244, 0.94));
+  box-shadow: 0 10px 30px rgba(16, 33, 37, 0.05);
+  display: grid;
+  gap: 0.9rem;
+}
+
+.household-overview-header h2,
+.household-overview-header p,
+.household-member-summary p {
+  margin: 0;
+}
+
+.household-overview-eyebrow {
+  margin: 0 0 0.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #1e7a5e;
+}
+
+.household-overview-members {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.household-member-chip {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 14px;
+  border: 1px solid rgba(16, 33, 37, 0.12);
+  background: rgba(255, 255, 255, 0.8);
+  color: #28404f;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.household-member-chip span {
+  font-size: 0.78rem;
+  color: #5a7078;
+}
+
+.household-member-chip.active,
+.household-member-summary.active {
+  border-color: rgba(66, 184, 154, 0.34);
+  background: linear-gradient(145deg, rgba(220, 245, 238, 0.96), rgba(247, 255, 252, 0.98));
+}
+
+.household-overview-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.7rem;
+}
+
+.household-member-summary {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.85rem 0.9rem;
+  border-radius: 14px;
+  border: 1px solid rgba(16, 33, 37, 0.1);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.household-member-summary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.household-member-summary-header span {
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #1e7a5e;
 }
 
 .household-setup-copy h2 {

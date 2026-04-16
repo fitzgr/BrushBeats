@@ -128,6 +128,18 @@
         "keyword": "Starter music keyword"
       }
     },
+    "householdOverview": {
+      "ariaLabel": "Household overview and active user switcher",
+      "eyebrow": "Phase 3 household",
+      "summary": "{{count}} members saved on this device.",
+      "memberStage": "Stage: {{stage}}",
+      "active": "Active now",
+      "sessions": "{{count}} recent sessions",
+      "streak": "{{count}} day streak",
+      "lastActivity": "Last activity: {{date}}",
+      "noActivity": "No activity saved yet.",
+      "lastSong": "Last song: {{title}}"
+    },
     "lastSession": {
       "summary": "Last session: {{title}} by {{artist}}, {{top}} top teeth, {{bottom}} bottom teeth, {{duration}} brush time."
     },

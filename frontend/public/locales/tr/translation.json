@@ -128,6 +128,18 @@
         "keyword": "Baslangic muzik anahtar sozcugu"
       }
     },
+    "householdOverview": {
+      "ariaLabel": "Hane genel gorunumu ve etkin kullanici secici",
+      "eyebrow": "Faz 3 hane",
+      "summary": "Bu cihazda kaydedilen {{count}} uye var.",
+      "memberStage": "Evre: {{stage}}",
+      "active": "Simdi etkin",
+      "sessions": "{{count}} son oturum",
+      "streak": "{{count}} gunluk seri",
+      "lastActivity": "Son etkinlik: {{date}}",
+      "noActivity": "Henuz kayitli etkinlik yok.",
+      "lastSong": "Son sarki: {{title}}"
+    },
     "lastSession": {
       "summary": "Son oturum: {{artist}} tarafından {{title}}, üstte {{top}} diş, altta {{bottom}} diş, fırçalama süresi {{duration}}."
     },

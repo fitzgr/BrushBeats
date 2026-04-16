@@ -1,5 +1,17 @@
 [
   {
+    "id": "commit-2a29d0ba7046b1544d79c2c7c2f540b3368049ee",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "2a29d0ba7046b1544d79c2c7c2f540b3368049ee",
+    "shortSha": "2a29d0b",
+    "timestamp": "2026-04-16T12:26:44-04:00",
+    "date": "2026-04-16",
+    "author": "Grant Fitz",
+    "subject": "Complete Phase 2 IndexedDB migration flow",
+    "body": ""
+  },
+  {
     "id": "commit-74e12549db234579da0783a653d3be96188759ca",
     "kind": "commit",
     "source": "git-history",

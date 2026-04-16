@@ -128,6 +128,18 @@
         "keyword": "Palabra clave inicial para la musica"
       }
     },
+    "householdOverview": {
+      "ariaLabel": "Resumen del hogar y selector del usuario activo",
+      "eyebrow": "Hogar de la fase 3",
+      "summary": "{{count}} miembros guardados en este dispositivo.",
+      "memberStage": "Etapa: {{stage}}",
+      "active": "Activo ahora",
+      "sessions": "{{count}} sesiones recientes",
+      "streak": "Racha de {{count}} dias",
+      "lastActivity": "Ultima actividad: {{date}}",
+      "noActivity": "Todavia no hay actividad guardada.",
+      "lastSong": "Ultima cancion: {{title}}"
+    },
     "lastSession": {
       "summary": "Ultima sesion: {{title}} de {{artist}}, {{top}} dientes arriba, {{bottom}} abajo y {{duration}} de cepillado."
     },
