@@ -88,6 +88,11 @@
       }
     },
     "languageFallbackNotice": "This language is not available yet. Showing English.",
+    "migration": {
+      "importedLegacyStorage": "Imported your existing BrushBeats preferences and last session into the new local household database. Current storage behavior remains active during this transition.",
+      "bootstrappedHousehold": "Prepared a new local household database for this browser so future multi-user history and migration steps have a stable foundation.",
+      "failedLegacyStorage": "Could not complete the local data migration. Your current cookie and local storage data remains active."
+    },
     "lastSession": {
       "summary": "Last session: {{title}} by {{artist}}, {{top}} top teeth, {{bottom}} bottom teeth, {{duration}} brush time."
     },

@@ -1,5 +1,17 @@
 [
   {
+    "id": "commit-8ea70286ffa02f2db547b701c8725d7f1d7b70f9",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "8ea70286ffa02f2db547b701c8725d7f1d7b70f9",
+    "shortSha": "8ea7028",
+    "timestamp": "2026-04-16T10:02:55-04:00",
+    "date": "2026-04-16",
+    "author": "Grant Fitz",
+    "subject": "Build MVP1 IndexedDB foundation",
+    "body": ""
+  },
+  {
     "id": "commit-d5bd7f3eba53d87abab1a35b998d16aef0631e90",
     "kind": "commit",
     "source": "git-history",

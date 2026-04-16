@@ -88,6 +88,11 @@
       }
     },
     "languageFallbackNotice": "Este idioma todavia no esta disponible. Mostrando ingles.",
+    "migration": {
+      "importedLegacyStorage": "Tus preferencias actuales de BrushBeats y la ultima sesion se importaron a la nueva base de datos local del hogar. El comportamiento actual de almacenamiento sigue activo durante esta transicion.",
+      "bootstrappedHousehold": "Se preparo una nueva base de datos local del hogar en este navegador para que las futuras funciones multiusuario, el historial y la migracion tengan una base estable.",
+      "failedLegacyStorage": "No se pudo completar la migracion de datos local. Tus datos actuales en cookies y almacenamiento local siguen activos."
+    },
     "lastSession": {
       "summary": "Ultima sesion: {{title}} de {{artist}}, {{top}} dientes arriba, {{bottom}} abajo y {{duration}} de cepillado."
     },

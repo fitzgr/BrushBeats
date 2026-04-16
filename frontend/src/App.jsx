@@ -118,6 +118,13 @@ function buildLocalizedBrusherProfile(t, totalTeeth, ageEstimate) {
 
 function App() {
   const { t, i18n } = useTranslation();
+  const [migrationNotice, setMigrationNotice] = useState(() => {
+    if (typeof window === "undefined") {
+      return null;
+    }
+
+    return window.__brushbeatsMigrationStatus || null;
+  });
   const [appView, setAppView] = useState(() => {
     if (typeof window === "undefined") {
       return "brush";
@@ -212,6 +219,19 @@ function App() {
     [ageEstimate?.phase, brushType, totalTeeth]
   );
   const ageGroupCount = getAgeMessageGroupCount();
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return undefined;
+    }
+
+    function handleMigrationStatus(event) {
+      setMigrationNotice(event.detail || null);
+    }
+
+    window.addEventListener("brushbeats:migration-status", handleMigrationStatus);
+    return () => window.removeEventListener("brushbeats:migration-status", handleMigrationStatus);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -1357,6 +1377,10 @@ function App() {
           </div>
         </section>
       )}
+
+      {migrationNotice?.kind === "imported-legacy-storage" && !error && <p className="info-banner">{t("app.migration.importedLegacyStorage")}</p>}
+      {migrationNotice?.kind === "bootstrapped-household" && !error && <p className="info-banner">{t("app.migration.bootstrappedHousehold")}</p>}
+      {migrationNotice?.kind === "migration-failed" && !error && <p className="error-banner">{t("app.migration.failedLegacyStorage")}</p>}
 
       {backendStatus && !error && <p className="info-banner">{backendStatus}</p>}
       {error && <p className="error-banner">{error}</p>}

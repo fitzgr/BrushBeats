@@ -88,6 +88,11 @@
       }
     },
     "languageFallbackNotice": "Bu dil henüz mevcut değil. İngilizce gösteriliyor.",
+    "migration": {
+      "importedLegacyStorage": "Mevcut BrushBeats tercihlerin ve son oturumun yeni yerel hane veritabanina aktarıldı. Bu geçiş sırasında mevcut depolama davranışı çalışmaya devam eder.",
+      "bootstrappedHousehold": "Gelecekteki çok kullanıcılı geçmiş ve geçiş adımları için bu tarayıcıda yeni bir yerel hane veritabanı hazırlandı.",
+      "failedLegacyStorage": "Yerel veri geçişi tamamlanamadı. Mevcut çerez ve yerel depolama verilerin kullanılmaya devam ediyor."
+    },
     "lastSession": {
       "summary": "Son oturum: {{artist}} tarafından {{title}}, üstte {{top}} diş, altta {{bottom}} diş, fırçalama süresi {{duration}}."
     },

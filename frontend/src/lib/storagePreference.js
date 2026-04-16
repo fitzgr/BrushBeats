@@ -5,6 +5,13 @@ const PREFERENCES_KEY = "brushbeats_preferences_v1";
 const FAVORITE_SONGS_KEY = "brushbeats_favorite_songs_v1";
 const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 180;
 const MAX_FAVORITE_SONGS = 25;
+const LEGACY_STORAGE_KEYS = [
+  STORAGE_CONSENT_KEY,
+  STORAGE_BANNER_DISMISSED_KEY,
+  LAST_SESSION_KEY,
+  PREFERENCES_KEY,
+  FAVORITE_SONGS_KEY
+];
 
 const CONSENT_STATUS = {
   granted: "granted",
@@ -420,4 +427,35 @@ export function saveLastBrushedSong(song) {
 
 export function clearLastBrushedSong() {
   clearLastSession();
+}
+
+export function getLegacyStorageSnapshot() {
+  const rawValues = Object.fromEntries(LEGACY_STORAGE_KEYS.map((key) => [key, readStoredValue(key)]));
+
+  return {
+    hasLegacyData: Object.values(rawValues).some((value) => value !== null && value !== undefined && value !== ""),
+    rawValues,
+    consentStatus: getStorageConsentStatus(),
+    storageBannerDismissed: isStorageBannerDismissed(),
+    preferences: loadStoredPreferences(),
+    lastSession: loadLastSession(),
+    favoriteSongs: loadFavoriteSongs()
+  };
+}
+
+export function clearLegacyCookieMirrors() {
+  if (!canUseStorage()) {
+    return [];
+  }
+
+  const clearedKeys = [];
+
+  LEGACY_STORAGE_KEYS.forEach((key) => {
+    if (window.localStorage.getItem(key) !== null) {
+      removeCookie(key);
+      clearedKeys.push(key);
+    }
+  });
+
+  return clearedKeys;
 }
