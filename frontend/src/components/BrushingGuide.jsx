@@ -895,6 +895,10 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
         <svg viewBox="0 0 360 420" preserveAspectRatio="xMidYMid meet">
           <ellipse cx="180" cy="210" rx="150" ry="170" className="mouth-outline" />
 
+          {topPoints.map((point, index) => renderTooth(point, "top", topToothChart[index], index))}
+
+          {bottomPoints.map((point, index) => renderTooth(point, "bottom", bottomToothChart[index], index))}
+
           {timer.running && activeToothPoint && activeBounceStartPoint && (
             <g>
               <circle
@@ -1025,10 +1029,6 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
               />
             </g>
           )}
-
-          {topPoints.map((point, index) => renderTooth(point, "top", topToothChart[index], index))}
-
-          {bottomPoints.map((point, index) => renderTooth(point, "bottom", bottomToothChart[index], index))}
 
           {brushingPhase === "countdown" ? (
             <text x="180" y="216" textAnchor="middle" className="map-score countdown">
