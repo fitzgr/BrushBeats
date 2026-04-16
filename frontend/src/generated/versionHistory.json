@@ -1,5 +1,17 @@
 [
   {
+    "id": "commit-6158b0e27fd6dcfcb961c03aa3aeedee703f6e31",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "6158b0e27fd6dcfcb961c03aa3aeedee703f6e31",
+    "shortSha": "6158b0e",
+    "timestamp": "2026-04-16T09:01:18-04:00",
+    "date": "2026-04-16",
+    "author": "Grant Fitz",
+    "subject": "Export roadmap for machine-readable access",
+    "body": ""
+  },
+  {
     "id": "commit-2aeccfe3970f9f74ef8725a01cb240e296899d94",
     "kind": "commit",
     "source": "git-history",

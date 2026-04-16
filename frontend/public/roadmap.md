@@ -1,22 +1,22 @@
 # Brush Beats Development Roadmap
 
-Brush Beats is transitioning from cookie-based local storage to IndexedDB so the app can support richer household data, multi-user profiles, longitudinal brushing and flossing history, gamification, and future backend/cloud sync.
+Brush Beats is transitioning from cookie-based local storage to IndexedDB so the app can support richer household data, multi-user household profiles, longitudinal brushing and flossing history, developmental tooth tracking, gamification, and future backend/cloud sync.
 
 ## Suggested Build Order
 
 1. Phase 1 MVP: IndexedDB foundation and migration framework
 2. Phase 2 MVP: Cookie import flow and household onboarding
-3. Phase 3: Multi-user profiles, session logging, and dashboards
+3. Phase 3: Multi-user household management, session logging, tooth history, and dashboards
 4. Phase 4: Gamification, achievements, and encouragement systems
 5. Phase 5: Sync-ready backend compatibility and subscription placeholders
 6. Ongoing: Testing, admin tooling, analytics, and backup/export support
 
 ## Recommended Architecture Decisions
 
-- Treat IndexedDB as the source of truth for household, profile, and session data; keep cookies only as a short-lived import source.
+- Treat IndexedDB as the source of truth for household, users, toothHistory, brushingSessions, achievements, appSettings, and migrationLog data; keep cookies only as a short-lived import source.
 - Use stable generated IDs and sync metadata now so local models can map cleanly to future backend tables and multi-device sync.
-- Keep migration logic idempotent and explicitly versioned so upgrades can be retried without duplicating data.
-- Separate domain services from UI components so brushing, gamification, and sync logic remain testable outside React views.
+- Keep migration logic idempotent, resumable, and explicitly versioned so upgrades and imports can be retried without duplicating data.
+- Separate domain services from UI components so brushing, developmental tracking, gamification, and sync logic remain testable outside React views.
 
 ## Phase 1 MVP: IndexedDB Foundation
 
@@ -31,9 +31,9 @@ Establish the local data platform before expanding product behavior. This phase 
   - Reserve upgrade handlers per database version instead of one large upgrade block.
   - Document what constitutes a breaking schema change versus a data backfill.
 - Define the initial schema and object stores.
-  - Create stores for households, profiles, sessions, achievements, app settings, and migration state.
-  - Normalize frequently queried entities and add indexes for householdId, profileId, date, streak windows, and pending sync state.
-  - Add sync-friendly metadata fields now: createdAt, updatedAt, syncVersion, deleted, and deletedAt when relevant.
+  - Create stores for household, users, toothHistory, brushingSessions, achievements, appSettings, and migrationLog.
+  - Normalize frequently queried entities and add indexes for householdId, userId, startedAt, recordedAt, awardedAt, completed, isSeen, and sync state.
+  - Add sync-friendly metadata fields now: createdAt, updatedAt, syncVersion, isDeleted, and deletedAt when relevant.
 - Build an IndexedDB wrapper and service abstraction layer.
   - Expose typed read/write helpers instead of direct IndexedDB calls in UI components.
   - Centralize transaction handling, retries, and structured error mapping.
@@ -50,7 +50,7 @@ Establish the local data platform before expanding product behavior. This phase 
   - Create developer debug utilities for inspecting stores and clearing local state safely.
   - Define test fixtures for version upgrade tests before more data models are added.
 
-Dependencies / Notes: No downstream features should ship on IndexedDB until schema ownership, IDs, and upgrade mechanics are stable.
+Dependencies / Notes: No downstream features should ship on IndexedDB until schema ownership, IDs, indexing, and upgrade mechanics are stable.
 
 
 ## Phase 2 MVP: Cookie to IndexedDB Migration and Household Onboarding
@@ -62,9 +62,13 @@ Move existing users forward without data loss, then establish the first househol
 ### Cookie to IndexedDB Migration
 
 - Detect legacy cookie users and build a one-time import process.
-  - Detect whether legacy storage exists before the new household/profile bootstrap runs.
+  - Detect whether legacy storage exists before the new household/user bootstrap runs.
   - Map cookie data such as preferences, last session, stored songs, and consent flags into the IndexedDB schema.
-  - Mark migrated users so import is not re-run on every load.
+  - Mark migrated users and imported cookie payload fingerprints so import is not re-run on every load.
+- Make migration idempotent and resumable.
+  - Write import steps so a partially completed migration can be retried safely.
+  - Log migration start, completion, and failure states in migrationLog.
+  - Resume or recover gracefully if the app closes mid-migration.
 - Deprecate old cookie storage safely.
   - Switch cookie writes to read-only compatibility mode once IndexedDB is active.
   - Clear or expire obsolete cookies only after successful migration verification.
@@ -78,11 +82,11 @@ Move existing users forward without data loss, then establish the first househol
 
 - Define the initial household profile structure.
   - Create a default local household with household-level preferences and ownership metadata.
-  - Support caregiver-oriented naming and profile labeling for kids versus adults.
+  - Support caregiver-oriented naming and user labeling for kids versus adults.
   - Reserve fields for future subscription tier, sync owner, and invite relationships.
-- Build a profile setup and onboarding wizard.
+- Build a household onboarding wizard.
   - Collect household name, member names, approximate age/development stage, and brushing defaults.
-  - Set the first active profile after onboarding completes.
+  - Set the first active user after onboarding completes.
   - Keep onboarding resumable in case the user leaves mid-flow.
 
 Dependencies / Notes: Depends on Phase 1 database services and migration registries being complete and tested.
@@ -100,31 +104,35 @@ After the data foundation exists, ship the household workflows and persistent tr
   - Support add, edit, archive, and remove flows for household members.
   - Store avatar, preferred language, brush type, tooth counts, developmental stage, and routine defaults per user.
   - Define guardrails for deleting users with historical session data.
-- Implement active profile switching UI.
+- Implement active user switching UI.
   - Surface profile chips or a household switcher in the main brush flow.
-  - Persist the active profile locally across reloads and browser restarts.
-  - Ensure last-session restore, favorites, and routine prompts are profile-scoped.
+  - Persist the active user locally across reloads and browser restarts.
+  - Ensure last-session restore, favorites, and routine prompts are user-scoped.
 - Add household management screens.
   - Provide a household overview screen showing all members and their current streak/last activity.
   - Separate household-level settings from per-user settings.
   - Prepare caregiver-only actions for future sync/subscription controls.
 
-### Brushing and Flossing Tracking
+### Brushing, Flossing, and Tooth Development Tracking
 
-- Design the session logging structure.
+- Design the brushingSessions logging structure.
   - Capture session type, startedAt, completedAt, duration target, actual completion state, selected song/video, and brush type.
   - Record tooth count snapshots and inferred developmental stage at session time.
   - Leave room for flossing and water-picking session variants in the same event model.
+- Track tooth development over time.
+  - Use toothHistory to log tooth-added, tooth-lost, manual-adjustment, and stage-changed events.
+  - Store previous and new counts/stages so progress can be explained to caregivers and kids.
+  - Support future milestone logic based on dental development history.
 - Persist brushing logic inputs and performance history.
   - Store dynamic BPM targets, transition timing, hand preference, and session outcome.
   - Track historical performance trends such as completed sessions, skipped sessions, and restart frequency.
   - Implement streak calculations and rolling weekly/monthly summaries.
 - Ship progress dashboards and history views.
-  - Add profile-level history views for brushing and flossing sessions.
-  - Highlight streaks, totals, and recent routine consistency.
+  - Add user-level history views for brushing and flossing sessions.
+  - Highlight streaks, totals, developmental milestones, and recent routine consistency.
   - Support filters by member, activity type, and time range.
 
-Dependencies / Notes: Requires profile IDs, household scoping, and session repositories from earlier phases.
+Dependencies / Notes: Requires user IDs, household scoping, and session repositories from earlier phases.
 
 
 ## Phase 4: Gamification and Encouragement Systems
@@ -136,7 +144,7 @@ Gamification should sit on top of reliable session data. Build rules and rewards
 ### Achievement and Progression Engine
 
 - Build a badge and achievement engine.
-  - Define achievement rule types for streaks, milestones, consistency, profile growth, and routine completion mixes.
+  - Define achievement rule types for streaks, milestones, consistency, user growth, and routine completion mixes.
   - Store unlocked achievements with awardedAt and source event metadata.
   - Support hidden achievements and seasonal/event-based badges later.
 - Add progression and leveling systems.
@@ -147,7 +155,7 @@ Gamification should sit on top of reliable session data. Build rules and rewards
 ### Developmental Logic and Messaging
 
 - Extend developmental tooth eruption and tooth loss logic.
-  - Track tooth-count changes over time as profile milestones.
+  - Track tooth-count changes over time as user milestones.
   - Trigger educational nudges when a child transitions between dental stages.
   - Use these transitions as inputs for encouragement messaging and milestone unlocks.
 - Upgrade reward and encouragement messaging.
@@ -155,7 +163,7 @@ Gamification should sit on top of reliable session data. Build rules and rewards
   - Add caregiver-friendly summary messaging alongside kid-facing celebration copy.
   - Surface badges and progress summaries in dashboard and completion views.
 
-Dependencies / Notes: Achievement rules should read from stable session summaries, not raw UI state.
+Dependencies / Notes: Achievement rules should read from stable session summaries and tooth history, not raw UI state.
 
 
 ## Phase 5: Backend and Cloud Sync Readiness
@@ -167,13 +175,13 @@ Prepare the local-first model for future accounts, subscriptions, and multi-devi
 ### Future Backend Compatibility
 
 - Design local schema to mirror likely backend tables/models.
-  - Align households, profiles, sessions, achievements, and subscriptions with backend-ready model boundaries.
+  - Align household, users, toothHistory, brushingSessions, achievements, subscriptions, and settings with backend-ready model boundaries.
   - Keep soft-delete fields and syncVersion semantics consistent across stores.
   - Document entity ownership and foreign-key assumptions now to reduce future migration pain.
 - Add sync metadata and queueing considerations.
-  - Store createdAt, updatedAt, syncVersion, deleted flags, syncStatus, and lastSyncedAt where needed.
+  - Store createdAt, updatedAt, syncVersion, isDeleted, deletedAt, syncStatus, and lastSyncedAt where needed.
   - Prepare a local outbound sync queue for create/update/delete operations.
-  - Plan conflict resolution rules for household edits, profile merges, and duplicate session uploads.
+  - Plan conflict resolution rules for household edits, user merges, and duplicate session uploads.
 - Create placeholders for authentication and subscription architecture.
   - Reserve account linking fields at the household and caregiver level.
   - Sketch entitlement checks for premium household size, sync, and advanced dashboards.
@@ -190,11 +198,11 @@ Prepare the local-first model for future accounts, subscriptions, and multi-devi
   - Audit which entities can be safely synced versus device-local only.
   - Ensure telemetry and privacy disclosures are updated before any remote storage launches.
 
-Dependencies / Notes: Do not start full sync until local migrations, exports, and profile-scoped history are proven stable.
+Dependencies / Notes: Do not start full sync until local migrations, exports, and user-scoped history are proven stable.
 
 ## Technical Debt and Infrastructure Track
 
-- Testing strategy for migrations, upgrade/version handling, and profile-scoped history correctness.
+- Testing strategy for migrations, upgrade/version handling, and user-scoped history correctness.
 - Robust error handling and fallback logic for blocked IndexedDB opens, quota issues, and failed transactions.
 - Admin/debug tools for inspecting IndexedDB stores, simulating migrations, and resetting environments safely.
 - Analytics and telemetry plans focused on migration success, retention, and feature adoption while respecting family privacy.
