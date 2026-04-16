@@ -562,6 +562,39 @@
   gap: 1rem;
 }
 
+.roadmap-header-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.roadmap-export-links {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.roadmap-export-links a {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(41, 64, 84, 0.14);
+  background: rgba(255, 255, 255, 0.84);
+  color: #355064;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.roadmap-machine-note {
+  margin-top: 0.55rem;
+  font-size: 0.88rem;
+  color: #5b6d76;
+}
+
 .roadmap-header-card,
 .roadmap-card,
 .roadmap-phase-card {

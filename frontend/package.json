@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node scripts/inject-version.js && vite",
-    "build": "node scripts/inject-version.js && vite build",
+    "dev": "node scripts/inject-version.js && node scripts/export-roadmap.js && vite",
+    "build": "node scripts/inject-version.js && node scripts/export-roadmap.js && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

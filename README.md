@@ -95,6 +95,8 @@ This repo includes a GitHub Pages workflow at [.github/workflows/deploy-frontend
 After pushing to main and enabling Pages (Source: GitHub Actions), your public website URL will be:
 
 - Website URL: https://fitzgr.github.io/BrushBeats/
+- Roadmap JSON: https://fitzgr.github.io/BrushBeats/roadmap.json
+- Roadmap Markdown: https://fitzgr.github.io/BrushBeats/roadmap.md
 
 BrushBeats includes a visible GetSongBPM attribution/footer link in the app. Use this as your backlink URL for GetSongBPM registration:
 
