@@ -101,7 +101,7 @@
     "intro": "Bu zaman cizelgesi, surum ozetlerini ve son gelistirme etkinligini tek yerde gosterir.",
     "releaseHistory": "Surum gecmisi",
     "developmentActivity": "Gelistirme etkinligi",
-    "developmentIntro": "Yerel zaman damgali son proje commitleri.",
+    "developmentIntro": "Zaman cizelgesinde tarihe gore gruplandirilan son proje commitleri.",
     "latestRelease": "Son surum",
     "releaseSnapshot": "Surum ozeti",
     "noReleaseHistory": "Henuz surum gecmisi yok.",

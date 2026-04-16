@@ -16,15 +16,16 @@ function formatHistoryDate(value) {
   }).format(new Date(value));
 }
 
-function formatHistoryDateTime(value) {
-  if (!value) {
-    return "";
+function buildApproximateVersion(index, total) {
+  if (total <= 1) {
+    return "v1.0.0";
   }
 
-  return new Intl.DateTimeFormat(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short"
-  }).format(new Date(value));
+  if (index === total - 1) {
+    return "v1.0.0";
+  }
+
+  return `v0.${index + 1}.0`;
 }
 
 function normalizeHistoryEntries(historyData) {
@@ -95,17 +96,20 @@ function buildReleaseHistory(entries, t) {
     groupedByDate.get(dateKey).push(entry);
   });
 
-  return [...groupedByDate.entries()].map(([dateKey, items], index) => {
-    const combinedSubjects = items.map((item) => item.subject || "").join(" ");
-    const versionMatch = combinedSubjects.match(/\bv\d+(?:\.\d+){1,2}\b/i);
+  const datedGroups = [...groupedByDate.entries()].sort(([leftDate], [rightDate]) => leftDate.localeCompare(rightDate));
+
+  const releases = datedGroups.map(([dateKey, items], index) => {
+    const releaseVersion = buildApproximateVersion(index, datedGroups.length);
 
     return {
       id: dateKey,
-      version: versionMatch?.[0] || (index === 0 ? t("history.latestRelease") : t("history.releaseSnapshot")),
+      version: releaseVersion,
       releasedAt: items[0]?.timestamp || dateKey,
       notes: summarizeReleaseNotes(items)
     };
   });
+
+  return releases.reverse();
 }
 
 function VersionHistory({ onExit }) {
@@ -158,7 +162,7 @@ function VersionHistory({ onExit }) {
                 <article key={entry.id || entry.sha} className="timeline-item">
                   <div className="timeline-item-header">
                     <span className="timeline-item-title">{entry.subject}</span>
-                    <span className="timeline-item-meta">{formatHistoryDateTime(entry.timestamp || entry.date)}</span>
+                    <span className="timeline-item-meta">{formatHistoryDate(entry.timestamp || entry.date)}</span>
                   </div>
                   <p className="timeline-item-meta">{entry.author || "BrushBeats"} · #{entry.shortSha}</p>
                 </article>

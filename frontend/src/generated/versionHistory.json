@@ -1,5 +1,29 @@
 [
   {
+    "id": "commit-d6255167a40e96ea301bbe147b6ed29c6a25d6a0",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "d6255167a40e96ea301bbe147b6ed29c6a25d6a0",
+    "shortSha": "d625516",
+    "timestamp": "2026-04-15T06:18:18-04:00",
+    "date": "2026-04-15",
+    "author": "Grant Fitz",
+    "subject": "Fetch full git history in Pages deploy",
+    "body": ""
+  },
+  {
+    "id": "commit-532cbec12bc4800aa6dad06fb22e538940b5a7a3",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "532cbec12bc4800aa6dad06fb22e538940b5a7a3",
+    "shortSha": "532cbec",
+    "timestamp": "2026-04-15T06:14:00-04:00",
+    "date": "2026-04-15",
+    "author": "Grant Fitz",
+    "subject": "Fix full versions and activity history rendering",
+    "body": ""
+  },
+  {
     "id": "commit-13c5fb9c39c000506ac7b3c32b3f583abf796874",
     "kind": "commit",
     "source": "git-history",

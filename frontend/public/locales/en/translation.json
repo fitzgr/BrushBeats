@@ -101,7 +101,7 @@
     "intro": "This timeline shows release snapshots and recent development activity in one place.",
     "releaseHistory": "Release History",
     "developmentActivity": "Development Activity",
-    "developmentIntro": "Recent project commits with local-time stamps.",
+    "developmentIntro": "Recent project commits grouped on the timeline by date.",
     "latestRelease": "Latest release",
     "releaseSnapshot": "Release snapshot",
     "noReleaseHistory": "No release history available yet.",

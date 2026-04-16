@@ -101,7 +101,7 @@
     "intro": "Esta linea de tiempo muestra los resumentes de lanzamientos y la actividad reciente de desarrollo en un solo lugar.",
     "releaseHistory": "Historial de lanzamientos",
     "developmentActivity": "Actividad de desarrollo",
-    "developmentIntro": "Commits recientes del proyecto con marcas de hora locales.",
+    "developmentIntro": "Commits recientes del proyecto agrupados en la linea de tiempo por fecha.",
     "latestRelease": "Ultimo lanzamiento",
     "releaseSnapshot": "Resumen de lanzamiento",
     "noReleaseHistory": "Todavia no hay historial de lanzamientos.",
