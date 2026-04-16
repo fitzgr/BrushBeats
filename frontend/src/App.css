@@ -937,6 +937,78 @@
   background: linear-gradient(90deg, #1e7a5e, #79c3aa);
 }
 
+.progress-dashboard-level-card small,
+.achievement-badge-card small,
+.progress-dashboard-caregiver-note {
+  color: #5b6d76;
+  font-size: 0.78rem;
+}
+
+.progress-dashboard-caregiver-card {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.85rem 0.9rem;
+  border-radius: 14px;
+  border: 1px solid rgba(16, 33, 37, 0.1);
+  background: linear-gradient(145deg, rgba(255, 248, 238, 0.92), rgba(244, 250, 251, 0.92));
+}
+
+.progress-dashboard-caregiver-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.progress-dashboard-caregiver-item {
+  display: grid;
+  gap: 0.22rem;
+  padding: 0.72rem 0.78rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(16, 33, 37, 0.08);
+}
+
+.progress-dashboard-caregiver-item span,
+.progress-dashboard-caregiver-note {
+  margin: 0;
+}
+
+.progress-dashboard-points-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.progress-dashboard-points-breakdown span {
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(16, 33, 37, 0.08);
+  color: #36505a;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.progress-dashboard-nudges {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.55rem;
+}
+
+.progress-dashboard-nudge-card {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.72rem 0.78rem;
+  border-radius: 12px;
+  border: 1px solid rgba(16, 33, 37, 0.08);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.progress-dashboard-nudge-card span {
+  color: #5b6d76;
+  font-size: 0.8rem;
+}
+
 .achievement-badge-list {
   display: grid;
   gap: 0.55rem;
@@ -963,6 +1035,16 @@
   background: linear-gradient(145deg, rgba(255, 244, 225, 0.96), rgba(255, 251, 244, 0.98));
 }
 
+.achievement-badge-card.tier-silver {
+  border-color: rgba(91, 109, 118, 0.22);
+  background: linear-gradient(145deg, rgba(238, 244, 247, 0.98), rgba(250, 252, 253, 0.98));
+}
+
+.achievement-badge-card.tier-gold {
+  border-color: rgba(170, 122, 15, 0.22);
+  background: linear-gradient(145deg, rgba(255, 247, 211, 0.98), rgba(255, 252, 235, 0.98));
+}
+
 .achievement-badge-icon {
   display: inline-flex;
   align-items: center;
@@ -976,7 +1058,8 @@
 }
 
 .achievement-badge-card strong,
-.achievement-badge-card span {
+.achievement-badge-card span,
+.achievement-badge-card small {
   display: block;
 }
 
@@ -1010,6 +1093,10 @@
 }
 
 @media (max-width: 720px) {
+  .progress-dashboard-caregiver-grid {
+    grid-template-columns: 1fr;
+  }
+
   .progress-dashboard-grid {
     grid-template-columns: 1fr;
   }
@@ -1098,6 +1185,12 @@
   border-radius: 12px;
   border: 1px solid rgba(16, 33, 37, 0.12);
   background: rgba(248, 250, 252, 0.88);
+}
+
+.household-management-helper-copy {
+  margin: 0;
+  color: #5b6d76;
+  font-size: 0.82rem;
 }
 
 .household-management-list {

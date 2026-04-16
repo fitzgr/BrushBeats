@@ -148,6 +148,8 @@
       "title": "Progreso de {{name}}",
       "defaultUser": "Este miembro",
       "subtitle": "Las sesiones recientes, las rachas y el desarrollo dental ahora se guardan localmente en este dispositivo.",
+      "caregiverSummaryTitle": "Resumen de recompensas para cuidadores",
+      "caregiverSummarySubtitle": "Vista rapida de lo desbloqueado, lo cercano y donde conviene insistir ahora.",
       "filters": {
         "timeRange": "Periodo",
         "activityType": "Actividad",
@@ -175,7 +177,61 @@
       },
       "levelTitle": "Progreso del nivel {{level}}",
       "levelSummary": "{{points}} puntos ganados. El siguiente nivel llega en {{next}} puntos.",
+      "levelSummaryDetailed": "Faltan {{remaining}} puntos para el siguiente nivel.",
       "achievementsTitle": "Insignias recientes",
+      "pointsBreakdownTitle": "Fuentes de puntos",
+      "nudgesTitle": "Sugerencias para cuidadores",
+      "pointsBreakdown": {
+        "brushing": "Cepillado +{{points}}",
+        "support": "Hilo/irrigador +{{points}}",
+        "milestones": "Hitos dentales +{{points}}",
+        "variety": "Variedad de rutinas +{{points}}",
+        "achievements": "Bonos por insignias +{{points}}"
+      },
+      "caregiverCards": {
+        "nextRewardTitle": "Siguiente recompensa",
+        "nextRewardCount": "{{title}} necesita {{remaining}} mas para llegar a {{target}}.",
+        "nextRewardRoutineMix": "{{title}} necesita {{remaining}} tipos de rutina mas de {{target}}.",
+        "nextRewardDevelopment": "{{title}} se desbloqueara con el siguiente cambio de etapa dental.",
+        "noPendingReward": "Todas las recompensas actuales ya estan desbloqueadas.",
+        "routineMixTitle": "Variedad: {{current}}/{{total}}",
+        "routineMixPending": "Todavia falta: {{items}}.",
+        "routineMixComplete": "Ya se registran todos los tipos de rutina.",
+        "badgeMixTitle": "Niveles de insignia",
+        "badgeMixValue": "Bronce {{bronze}} · Plata {{silver}} · Oro {{gold}}"
+      },
+      "goalCards": {
+        "weeklyBrushingTitle": "Meta semanal de cepillado",
+        "weeklyBrushingProgress": "{{current}} de {{target}} completados esta semana. Faltan {{remaining}}.",
+        "weeklyBrushingComplete": "La meta semanal de cepillado se completo con {{current}} de {{target}}.",
+        "weeklySupportTitle": "Meta semanal de rutinas de apoyo",
+        "weeklySupportProgress": "{{current}} de {{target}} rutinas de apoyo completadas esta semana. Faltan {{remaining}}.",
+        "weeklySupportComplete": "La meta semanal de apoyo se completo con {{current}} de {{target}}."
+      },
+      "nudgeTitles": {
+        "goalsComplete": "Metas cumplidas",
+        "weeklyBrushing": "Sigue el cepillado",
+        "weeklySupport": "Sigue la rutina de apoyo",
+        "restartMomentum": "Reactivar la inercia",
+        "stageTransition": "Momento del desarrollo",
+        "routineVariety": "Variedad de rutinas",
+        "nextAchievement": "Insignia cercana"
+      },
+      "nudges": {
+        "goalsComplete": "La semana ya va en objetivo. Ahora conviene cuidar la constancia y sumar variedad de insignias.",
+        "weeklyBrushing": "Programa {{remaining}} sesiones mas de cepillado para sostener el ritmo hacia {{target}} esta semana.",
+        "weeklySupport": "Agrega {{remaining}} rutinas mas de hilo o irrigador para llegar a {{target}} esta semana.",
+        "restartMomentum": "No hubo cepillado en los ultimos dos dias. Una rutina hoy reactivara la inercia.",
+        "stageTransition": "La sonrisa paso de {{previousStage}} a {{newStage}}. Este cambio es buen momento para explicar lo que ocurre y mantener la rutina estable.",
+        "routineVariety": "Todavia faltan rutinas de apoyo esta semana. Suma hilo dental o irrigador para ampliar la cobertura.",
+        "nextAchievement": "{{badge}} esta a {{remaining}} de su meta de {{target}}."
+      },
+      "momentum": {
+        "idle": "Todavia no hay rutinas completadas guardadas, asi que la victoria mas rapida es registrar la primera sesion.",
+        "starting": "La inercia esta empezando. Unos dias mas de constancia desbloquearan la siguiente racha.",
+        "building": "La constancia esta creciendo. Mantener este ritmo abrira recompensas de racha mas altas.",
+        "strong": "La inercia es fuerte. El perfil ya esta listo para recompensas mas altas por racha y volumen."
+      },
       "recentSessionsTitle": "Sesiones recientes",
       "activityTypes": {
         "brushing": "Sesion de cepillado",
@@ -201,6 +257,22 @@
     "achievements": {
       "ariaLabel": "Logros e insignias",
       "unlockedTitle": "Nuevas insignias desbloqueadas",
+      "tiers": {
+        "bronze": "Insignia de bronce",
+        "silver": "Insignia de plata",
+        "gold": "Insignia de oro"
+      },
+      "completionCelebration": {
+        "unlocked": "Recompensa desbloqueada: {{badge}} se gano como {{tier}} y suma +{{points}} puntos.",
+        "progress": "El nivel {{level}} sigue subiendo. Faltan {{remainingPoints}} puntos para el siguiente nivel y {{badge}} es la siguiente insignia cercana.",
+        "weeklyBrushing": "Progreso de la meta semanal de cepillado: {{current}} de {{target}} hechos y faltan {{remaining}} esta semana.",
+        "weeklySupport": "Progreso de la meta semanal de apoyo: {{current}} de {{target}} hechos y faltan {{remaining}} esta semana.",
+        "goalsComplete": "Las metas semanales del hogar ya se cumplieron: {{brushing}} cepillados y {{support}} rutinas de apoyo alcanzadas.",
+        "restartMomentum": "Una sesion de cepillado hoy reactivara la inercia despues de unos dias tranquilos.",
+        "stageTransition": "Nuevo hito del desarrollo: la sonrisa paso de {{previousStage}} a {{newStage}}. Mantener la rutina estable ayudara durante este cambio.",
+        "routineVariety": "La siguiente mejor accion es una rutina de apoyo para ampliar la mezcla semanal.",
+        "nextAchievement": "{{badge}} ya esta a solo {{remaining}} de su objetivo de {{target}}."
+      },
       "types": {
         "first-session": {
           "title": "Primera sesion",
@@ -214,9 +286,17 @@
           "title": "Racha de 7 dias",
           "description": "Mantuviste la constancia durante una semana completa."
         },
+        "streak-14": {
+          "title": "Racha de 14 dias",
+          "description": "Sostuviste la rutina durante dos semanas completas."
+        },
         "ten-sessions": {
           "title": "10 sesiones",
           "description": "Registraste diez rutinas completadas."
+        },
+        "twenty-sessions": {
+          "title": "20 sesiones",
+          "description": "Construiste un historial mas profundo con veinte rutinas completadas."
         },
         "routine-mix": {
           "title": "Mezcla de rutinas",
@@ -240,6 +320,7 @@
       "memberSummary": "Etapa: {{stage}}",
       "householdSettingsTitle": "Configuracion del hogar",
       "householdSettingsSummary": "Ajustes del cuidador para este dispositivo.",
+      "rewardSettingsSummary": "Estos ajustes controlan que tan rapido suben los niveles y cuantos puntos aporta cada tipo de rutina.",
       "membersTitle": "Miembros",
       "membersSummary": "{{count}} miembros activos.",
       "addMemberTitle": "Agregar un miembro",
@@ -253,6 +334,15 @@
         "householdName": "Nombre del hogar",
         "subscriptionTier": "Nivel de suscripcion",
         "syncStatus": "Estado de sincronizacion",
+        "levelBasePoints": "Umbral del primer nivel",
+        "levelStepPoints": "Puntos por nivel",
+        "levelGrowthPoints": "Crecimiento por nivel",
+        "brushingSessionPoints": "Puntos por cepillado",
+        "supportRoutinePoints": "Puntos por hilo / irrigador",
+        "toothMilestonePoints": "Puntos por hitos dentales",
+        "routineVarietyPoints": "Bono por variedad",
+        "weeklyBrushingSessions": "Meta semanal de cepillado",
+        "weeklySupportRoutines": "Meta semanal de apoyo",
         "memberName": "Nombre del miembro",
         "topTeeth": "Dientes superiores",
         "bottomTeeth": "Dientes inferiores",

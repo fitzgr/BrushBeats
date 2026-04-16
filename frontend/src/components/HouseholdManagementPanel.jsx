@@ -1,5 +1,24 @@
 import { useState } from "react";
 
+function buildRewardSettingsDraft(rewardSettings = {}) {
+  return {
+    levelBasePoints: Number(rewardSettings.levelBasePoints || 100),
+    levelStepPoints: Number(rewardSettings.levelStepPoints || 120),
+    levelGrowthPoints: Number(rewardSettings.levelGrowthPoints || 20),
+    brushingSessionPoints: Number(rewardSettings.brushingSessionPoints || 12),
+    supportRoutinePoints: Number(rewardSettings.supportRoutinePoints || 8),
+    toothMilestonePoints: Number(rewardSettings.toothMilestonePoints || 18),
+    routineVarietyPoints: Number(rewardSettings.routineVarietyPoints || 10)
+  };
+}
+
+function buildGoalSettingsDraft(goalSettings = {}) {
+  return {
+    weeklyBrushingSessions: Number(goalSettings.weeklyBrushingSessions || 14),
+    weeklySupportRoutines: Number(goalSettings.weeklySupportRoutines || 5)
+  };
+}
+
 function buildEmptyMemberDraft() {
   return {
     name: "",
@@ -118,6 +137,8 @@ export default function HouseholdManagementPanel({
   onActivateMember
 }) {
   const [householdName, setHouseholdName] = useState(() => management?.household?.householdName || "");
+  const [rewardSettings, setRewardSettings] = useState(() => buildRewardSettingsDraft(management?.household?.rewardSettings));
+  const [goalSettings, setGoalSettings] = useState(() => buildGoalSettingsDraft(management?.household?.goalSettings));
   const [newMemberDraft, setNewMemberDraft] = useState(buildEmptyMemberDraft());
 
   if (!management?.household) {
@@ -152,9 +173,46 @@ export default function HouseholdManagementPanel({
             <span>{t("app.householdManagement.fields.syncStatus")}</span>
             <strong>{management.household.syncStatus || "local-only"}</strong>
           </div>
+          <label>
+            <span>{t("app.householdManagement.fields.levelBasePoints")}</span>
+            <input type="number" min="40" step="10" value={rewardSettings.levelBasePoints} onChange={(event) => setRewardSettings((current) => ({ ...current, levelBasePoints: Number(event.target.value) }))} />
+          </label>
+          <label>
+            <span>{t("app.householdManagement.fields.levelStepPoints")}</span>
+            <input type="number" min="40" step="10" value={rewardSettings.levelStepPoints} onChange={(event) => setRewardSettings((current) => ({ ...current, levelStepPoints: Number(event.target.value) }))} />
+          </label>
+          <label>
+            <span>{t("app.householdManagement.fields.levelGrowthPoints")}</span>
+            <input type="number" min="0" step="5" value={rewardSettings.levelGrowthPoints} onChange={(event) => setRewardSettings((current) => ({ ...current, levelGrowthPoints: Number(event.target.value) }))} />
+          </label>
+          <label>
+            <span>{t("app.householdManagement.fields.brushingSessionPoints")}</span>
+            <input type="number" min="1" step="1" value={rewardSettings.brushingSessionPoints} onChange={(event) => setRewardSettings((current) => ({ ...current, brushingSessionPoints: Number(event.target.value) }))} />
+          </label>
+          <label>
+            <span>{t("app.householdManagement.fields.supportRoutinePoints")}</span>
+            <input type="number" min="1" step="1" value={rewardSettings.supportRoutinePoints} onChange={(event) => setRewardSettings((current) => ({ ...current, supportRoutinePoints: Number(event.target.value) }))} />
+          </label>
+          <label>
+            <span>{t("app.householdManagement.fields.toothMilestonePoints")}</span>
+            <input type="number" min="1" step="1" value={rewardSettings.toothMilestonePoints} onChange={(event) => setRewardSettings((current) => ({ ...current, toothMilestonePoints: Number(event.target.value) }))} />
+          </label>
+          <label>
+            <span>{t("app.householdManagement.fields.routineVarietyPoints")}</span>
+            <input type="number" min="0" step="1" value={rewardSettings.routineVarietyPoints} onChange={(event) => setRewardSettings((current) => ({ ...current, routineVarietyPoints: Number(event.target.value) }))} />
+          </label>
+          <label>
+            <span>{t("app.householdManagement.fields.weeklyBrushingSessions")}</span>
+            <input type="number" min="1" step="1" value={goalSettings.weeklyBrushingSessions} onChange={(event) => setGoalSettings((current) => ({ ...current, weeklyBrushingSessions: Number(event.target.value) }))} />
+          </label>
+          <label>
+            <span>{t("app.householdManagement.fields.weeklySupportRoutines")}</span>
+            <input type="number" min="0" step="1" value={goalSettings.weeklySupportRoutines} onChange={(event) => setGoalSettings((current) => ({ ...current, weeklySupportRoutines: Number(event.target.value) }))} />
+          </label>
         </div>
+        <p className="household-management-helper-copy">{t("app.householdManagement.rewardSettingsSummary")}</p>
         <div className="household-management-inline-actions">
-          <button type="button" className="action-btn" disabled={saving} onClick={() => onSaveHousehold(householdName)}>
+          <button type="button" className="action-btn" disabled={saving} onClick={() => onSaveHousehold({ householdName, rewardSettings, goalSettings })}>
             {saving ? t("app.householdManagement.saving") : t("common.buttons.save")}
           </button>
         </div>

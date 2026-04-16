@@ -6,6 +6,7 @@ import {
   STORE_NAMES,
   waitForTransaction
 } from "./indexedDbService";
+import { normalizeGoalSettings, normalizeRewardSettings } from "./rewardProgressionService";
 
 function normalizeNumber(value, fallback = 0) {
   const numericValue = Number(value);
@@ -98,7 +99,9 @@ export async function createHousehold(input = {}) {
     subscriptionTier: input.subscriptionTier || "free",
     activeUserId: input.activeUserId || null,
     migrationSource: input.migrationSource || "manual",
-    syncStatus: input.syncStatus || "local-only"
+    syncStatus: input.syncStatus || "local-only",
+    rewardSettings: normalizeRewardSettings(input.rewardSettings),
+    goalSettings: normalizeGoalSettings(input.goalSettings)
   };
 
   await putItem(STORE_NAMES.household, household);
@@ -305,9 +308,16 @@ export async function createAchievement(input = {}) {
     achievementType: input.achievementType || "milestone",
     title: input.title || "Achievement",
     description: input.description || "",
+    tier: input.tier || "bronze",
+    category: input.category || "consistency",
     awardedAt: input.awardedAt || nowIso(),
     relatedSessionId: input.relatedSessionId || null,
+    sourceEventType: input.sourceEventType || null,
+    sourceEventId: input.sourceEventId || null,
+    sourceEventAt: input.sourceEventAt || null,
+    sourceContext: input.sourceContext || null,
     progressValue: normalizeNumber(input.progressValue, 0),
+    pointsAwarded: normalizeNumber(input.pointsAwarded, 0),
     isSeen: Boolean(input.isSeen),
     createdAt: input.createdAt || baseFields.createdAt,
     updatedAt: input.updatedAt || baseFields.updatedAt,

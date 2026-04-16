@@ -1,5 +1,80 @@
 import AchievementBadgeList from "./AchievementBadgeList";
 
+function formatNextAchievementSummary(t, nextAchievement) {
+  if (!nextAchievement) {
+    return t("app.progressDashboard.caregiverCards.noPendingReward");
+  }
+
+  const achievementTitle = t(`app.achievements.types.${nextAchievement.achievementType}.title`);
+  if (nextAchievement.progress.measure === "distinctRoutineTypes") {
+    return t("app.progressDashboard.caregiverCards.nextRewardRoutineMix", {
+      title: achievementTitle,
+      remaining: nextAchievement.progress.remaining,
+      target: nextAchievement.progress.target
+    });
+  }
+
+  if (nextAchievement.progress.measure === "stageTransitions") {
+    return t("app.progressDashboard.caregiverCards.nextRewardDevelopment", {
+      title: achievementTitle
+    });
+  }
+
+  return t("app.progressDashboard.caregiverCards.nextRewardCount", {
+    title: achievementTitle,
+    remaining: nextAchievement.progress.remaining,
+    target: nextAchievement.progress.target
+  });
+}
+
+function formatMissingRoutineTypes(t, routineCoverage) {
+  if (!routineCoverage || routineCoverage.missingTypes.length === 0) {
+    return t("app.progressDashboard.caregiverCards.routineMixComplete");
+  }
+
+  const labels = routineCoverage.missingTypes.map((routineType) => t(`app.progressDashboard.activityTypes.${routineType}`));
+  return t("app.progressDashboard.caregiverCards.routineMixPending", { items: labels.join(", ") });
+}
+
+function formatGoalSummary(t, goal, kind) {
+  if (!goal) {
+    return "";
+  }
+
+  if (goal.complete) {
+    return t(`app.progressDashboard.goalCards.${kind}Complete`, { current: goal.current, target: goal.target });
+  }
+
+  return t(`app.progressDashboard.goalCards.${kind}Progress`, {
+    current: goal.current,
+    target: goal.target,
+    remaining: goal.remaining
+  });
+}
+
+function formatCaregiverNudge(t, nudge) {
+  if (!nudge) {
+    return "";
+  }
+
+  if (nudge.key === "stageTransition") {
+    return t("app.progressDashboard.nudges.stageTransition", {
+      previousStage: t(`age.stages.${nudge.values.previousStage}.label`),
+      newStage: t(`age.stages.${nudge.values.newStage}.label`)
+    });
+  }
+
+  if (nudge.key === "nextAchievement") {
+    return t("app.progressDashboard.nudges.nextAchievement", {
+      badge: t(`app.achievements.types.${nudge.values.achievementType}.title`),
+      remaining: nudge.values.remaining,
+      target: nudge.values.target
+    });
+  }
+
+  return t(`app.progressDashboard.nudges.${nudge.key}`, nudge.values);
+}
+
 export default function ProgressDashboardPanel({ t, dashboard, activeUserName, filters, onFilterChange, onLogActivity }) {
   if (!dashboard) {
     return null;
@@ -63,6 +138,62 @@ export default function ProgressDashboardPanel({ t, dashboard, activeUserName, f
         <div className="progress-dashboard-level-track" aria-hidden="true">
           <span className="progress-dashboard-level-fill" style={{ width: `${dashboard.progression.progressPercent}%` }} />
         </div>
+        <small>{t("app.progressDashboard.levelSummaryDetailed", { remaining: dashboard.progression.pointsToNextLevel })}</small>
+      </section>
+
+      <section className="progress-dashboard-caregiver-card">
+        <div className="progress-dashboard-section-header">
+          <strong>{t("app.progressDashboard.caregiverSummaryTitle")}</strong>
+          <span>{t("app.progressDashboard.caregiverSummarySubtitle")}</span>
+        </div>
+        <div className="progress-dashboard-caregiver-grid">
+          <article className="progress-dashboard-caregiver-item">
+            <strong>{t("app.progressDashboard.goalCards.weeklyBrushingTitle")}</strong>
+            <span>{formatGoalSummary(t, dashboard.goals.weeklyBrushing, "weeklyBrushing")}</span>
+            <div className="progress-dashboard-level-track" aria-hidden="true">
+              <span className="progress-dashboard-level-fill" style={{ width: `${dashboard.goals.weeklyBrushing.percent}%` }} />
+            </div>
+          </article>
+          <article className="progress-dashboard-caregiver-item">
+            <strong>{t("app.progressDashboard.goalCards.weeklySupportTitle")}</strong>
+            <span>{formatGoalSummary(t, dashboard.goals.weeklySupport, "weeklySupport")}</span>
+            <div className="progress-dashboard-level-track" aria-hidden="true">
+              <span className="progress-dashboard-level-fill" style={{ width: `${dashboard.goals.weeklySupport.percent}%` }} />
+            </div>
+          </article>
+          <article className="progress-dashboard-caregiver-item">
+            <strong>{t("app.progressDashboard.caregiverCards.nextRewardTitle")}</strong>
+            <span>{formatNextAchievementSummary(t, dashboard.nextAchievement)}</span>
+          </article>
+          <article className="progress-dashboard-caregiver-item">
+            <strong>{t("app.progressDashboard.caregiverCards.routineMixTitle", { current: dashboard.caregiverSummary.routineCoverage.current, total: dashboard.caregiverSummary.routineCoverage.target })}</strong>
+            <span>{formatMissingRoutineTypes(t, dashboard.caregiverSummary.routineCoverage)}</span>
+          </article>
+          <article className="progress-dashboard-caregiver-item">
+            <strong>{t("app.progressDashboard.caregiverCards.badgeMixTitle")}</strong>
+            <span>{t("app.progressDashboard.caregiverCards.badgeMixValue", {
+              bronze: dashboard.caregiverSummary.tierCounts.bronze,
+              silver: dashboard.caregiverSummary.tierCounts.silver,
+              gold: dashboard.caregiverSummary.tierCounts.gold
+            })}</span>
+          </article>
+        </div>
+        <div className="progress-dashboard-points-breakdown" aria-label={t("app.progressDashboard.pointsBreakdownTitle")}>
+          {dashboard.progression.pointsBreakdown.map((entry) => (
+            <span key={entry.key}>{t(`app.progressDashboard.pointsBreakdown.${entry.key}`, { points: entry.points })}</span>
+          ))}
+        </div>
+        {dashboard.caregiverNudges.length > 0 && (
+          <div className="progress-dashboard-nudges" aria-label={t("app.progressDashboard.nudgesTitle")}>
+            {dashboard.caregiverNudges.map((nudge) => (
+              <article key={`${nudge.key}-${nudge.priority}`} className="progress-dashboard-nudge-card">
+                <strong>{t(`app.progressDashboard.nudgeTitles.${nudge.key}`)}</strong>
+                <span>{formatCaregiverNudge(t, nudge)}</span>
+              </article>
+            ))}
+          </div>
+        )}
+        <p className="progress-dashboard-caregiver-note">{t(`app.progressDashboard.momentum.${dashboard.caregiverSummary.momentum}`)}</p>
       </section>
 
       <AchievementBadgeList

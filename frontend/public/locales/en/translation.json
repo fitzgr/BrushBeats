@@ -148,6 +148,8 @@
       "title": "{{name}}'s progress",
       "defaultUser": "This brusher",
       "subtitle": "Recent sessions, streaks, and tooth development are now tracked locally on this device.",
+      "caregiverSummaryTitle": "Caregiver reward summary",
+      "caregiverSummarySubtitle": "A quick view of what is unlocked, what is close, and where to nudge next.",
       "filters": {
         "timeRange": "Time range",
         "activityType": "Activity",
@@ -175,7 +177,61 @@
       },
       "levelTitle": "Level {{level}} progress",
       "levelSummary": "{{points}} points earned. Next level at {{next}} points.",
+      "levelSummaryDetailed": "{{remaining}} points to the next level.",
       "achievementsTitle": "Recent badges",
+      "pointsBreakdownTitle": "Progression point sources",
+      "nudgesTitle": "Caregiver nudges",
+      "pointsBreakdown": {
+        "brushing": "Brushing +{{points}}",
+        "support": "Flossing/water picking +{{points}}",
+        "milestones": "Tooth milestones +{{points}}",
+        "variety": "Routine variety +{{points}}",
+        "achievements": "Badge bonuses +{{points}}"
+      },
+      "caregiverCards": {
+        "nextRewardTitle": "Next reward",
+        "nextRewardCount": "{{title}} needs {{remaining}} more toward {{target}}.",
+        "nextRewardRoutineMix": "{{title}} needs {{remaining}} more routine types out of {{target}}.",
+        "nextRewardDevelopment": "{{title}} will unlock after the next tooth-stage transition.",
+        "noPendingReward": "All current reward tracks are unlocked.",
+        "routineMixTitle": "Routine mix: {{current}}/{{total}}",
+        "routineMixPending": "Still missing: {{items}}.",
+        "routineMixComplete": "All routine types are being tracked.",
+        "badgeMixTitle": "Badge tiers",
+        "badgeMixValue": "Bronze {{bronze}} · Silver {{silver}} · Gold {{gold}}"
+      },
+      "goalCards": {
+        "weeklyBrushingTitle": "Weekly brushing goal",
+        "weeklyBrushingProgress": "{{current}} of {{target}} done this week. {{remaining}} to go.",
+        "weeklyBrushingComplete": "Weekly brushing goal cleared at {{current}} of {{target}}.",
+        "weeklySupportTitle": "Weekly support-routine goal",
+        "weeklySupportProgress": "{{current}} of {{target}} support routines done this week. {{remaining}} to go.",
+        "weeklySupportComplete": "Weekly support-routine goal cleared at {{current}} of {{target}}."
+      },
+      "nudgeTitles": {
+        "goalsComplete": "Goals cleared",
+        "weeklyBrushing": "Brushing next",
+        "weeklySupport": "Support routine next",
+        "restartMomentum": "Momentum reset",
+        "stageTransition": "Development spotlight",
+        "routineVariety": "Routine variety",
+        "nextAchievement": "Badge in reach"
+      },
+      "nudges": {
+        "goalsComplete": "This week is already on target. Shift attention to consistency and badge variety.",
+        "weeklyBrushing": "Schedule {{remaining}} more brushing sessions to stay on pace for {{target}} this week.",
+        "weeklySupport": "Add {{remaining}} more flossing or water-picking routines to reach {{target}} this week.",
+        "restartMomentum": "No brushing session has landed in the last two days. A quick routine today will restart momentum.",
+        "stageTransition": "The smile just moved from {{previousStage}} to {{newStage}}. Use this milestone to explain what is changing and keep routines steady.",
+        "routineVariety": "Support routines are still missing this week. Mix in flossing or water picking to widen coverage.",
+        "nextAchievement": "{{badge}} is {{remaining}} away from its {{target}} goal."
+      },
+      "momentum": {
+        "idle": "No completed routines are logged yet, so the fastest win is a first tracked session.",
+        "starting": "Momentum is starting. A few more consistent days will unlock the next streak reward.",
+        "building": "Consistency is building. Keep the current rhythm to climb into the higher streak tiers.",
+        "strong": "Momentum is strong. The profile is ready for higher-tier streak and volume rewards."
+      },
       "activityTypes": {
         "brushing": "Brushing session",
         "flossing": "Flossing session",
@@ -201,6 +257,22 @@
     "achievements": {
       "ariaLabel": "Achievements and badges",
       "unlockedTitle": "New badges unlocked",
+      "tiers": {
+        "bronze": "Bronze badge",
+        "silver": "Silver badge",
+        "gold": "Gold badge"
+      },
+      "completionCelebration": {
+        "unlocked": "Reward unlocked: {{badge}} earned as a {{tier}} for +{{points}} points.",
+        "progress": "Level {{level}} is moving. {{remainingPoints}} points until the next level and {{badge}} is the next badge in view.",
+        "weeklyBrushing": "Weekly brushing goal progress: {{current}} of {{target}} done, with {{remaining}} left this week.",
+        "weeklySupport": "Weekly support-routine goal progress: {{current}} of {{target}} done, with {{remaining}} left this week.",
+        "goalsComplete": "Weekly household goals are cleared: {{brushing}} brushing sessions and {{support}} support routines reached.",
+        "restartMomentum": "A brushing session today will restart momentum after a quiet couple of days.",
+        "stageTransition": "New development milestone: the smile moved from {{previousStage}} to {{newStage}}. Keep routines calm and consistent through the change.",
+        "routineVariety": "A support routine next will widen the weekly mix and keep variety goals moving.",
+        "nextAchievement": "{{badge}} is now only {{remaining}} away from its {{target}} target."
+      },
       "types": {
         "first-session": {
           "title": "First Session",
@@ -214,9 +286,17 @@
           "title": "7-Day Streak",
           "description": "Stayed consistent for a full week."
         },
+        "streak-14": {
+          "title": "14-Day Streak",
+          "description": "Held the routine together for two full weeks."
+        },
         "ten-sessions": {
           "title": "10 Sessions",
           "description": "Tracked ten completed routines."
+        },
+        "twenty-sessions": {
+          "title": "20 Sessions",
+          "description": "Built a deeper history with twenty completed routines."
         },
         "routine-mix": {
           "title": "Routine Mix",
@@ -240,6 +320,7 @@
       "memberSummary": "Stage: {{stage}}",
       "householdSettingsTitle": "Household settings",
       "householdSettingsSummary": "Caregiver-facing settings for this device.",
+      "rewardSettingsSummary": "These settings tune how quickly levels advance and how many points each routine type contributes.",
       "membersTitle": "Members",
       "membersSummary": "{{count}} active members.",
       "addMemberTitle": "Add a new member",
@@ -253,6 +334,15 @@
         "householdName": "Household name",
         "subscriptionTier": "Subscription tier",
         "syncStatus": "Sync status",
+        "levelBasePoints": "First level threshold",
+        "levelStepPoints": "Level step points",
+        "levelGrowthPoints": "Per-level growth",
+        "brushingSessionPoints": "Brushing points",
+        "supportRoutinePoints": "Flossing / water-picking points",
+        "toothMilestonePoints": "Tooth milestone points",
+        "routineVarietyPoints": "Routine variety bonus",
+        "weeklyBrushingSessions": "Weekly brushing goal",
+        "weeklySupportRoutines": "Weekly support-routine goal",
         "memberName": "Member name",
         "topTeeth": "Top teeth",
         "bottomTeeth": "Bottom teeth",

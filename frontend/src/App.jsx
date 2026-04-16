@@ -17,6 +17,7 @@ import { awardAchievementsForUser } from "./db/achievementEngineService";
 import { archiveHouseholdMember, loadHouseholdManagement, removeHouseholdMember, restoreHouseholdMember, saveHouseholdMember, saveHouseholdSettings } from "./db/householdManagementService";
 import { initializePhase2Migration } from "./db/migrationService";
 import { loadUserProgressDashboard } from "./db/progressDashboardService";
+import { getAchievementPresentation } from "./db/rewardProgressionService";
 import { completeHouseholdOnboarding, saveHouseholdOnboardingDraft, setHouseholdOnboardingUiDismissed } from "./db/householdSetupService";
 import { createBrushingSession, logToothChange, updateUser } from "./db/storeHelpers";
 import { getUserScopedState, saveUserScopedDefaults, saveUserScopedFavoriteSongs, saveUserScopedLastSession } from "./db/userScopedStateService";
@@ -165,6 +166,69 @@ function buildHouseholdSetupDraft({ household, activeUser, onboardingDraft, user
   };
 }
 
+function buildCompletionCelebrationMessage(t, fallbackMessage, unlockedAchievements, dashboard) {
+  const highlightedAchievement = Array.isArray(unlockedAchievements) && unlockedAchievements.length > 0
+    ? [...unlockedAchievements]
+      .map((achievement) => getAchievementPresentation(achievement))
+      .sort((left, right) => Number(right.pointsAwarded || 0) - Number(left.pointsAwarded || 0))[0]
+    : null;
+
+  if (highlightedAchievement) {
+    return t("app.achievements.completionCelebration.unlocked", {
+      badge: t(`app.achievements.types.${highlightedAchievement.achievementType}.title`),
+      tier: t(`app.achievements.tiers.${highlightedAchievement.tier || "bronze"}`),
+      points: highlightedAchievement.pointsAwarded || 0
+    });
+  }
+
+  if (dashboard?.nextAchievement) {
+    if (dashboard.goals?.summary?.allComplete) {
+      return t("app.achievements.completionCelebration.goalsComplete", {
+        brushing: dashboard.goals.weeklyBrushing.target,
+        support: dashboard.goals.weeklySupport.target
+      });
+    }
+
+    if (dashboard.goals?.summary?.nextFocus) {
+      const focusKey = dashboard.goals.summary.nextFocus === "support" ? "weeklySupport" : "weeklyBrushing";
+      const focusGoal = dashboard.goals[focusKey];
+      return t(`app.achievements.completionCelebration.${focusKey}`, {
+        current: focusGoal.current,
+        target: focusGoal.target,
+        remaining: focusGoal.remaining
+      });
+    }
+
+    if (dashboard.caregiverNudges?.length > 0) {
+      const topNudge = dashboard.caregiverNudges[0];
+      if (topNudge.key === "stageTransition") {
+        return t("app.achievements.completionCelebration.stageTransition", {
+          previousStage: t(`age.stages.${topNudge.values.previousStage}.label`),
+          newStage: t(`age.stages.${topNudge.values.newStage}.label`)
+        });
+      }
+
+      if (topNudge.key === "nextAchievement") {
+        return t("app.achievements.completionCelebration.nextAchievement", {
+          badge: t(`app.achievements.types.${topNudge.values.achievementType}.title`),
+          remaining: topNudge.values.remaining,
+          target: topNudge.values.target
+        });
+      }
+
+      return t(`app.achievements.completionCelebration.${topNudge.key}`, topNudge.values);
+    }
+
+    return t("app.achievements.completionCelebration.progress", {
+      level: dashboard.progression.currentLevel,
+      remainingPoints: dashboard.progression.pointsToNextLevel,
+      badge: t(`app.achievements.types.${dashboard.nextAchievement.achievementType}.title`)
+    });
+  }
+
+  return fallbackMessage;
+}
+
 function App() {
   const { t, i18n } = useTranslation();
   const [dbStatus, setDbStatus] = useState(() => {
@@ -294,6 +358,10 @@ function App() {
     [ageEstimate?.phase, brushType, totalTeeth]
   );
   const ageGroupCount = getAgeMessageGroupCount();
+  const completionBannerMessage = useMemo(
+    () => buildCompletionCelebrationMessage(t, completionMessage || t("app.success", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) }), recentUnlockedAchievements, progressDashboard),
+    [bpmData?.totalBrushingSeconds, brushDurationSeconds, completionMessage, progressDashboard, recentUnlockedAchievements, t]
+  );
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -508,7 +576,7 @@ function App() {
         setHouseholdOverview(overview);
         setProgressDashboard(
           dbStatus.ready && persistedState.activeUser?.userId
-            ? await loadUserProgressDashboard(persistedState.activeUser.userId, progressDashboardFilters)
+            ? await loadUserProgressDashboard(persistedState.activeUser.userId, progressDashboardFilters, persistedState.household?.rewardSettings, persistedState.household?.goalSettings)
             : null
         );
         setPersistedMigrationState(persistedState.migrationState || null);
@@ -623,7 +691,7 @@ function App() {
         return;
       }
 
-      const dashboard = await loadUserProgressDashboard(activeHouseholdUser.userId, progressDashboardFilters);
+      const dashboard = await loadUserProgressDashboard(activeHouseholdUser.userId, progressDashboardFilters, householdProfile?.rewardSettings, householdProfile?.goalSettings);
       if (!cancelled) {
         setProgressDashboard(dashboard);
       }
@@ -633,7 +701,7 @@ function App() {
     return () => {
       cancelled = true;
     };
-  }, [activeHouseholdUser?.userId, dbStatus.ready, householdOnboardingState?.completedAt, persistedStateRevision, progressDashboardFilters, storageConsent]);
+  }, [activeHouseholdUser?.userId, dbStatus.ready, householdOnboardingState?.completedAt, householdProfile?.goalSettings, householdProfile?.rewardSettings, persistedStateRevision, progressDashboardFilters, storageConsent]);
 
   useEffect(() => {
     if (!activeHouseholdUser?.userId) {
@@ -702,7 +770,7 @@ function App() {
         toothStage: nextSnapshot.stage
       });
       setActiveHouseholdUser(updatedUser);
-      await logToothChange({
+      const toothHistoryRecord = await logToothChange({
         userId: activeHouseholdUser.userId,
         householdId: householdProfile?.householdId,
         eventType,
@@ -714,15 +782,24 @@ function App() {
         newToothStage: nextSnapshot.stage,
         reason: "phase3-progress-tracking"
       });
-      const unlockedAchievements = await awardAchievementsForUser(activeHouseholdUser.userId, householdProfile?.householdId);
+      const unlockedAchievements = await awardAchievementsForUser(activeHouseholdUser.userId, householdProfile?.householdId, {
+        sourceEventType: eventType,
+        sourceEventId: toothHistoryRecord.toothHistoryId,
+        sourceEventAt: toothHistoryRecord.recordedAt,
+        sourceContext: {
+          previousStage: previousSnapshot.stage,
+          newStage: nextSnapshot.stage
+        }
+      });
       if (unlockedAchievements.length > 0) {
         setRecentUnlockedAchievements((current) => [...unlockedAchievements, ...current].slice(0, 4));
       }
+      setProgressDashboard(await loadUserProgressDashboard(activeHouseholdUser.userId, progressDashboardFilters, householdProfile?.rewardSettings, householdProfile?.goalSettings));
       setPersistedStateRevision((current) => current + 1);
     })().catch((trackingError) => {
       setError(trackingError?.message || t("app.householdSetup.saveFailed"));
     });
-  }, [activeHouseholdUser?.userId, ageEstimate?.phase, dbStatus.ready, householdOnboardingState?.completedAt, householdProfile?.householdId, storageConsent, t, values.bottom, values.top]);
+  }, [activeHouseholdUser?.userId, ageEstimate?.phase, dbStatus.ready, householdOnboardingState?.completedAt, householdProfile?.householdId, progressDashboardFilters, storageConsent, t, values.bottom, values.top]);
 
   useEffect(() => {
     if (storageConsent !== "granted" || !preferencesHydratedRef.current) {
@@ -825,14 +902,23 @@ function App() {
         source: "phase3-progress-dashboard"
       });
       const unlockedAchievements = await awardAchievementsForUser(activeHouseholdUser.userId, householdProfile.householdId, {
-        relatedSessionId: createdSession.sessionId
+        relatedSessionId: createdSession.sessionId,
+        sourceEventType: "brushing-session-complete",
+        sourceEventId: createdSession.sessionId,
+        sourceEventAt: createdSession.completedAt,
+        sourceContext: {
+          sessionType: "brushing",
+          brushType,
+          toothStage: ageEstimate?.phase || "unknown"
+        }
       });
       setRecentUnlockedAchievements(unlockedAchievements);
+      setProgressDashboard(await loadUserProgressDashboard(activeHouseholdUser.userId, progressDashboardFilters, householdProfile?.rewardSettings, householdProfile?.goalSettings));
       setPersistedStateRevision((current) => current + 1);
     })().catch((sessionError) => {
       setError(sessionError?.message || t("app.householdSetup.saveFailed"));
     });
-  }, [activeHouseholdUser?.userId, bpmData?.searchBpm, bpmData?.totalBrushingSeconds, brushDurationSeconds, brushingMusicElapsedSeconds, brushingPhase, dbStatus.ready, householdProfile?.householdId, selectedSong?.artist, selectedSong?.bpm, selectedSong?.title, storageConsent, t, values.bottom, values.top]);
+  }, [activeHouseholdUser?.userId, bpmData?.searchBpm, bpmData?.totalBrushingSeconds, brushDurationSeconds, brushingMusicElapsedSeconds, brushingPhase, dbStatus.ready, householdProfile?.householdId, progressDashboardFilters, selectedSong?.artist, selectedSong?.bpm, selectedSong?.title, storageConsent, t, values.bottom, values.top]);
 
   async function handleAllowStorage() {
     const nextStatus = setStorageConsent(true);
@@ -1023,7 +1109,7 @@ function App() {
       setActiveHouseholdUser(result.user);
       setHouseholdManagement(await loadHouseholdManagement(result.household.householdId));
       setHouseholdOverview(await loadHouseholdOverview(result.household.householdId));
-      setProgressDashboard(await loadUserProgressDashboard(result.user.userId, progressDashboardFilters));
+      setProgressDashboard(await loadUserProgressDashboard(result.user.userId, progressDashboardFilters, result.household.rewardSettings, result.household.goalSettings));
       setHouseholdOnboardingState({
         completedAt: new Date().toISOString(),
         householdId: result.household.householdId,
@@ -1050,7 +1136,7 @@ function App() {
     setLanguageFallbackState(nextFallbackInfo);
   }
 
-  async function handleSaveHouseholdSettings(nextHouseholdName) {
+  async function handleSaveHouseholdSettings(nextSettings) {
     if (!householdProfile?.householdId) {
       return;
     }
@@ -1058,11 +1144,16 @@ function App() {
     setHouseholdManagementSaving(true);
     try {
       const updatedHousehold = await saveHouseholdSettings(householdProfile.householdId, {
-        householdName: nextHouseholdName?.trim() || "BrushBeats Household"
+        householdName: nextSettings?.householdName?.trim() || "BrushBeats Household",
+        rewardSettings: nextSettings?.rewardSettings || householdProfile.rewardSettings || {},
+        goalSettings: nextSettings?.goalSettings || householdProfile.goalSettings || {}
       });
       setHouseholdProfile(updatedHousehold);
       setHouseholdManagement(await loadHouseholdManagement(updatedHousehold.householdId));
       setHouseholdOverview(await loadHouseholdOverview(updatedHousehold.householdId));
+      if (activeHouseholdUser?.userId) {
+        setProgressDashboard(await loadUserProgressDashboard(activeHouseholdUser.userId, progressDashboardFilters, updatedHousehold.rewardSettings, updatedHousehold.goalSettings));
+      }
       setError("");
     } catch (householdError) {
       setError(householdError?.message || t("app.householdSetup.saveFailed"));
@@ -1136,7 +1227,7 @@ function App() {
         }
         setLastSession(scopedState.lastSession || null);
         setFavoriteSongs(scopedState.favoriteSongs || []);
-        setProgressDashboard(await loadUserProgressDashboard(nextActiveUser.userId, progressDashboardFilters));
+        setProgressDashboard(await loadUserProgressDashboard(nextActiveUser.userId, progressDashboardFilters, management.household.rewardSettings, management.household.goalSettings));
       }
 
       setPersistedStateRevision((current) => current + 1);
@@ -1197,7 +1288,7 @@ function App() {
         }
         setLastSession(scopedState.lastSession || null);
         setFavoriteSongs(scopedState.favoriteSongs || []);
-        setProgressDashboard(await loadUserProgressDashboard(nextActiveUser.userId, progressDashboardFilters));
+        setProgressDashboard(await loadUserProgressDashboard(nextActiveUser.userId, progressDashboardFilters, management.household.rewardSettings, management.household.goalSettings));
       }
 
       setPersistedStateRevision((current) => current + 1);
@@ -1238,11 +1329,20 @@ function App() {
         source: "phase3-quick-log"
       });
       const unlockedAchievements = await awardAchievementsForUser(activeHouseholdUser.userId, householdProfile.householdId, {
-        relatedSessionId: createdSession.sessionId
+        relatedSessionId: createdSession.sessionId,
+        sourceEventType: sessionType,
+        sourceEventId: createdSession.sessionId,
+        sourceEventAt: createdSession.completedAt,
+        sourceContext: {
+          sessionType,
+          brushType,
+          toothStage: ageEstimate?.phase || "unknown"
+        }
       });
       if (unlockedAchievements.length > 0) {
         setRecentUnlockedAchievements(unlockedAchievements);
       }
+      setProgressDashboard(await loadUserProgressDashboard(activeHouseholdUser.userId, progressDashboardFilters, householdProfile?.rewardSettings, householdProfile?.goalSettings));
       setPersistedStateRevision((current) => current + 1);
       trackEvent("phase3_activity_logged", { session_type: sessionType });
       setError("");
@@ -1283,7 +1383,7 @@ function App() {
       setHouseholdOverview(overview);
   setHouseholdManagement(await loadHouseholdManagement(householdProfile.householdId));
       setActiveHouseholdUser(nextActiveUser);
-  setProgressDashboard(await loadUserProgressDashboard(userId, progressDashboardFilters));
+  setProgressDashboard(await loadUserProgressDashboard(userId, progressDashboardFilters, householdProfile?.rewardSettings, householdProfile?.goalSettings));
       setRecentUnlockedAchievements([]);
       setLastSession(scopedState.lastSession || null);
       setFavoriteSongs(scopedState.favoriteSongs || []);
@@ -2470,7 +2570,7 @@ function App() {
                 {brushingPhase === "complete" && (
                   <section className="success-banner brush-success-banner" aria-live="polite">
                     <span className="sparkle-stars" aria-hidden="true">✦ ✧ ✦</span>
-                    <p>{completionMessage || t("app.success", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) })}</p>
+                    <p>{completionBannerMessage}</p>
                     <small>{t("app.successAgeGroups", { count: ageGroupCount })}</small>
                     <AchievementBadgeList
                       t={t}
@@ -2524,7 +2624,7 @@ function App() {
               {brushingPhase === "complete" && (
                 <section className="success-banner brush-success-banner" aria-live="polite">
                   <span className="sparkle-stars" aria-hidden="true">✦ ✧ ✦</span>
-                  <p>{completionMessage || t("app.success", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) })}</p>
+                  <p>{completionBannerMessage}</p>
                   <small>{t("app.successAgeGroups", { count: ageGroupCount })}</small>
                   <AchievementBadgeList
                     t={t}

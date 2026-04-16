@@ -148,6 +148,8 @@
       "title": "{{name}} ilerlemesi",
       "defaultUser": "Bu fircalayan",
       "subtitle": "Son oturumlar, seriler ve dis gelisimi artik bu cihazda yerel olarak izleniyor.",
+      "caregiverSummaryTitle": "Bakici odul ozeti",
+      "caregiverSummarySubtitle": "Nelerin acildigini, neyin yakin oldugunu ve siradaki odagi hizlica gosterir.",
       "filters": {
         "timeRange": "Zaman araligi",
         "activityType": "Etkinlik",
@@ -170,7 +172,65 @@
         "totalSessions": "Izlenen oturumlar",
         "completionRate": "Tamamlama orani",
         "streak": "Guncel seri",
-        "monthlySessions": "Son 30 gun"
+        "monthlySessions": "Son 30 gun",
+        "level": "Seviye"
+      },
+      "levelTitle": "Seviye {{level}} ilerlemesi",
+      "levelSummary": "{{points}} puan kazanildi. Sonraki seviye {{next}} puanda.",
+      "levelSummaryDetailed": "Sonraki seviye icin {{remaining}} puan kaldi.",
+      "achievementsTitle": "Son rozetler",
+      "pointsBreakdownTitle": "Puan kaynaklari",
+      "nudgesTitle": "Bakici yonlendirmeleri",
+      "pointsBreakdown": {
+        "brushing": "Fircalama +{{points}}",
+        "support": "Dis ipi/agiz dusu +{{points}}",
+        "milestones": "Dis kilometre taslari +{{points}}",
+        "variety": "Rutin cesitliligi +{{points}}",
+        "achievements": "Rozet bonuslari +{{points}}"
+      },
+      "caregiverCards": {
+        "nextRewardTitle": "Siradaki odul",
+        "nextRewardCount": "{{title}} icin {{target}} hedefine dogru {{remaining}} daha gerekli.",
+        "nextRewardRoutineMix": "{{title}} icin {{target}} rutinden {{remaining}} rutin tipi daha gerekli.",
+        "nextRewardDevelopment": "{{title}} sonraki dis asamasi gecisinde acilacak.",
+        "noPendingReward": "Mevcut odul yollarinin tamami acildi.",
+        "routineMixTitle": "Rutin karisimi: {{current}}/{{total}}",
+        "routineMixPending": "Hala eksik: {{items}}.",
+        "routineMixComplete": "Tum rutin tipleri izleniyor.",
+        "badgeMixTitle": "Rozet katmanlari",
+        "badgeMixValue": "Bronz {{bronze}} · Gumus {{silver}} · Altin {{gold}}"
+      },
+      "goalCards": {
+        "weeklyBrushingTitle": "Haftalik fircalama hedefi",
+        "weeklyBrushingProgress": "Bu hafta {{target}} hedefinin {{current}} kadari tamamlandi. {{remaining}} kaldi.",
+        "weeklyBrushingComplete": "Haftalik fircalama hedefi {{current}} / {{target}} ile tamamlandi.",
+        "weeklySupportTitle": "Haftalik destek-rutini hedefi",
+        "weeklySupportProgress": "Bu hafta {{target}} destek rutininin {{current}} kadari tamamlandi. {{remaining}} kaldi.",
+        "weeklySupportComplete": "Haftalik destek-rutini hedefi {{current}} / {{target}} ile tamamlandi."
+      },
+      "nudgeTitles": {
+        "goalsComplete": "Hedefler tamam",
+        "weeklyBrushing": "Siradaki fircalama",
+        "weeklySupport": "Siradaki destek rutini",
+        "restartMomentum": "Momentumu yeniden baslat",
+        "stageTransition": "Gelisim odagi",
+        "routineVariety": "Rutin cesitliligi",
+        "nextAchievement": "Rozet yakinda"
+      },
+      "nudges": {
+        "goalsComplete": "Bu hafta hedefte. Simdi odak tutarlilik ve rozet cesitliligi olabilir.",
+        "weeklyBrushing": "Bu hafta {{target}} hedefine yetismek icin {{remaining}} fircalama daha planlayin.",
+        "weeklySupport": "Bu hafta {{target}} hedefine ulasmak icin {{remaining}} dis ipi veya agiz dusu rutini daha ekleyin.",
+        "restartMomentum": "Son iki gunde fircalama yok. Bugun kisa bir rutin momentumu yeniden baslatir.",
+        "stageTransition": "Gulumseme {{previousStage}} evresinden {{newStage}} evresine gecti. Bu degisimi anlatmak ve rutini sabit tutmak icin iyi bir zaman.",
+        "routineVariety": "Bu hafta destek rutinleri eksik. Kapsami genisletmek icin dis ipi veya agiz dusu ekleyin.",
+        "nextAchievement": "{{badge}}, {{target}} hedefine sadece {{remaining}} uzakta."
+      },
+      "momentum": {
+        "idle": "Henuz tamamlanmis rutin kaydi yok; en hizli kazanc ilk izlenen oturumdur.",
+        "starting": "Momentum basliyor. Birkac tutarli gun daha sonraki seri odulunu acar.",
+        "building": "Tutarlilik gucleniyor. Bu ritmi korumak daha yuksek seri odullerini acacak.",
+        "strong": "Momentum guclu. Profil artik daha yuksek seri ve hacim odullerine hazir."
       },
       "activityTypes": {
         "brushing": "Fircalama oturumu",
@@ -194,6 +254,60 @@
       "noSessions": "Bu filtre icin henuz izlenen oturum yok.",
       "noToothHistory": "Henuz dis gecmisi kaydi yok."
     },
+    "achievements": {
+      "ariaLabel": "Basarilar ve rozetler",
+      "unlockedTitle": "Yeni rozetlerin kilidi acildi",
+      "tiers": {
+        "bronze": "Bronz rozet",
+        "silver": "Gumus rozet",
+        "gold": "Altin rozet"
+      },
+      "completionCelebration": {
+        "unlocked": "Odul acildi: {{badge}}, {{tier}} olarak kazanildi ve +{{points}} puan verdi.",
+        "progress": "Seviye {{level}} ilerliyor. Sonraki seviye icin {{remainingPoints}} puan kaldi ve siradaki rozet {{badge}}.",
+        "weeklyBrushing": "Haftalik fircalama hedefi ilerlemesi: {{target}} hedefinin {{current}} kadari tamamlandi, {{remaining}} kaldi.",
+        "weeklySupport": "Haftalik destek rutini ilerlemesi: {{target}} hedefinin {{current}} kadari tamamlandi, {{remaining}} kaldi.",
+        "goalsComplete": "Haftalik hane hedefleri tamamlandi: {{brushing}} fircalama ve {{support}} destek rutini hedefine ulasildi.",
+        "restartMomentum": "Bugunku bir fircalama oturumu, sakin gecen iki gunun ardindan momentumu yeniden baslatir.",
+        "stageTransition": "Yeni gelisim kilometre tasi: gulumseme {{previousStage}} evresinden {{newStage}} evresine gecti. Bu degisimde rutini sakin ve tutarli tutun.",
+        "routineVariety": "Siradaki en iyi adim, haftalik karisimi genisletmek icin bir destek rutini eklemek.",
+        "nextAchievement": "{{badge}}, {{target}} hedefinin artik sadece {{remaining}} gerisinde."
+      },
+      "types": {
+        "first-session": {
+          "title": "Ilk oturum",
+          "description": "Izlenen ilk rutin tamamlandi."
+        },
+        "streak-3": {
+          "title": "3 gunluk seri",
+          "description": "Rutinler uc gun ust uste tamamlandi."
+        },
+        "streak-7": {
+          "title": "7 gunluk seri",
+          "description": "Bir tam hafta tutarlilik saglandi."
+        },
+        "streak-14": {
+          "title": "14 gunluk seri",
+          "description": "Rutin iki tam hafta boyunca korundu."
+        },
+        "ten-sessions": {
+          "title": "10 oturum",
+          "description": "On tamamlanmis rutin kaydedildi."
+        },
+        "twenty-sessions": {
+          "title": "20 oturum",
+          "description": "Yirmi tamamlanmis rutinle daha derin bir gecmis olustu."
+        },
+        "routine-mix": {
+          "title": "Rutin karisimi",
+          "description": "Fircalama, dis ipi ve agiz dusu tamamlandi."
+        },
+        "stage-transition": {
+          "title": "Buyume kilometre tasi",
+          "description": "Yeni bir dis gelisim evresine ulasildi."
+        }
+      }
+    },
     "householdManagement": {
       "ariaLabel": "Hane ayarlari ve uye yonetimi",
       "eyebrow": "Faz 3 yonetim",
@@ -206,6 +320,7 @@
       "memberSummary": "Evre: {{stage}}",
       "householdSettingsTitle": "Hane ayarlari",
       "householdSettingsSummary": "Bu cihaz icin bakici odakli ayarlar.",
+      "rewardSettingsSummary": "Bu ayarlar seviyelerin ne kadar hizli ilerledigini ve her rutin turunun kac puan verdigini belirler.",
       "membersTitle": "Uyeler",
       "membersSummary": "{{count}} etkin uye.",
       "addMemberTitle": "Yeni uye ekle",
@@ -219,6 +334,15 @@
         "householdName": "Hane adi",
         "subscriptionTier": "Abonelik duzeyi",
         "syncStatus": "Eszamanlama durumu",
+        "levelBasePoints": "Ilk seviye esigi",
+        "levelStepPoints": "Seviye adim puani",
+        "levelGrowthPoints": "Seviye basi artis",
+        "brushingSessionPoints": "Fircalama puani",
+        "supportRoutinePoints": "Dis ipi / agiz dusu puani",
+        "toothMilestonePoints": "Dis kilometre tasi puani",
+        "routineVarietyPoints": "Rutin cesitliligi bonusu",
+        "weeklyBrushingSessions": "Haftalik fircalama hedefi",
+        "weeklySupportRoutines": "Haftalik destek-rutini hedefi",
         "memberName": "Uye adi",
         "topTeeth": "Ust disler",
         "bottomTeeth": "Alt disler",
@@ -537,34 +661,3 @@
     }
   }
 }
-
-    "achievements": {
-      "ariaLabel": "Basarilar ve rozetler",
-      "unlockedTitle": "Yeni rozetler acildi",
-      "types": {
-        "first-session": {
-          "title": "Ilk Oturum",
-          "description": "Ilk izlenen rutini tamamladin."
-        },
-        "streak-3": {
-          "title": "3 Gunluk Seri",
-          "description": "Uc gun ust uste rutin tamamlandi."
-        },
-        "streak-7": {
-          "title": "7 Gunluk Seri",
-          "description": "Bir hafta boyunca duzen korundu."
-        },
-        "ten-sessions": {
-          "title": "10 Oturum",
-          "description": "On tamamlanmis rutin izlendi."
-        },
-        "routine-mix": {
-          "title": "Rutin Karisimi",
-          "description": "Fircalama, dis ipi ve agiz dusu tamamlandi."
-        },
-        "stage-transition": {
-          "title": "Buyume Donum Noktasi",
-          "description": "Yeni bir dis gelisim evresine ulasildi."
-        }
-      }
-    },

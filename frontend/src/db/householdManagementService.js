@@ -1,4 +1,5 @@
 import { estimateAgeFromTeethFull } from "../lib/teethAge";
+import { normalizeGoalSettings, normalizeRewardSettings } from "./rewardProgressionService";
 import { STORE_NAMES } from "./indexedDbService";
 import { deleteItem, getAchievementsByUser, getHousehold, getToothHistoryByUser, getUsersByHousehold, setActiveUser, updateHousehold, createUser, updateUser, getSessionsByUser, getUserById } from "./storeHelpers";
 import { getUserScopedState, saveUserScopedDefaults } from "./userScopedStateService";
@@ -50,14 +51,22 @@ export async function loadHouseholdManagement(householdId) {
   const hydratedMembers = await Promise.all(users.map(hydrateMember));
 
   return {
-    household,
+    household: {
+      ...household,
+      rewardSettings: normalizeRewardSettings(household.rewardSettings),
+      goalSettings: normalizeGoalSettings(household.goalSettings)
+    },
     members: hydratedMembers.filter((member) => !member.isArchived && !member.isDeleted),
     archivedMembers: hydratedMembers.filter((member) => member.isArchived && !member.isDeleted)
   };
 }
 
 export async function saveHouseholdSettings(householdId, updates = {}) {
-  return updateHousehold(householdId, updates);
+  return updateHousehold(householdId, {
+    ...updates,
+    rewardSettings: normalizeRewardSettings(updates.rewardSettings),
+    goalSettings: normalizeGoalSettings(updates.goalSettings)
+  });
 }
 
 export async function saveHouseholdMember(householdId, input = {}) {

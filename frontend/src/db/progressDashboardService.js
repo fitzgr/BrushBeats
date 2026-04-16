@@ -1,36 +1,5 @@
+import { calculateCaregiverNudges, calculateGoalProgress, calculateProgressionSummary } from "./rewardProgressionService";
 import { getAchievementsByUser, getSessionsByUser, getToothHistoryByUser } from "./storeHelpers";
-
-function buildStreak(sessions) {
-  const uniqueDays = [...new Set((sessions || []).map((session) => String(session.completedAt || session.startedAt || "").slice(0, 10)).filter(Boolean))];
-  if (uniqueDays.length === 0) {
-    return 0;
-  }
-
-  let streak = 0;
-  let cursor = new Date(`${uniqueDays[0]}T00:00:00Z`);
-
-  for (const day of uniqueDays) {
-    const currentDay = new Date(`${day}T00:00:00Z`);
-    if (streak === 0) {
-      streak = 1;
-      cursor = currentDay;
-      continue;
-    }
-
-    const expectedPreviousDay = new Date(cursor);
-    expectedPreviousDay.setUTCDate(expectedPreviousDay.getUTCDate() - 1);
-
-    if (currentDay.getTime() === expectedPreviousDay.getTime()) {
-      streak += 1;
-      cursor = currentDay;
-      continue;
-    }
-
-    break;
-  }
-
-  return streak;
-}
 
 function subtractDays(date, days) {
   const nextDate = new Date(date);
@@ -57,7 +26,7 @@ function normalizeToothEventLabel(eventType) {
   return "manual-adjustment";
 }
 
-export async function loadUserProgressDashboard(userId, filters = { timeRange: "30d", activityType: "all" }) {
+export async function loadUserProgressDashboard(userId, filters = { timeRange: "30d", activityType: "all" }, rewardSettings = {}, goalSettings = {}) {
   if (!userId) {
     return null;
   }
@@ -85,11 +54,9 @@ export async function loadUserProgressDashboard(userId, filters = { timeRange: "
   const completedSessions = filteredSessions.filter((session) => session.completed);
   const weeklySessions = allSessions.filter((session) => isWithinRange(session.completedAt || session.startedAt, "7d") && session.completed);
   const monthlySessions = allSessions.filter((session) => isWithinRange(session.completedAt || session.startedAt, "30d") && session.completed);
-  const allCompletedSessions = allSessions.filter((session) => session.completed);
-  const distinctRoutineTypes = [...new Set(allCompletedSessions.map((session) => session.sessionType).filter(Boolean))];
-  const points = allCompletedSessions.length * 10 + allAchievements.length * 50 + distinctRoutineTypes.length * 20 + allToothHistory.length * 15;
-  const currentLevel = Math.max(1, Math.floor(points / 100) + 1);
-  const nextLevelPoints = currentLevel * 100;
+  const progression = calculateProgressionSummary(allSessions, allToothHistory, allAchievements, rewardSettings);
+  const goals = calculateGoalProgress(allSessions, goalSettings);
+  const caregiverNudges = calculateCaregiverNudges(allSessions, progression, goals);
 
   return {
     filters,
@@ -97,18 +64,25 @@ export async function loadUserProgressDashboard(userId, filters = { timeRange: "
       totalSessions: filteredSessions.length,
       completedSessions: completedSessions.length,
       completionRate: filteredSessions.length > 0 ? Math.round((completedSessions.length / filteredSessions.length) * 100) : 0,
-      streakDays: buildStreak(allCompletedSessions),
+      streakDays: progression.snapshot.streakDays,
       weeklySessions: weeklySessions.length,
       monthlySessions: monthlySessions.length
     },
     progression: {
-      points,
-      currentLevel,
-      nextLevelPoints,
-      progressPercent: nextLevelPoints > 0 ? Math.round(((points % 100) / 100) * 100) : 0
+      points: progression.points,
+      currentLevel: progression.currentLevel,
+      previousLevelPoints: progression.previousLevelPoints,
+      nextLevelPoints: progression.nextLevelPoints,
+      pointsToNextLevel: progression.pointsToNextLevel,
+      progressPercent: progression.progressPercent,
+      pointsBreakdown: progression.pointsBreakdown
     },
     recentSessions: filteredSessions.slice(0, 8),
-    recentAchievements: filteredAchievements.slice(0, 6),
+    recentAchievements: progression.achievements.filter((achievement) => isWithinRange(achievement.awardedAt, filters.timeRange)).slice(0, 6),
+    nextAchievement: progression.nextAchievement,
+    caregiverSummary: progression.caregiverSummary,
+    goals,
+    caregiverNudges,
     toothMilestones: filteredToothHistory.slice(0, 6).map((entry) => ({
       ...entry,
       label: normalizeToothEventLabel(entry.eventType)
