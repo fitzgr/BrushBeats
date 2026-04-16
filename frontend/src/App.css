@@ -250,6 +250,7 @@
 .desktop-shell .consent-banner,
 .desktop-shell .storage-banner,
 .desktop-shell .household-overview-panel,
+.desktop-shell .progress-dashboard-panel,
 .desktop-shell .household-setup-panel,
 .desktop-shell .last-song-banner {
   max-width: 860px;
@@ -803,6 +804,130 @@
   font-size: 0.76rem;
   font-weight: 800;
   color: #1e7a5e;
+}
+
+.progress-dashboard-panel {
+  margin: 0 0 1rem;
+  padding: 1rem;
+  border-radius: 18px;
+  border: 1px solid rgba(16, 33, 37, 0.14);
+  background: linear-gradient(145deg, rgba(241, 247, 251, 0.96), rgba(255, 251, 244, 0.94));
+  box-shadow: 0 10px 30px rgba(16, 33, 37, 0.05);
+  display: grid;
+  gap: 0.9rem;
+}
+
+.progress-dashboard-header,
+.progress-dashboard-section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.progress-dashboard-header h2,
+.progress-dashboard-header p,
+.progress-dashboard-list-item strong,
+.progress-dashboard-list-item span,
+.progress-dashboard-empty {
+  margin: 0;
+}
+
+.progress-dashboard-eyebrow {
+  margin: 0 0 0.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #355064;
+}
+
+.progress-dashboard-filters {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.progress-dashboard-filters label {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.progress-dashboard-filters span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #50626a;
+}
+
+.progress-dashboard-filters select {
+  border-radius: 10px;
+  border: 1px solid rgba(16, 33, 37, 0.16);
+  background: rgba(255, 255, 255, 0.92);
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+}
+
+.progress-dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.7rem;
+}
+
+.progress-dashboard-stat-card,
+.progress-dashboard-section,
+.progress-dashboard-list-item {
+  border-radius: 14px;
+  border: 1px solid rgba(16, 33, 37, 0.1);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.progress-dashboard-stat-card {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.8rem 0.9rem;
+}
+
+.progress-dashboard-stat-card strong {
+  font-size: 1.25rem;
+  color: #294054;
+}
+
+.progress-dashboard-stat-card span,
+.progress-dashboard-section-header span,
+.progress-dashboard-list-item span,
+.progress-dashboard-empty {
+  color: #5b6d76;
+  font-size: 0.82rem;
+}
+
+.progress-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.progress-dashboard-section {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.85rem 0.9rem;
+}
+
+.progress-dashboard-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.progress-dashboard-list-item {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.75rem 0.8rem;
+}
+
+@media (max-width: 720px) {
+  .progress-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .household-overview-members {

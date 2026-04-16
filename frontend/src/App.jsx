@@ -6,12 +6,15 @@ import Player from "./components/Player";
 import BrushingGuide from "./components/BrushingGuide";
 import HouseholdSetupPanel from "./components/HouseholdSetupPanel";
 import HouseholdOverviewPanel from "./components/HouseholdOverviewPanel";
+import ProgressDashboardPanel from "./components/ProgressDashboardPanel";
 import TranslationWorkshop from "./components/TranslationWorkshop";
 import VersionHistory from "./components/VersionHistory";
 import { clearPersistedPhase2Data, loadPersistedAppState } from "./db/appStateService";
 import { loadHouseholdOverview, switchActiveHouseholdUser } from "./db/householdOverviewService";
 import { initializePhase2Migration } from "./db/migrationService";
+import { loadUserProgressDashboard } from "./db/progressDashboardService";
 import { completeHouseholdOnboarding, saveHouseholdOnboardingDraft, setHouseholdOnboardingUiDismissed } from "./db/householdSetupService";
+import { createBrushingSession, logToothChange, updateUser } from "./db/storeHelpers";
 import { getUserScopedState, saveUserScopedDefaults, saveUserScopedFavoriteSongs, saveUserScopedLastSession } from "./db/userScopedStateService";
 import { getLanguageFallbackInfo, setPreferredSupportedLanguage } from "./i18n.ts";
 import { getBpm, getGeoCountry, getSongs, getYoutubeVideo } from "./api/client";
@@ -224,6 +227,8 @@ function App() {
   const [householdProfile, setHouseholdProfile] = useState(null);
   const [activeHouseholdUser, setActiveHouseholdUser] = useState(null);
   const [householdOverview, setHouseholdOverview] = useState(null);
+  const [progressDashboard, setProgressDashboard] = useState(null);
+  const [progressDashboardFilters, setProgressDashboardFilters] = useState({ timeRange: "30d", activityType: "all" });
   const [persistedMigrationState, setPersistedMigrationState] = useState(null);
   const [householdOnboardingState, setHouseholdOnboardingState] = useState(null);
   const [householdOnboardingUiState, setHouseholdOnboardingUiState] = useState(null);
@@ -246,6 +251,9 @@ function App() {
   const lastCompletionMessageRef = useRef("");
   const trackedMigrationNoticeRef = useRef(null);
   const selectSongWithOptionsRef = useRef(null);
+  const sessionStartedAtRef = useRef(null);
+  const loggedCompletedSessionRef = useRef(null);
+  const previousTrackedTeethRef = useRef(null);
   const analyticsAvailable = useMemo(() => analyticsEnabled(), []);
   const device = useDeviceContext();
   const totalTeeth = values.top + values.bottom;
@@ -491,6 +499,11 @@ function App() {
         setHouseholdProfile(persistedState.household || null);
         setActiveHouseholdUser(persistedState.activeUser || null);
         setHouseholdOverview(overview);
+        setProgressDashboard(
+          dbStatus.ready && persistedState.activeUser?.userId
+            ? await loadUserProgressDashboard(persistedState.activeUser.userId, progressDashboardFilters)
+            : null
+        );
         setPersistedMigrationState(persistedState.migrationState || null);
         setHouseholdOnboardingState(persistedState.onboardingState || null);
         setHouseholdOnboardingUiState(persistedState.onboardingUiState || null);
@@ -524,6 +537,7 @@ function App() {
       setHouseholdProfile(null);
       setActiveHouseholdUser(null);
       setHouseholdOverview(null);
+      setProgressDashboard(null);
       setPersistedMigrationState(null);
       setHouseholdOnboardingState(null);
       setHouseholdOnboardingUiState(null);
@@ -534,7 +548,7 @@ function App() {
     return () => {
       cancelled = true;
     };
-  }, [dbStatus.ready, persistedStateRevision, storageBannerDismissed, storageConsent]);
+  }, [dbStatus.ready, persistedStateRevision, progressDashboardFilters, storageBannerDismissed, storageConsent]);
 
   useEffect(() => {
     if (
@@ -570,6 +584,112 @@ function App() {
       cancelled = true;
     };
   }, [dbStatus.ready, householdProfile?.householdId, persistedStateRevision, storageConsent]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function refreshProgressDashboard() {
+      if (storageConsent !== "granted" || !dbStatus.ready || !activeHouseholdUser?.userId || !householdOnboardingState?.completedAt) {
+        setProgressDashboard(null);
+        return;
+      }
+
+      const dashboard = await loadUserProgressDashboard(activeHouseholdUser.userId, progressDashboardFilters);
+      if (!cancelled) {
+        setProgressDashboard(dashboard);
+      }
+    }
+
+    void refreshProgressDashboard();
+    return () => {
+      cancelled = true;
+    };
+  }, [activeHouseholdUser?.userId, dbStatus.ready, householdOnboardingState?.completedAt, persistedStateRevision, progressDashboardFilters, storageConsent]);
+
+  useEffect(() => {
+    if (!activeHouseholdUser?.userId) {
+      previousTrackedTeethRef.current = null;
+      return;
+    }
+
+    previousTrackedTeethRef.current = {
+      userId: activeHouseholdUser.userId,
+      top: Number(activeHouseholdUser.topTeethCount ?? values.top ?? 0),
+      bottom: Number(activeHouseholdUser.bottomTeethCount ?? values.bottom ?? 0),
+      stage: activeHouseholdUser.toothStage || ageEstimate?.phase || "unknown"
+    };
+  }, [activeHouseholdUser?.bottomTeethCount, activeHouseholdUser?.topTeethCount, activeHouseholdUser?.toothStage, activeHouseholdUser?.userId, ageEstimate?.phase, values.bottom, values.top]);
+
+  useEffect(() => {
+    const nextSnapshot = {
+      userId: activeHouseholdUser?.userId || null,
+      top: Number(values.top || 0),
+      bottom: Number(values.bottom || 0),
+      stage: ageEstimate?.phase || "unknown"
+    };
+
+    if (
+      storageConsent !== "granted" ||
+      !dbStatus.ready ||
+      !householdOnboardingState?.completedAt ||
+      !activeHouseholdUser?.userId ||
+      !preferencesHydratedRef.current
+    ) {
+      previousTrackedTeethRef.current = nextSnapshot;
+      return;
+    }
+
+    const previousSnapshot = previousTrackedTeethRef.current;
+    if (!previousSnapshot || previousSnapshot.userId !== nextSnapshot.userId) {
+      previousTrackedTeethRef.current = nextSnapshot;
+      return;
+    }
+
+    if (
+      previousSnapshot.top === nextSnapshot.top &&
+      previousSnapshot.bottom === nextSnapshot.bottom &&
+      previousSnapshot.stage === nextSnapshot.stage
+    ) {
+      return;
+    }
+
+    const nextTotal = nextSnapshot.top + nextSnapshot.bottom;
+    const previousTotal = previousSnapshot.top + previousSnapshot.bottom;
+    const eventType = nextTotal > previousTotal
+      ? "tooth-added"
+      : nextTotal < previousTotal
+        ? "tooth-lost"
+        : previousSnapshot.stage !== nextSnapshot.stage
+          ? "stage-changed"
+          : "manual-adjustment";
+
+    previousTrackedTeethRef.current = nextSnapshot;
+
+    void (async () => {
+      const updatedUser = await updateUser(activeHouseholdUser.userId, {
+        topTeethCount: nextSnapshot.top,
+        bottomTeethCount: nextSnapshot.bottom,
+        totalTeethCount: nextTotal,
+        toothStage: nextSnapshot.stage
+      });
+      setActiveHouseholdUser(updatedUser);
+      await logToothChange({
+        userId: activeHouseholdUser.userId,
+        householdId: householdProfile?.householdId,
+        eventType,
+        previousTopTeethCount: previousSnapshot.top,
+        previousBottomTeethCount: previousSnapshot.bottom,
+        newTopTeethCount: nextSnapshot.top,
+        newBottomTeethCount: nextSnapshot.bottom,
+        previousToothStage: previousSnapshot.stage,
+        newToothStage: nextSnapshot.stage,
+        reason: "phase3-progress-tracking"
+      });
+      setPersistedStateRevision((current) => current + 1);
+    })().catch((trackingError) => {
+      setError(trackingError?.message || t("app.householdSetup.saveFailed"));
+    });
+  }, [activeHouseholdUser?.userId, ageEstimate?.phase, dbStatus.ready, householdOnboardingState?.completedAt, householdProfile?.householdId, storageConsent, t, values.bottom, values.top]);
 
   useEffect(() => {
     if (storageConsent !== "granted" || !preferencesHydratedRef.current) {
@@ -640,6 +760,43 @@ function App() {
     void selectSongWithOptionsRef.current?.(lastSession.song, { autoplay: false });
   }, [lastSession, storageConsent]);
 
+  useEffect(() => {
+    if (brushingPhase !== "complete" || storageConsent !== "granted" || !dbStatus.ready || !activeHouseholdUser?.userId || !householdProfile?.householdId) {
+      return;
+    }
+
+    const completionKey = `${activeHouseholdUser.userId}:${selectedSong?.title || ""}:${selectedSong?.artist || ""}:${sessionStartedAtRef.current || "none"}`;
+    if (loggedCompletedSessionRef.current === completionKey) {
+      return;
+    }
+
+    loggedCompletedSessionRef.current = completionKey;
+
+    void (async () => {
+      await createBrushingSession({
+        userId: activeHouseholdUser.userId,
+        householdId: householdProfile.householdId,
+        sessionType: "brushing",
+        startedAt: sessionStartedAtRef.current || new Date(Date.now() - Math.round(brushingMusicElapsedSeconds * 1000)).toISOString(),
+        completedAt: new Date().toISOString(),
+        durationSeconds: Math.max(0, Math.round(brushingMusicElapsedSeconds)),
+        targetDurationSeconds: Number(bpmData?.totalBrushingSeconds || brushDurationSeconds),
+        songTitle: selectedSong?.title || null,
+        artistName: selectedSong?.artist || null,
+        bpmUsed: Number(selectedSong?.bpm || bpmData?.searchBpm || 0),
+        topTeethCount: Number(values.top || 0),
+        bottomTeethCount: Number(values.bottom || 0),
+        totalTeethCount: Number(values.top || 0) + Number(values.bottom || 0),
+        performanceRating: "complete",
+        completed: true,
+        source: "phase3-progress-dashboard"
+      });
+      setPersistedStateRevision((current) => current + 1);
+    })().catch((sessionError) => {
+      setError(sessionError?.message || t("app.householdSetup.saveFailed"));
+    });
+  }, [activeHouseholdUser?.userId, bpmData?.searchBpm, bpmData?.totalBrushingSeconds, brushDurationSeconds, brushingMusicElapsedSeconds, brushingPhase, dbStatus.ready, householdProfile?.householdId, selectedSong?.artist, selectedSong?.bpm, selectedSong?.title, storageConsent, t, values.bottom, values.top]);
+
   async function handleAllowStorage() {
     const nextStatus = setStorageConsent(true);
     setStorageConsentState(nextStatus);
@@ -672,6 +829,7 @@ function App() {
     setLastSession(null);
     setFavoriteSongs([]);
     setHouseholdOverview(null);
+    setProgressDashboard(null);
 
     if (!dbStatus.ready) {
       return;
@@ -825,6 +983,7 @@ function App() {
       setHouseholdProfile(result.household);
       setActiveHouseholdUser(result.user);
       setHouseholdOverview(await loadHouseholdOverview(result.household.householdId));
+      setProgressDashboard(await loadUserProgressDashboard(result.user.userId, progressDashboardFilters));
       setHouseholdOnboardingState({
         completedAt: new Date().toISOString(),
         householdId: result.household.householdId,
@@ -882,6 +1041,7 @@ function App() {
 
       setHouseholdOverview(overview);
       setActiveHouseholdUser(nextActiveUser);
+  setProgressDashboard(await loadUserProgressDashboard(userId, progressDashboardFilters));
       setLastSession(scopedState.lastSession || null);
       setFavoriteSongs(scopedState.favoriteSongs || []);
       setBpmData(scopedState.lastSession?.bpmSnapshot || null);
@@ -889,6 +1049,7 @@ function App() {
       setSelectedSong(null);
       setPlayerData(null);
       setQueuedStoredSongKey("");
+  loggedCompletedSessionRef.current = null;
       setWorkflowStep("teeth");
       trackEvent("phase3_active_user_switched", {
         household_id: householdProfile.householdId,
@@ -1405,6 +1566,9 @@ function App() {
       return;
     }
 
+    sessionStartedAtRef.current = new Date().toISOString();
+    loggedCompletedSessionRef.current = null;
+
     markSongAsPlayed(selectedSong);
 
     const queuedSong = queueNextGeneratedSong(selectedSong);
@@ -1492,6 +1656,8 @@ function App() {
     setCountdownRemainingMs(0);
     countdownDeadlineRef.current = null;
     playOnCountdownEndRef.current = false;
+    sessionStartedAtRef.current = null;
+    loggedCompletedSessionRef.current = null;
     setTimer({ running: false, remaining: totalSeconds });
     setBrushingPhase("idle");
     queuedSongRef.current = null;
@@ -1519,6 +1685,13 @@ function App() {
   function handleBrushDurationChange(nextDuration) {
     const safeDuration = Number(nextDuration || DEFAULT_BRUSH_DURATION_SECONDS);
     setBrushDurationSeconds(safeDuration);
+  }
+
+  function handleProgressDashboardFilterChange(key, value) {
+    setProgressDashboardFilters((current) => ({
+      ...current,
+      [key]: value
+    }));
   }
 
   function updateValue(key, value) {
@@ -1612,6 +1785,13 @@ function App() {
     dbStatus.ready &&
     householdOnboardingState?.completedAt &&
     householdOverview?.household;
+  const showProgressDashboard =
+    appView === "brush" &&
+    storageConsent === "granted" &&
+    dbStatus.ready &&
+    householdOnboardingState?.completedAt &&
+    activeHouseholdUser?.userId &&
+    progressDashboard;
 
   return (
     <main className={`app-shell ${device.isMobile ? "mobile-shell" : "desktop-shell"}${appView === "workshop" && !device.isMobile ? " workshop-shell" : ""}`}>
@@ -1845,6 +2025,16 @@ function App() {
           t={t}
           overview={householdOverview}
           onSwitchUser={handleSwitchHouseholdUser}
+        />
+      )}
+
+      {showProgressDashboard && (
+        <ProgressDashboardPanel
+          t={t}
+          dashboard={progressDashboard}
+          activeUserName={activeHouseholdUser?.name}
+          filters={progressDashboardFilters}
+          onFilterChange={handleProgressDashboardFilterChange}
         />
       )}
 

@@ -140,6 +140,46 @@
       "noActivity": "Todavia no hay actividad guardada.",
       "lastSong": "Ultima cancion: {{title}}"
     },
+    "progressDashboard": {
+      "ariaLabel": "Panel de progreso e historial",
+      "eyebrow": "Progreso de la fase 3",
+      "title": "Progreso de {{name}}",
+      "defaultUser": "Este miembro",
+      "subtitle": "Las sesiones recientes, las rachas y el desarrollo dental ahora se guardan localmente en este dispositivo.",
+      "filters": {
+        "timeRange": "Periodo",
+        "activityType": "Actividad",
+        "options": {
+          "7d": "Ultimos 7 dias",
+          "30d": "Ultimos 30 dias",
+          "all": "Todo el tiempo",
+          "allActivities": "Todas las actividades",
+          "brushing": "Cepillado"
+        }
+      },
+      "stats": {
+        "totalSessions": "Sesiones registradas",
+        "completionRate": "Tasa de finalizacion",
+        "streak": "Racha actual",
+        "monthlySessions": "Ultimos 30 dias"
+      },
+      "recentSessionsTitle": "Sesiones recientes",
+      "recentSessionsSummary": "{{count}} sesiones en esta vista.",
+      "sessionWithSong": "Cepillado con {{title}}",
+      "sessionWithoutSong": "Sesion de cepillado",
+      "sessionMeta": "{{date}} · objetivo {{duration}} s",
+      "toothHistoryTitle": "Desarrollo dental",
+      "toothHistorySummary": "{{count}} hitos recientes.",
+      "toothEventMeta": "{{date}} · etapa {{stage}}",
+      "toothEvents": {
+        "tooth-added": "Aumento del numero de dientes",
+        "tooth-lost": "Disminucion del numero de dientes",
+        "stage-changed": "Cambio de etapa de desarrollo",
+        "manual-adjustment": "Actualizacion manual de dientes"
+      },
+      "noSessions": "Todavia no hay sesiones registradas para este filtro.",
+      "noToothHistory": "Todavia no se registraron cambios dentales."
+    },
     "lastSession": {
       "summary": "Ultima sesion: {{title}} de {{artist}}, {{top}} dientes arriba, {{bottom}} abajo y {{duration}} de cepillado."
     },

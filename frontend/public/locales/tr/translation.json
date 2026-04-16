@@ -140,6 +140,46 @@
       "noActivity": "Henuz kayitli etkinlik yok.",
       "lastSong": "Son sarki: {{title}}"
     },
+    "progressDashboard": {
+      "ariaLabel": "Ilerleme panosu ve gecmis gorunumu",
+      "eyebrow": "Faz 3 ilerleme",
+      "title": "{{name}} ilerlemesi",
+      "defaultUser": "Bu fircalayan",
+      "subtitle": "Son oturumlar, seriler ve dis gelisimi artik bu cihazda yerel olarak izleniyor.",
+      "filters": {
+        "timeRange": "Zaman araligi",
+        "activityType": "Etkinlik",
+        "options": {
+          "7d": "Son 7 gun",
+          "30d": "Son 30 gun",
+          "all": "Tum zamanlar",
+          "allActivities": "Tum etkinlikler",
+          "brushing": "Fircalama"
+        }
+      },
+      "stats": {
+        "totalSessions": "Izlenen oturumlar",
+        "completionRate": "Tamamlama orani",
+        "streak": "Guncel seri",
+        "monthlySessions": "Son 30 gun"
+      },
+      "recentSessionsTitle": "Son oturumlar",
+      "recentSessionsSummary": "Bu gorunumde {{count}} oturum var.",
+      "sessionWithSong": "{{title}} ile fircalandi",
+      "sessionWithoutSong": "Fircalama oturumu",
+      "sessionMeta": "{{date}} · hedef {{duration}} sn",
+      "toothHistoryTitle": "Dis gelisimi",
+      "toothHistorySummary": "{{count}} son donum noktasi.",
+      "toothEventMeta": "{{date}} · evre {{stage}}",
+      "toothEvents": {
+        "tooth-added": "Dis sayisi artti",
+        "tooth-lost": "Dis sayisi azaldi",
+        "stage-changed": "Gelisim evresi degisti",
+        "manual-adjustment": "Elle dis guncellemesi"
+      },
+      "noSessions": "Bu filtre icin henuz izlenen oturum yok.",
+      "noToothHistory": "Henuz dis gecmisi kaydi yok."
+    },
     "lastSession": {
       "summary": "Son oturum: {{artist}} tarafından {{title}}, üstte {{top}} diş, altta {{bottom}} diş, fırçalama süresi {{duration}}."
     },

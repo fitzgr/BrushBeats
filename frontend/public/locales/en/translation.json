@@ -140,6 +140,46 @@
       "noActivity": "No activity saved yet.",
       "lastSong": "Last song: {{title}}"
     },
+    "progressDashboard": {
+      "ariaLabel": "Progress dashboard and history view",
+      "eyebrow": "Phase 3 progress",
+      "title": "{{name}}'s progress",
+      "defaultUser": "This brusher",
+      "subtitle": "Recent sessions, streaks, and tooth development are now tracked locally on this device.",
+      "filters": {
+        "timeRange": "Time range",
+        "activityType": "Activity",
+        "options": {
+          "7d": "Last 7 days",
+          "30d": "Last 30 days",
+          "all": "All time",
+          "allActivities": "All activities",
+          "brushing": "Brushing"
+        }
+      },
+      "stats": {
+        "totalSessions": "Tracked sessions",
+        "completionRate": "Completion rate",
+        "streak": "Current streak",
+        "monthlySessions": "Last 30 days"
+      },
+      "recentSessionsTitle": "Recent sessions",
+      "recentSessionsSummary": "{{count}} sessions in this view.",
+      "sessionWithSong": "Brushed with {{title}}",
+      "sessionWithoutSong": "Brushing session",
+      "sessionMeta": "{{date}} · target {{duration}}s",
+      "toothHistoryTitle": "Tooth development",
+      "toothHistorySummary": "{{count}} recent milestones.",
+      "toothEventMeta": "{{date}} · stage {{stage}}",
+      "toothEvents": {
+        "tooth-added": "Teeth count increased",
+        "tooth-lost": "Teeth count decreased",
+        "stage-changed": "Development stage changed",
+        "manual-adjustment": "Manual tooth update"
+      },
+      "noSessions": "No tracked sessions yet for this filter.",
+      "noToothHistory": "No tooth history has been recorded yet."
+    },
     "lastSession": {
       "summary": "Last session: {{title}} by {{artist}}, {{top}} top teeth, {{bottom}} bottom teeth, {{duration}} brush time."
     },
