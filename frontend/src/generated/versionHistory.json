@@ -1,5 +1,17 @@
 [
   {
+    "id": "commit-d5bd7f3eba53d87abab1a35b998d16aef0631e90",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "d5bd7f3eba53d87abab1a35b998d16aef0631e90",
+    "shortSha": "d5bd7f3",
+    "timestamp": "2026-04-16T09:49:43-04:00",
+    "date": "2026-04-16",
+    "author": "Grant Fitz",
+    "subject": "Align roadmap exports and add MVP1 prompt",
+    "body": ""
+  },
+  {
     "id": "commit-6158b0e27fd6dcfcb961c03aa3aeedee703f6e31",
     "kind": "commit",
     "source": "git-history",
