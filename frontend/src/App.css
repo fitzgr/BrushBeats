@@ -251,6 +251,7 @@
 .desktop-shell .storage-banner,
 .desktop-shell .household-overview-panel,
 .desktop-shell .progress-dashboard-panel,
+.desktop-shell .household-management-panel,
 .desktop-shell .household-setup-panel,
 .desktop-shell .last-song-banner {
   max-width: 860px;
@@ -874,6 +875,17 @@
   gap: 0.7rem;
 }
 
+.progress-dashboard-quick-actions {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.progress-dashboard-quick-action-list {
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
 .progress-dashboard-stat-card,
 .progress-dashboard-section,
 .progress-dashboard-list-item {
@@ -926,6 +938,111 @@
 
 @media (max-width: 720px) {
   .progress-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.household-management-panel {
+  margin: 0 0 1rem;
+  padding: 1rem;
+  border-radius: 18px;
+  border: 1px solid rgba(16, 33, 37, 0.14);
+  background: linear-gradient(145deg, rgba(255, 250, 245, 0.96), rgba(241, 247, 251, 0.94));
+  box-shadow: 0 10px 30px rgba(16, 33, 37, 0.05);
+  display: grid;
+  gap: 0.9rem;
+}
+
+.household-management-header h2,
+.household-management-header p,
+.household-member-editor-header span,
+.household-management-caregiver-note p {
+  margin: 0;
+}
+
+.household-management-eyebrow {
+  margin: 0 0 0.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #8a4716;
+}
+
+.household-management-section,
+.household-member-editor {
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.85rem 0.9rem;
+  border-radius: 14px;
+  border: 1px solid rgba(16, 33, 37, 0.1);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.household-management-section-header,
+.household-member-editor-header,
+.household-management-inline-actions,
+.household-member-editor-actions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.household-management-section-header span,
+.household-management-readonly span,
+.household-member-editor-header span {
+  font-size: 0.82rem;
+  color: #5b6d76;
+}
+
+.household-management-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.household-management-grid label,
+.household-management-readonly {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.household-management-grid input,
+.household-management-grid select {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(16, 33, 37, 0.16);
+  background: rgba(255, 255, 255, 0.96);
+  padding: 0.68rem 0.78rem;
+  font: inherit;
+  color: var(--ink);
+}
+
+.household-management-readonly {
+  padding: 0.68rem 0.78rem;
+  border-radius: 12px;
+  border: 1px solid rgba(16, 33, 37, 0.12);
+  background: rgba(248, 250, 252, 0.88);
+}
+
+.household-management-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.household-member-editor.active {
+  border-color: rgba(66, 184, 154, 0.34);
+  background: linear-gradient(145deg, rgba(220, 245, 238, 0.96), rgba(247, 255, 252, 0.98));
+}
+
+.household-member-editor-actions {
+  justify-content: flex-end;
+}
+
+@media (max-width: 720px) {
+  .household-management-grid {
     grid-template-columns: 1fr;
   }
 }

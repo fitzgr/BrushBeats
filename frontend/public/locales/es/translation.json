@@ -26,7 +26,9 @@
       "householdSetup": "Configuracion del hogar",
       "continueLater": "Continuar despues",
       "addMember": "Agregar miembro",
-      "removeMember": "Quitar miembro"
+      "removeMember": "Quitar miembro",
+      "save": "Guardar",
+      "remove": "Quitar"
     },
     "states": {
       "on": "Activado",
@@ -154,8 +156,15 @@
           "30d": "Ultimos 30 dias",
           "all": "Todo el tiempo",
           "allActivities": "Todas las actividades",
-          "brushing": "Cepillado"
+          "brushing": "Cepillado",
+          "flossing": "Hilo dental",
+          "waterPicking": "Irrigador"
         }
+      },
+      "quickActionsTitle": "Registro rapido de rutinas",
+      "quickActions": {
+        "flossing": "Registrar hilo dental",
+        "waterPicking": "Registrar irrigador"
       },
       "stats": {
         "totalSessions": "Sesiones registradas",
@@ -164,6 +173,11 @@
         "monthlySessions": "Ultimos 30 dias"
       },
       "recentSessionsTitle": "Sesiones recientes",
+      "activityTypes": {
+        "brushing": "Sesion de cepillado",
+        "flossing": "Sesion de hilo dental",
+        "water-picking": "Sesion de irrigador"
+      },
       "recentSessionsSummary": "{{count}} sesiones en esta vista.",
       "sessionWithSong": "Cepillado con {{title}}",
       "sessionWithoutSong": "Sesion de cepillado",
@@ -179,6 +193,41 @@
       },
       "noSessions": "Todavia no hay sesiones registradas para este filtro.",
       "noToothHistory": "Todavia no se registraron cambios dentales."
+    },
+    "householdManagement": {
+      "ariaLabel": "Configuracion del hogar y gestion de miembros",
+      "eyebrow": "Gestion de la fase 3",
+      "title": "Gestiona el hogar y los ajustes de miembros",
+      "subtitle": "Los ajustes del hogar ahora estan separados de los valores, perfiles e historial de cada miembro.",
+      "saving": "Guardando...",
+      "activate": "Activar",
+      "archive": "Archivar",
+      "restore": "Restaurar",
+      "memberSummary": "Etapa: {{stage}}",
+      "householdSettingsTitle": "Configuracion del hogar",
+      "householdSettingsSummary": "Ajustes del cuidador para este dispositivo.",
+      "membersTitle": "Miembros",
+      "membersSummary": "{{count}} miembros activos.",
+      "addMemberTitle": "Agregar un miembro",
+      "addMemberSummary": "Crea otro perfil local con valores e historial separados.",
+      "archivedTitle": "Miembros archivados",
+      "archivedSummary": "{{count}} miembros archivados.",
+      "caregiverTitle": "Acciones del cuidador",
+      "caregiverSummary": "Reservado para futuros controles de sincronizacion y suscripcion.",
+      "caregiverNote": "Las exportaciones del hogar, la propiedad de sincronizacion y los controles premium pueden apoyarse despues en esta seccion separada para cuidadores.",
+      "fields": {
+        "householdName": "Nombre del hogar",
+        "subscriptionTier": "Nivel de suscripcion",
+        "syncStatus": "Estado de sincronizacion",
+        "memberName": "Nombre del miembro",
+        "topTeeth": "Dientes superiores",
+        "bottomTeeth": "Dientes inferiores",
+        "language": "Idioma preferido",
+        "brushingHand": "Mano de cepillado",
+        "brushType": "Tipo de cepillo",
+        "duration": "Duracion de la rutina",
+        "keyword": "Palabra clave musical"
+      }
     },
     "lastSession": {
       "summary": "Ultima sesion: {{title}} de {{artist}}, {{top}} dientes arriba, {{bottom}} abajo y {{duration}} de cepillado."

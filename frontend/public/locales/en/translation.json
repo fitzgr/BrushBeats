@@ -26,7 +26,9 @@
       "householdSetup": "Household Setup",
       "continueLater": "Continue Later",
       "addMember": "Add Member",
-      "removeMember": "Remove Member"
+      "removeMember": "Remove Member",
+      "save": "Save",
+      "remove": "Remove"
     },
     "states": {
       "on": "On",
@@ -154,14 +156,26 @@
           "30d": "Last 30 days",
           "all": "All time",
           "allActivities": "All activities",
-          "brushing": "Brushing"
+          "brushing": "Brushing",
+          "flossing": "Flossing",
+          "waterPicking": "Water picking"
         }
+      },
+      "quickActionsTitle": "Quick routine logging",
+      "quickActions": {
+        "flossing": "Log flossing",
+        "waterPicking": "Log water picking"
       },
       "stats": {
         "totalSessions": "Tracked sessions",
         "completionRate": "Completion rate",
         "streak": "Current streak",
         "monthlySessions": "Last 30 days"
+      },
+      "activityTypes": {
+        "brushing": "Brushing session",
+        "flossing": "Flossing session",
+        "water-picking": "Water-picking session"
       },
       "recentSessionsTitle": "Recent sessions",
       "recentSessionsSummary": "{{count}} sessions in this view.",
@@ -179,6 +193,41 @@
       },
       "noSessions": "No tracked sessions yet for this filter.",
       "noToothHistory": "No tooth history has been recorded yet."
+    },
+    "householdManagement": {
+      "ariaLabel": "Household settings and member management",
+      "eyebrow": "Phase 3 management",
+      "title": "Manage household and member settings",
+      "subtitle": "Household-level settings now live separately from each member's brushing defaults and history.",
+      "saving": "Saving...",
+      "activate": "Make active",
+      "archive": "Archive",
+      "restore": "Restore",
+      "memberSummary": "Stage: {{stage}}",
+      "householdSettingsTitle": "Household settings",
+      "householdSettingsSummary": "Caregiver-facing settings for this device.",
+      "membersTitle": "Members",
+      "membersSummary": "{{count}} active members.",
+      "addMemberTitle": "Add a new member",
+      "addMemberSummary": "Create another local profile with separate defaults and history.",
+      "archivedTitle": "Archived members",
+      "archivedSummary": "{{count}} archived members.",
+      "caregiverTitle": "Caregiver actions",
+      "caregiverSummary": "Reserved for future sync and subscription controls.",
+      "caregiverNote": "Household exports, sync ownership, and premium household controls can now hang off this separate caregiver area in a later phase.",
+      "fields": {
+        "householdName": "Household name",
+        "subscriptionTier": "Subscription tier",
+        "syncStatus": "Sync status",
+        "memberName": "Member name",
+        "topTeeth": "Top teeth",
+        "bottomTeeth": "Bottom teeth",
+        "language": "Preferred language",
+        "brushingHand": "Brushing hand",
+        "brushType": "Brush type",
+        "duration": "Routine duration",
+        "keyword": "Music keyword"
+      }
     },
     "lastSession": {
       "summary": "Last session: {{title}} by {{artist}}, {{top}} top teeth, {{bottom}} bottom teeth, {{duration}} brush time."

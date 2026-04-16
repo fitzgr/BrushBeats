@@ -26,7 +26,9 @@
       "householdSetup": "Hane Kurulumu",
       "continueLater": "Daha Sonra Devam Et",
       "addMember": "Uye Ekle",
-      "removeMember": "Uyeyi Kaldir"
+      "removeMember": "Uyeyi Kaldir",
+      "save": "Kaydet",
+      "remove": "Kaldir"
     },
     "states": {
       "on": "Açık",
@@ -154,14 +156,26 @@
           "30d": "Son 30 gun",
           "all": "Tum zamanlar",
           "allActivities": "Tum etkinlikler",
-          "brushing": "Fircalama"
+          "brushing": "Fircalama",
+          "flossing": "Dis ipi",
+          "waterPicking": "Agiz dusu"
         }
+      },
+      "quickActionsTitle": "Hizli rutin kaydi",
+      "quickActions": {
+        "flossing": "Dis ipi kaydet",
+        "waterPicking": "Agiz dusu kaydet"
       },
       "stats": {
         "totalSessions": "Izlenen oturumlar",
         "completionRate": "Tamamlama orani",
         "streak": "Guncel seri",
         "monthlySessions": "Son 30 gun"
+      },
+      "activityTypes": {
+        "brushing": "Fircalama oturumu",
+        "flossing": "Dis ipi oturumu",
+        "water-picking": "Agiz dusu oturumu"
       },
       "recentSessionsTitle": "Son oturumlar",
       "recentSessionsSummary": "Bu gorunumde {{count}} oturum var.",
@@ -179,6 +193,41 @@
       },
       "noSessions": "Bu filtre icin henuz izlenen oturum yok.",
       "noToothHistory": "Henuz dis gecmisi kaydi yok."
+    },
+    "householdManagement": {
+      "ariaLabel": "Hane ayarlari ve uye yonetimi",
+      "eyebrow": "Faz 3 yonetim",
+      "title": "Hane ve uye ayarlarini yonet",
+      "subtitle": "Hane duzeyindeki ayarlar artik her uyenin varsayimlari ve gecmisinden ayri yasiyor.",
+      "saving": "Kaydediliyor...",
+      "activate": "Etkin yap",
+      "archive": "Arsivle",
+      "restore": "Geri yukle",
+      "memberSummary": "Evre: {{stage}}",
+      "householdSettingsTitle": "Hane ayarlari",
+      "householdSettingsSummary": "Bu cihaz icin bakici odakli ayarlar.",
+      "membersTitle": "Uyeler",
+      "membersSummary": "{{count}} etkin uye.",
+      "addMemberTitle": "Yeni uye ekle",
+      "addMemberSummary": "Ayrı varsayimlar ve gecmis ile yeni bir yerel profil olustur.",
+      "archivedTitle": "Arsivlenen uyeler",
+      "archivedSummary": "{{count}} arsivlenen uye.",
+      "caregiverTitle": "Bakici islemleri",
+      "caregiverSummary": "Gelecekteki eszamanlama ve abonelik kontrolleri icin ayrildi.",
+      "caregiverNote": "Hane disa aktarma, eszamanlama sahipligi ve premium kontroller daha sonra bu ayri bakici alanina baglanabilir.",
+      "fields": {
+        "householdName": "Hane adi",
+        "subscriptionTier": "Abonelik duzeyi",
+        "syncStatus": "Eszamanlama durumu",
+        "memberName": "Uye adi",
+        "topTeeth": "Ust disler",
+        "bottomTeeth": "Alt disler",
+        "language": "Tercih edilen dil",
+        "brushingHand": "Fircalama eli",
+        "brushType": "Firca tipi",
+        "duration": "Rutin suresi",
+        "keyword": "Muzik anahtar sozcugu"
+      }
     },
     "lastSession": {
       "summary": "Son oturum: {{artist}} tarafından {{title}}, üstte {{top}} diş, altta {{bottom}} diş, fırçalama süresi {{duration}}."

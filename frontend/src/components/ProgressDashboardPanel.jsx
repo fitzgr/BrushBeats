@@ -1,4 +1,4 @@
-export default function ProgressDashboardPanel({ t, dashboard, activeUserName, filters, onFilterChange }) {
+export default function ProgressDashboardPanel({ t, dashboard, activeUserName, filters, onFilterChange, onLogActivity }) {
   if (!dashboard) {
     return null;
   }
@@ -25,6 +25,8 @@ export default function ProgressDashboardPanel({ t, dashboard, activeUserName, f
             <select value={filters.activityType} onChange={(event) => onFilterChange("activityType", event.target.value)}>
               <option value="all">{t("app.progressDashboard.filters.options.allActivities")}</option>
               <option value="brushing">{t("app.progressDashboard.filters.options.brushing")}</option>
+              <option value="flossing">{t("app.progressDashboard.filters.options.flossing")}</option>
+              <option value="water-picking">{t("app.progressDashboard.filters.options.waterPicking")}</option>
             </select>
           </label>
         </div>
@@ -49,6 +51,18 @@ export default function ProgressDashboardPanel({ t, dashboard, activeUserName, f
         </article>
       </div>
 
+      <div className="progress-dashboard-quick-actions">
+        <strong>{t("app.progressDashboard.quickActionsTitle")}</strong>
+        <div className="progress-dashboard-quick-action-list">
+          <button type="button" className="action-btn secondary" onClick={() => onLogActivity("flossing")}>
+            {t("app.progressDashboard.quickActions.flossing")}
+          </button>
+          <button type="button" className="action-btn secondary" onClick={() => onLogActivity("water-picking")}>
+            {t("app.progressDashboard.quickActions.waterPicking")}
+          </button>
+        </div>
+      </div>
+
       <div className="progress-dashboard-grid">
         <section className="progress-dashboard-section">
           <div className="progress-dashboard-section-header">
@@ -59,7 +73,11 @@ export default function ProgressDashboardPanel({ t, dashboard, activeUserName, f
             <div className="progress-dashboard-list">
               {dashboard.recentSessions.map((session) => (
                 <article key={session.sessionId} className="progress-dashboard-list-item">
-                  <strong>{session.songTitle ? t("app.progressDashboard.sessionWithSong", { title: session.songTitle }) : t("app.progressDashboard.sessionWithoutSong")}</strong>
+                  <strong>
+                    {session.songTitle
+                      ? t("app.progressDashboard.sessionWithSong", { title: session.songTitle })
+                      : t(`app.progressDashboard.activityTypes.${session.sessionType || "brushing"}`)}
+                  </strong>
                   <span>{t("app.progressDashboard.sessionMeta", { date: String(session.completedAt || session.startedAt || "").slice(0, 10), duration: session.targetDurationSeconds || session.durationSeconds || 0 })}</span>
                 </article>
               ))}

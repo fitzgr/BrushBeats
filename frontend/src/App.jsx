@@ -6,11 +6,13 @@ import Player from "./components/Player";
 import BrushingGuide from "./components/BrushingGuide";
 import HouseholdSetupPanel from "./components/HouseholdSetupPanel";
 import HouseholdOverviewPanel from "./components/HouseholdOverviewPanel";
+import HouseholdManagementPanel from "./components/HouseholdManagementPanel";
 import ProgressDashboardPanel from "./components/ProgressDashboardPanel";
 import TranslationWorkshop from "./components/TranslationWorkshop";
 import VersionHistory from "./components/VersionHistory";
 import { clearPersistedPhase2Data, loadPersistedAppState } from "./db/appStateService";
 import { loadHouseholdOverview, switchActiveHouseholdUser } from "./db/householdOverviewService";
+import { archiveHouseholdMember, loadHouseholdManagement, removeHouseholdMember, restoreHouseholdMember, saveHouseholdMember, saveHouseholdSettings } from "./db/householdManagementService";
 import { initializePhase2Migration } from "./db/migrationService";
 import { loadUserProgressDashboard } from "./db/progressDashboardService";
 import { completeHouseholdOnboarding, saveHouseholdOnboardingDraft, setHouseholdOnboardingUiDismissed } from "./db/householdSetupService";
@@ -227,6 +229,8 @@ function App() {
   const [householdProfile, setHouseholdProfile] = useState(null);
   const [activeHouseholdUser, setActiveHouseholdUser] = useState(null);
   const [householdOverview, setHouseholdOverview] = useState(null);
+  const [householdManagement, setHouseholdManagement] = useState(null);
+  const [householdManagementSaving, setHouseholdManagementSaving] = useState(false);
   const [progressDashboard, setProgressDashboard] = useState(null);
   const [progressDashboardFilters, setProgressDashboardFilters] = useState({ timeRange: "30d", activityType: "all" });
   const [persistedMigrationState, setPersistedMigrationState] = useState(null);
@@ -588,6 +592,27 @@ function App() {
   useEffect(() => {
     let cancelled = false;
 
+    async function refreshHouseholdManagement() {
+      if (storageConsent !== "granted" || !dbStatus.ready || !householdProfile?.householdId) {
+        setHouseholdManagement(null);
+        return;
+      }
+
+      const management = await loadHouseholdManagement(householdProfile.householdId);
+      if (!cancelled) {
+        setHouseholdManagement(management);
+      }
+    }
+
+    void refreshHouseholdManagement();
+    return () => {
+      cancelled = true;
+    };
+  }, [dbStatus.ready, householdProfile?.householdId, persistedStateRevision, storageConsent]);
+
+  useEffect(() => {
+    let cancelled = false;
+
     async function refreshProgressDashboard() {
       if (storageConsent !== "granted" || !dbStatus.ready || !activeHouseholdUser?.userId || !householdOnboardingState?.completedAt) {
         setProgressDashboard(null);
@@ -828,6 +853,7 @@ function App() {
     clearFavoriteSongs();
     setLastSession(null);
     setFavoriteSongs([]);
+    setHouseholdManagement(null);
     setHouseholdOverview(null);
     setProgressDashboard(null);
 
@@ -982,6 +1008,7 @@ function App() {
 
       setHouseholdProfile(result.household);
       setActiveHouseholdUser(result.user);
+      setHouseholdManagement(await loadHouseholdManagement(result.household.householdId));
       setHouseholdOverview(await loadHouseholdOverview(result.household.householdId));
       setProgressDashboard(await loadUserProgressDashboard(result.user.userId, progressDashboardFilters));
       setHouseholdOnboardingState({
@@ -1008,6 +1035,201 @@ function App() {
   async function handlePreferredLanguageChange(nextLanguage) {
     const nextFallbackInfo = await setPreferredSupportedLanguage(nextLanguage);
     setLanguageFallbackState(nextFallbackInfo);
+  }
+
+  async function handleSaveHouseholdSettings(nextHouseholdName) {
+    if (!householdProfile?.householdId) {
+      return;
+    }
+
+    setHouseholdManagementSaving(true);
+    try {
+      const updatedHousehold = await saveHouseholdSettings(householdProfile.householdId, {
+        householdName: nextHouseholdName?.trim() || "BrushBeats Household"
+      });
+      setHouseholdProfile(updatedHousehold);
+      setHouseholdManagement(await loadHouseholdManagement(updatedHousehold.householdId));
+      setHouseholdOverview(await loadHouseholdOverview(updatedHousehold.householdId));
+      setError("");
+    } catch (householdError) {
+      setError(householdError?.message || t("app.householdSetup.saveFailed"));
+    } finally {
+      setHouseholdManagementSaving(false);
+    }
+  }
+
+  async function handleSaveHouseholdMember(userId, draft) {
+    if (!householdProfile?.householdId) {
+      return;
+    }
+
+    setHouseholdManagementSaving(true);
+    try {
+      const member = await saveHouseholdMember(householdProfile.householdId, {
+        userId,
+        ...draft
+      });
+      const [management, overview] = await Promise.all([
+        loadHouseholdManagement(householdProfile.householdId),
+        loadHouseholdOverview(householdProfile.householdId)
+      ]);
+
+      setHouseholdManagement(management);
+      setHouseholdOverview(overview);
+
+      if (member.userId === activeHouseholdUser?.userId) {
+        setActiveHouseholdUser(member);
+        applySavedSession(member);
+      }
+
+      setPersistedStateRevision((current) => current + 1);
+      setError("");
+    } catch (memberError) {
+      setError(memberError?.message || t("app.householdSetup.saveFailed"));
+    } finally {
+      setHouseholdManagementSaving(false);
+    }
+  }
+
+  async function handleArchiveHouseholdMember(userId) {
+    if (!householdProfile?.householdId) {
+      return;
+    }
+
+    setHouseholdManagementSaving(true);
+    try {
+      const management = await archiveHouseholdMember(householdProfile.householdId, userId);
+      const [overview, scopedState] = await Promise.all([
+        loadHouseholdOverview(householdProfile.householdId),
+        management.household.activeUserId
+          ? getUserScopedState(management.household.activeUserId, {
+              defaults: { values, filters: songFilters, keyword, brushingHand, brushType, brushDurationSeconds },
+              lastSession,
+              favoriteSongs
+            })
+          : Promise.resolve(null)
+      ]);
+
+      const nextActiveUser = management.members.find((member) => member.userId === management.household.activeUserId) || null;
+
+      setHouseholdManagement(management);
+      setHouseholdOverview(overview);
+      setActiveHouseholdUser(nextActiveUser);
+      setHouseholdProfile(management.household);
+
+      if (nextActiveUser && scopedState) {
+        if (scopedState.defaults) {
+          applySavedSession(scopedState.defaults);
+        }
+        setLastSession(scopedState.lastSession || null);
+        setFavoriteSongs(scopedState.favoriteSongs || []);
+        setProgressDashboard(await loadUserProgressDashboard(nextActiveUser.userId, progressDashboardFilters));
+      }
+
+      setPersistedStateRevision((current) => current + 1);
+      setError("");
+    } catch (archiveError) {
+      setError(archiveError?.message || t("app.householdSetup.saveFailed"));
+    } finally {
+      setHouseholdManagementSaving(false);
+    }
+  }
+
+  async function handleRestoreHouseholdMember(userId) {
+    if (!householdProfile?.householdId) {
+      return;
+    }
+
+    setHouseholdManagementSaving(true);
+    try {
+      setHouseholdManagement(await restoreHouseholdMember(householdProfile.householdId, userId));
+      setHouseholdOverview(await loadHouseholdOverview(householdProfile.householdId));
+      setPersistedStateRevision((current) => current + 1);
+      setError("");
+    } catch (restoreError) {
+      setError(restoreError?.message || t("app.householdSetup.saveFailed"));
+    } finally {
+      setHouseholdManagementSaving(false);
+    }
+  }
+
+  async function handleDeleteHouseholdMember(userId) {
+    if (!householdProfile?.householdId) {
+      return;
+    }
+
+    setHouseholdManagementSaving(true);
+    try {
+      const management = await removeHouseholdMember(householdProfile.householdId, userId);
+      const [overview, scopedState] = await Promise.all([
+        loadHouseholdOverview(householdProfile.householdId),
+        management?.household?.activeUserId
+          ? getUserScopedState(management.household.activeUserId, {
+              defaults: { values, filters: songFilters, keyword, brushingHand, brushType, brushDurationSeconds },
+              lastSession,
+              favoriteSongs
+            })
+          : Promise.resolve(null)
+      ]);
+
+      const nextActiveUser = management?.members?.find((member) => member.userId === management.household.activeUserId) || null;
+      setHouseholdManagement(management);
+      setHouseholdOverview(overview);
+      setActiveHouseholdUser(nextActiveUser);
+      setHouseholdProfile(management?.household || householdProfile);
+
+      if (nextActiveUser && scopedState) {
+        if (scopedState.defaults) {
+          applySavedSession(scopedState.defaults);
+        }
+        setLastSession(scopedState.lastSession || null);
+        setFavoriteSongs(scopedState.favoriteSongs || []);
+        setProgressDashboard(await loadUserProgressDashboard(nextActiveUser.userId, progressDashboardFilters));
+      }
+
+      setPersistedStateRevision((current) => current + 1);
+      setError("");
+    } catch (removeError) {
+      setError(removeError?.message || t("app.householdSetup.saveFailed"));
+    } finally {
+      setHouseholdManagementSaving(false);
+    }
+  }
+
+  async function handleLogRoutineActivity(sessionType) {
+    if (!storageConsent || storageConsent !== "granted" || !dbStatus.ready || !activeHouseholdUser?.userId || !householdProfile?.householdId) {
+      return;
+    }
+
+    const durationByType = {
+      flossing: 90,
+      "water-picking": 60
+    };
+
+    try {
+      const now = new Date().toISOString();
+      const durationSeconds = durationByType[sessionType] || 60;
+      await createBrushingSession({
+        userId: activeHouseholdUser.userId,
+        householdId: householdProfile.householdId,
+        sessionType,
+        startedAt: now,
+        completedAt: now,
+        durationSeconds,
+        targetDurationSeconds: durationSeconds,
+        topTeethCount: Number(values.top || 0),
+        bottomTeethCount: Number(values.bottom || 0),
+        totalTeethCount: Number(values.top || 0) + Number(values.bottom || 0),
+        performanceRating: "complete",
+        completed: true,
+        source: "phase3-quick-log"
+      });
+      setPersistedStateRevision((current) => current + 1);
+      trackEvent("phase3_activity_logged", { session_type: sessionType });
+      setError("");
+    } catch (activityError) {
+      setError(activityError?.message || t("app.householdSetup.saveFailed"));
+    }
   }
 
   async function handleSwitchHouseholdUser(userId) {
@@ -1040,6 +1262,7 @@ function App() {
       }
 
       setHouseholdOverview(overview);
+  setHouseholdManagement(await loadHouseholdManagement(householdProfile.householdId));
       setActiveHouseholdUser(nextActiveUser);
   setProgressDashboard(await loadUserProgressDashboard(userId, progressDashboardFilters));
       setLastSession(scopedState.lastSession || null);
@@ -1792,6 +2015,12 @@ function App() {
     householdOnboardingState?.completedAt &&
     activeHouseholdUser?.userId &&
     progressDashboard;
+  const showHouseholdManagement =
+    appView === "brush" &&
+    storageConsent === "granted" &&
+    dbStatus.ready &&
+    householdOnboardingState?.completedAt &&
+    householdManagement?.household;
 
   return (
     <main className={`app-shell ${device.isMobile ? "mobile-shell" : "desktop-shell"}${appView === "workshop" && !device.isMobile ? " workshop-shell" : ""}`}>
@@ -2035,6 +2264,23 @@ function App() {
           activeUserName={activeHouseholdUser?.name}
           filters={progressDashboardFilters}
           onFilterChange={handleProgressDashboardFilterChange}
+          onLogActivity={handleLogRoutineActivity}
+        />
+      )}
+
+      {showHouseholdManagement && (
+        <HouseholdManagementPanel
+          key={`${householdManagement.household.householdId}:${householdManagement.household.updatedAt || "household"}:${householdManagement.members.length}:${householdManagement.archivedMembers.length}`}
+          t={t}
+          management={householdManagement}
+          activeUserId={activeHouseholdUser?.userId}
+          saving={householdManagementSaving}
+          onSaveHousehold={handleSaveHouseholdSettings}
+          onSaveMember={handleSaveHouseholdMember}
+          onArchiveMember={handleArchiveHouseholdMember}
+          onRestoreMember={handleRestoreHouseholdMember}
+          onRemoveMember={handleDeleteHouseholdMember}
+          onActivateMember={handleSwitchHouseholdUser}
         />
       )}
 
