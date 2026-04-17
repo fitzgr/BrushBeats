@@ -32,7 +32,10 @@ async function requestWithOptions(path, options = {}) {
 
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
-    throw new Error(body.error || "Request failed");
+    const error = new Error(body.error || "Request failed");
+    error.status = response.status;
+    error.code = body.code || null;
+    throw error;
   }
 
   return response.json();

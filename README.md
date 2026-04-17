@@ -50,6 +50,8 @@ Copy .env.example to .env at the project root and fill values:
 - YOUTUBE_API_KEY
 - PORT (default: 4000)
 - ADMIN_WORKSHOP_PASSWORD
+- DATABASE_URL
+- CLOUD_SYNC_ALLOWED_HOUSEHOLD_IDS (comma-separated list of household ids allowed to use cloud sync/readback)
 
 ## Run Locally
 
@@ -114,3 +116,15 @@ BrushBeats includes a visible GetSongBPM attribution/footer link in the app. Use
 GitHub Pages can host the React frontend but not the Express backend. For production API routes, deploy backend separately (Render, Railway, Fly.io, or similar), then set frontend env:
 
 - VITE_API_BASE=https://your-backend-domain.example
+
+## Cloud Sync Gate
+
+BrushBeats now supports an allowlist-based backend gate for household cloud sync and cloud hydration.
+
+- Free/local households stay local-only in the frontend.
+- The backend independently enforces cloud access using `CLOUD_SYNC_ALLOWED_HOUSEHOLD_IDS`.
+- If a household id is not in that comma-separated allowlist, `/api/households/:householdId` and `/api/households/:householdId/sync` return `403`.
+
+Example:
+
+- `CLOUD_SYNC_ALLOWED_HOUSEHOLD_IDS=household_10b22295-2bca-430c-8c68-3bf1fedc6946`

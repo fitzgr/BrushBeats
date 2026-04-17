@@ -12,6 +12,10 @@ export function hasCloudSyncAccess(subscriptionTier) {
   return normalizeSubscriptionTier(subscriptionTier) !== "free";
 }
 
+function isCloudSyncServerDenied(error) {
+  return error?.code === "cloud_sync_not_enabled";
+}
+
 function normalizeRemoteHousehold(remoteHousehold = {}, existingHousehold = {}) {
   return {
     ...existingHousehold,
@@ -190,10 +194,14 @@ export async function trySyncHouseholdSnapshot(householdId) {
     return { ok: true, response };
   } catch (error) {
     await updateHousehold(householdId, {
-      syncStatus: "sync-error"
+      syncStatus: isCloudSyncServerDenied(error) ? "server-gated" : "sync-error"
     });
 
-    return { ok: false, error };
+    return {
+      ok: false,
+      error,
+      reason: isCloudSyncServerDenied(error) ? "server-gated" : undefined
+    };
   }
 }
 
@@ -225,6 +233,19 @@ export async function tryHydrateHouseholdFromCloud(householdId) {
   try {
     return await hydrateHouseholdFromCloud(householdId);
   } catch (error) {
+    if (isCloudSyncServerDenied(error)) {
+      await updateHousehold(householdId, {
+        syncStatus: "server-gated"
+      });
+
+      return {
+        ok: false,
+        skipped: true,
+        reason: "server-gated",
+        error
+      };
+    }
+
     return {
       ok: false,
       error

@@ -3,6 +3,33 @@ const { getPool } = require("../config/database");
 
 const router = express.Router();
 
+function getCloudSyncAllowedHouseholdIds() {
+  return new Set(
+    String(process.env.CLOUD_SYNC_ALLOWED_HOUSEHOLD_IDS || "")
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean)
+  );
+}
+
+function buildCloudSyncDeniedPayload(householdId) {
+  return {
+    error: `Cloud sync is not enabled for household ${householdId}.`,
+    code: "cloud_sync_not_enabled"
+  };
+}
+
+function ensureCloudSyncEnabled(res, householdId) {
+  const allowedHouseholdIds = getCloudSyncAllowedHouseholdIds();
+
+  if (allowedHouseholdIds.has(householdId)) {
+    return true;
+  }
+
+  res.status(403).json(buildCloudSyncDeniedPayload(householdId));
+  return false;
+}
+
 function normalizeInteger(value, fallback = 0) {
   const numericValue = Number(value);
   return Number.isFinite(numericValue) ? Math.round(numericValue) : fallback;
@@ -135,6 +162,10 @@ router.get("/:householdId", async (req, res, next) => {
     return res.status(400).json({ error: "householdId is required" });
   }
 
+  if (!ensureCloudSyncEnabled(res, householdId)) {
+    return;
+  }
+
   const client = await getPool().connect();
 
   try {
@@ -167,6 +198,10 @@ router.post("/:householdId/sync", async (req, res, next) => {
 
   if (req.body?.household?.householdId && req.body.household.householdId !== householdId) {
     return res.status(400).json({ error: "householdId path parameter does not match household payload" });
+  }
+
+  if (!ensureCloudSyncEnabled(res, householdId)) {
+    return;
   }
 
   const client = await getPool().connect();

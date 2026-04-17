@@ -35,6 +35,8 @@ function formatSyncStatus(status) {
   switch (String(status || "local-only")) {
     case "connected":
       return "Connected";
+    case "server-gated":
+      return "Server gated";
     case "sync-error":
       return "Sync error";
     case "subscriber-required":
