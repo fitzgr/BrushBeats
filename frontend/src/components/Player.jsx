@@ -41,6 +41,7 @@ function Player({
   const onPlaybackDurationChangeRef = useRef(onPlaybackDurationChange);
   const onSongEndedRef = useRef(onSongEnded);
   const [apiReady, setApiReady] = useState(Boolean(window.YT?.Player));
+  const [playerError, setPlayerError] = useState("");
   const videoId = useMemo(() => parseVideoId(playerData), [playerData]);
 
   useEffect(() => {
@@ -101,23 +102,39 @@ function Player({
       return;
     }
 
+    setPlayerError("");
+
+    hostRef.current.replaceChildren();
+
     if (playerRef.current) {
       playerRef.current.destroy();
       playerRef.current = null;
     }
 
     playerRef.current = new window.YT.Player(hostRef.current, {
+      width: "100%",
+      height: "100%",
+      host: "https://www.youtube-nocookie.com",
       videoId,
       playerVars: {
         rel: 0,
         autoplay: 0,
         playsinline: 1,
-        modestbranding: 1
+        modestbranding: 1,
+        controls: 1,
+        fs: 1,
+        enablejsapi: 1,
+        origin: window.location.origin
       },
       events: {
         onReady: () => {
           onPlaybackDurationChangeRef.current?.(playerRef.current?.getDuration?.() ?? 0);
           onPlaybackTickRef.current?.(playerRef.current?.getCurrentTime?.() ?? 0);
+        },
+        onError: (event) => {
+          stopTickTimer();
+          setPlayerError(t("player.noEmbed", { title: selectedSong?.title || "" }));
+          console.error("YouTube player error", event?.data, { videoId });
         },
         onStateChange: (event) => {
           if (event.data === window.YT?.PlayerState?.PLAYING) {
@@ -206,6 +223,8 @@ function Player({
         <p>{t("player.noEmbed", { title: selectedSong.title })}</p>
       )}
 
+      {!loading && playerError && <p>{playerError}</p>}
+
       {brushingPhase === "running" && (
         <p className="player-status">{t("player.runningStatus")}</p>
       )}
@@ -220,30 +239,16 @@ function Player({
           <h3>
             {selectedSong.title} - {selectedSong.artist}
           </h3>
-          <div style={{ position: "relative" }}>
+          <div className="player-frame-shell" style={{ minHeight: frameMinHeight }}>
             <div
+              key={videoId || "player-host"}
               ref={hostRef}
               className="player-frame"
               aria-label={t("player.frameAria", { title: selectedSong.title, artist: selectedSong.artist })}
-              style={{ opacity: playerData?.embedUrl ? 1 : 0.4, minHeight: frameMinHeight }}
+              style={{ opacity: playerData?.embedUrl ? 1 : 0.4 }}
             />
             {loading && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: "rgba(255, 249, 239, 0.8)",
-                  borderRadius: "8px",
-                  fontSize: "0.9rem",
-                  color: "#666"
-                }}
-              >
+              <div className="player-loading-overlay">
                 {t("player.loadingVideo")}
               </div>
             )}

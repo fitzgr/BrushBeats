@@ -1,5 +1,17 @@
 [
   {
+    "id": "commit-213bb737010d8d3652205fa973247ba8327b2d5a",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "213bb737010d8d3652205fa973247ba8327b2d5a",
+    "shortSha": "213bb73",
+    "timestamp": "2026-04-17T14:39:16-04:00",
+    "date": "2026-04-17",
+    "author": "Grant Fitz",
+    "subject": "Add household snapshot sync to Postgres",
+    "body": ""
+  },
+  {
     "id": "commit-b234e838dd1e7a2603da2a3c58a6f67baf966d02",
     "kind": "commit",
     "source": "git-history",
