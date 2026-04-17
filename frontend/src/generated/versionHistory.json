@@ -1,5 +1,17 @@
 [
   {
+    "id": "commit-12f9da56571a77941e75969321bc88fec349f2b9",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "12f9da56571a77941e75969321bc88fec349f2b9",
+    "shortSha": "12f9da5",
+    "timestamp": "2026-04-17T15:34:16-04:00",
+    "date": "2026-04-17",
+    "author": "Grant Fitz",
+    "subject": "Gate cloud sync by subscription tier",
+    "body": ""
+  },
+  {
     "id": "commit-e5c48f79eeb5f4bdbce96a0ad20403c43ac77444",
     "kind": "commit",
     "source": "git-history",

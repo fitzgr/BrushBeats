@@ -1,4 +1,5 @@
 import { getDB, STORE_NAMES, waitForTransaction } from "./indexedDbService";
+import { tryHydrateHouseholdFromCloud } from "./householdSyncService";
 import { getHousehold, getAppSetting, getUserById, getUsersByHousehold } from "./storeHelpers";
 
 async function resolveActiveUser(household) {
@@ -18,7 +19,15 @@ async function resolveActiveUser(household) {
 }
 
 export async function loadPersistedAppState(fallbackState = {}) {
-  const household = await getHousehold();
+  let household = await getHousehold();
+
+  if (household?.householdId) {
+    const hydrationResult = await tryHydrateHouseholdFromCloud(household.householdId);
+    if (hydrationResult?.ok && hydrationResult.household?.householdId) {
+      household = hydrationResult.household;
+    }
+  }
+
   const activeUser = await resolveActiveUser(household);
   const [
     storageConsent,

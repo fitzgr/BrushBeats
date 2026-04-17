@@ -1,7 +1,8 @@
 import { nowIso } from "./indexedDbService";
-import { syncHouseholdSnapshot as syncHouseholdSnapshotRequest } from "../api/client";
-import { getHousehold, getUsersByHousehold, updateHousehold } from "./storeHelpers";
-import { getUserScopedState } from "./userScopedStateService";
+import { getHouseholdSnapshot, syncHouseholdSnapshot as syncHouseholdSnapshotRequest } from "../api/client";
+import { STORE_NAMES } from "./indexedDbService";
+import { getHousehold, getUsersByHousehold, putItem, updateHousehold } from "./storeHelpers";
+import { getUserScopedState, saveUserScopedDefaults } from "./userScopedStateService";
 
 function normalizeSubscriptionTier(value) {
   return String(value || "free").trim().toLowerCase();
@@ -9,6 +10,90 @@ function normalizeSubscriptionTier(value) {
 
 export function hasCloudSyncAccess(subscriptionTier) {
   return normalizeSubscriptionTier(subscriptionTier) !== "free";
+}
+
+function normalizeRemoteHousehold(remoteHousehold = {}, existingHousehold = {}) {
+  return {
+    ...existingHousehold,
+    householdId: remoteHousehold.householdId || existingHousehold.householdId,
+    householdName: remoteHousehold.householdName || existingHousehold.householdName || "BrushBeats Household",
+    createdAt: remoteHousehold.createdAt || existingHousehold.createdAt || nowIso(),
+    updatedAt: remoteHousehold.updatedAt || existingHousehold.updatedAt || nowIso(),
+    lastSyncedAt: nowIso(),
+    subscriptionTier: remoteHousehold.subscriptionTier || existingHousehold.subscriptionTier || "free",
+    activeUserId: remoteHousehold.activeUserId || existingHousehold.activeUserId || null,
+    migrationSource: remoteHousehold.migrationSource || existingHousehold.migrationSource || "manual",
+    syncStatus: remoteHousehold.syncStatus || existingHousehold.syncStatus || "connected",
+    rewardSettings: remoteHousehold.rewardSettings || existingHousehold.rewardSettings || {},
+    goalSettings: remoteHousehold.goalSettings || existingHousehold.goalSettings || {}
+  };
+}
+
+function normalizeRemoteMember(remoteMember = {}, householdId, existingMember = {}) {
+  return {
+    ...existingMember,
+    userId: remoteMember.userId || existingMember.userId,
+    householdId,
+    name: remoteMember.name || existingMember.name || "Household Member",
+    avatar: remoteMember.avatar ?? existingMember.avatar ?? null,
+    birthYear: Number.isFinite(Number(remoteMember.birthYear)) ? Number(remoteMember.birthYear) : existingMember.birthYear ?? null,
+    ageGroup: remoteMember.ageGroup || existingMember.ageGroup || remoteMember.toothStage || "unknown",
+    toothStage: remoteMember.toothStage || existingMember.toothStage || "unknown",
+    topTeethCount: Number.isFinite(Number(remoteMember.topTeethCount)) ? Number(remoteMember.topTeethCount) : Number(existingMember.topTeethCount || 0),
+    bottomTeethCount: Number.isFinite(Number(remoteMember.bottomTeethCount)) ? Number(remoteMember.bottomTeethCount) : Number(existingMember.bottomTeethCount || 0),
+    totalTeethCount: Number.isFinite(Number(remoteMember.totalTeethCount))
+      ? Number(remoteMember.totalTeethCount)
+      : Number(existingMember.totalTeethCount || 0),
+    isActive: Boolean(remoteMember.isActive),
+    isArchived: Boolean(remoteMember.isArchived),
+    createdAt: remoteMember.createdAt || existingMember.createdAt || nowIso(),
+    updatedAt: remoteMember.updatedAt || existingMember.updatedAt || nowIso(),
+    syncVersion: Number.isFinite(Number(remoteMember.syncVersion)) ? Number(remoteMember.syncVersion) : Number(existingMember.syncVersion || 1),
+    isDeleted: Boolean(remoteMember.isDeleted),
+    deletedAt: remoteMember.deletedAt || existingMember.deletedAt || null
+  };
+}
+
+async function importHouseholdSnapshot(snapshot) {
+  if (!snapshot?.household?.householdId) {
+    return null;
+  }
+
+  const householdId = snapshot.household.householdId;
+  const [existingHousehold, localUsers] = await Promise.all([
+    getHousehold(householdId),
+    getUsersByHousehold(householdId)
+  ]);
+  const localUsersById = new Map(localUsers.map((user) => [user.userId, user]));
+  const remoteMembers = Array.isArray(snapshot.members) ? snapshot.members : [];
+  const remoteMemberIds = new Set(remoteMembers.map((member) => member.userId).filter(Boolean));
+
+  const nextHousehold = normalizeRemoteHousehold(snapshot.household, existingHousehold || {});
+  await putItem(STORE_NAMES.household, nextHousehold);
+
+  for (const remoteMember of remoteMembers) {
+    const nextMember = normalizeRemoteMember(remoteMember, householdId, localUsersById.get(remoteMember.userId) || {});
+    await putItem(STORE_NAMES.users, nextMember);
+
+    if (remoteMember.preferences && typeof remoteMember.preferences === "object") {
+      await saveUserScopedDefaults(remoteMember.userId, remoteMember.preferences);
+    }
+  }
+
+  for (const localUser of localUsers) {
+    if (remoteMemberIds.has(localUser.userId)) {
+      continue;
+    }
+
+    await putItem(STORE_NAMES.users, {
+      ...localUser,
+      isDeleted: true,
+      deletedAt: localUser.deletedAt || nowIso(),
+      updatedAt: nowIso()
+    });
+  }
+
+  return nextHousehold;
 }
 
 function buildMemberPreferences(defaults) {
@@ -109,5 +194,40 @@ export async function trySyncHouseholdSnapshot(householdId) {
     });
 
     return { ok: false, error };
+  }
+}
+
+export async function hydrateHouseholdFromCloud(householdId) {
+  const localHousehold = await getHousehold(householdId);
+
+  if (!localHousehold?.householdId || !hasCloudSyncAccess(localHousehold.subscriptionTier)) {
+    return {
+      ok: false,
+      skipped: true,
+      reason: "subscriber-required"
+    };
+  }
+
+  const snapshot = await getHouseholdSnapshot(householdId);
+  const household = await importHouseholdSnapshot(snapshot);
+  return {
+    ok: true,
+    household,
+    snapshot
+  };
+}
+
+export async function tryHydrateHouseholdFromCloud(householdId) {
+  if (!householdId) {
+    return { ok: false, skipped: true, reason: "missing-household-id" };
+  }
+
+  try {
+    return await hydrateHouseholdFromCloud(householdId);
+  } catch (error) {
+    return {
+      ok: false,
+      error
+    };
   }
 }
