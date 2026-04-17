@@ -4,6 +4,7 @@
   "main": "src/server.js",
   "scripts": {
     "dev": "nodemon src/server.js",
+    "migrate": "node src/scripts/runMigrations.js",
     "start": "node src/server.js",
     "test": "echo \"No tests configured yet\""
   },
@@ -16,7 +17,8 @@
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
-    "node-cache": "^5.1.2"
+    "node-cache": "^5.1.2",
+    "pg": "^8.20.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

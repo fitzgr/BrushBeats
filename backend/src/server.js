@@ -11,6 +11,7 @@ const songsRoute = require("./routes/songs");
 const youtubeRoute = require("./routes/youtube");
 const adminLocalesRoute = require("./routes/adminLocales");
 const geoRoute = require("./routes/geo");
+const healthRoute = require("./routes/health");
 
 const app = express();
 const port = Number(process.env.PORT || 4000);
@@ -25,13 +26,12 @@ app.get("/", (_req, res) => {
     ok: true,
     name: "BrushBeats API",
     frontend: "http://localhost:5173/BrushBeats/",
-    health: "/api/health"
+    health: "/api/health",
+    databaseHealth: "/api/health/db"
   });
 });
 
-app.get("/api/health", (_req, res) => {
-  res.json({ ok: true, name: "BrushBeats API" });
-});
+app.use("/api/health", healthRoute);
 
 app.use("/api/bpm", bpmRoute);
 app.use("/api/songs", songsRoute);
@@ -47,6 +47,10 @@ app.use((error, _req, res, _next) => {
   });
 });
 
-app.listen(port, () => {
-  console.log(`BrushBeats API listening on http://localhost:${port}`);
-});
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`BrushBeats API listening on http://localhost:${port}`);
+  });
+}
+
+module.exports = app;
