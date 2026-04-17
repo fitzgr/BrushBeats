@@ -96,6 +96,7 @@ export async function createHousehold(input = {}) {
     householdName: input.householdName || "My Brush Beats Household",
     createdAt: input.createdAt || timestamp,
     updatedAt: input.updatedAt || timestamp,
+    lastSyncedAt: input.lastSyncedAt || null,
     subscriptionTier: input.subscriptionTier || "free",
     activeUserId: input.activeUserId || null,
     migrationSource: input.migrationSource || "manual",

@@ -1,6 +1,15 @@
+import { nowIso } from "./indexedDbService";
 import { syncHouseholdSnapshot as syncHouseholdSnapshotRequest } from "../api/client";
 import { getHousehold, getUsersByHousehold, updateHousehold } from "./storeHelpers";
 import { getUserScopedState } from "./userScopedStateService";
+
+function normalizeSubscriptionTier(value) {
+  return String(value || "free").trim().toLowerCase();
+}
+
+export function hasCloudSyncAccess(subscriptionTier) {
+  return normalizeSubscriptionTier(subscriptionTier) !== "free";
+}
 
 function buildMemberPreferences(defaults) {
   if (!defaults || typeof defaults !== "object") {
@@ -58,11 +67,28 @@ export async function syncHouseholdSnapshot(householdId) {
     return null;
   }
 
+  if (!hasCloudSyncAccess(snapshot.household.subscriptionTier)) {
+    await updateHousehold(householdId, {
+      syncStatus: "subscriber-required"
+    });
+
+    return {
+      ok: false,
+      skipped: true,
+      reason: "subscriber-required"
+    };
+  }
+
   const response = await syncHouseholdSnapshotRequest(householdId, snapshot);
+  const syncedAt = nowIso();
   await updateHousehold(householdId, {
-    syncStatus: response?.household?.syncStatus || "connected"
+    syncStatus: response?.household?.syncStatus || "connected",
+    lastSyncedAt: syncedAt
   });
-  return response;
+  return {
+    ...response,
+    lastSyncedAt: syncedAt
+  };
 }
 
 export async function trySyncHouseholdSnapshot(householdId) {
@@ -72,6 +98,10 @@ export async function trySyncHouseholdSnapshot(householdId) {
 
   try {
     const response = await syncHouseholdSnapshot(householdId);
+    if (response?.skipped) {
+      return { ok: false, skipped: true, reason: response.reason, response };
+    }
+
     return { ok: true, response };
   } catch (error) {
     await updateHousehold(householdId, {

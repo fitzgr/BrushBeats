@@ -31,6 +31,39 @@ function getStageLabel(t, stage) {
   return t("age.stages.unknown.label");
 }
 
+function formatSyncStatus(status) {
+  switch (String(status || "local-only")) {
+    case "connected":
+      return "Connected";
+    case "sync-error":
+      return "Sync error";
+    case "subscriber-required":
+      return "Subscriber required";
+    case "local-only":
+    default:
+      return "Local only";
+  }
+}
+
+function formatSyncTimestamp(value) {
+  if (!value) {
+    return "Not synced yet";
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return "Not synced yet";
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+  }).format(parsed);
+}
+
 function buildRewardSettingsDraft(rewardSettings = {}) {
   return {
     levelBasePoints: createNumericDraftValue(rewardSettings.levelBasePoints, 100),
@@ -223,7 +256,8 @@ export default function HouseholdManagementPanel({
           </div>
           <div className="household-management-readonly">
             <span>{t("app.householdManagement.fields.syncStatus")}</span>
-            <strong>{management.household.syncStatus || "local-only"}</strong>
+            <strong>{formatSyncStatus(management.household.syncStatus)}</strong>
+            <small>{formatSyncTimestamp(management.household.lastSyncedAt)}</small>
           </div>
           <label>
             <span>{t("app.householdManagement.fields.levelBasePoints")}</span>
