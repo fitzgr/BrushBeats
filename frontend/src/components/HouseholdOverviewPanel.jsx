@@ -1,3 +1,19 @@
+function getStageLabel(t, stage) {
+  const nestedKey = `age.stages.${stage || "unknown"}.label`;
+  const nestedLabel = t(nestedKey);
+  if (nestedLabel !== nestedKey) {
+    return nestedLabel;
+  }
+
+  const directKey = `age.stages.${stage || "unknown"}`;
+  const directLabel = t(directKey);
+  if (directLabel !== directKey) {
+    return directLabel;
+  }
+
+  return t("age.stages.unknown.label");
+}
+
 export default function HouseholdOverviewPanel({ t, overview, onSwitchUser }) {
   if (!overview?.household) {
     return null;
@@ -21,7 +37,7 @@ export default function HouseholdOverviewPanel({ t, overview, onSwitchUser }) {
             onClick={() => onSwitchUser(member.userId)}
           >
             <strong>{member.name}</strong>
-            <span>{t("app.householdOverview.memberStage", { stage: t(`age.stages.${member.toothStage || "unknown"}.label`) })}</span>
+            <span>{t("app.householdOverview.memberStage", { stage: getStageLabel(t, member.toothStage) })}</span>
           </button>
         ))}
       </div>

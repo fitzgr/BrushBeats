@@ -1,55 +1,94 @@
 import { useState } from "react";
 
+function createNumericDraftValue(value, fallback) {
+  const numericValue = Number(value);
+  return String(Number.isFinite(numericValue) ? numericValue : fallback);
+}
+
+function parseIntegerInput(value, fallback, min, max) {
+  const trimmedValue = String(value ?? "").trim();
+  const numericValue = Number(trimmedValue);
+  if (!trimmedValue || !Number.isFinite(numericValue)) {
+    return fallback;
+  }
+
+  return Math.min(max, Math.max(min, Math.round(numericValue)));
+}
+
+function getStageLabel(t, stage) {
+  const nestedKey = `age.stages.${stage || "unknown"}.label`;
+  const nestedLabel = t(nestedKey);
+  if (nestedLabel !== nestedKey) {
+    return nestedLabel;
+  }
+
+  const directKey = `age.stages.${stage || "unknown"}`;
+  const directLabel = t(directKey);
+  if (directLabel !== directKey) {
+    return directLabel;
+  }
+
+  return t("age.stages.unknown.label");
+}
+
 function buildRewardSettingsDraft(rewardSettings = {}) {
   return {
-    levelBasePoints: Number(rewardSettings.levelBasePoints || 100),
-    levelStepPoints: Number(rewardSettings.levelStepPoints || 120),
-    levelGrowthPoints: Number(rewardSettings.levelGrowthPoints || 20),
-    brushingSessionPoints: Number(rewardSettings.brushingSessionPoints || 12),
-    supportRoutinePoints: Number(rewardSettings.supportRoutinePoints || 8),
-    toothMilestonePoints: Number(rewardSettings.toothMilestonePoints || 18),
-    routineVarietyPoints: Number(rewardSettings.routineVarietyPoints || 10)
+    levelBasePoints: createNumericDraftValue(rewardSettings.levelBasePoints, 100),
+    levelStepPoints: createNumericDraftValue(rewardSettings.levelStepPoints, 120),
+    levelGrowthPoints: createNumericDraftValue(rewardSettings.levelGrowthPoints, 20),
+    brushingSessionPoints: createNumericDraftValue(rewardSettings.brushingSessionPoints, 12),
+    supportRoutinePoints: createNumericDraftValue(rewardSettings.supportRoutinePoints, 8),
+    toothMilestonePoints: createNumericDraftValue(rewardSettings.toothMilestonePoints, 18),
+    routineVarietyPoints: createNumericDraftValue(rewardSettings.routineVarietyPoints, 10)
   };
 }
 
 function buildGoalSettingsDraft(goalSettings = {}) {
   return {
-    weeklyBrushingSessions: Number(goalSettings.weeklyBrushingSessions || 14),
-    weeklySupportRoutines: Number(goalSettings.weeklySupportRoutines || 5)
+    weeklyBrushingSessions: createNumericDraftValue(goalSettings.weeklyBrushingSessions, 14),
+    weeklySupportRoutines: createNumericDraftValue(goalSettings.weeklySupportRoutines, 5)
   };
 }
 
 function buildEmptyMemberDraft() {
   return {
     name: "",
-    topTeethCount: 16,
-    bottomTeethCount: 16,
+    topTeethCount: "16",
+    bottomTeethCount: "16",
     preferredLanguage: "en",
     brushingHand: "right",
     brushType: "manual",
-    brushDurationSeconds: 120,
+    brushDurationSeconds: "120",
     keyword: ""
   };
 }
 
-function MemberEditor({ t, member, saving, activeUserId, onSave, onArchive, onRestore, onRemove, onActivate }) {
-  const [draft, setDraft] = useState(() => ({
+function buildMemberDraft(member) {
+  return {
     name: member.name || "",
-    topTeethCount: Number(member.topTeethCount || 0),
-    bottomTeethCount: Number(member.bottomTeethCount || 0),
+    topTeethCount: createNumericDraftValue(member.topTeethCount, 0),
+    bottomTeethCount: createNumericDraftValue(member.bottomTeethCount, 0),
     preferredLanguage: member.preferredLanguage || "en",
     brushingHand: member.brushingHand || "right",
     brushType: member.brushType || "manual",
-    brushDurationSeconds: Number(member.brushDurationSeconds || 120),
+    brushDurationSeconds: createNumericDraftValue(member.brushDurationSeconds, 120),
     keyword: member.keyword || ""
-  }));
+  };
+}
+
+function MemberEditor({ t, member, saving, activeUserId, onSave, onArchive, onRestore, onRemove, onActivate }) {
+  const [draft, setDraft] = useState(() => buildMemberDraft(member));
+
+  function updateDraft(key, value) {
+    setDraft((current) => ({ ...current, [key]: value }));
+  }
 
   return (
     <article className={`household-member-editor${member.userId === activeUserId ? " active" : ""}`}>
       <div className="household-member-editor-header">
         <div>
           <strong>{member.name}</strong>
-          <span>{t("app.householdManagement.memberSummary", { stage: t(`age.stages.${member.toothStage || "unknown"}.label`) })}</span>
+          <span>{t("app.householdManagement.memberSummary", { stage: getStageLabel(t, member.toothStage) })}</span>
         </div>
         <div className="household-member-editor-actions">
           {member.userId !== activeUserId && !member.isArchived && (
@@ -74,19 +113,19 @@ function MemberEditor({ t, member, saving, activeUserId, onSave, onArchive, onRe
       <div className="household-management-grid">
         <label>
           <span>{t("app.householdManagement.fields.memberName")}</span>
-          <input value={draft.name} onChange={(event) => setDraft((current) => ({ ...current, name: event.target.value }))} />
+          <input value={draft.name} onChange={(event) => updateDraft("name", event.target.value)} />
         </label>
         <label>
           <span>{t("app.householdManagement.fields.topTeeth")}</span>
-          <input type="number" min="0" max="16" value={draft.topTeethCount} onChange={(event) => setDraft((current) => ({ ...current, topTeethCount: Number(event.target.value) }))} />
+          <input type="number" inputMode="numeric" min="0" max="16" value={draft.topTeethCount} onChange={(event) => updateDraft("topTeethCount", event.target.value)} />
         </label>
         <label>
           <span>{t("app.householdManagement.fields.bottomTeeth")}</span>
-          <input type="number" min="0" max="16" value={draft.bottomTeethCount} onChange={(event) => setDraft((current) => ({ ...current, bottomTeethCount: Number(event.target.value) }))} />
+          <input type="number" inputMode="numeric" min="0" max="16" value={draft.bottomTeethCount} onChange={(event) => updateDraft("bottomTeethCount", event.target.value)} />
         </label>
         <label>
           <span>{t("app.householdManagement.fields.language")}</span>
-          <select value={draft.preferredLanguage} onChange={(event) => setDraft((current) => ({ ...current, preferredLanguage: event.target.value }))}>
+          <select value={draft.preferredLanguage} onChange={(event) => updateDraft("preferredLanguage", event.target.value)}>
             <option value="en">English</option>
             <option value="es">Espanol</option>
             <option value="tr">Turkce</option>
@@ -94,29 +133,39 @@ function MemberEditor({ t, member, saving, activeUserId, onSave, onArchive, onRe
         </label>
         <label>
           <span>{t("app.householdManagement.fields.brushingHand")}</span>
-          <select value={draft.brushingHand} onChange={(event) => setDraft((current) => ({ ...current, brushingHand: event.target.value }))}>
+          <select value={draft.brushingHand} onChange={(event) => updateDraft("brushingHand", event.target.value)}>
             <option value="right">{t("common.hands.right")}</option>
             <option value="left">{t("common.hands.left")}</option>
           </select>
         </label>
         <label>
           <span>{t("app.householdManagement.fields.brushType")}</span>
-          <select value={draft.brushType} onChange={(event) => setDraft((current) => ({ ...current, brushType: event.target.value }))}>
-            <option value="manual">{t("brushing.brushTypeOptions.manual")}</option>
-            <option value="electric">{t("brushing.brushTypeOptions.electric")}</option>
+          <select value={draft.brushType} onChange={(event) => updateDraft("brushType", event.target.value)}>
+            <option value="manual">{t("brushing.brushTypeManual")}</option>
+            <option value="electric">{t("brushing.brushTypeElectric")}</option>
           </select>
         </label>
         <label>
           <span>{t("app.householdManagement.fields.duration")}</span>
-          <input type="number" min="30" step="30" value={draft.brushDurationSeconds} onChange={(event) => setDraft((current) => ({ ...current, brushDurationSeconds: Number(event.target.value) }))} />
+          <input type="number" inputMode="numeric" min="30" step="30" value={draft.brushDurationSeconds} onChange={(event) => updateDraft("brushDurationSeconds", event.target.value)} />
         </label>
         <label>
           <span>{t("app.householdManagement.fields.keyword")}</span>
-          <input value={draft.keyword} onChange={(event) => setDraft((current) => ({ ...current, keyword: event.target.value }))} />
+          <input value={draft.keyword} onChange={(event) => updateDraft("keyword", event.target.value)} />
         </label>
       </div>
       <div className="household-management-inline-actions">
-        <button type="button" className="action-btn" disabled={saving} onClick={() => onSave(member.userId, draft)}>
+        <button
+          type="button"
+          className="action-btn"
+          disabled={saving}
+          onClick={() => onSave(member.userId, {
+            ...draft,
+            topTeethCount: parseIntegerInput(draft.topTeethCount, Number(member.topTeethCount || 0), 0, 16),
+            bottomTeethCount: parseIntegerInput(draft.bottomTeethCount, Number(member.bottomTeethCount || 0), 0, 16),
+            brushDurationSeconds: parseIntegerInput(draft.brushDurationSeconds, Number(member.brushDurationSeconds || 120), 30, 600)
+          })}
+        >
           {saving ? t("app.householdManagement.saving") : t("common.buttons.save")}
         </button>
       </div>
@@ -129,6 +178,7 @@ export default function HouseholdManagementPanel({
   management,
   activeUserId,
   saving,
+  saveNotice,
   onSaveHousehold,
   onSaveMember,
   onArchiveMember,
@@ -155,6 +205,8 @@ export default function HouseholdManagementPanel({
         </div>
       </div>
 
+      {saveNotice && <p className="info-banner household-management-save-notice">{saveNotice}</p>}
+
       <section className="household-management-section">
         <div className="household-management-section-header">
           <strong>{t("app.householdManagement.householdSettingsTitle")}</strong>
@@ -175,44 +227,64 @@ export default function HouseholdManagementPanel({
           </div>
           <label>
             <span>{t("app.householdManagement.fields.levelBasePoints")}</span>
-            <input type="number" min="40" step="10" value={rewardSettings.levelBasePoints} onChange={(event) => setRewardSettings((current) => ({ ...current, levelBasePoints: Number(event.target.value) }))} />
+            <input type="number" inputMode="numeric" min="40" step="10" value={rewardSettings.levelBasePoints} onChange={(event) => setRewardSettings((current) => ({ ...current, levelBasePoints: event.target.value }))} />
           </label>
           <label>
             <span>{t("app.householdManagement.fields.levelStepPoints")}</span>
-            <input type="number" min="40" step="10" value={rewardSettings.levelStepPoints} onChange={(event) => setRewardSettings((current) => ({ ...current, levelStepPoints: Number(event.target.value) }))} />
+            <input type="number" inputMode="numeric" min="40" step="10" value={rewardSettings.levelStepPoints} onChange={(event) => setRewardSettings((current) => ({ ...current, levelStepPoints: event.target.value }))} />
           </label>
           <label>
             <span>{t("app.householdManagement.fields.levelGrowthPoints")}</span>
-            <input type="number" min="0" step="5" value={rewardSettings.levelGrowthPoints} onChange={(event) => setRewardSettings((current) => ({ ...current, levelGrowthPoints: Number(event.target.value) }))} />
+            <input type="number" inputMode="numeric" min="0" step="5" value={rewardSettings.levelGrowthPoints} onChange={(event) => setRewardSettings((current) => ({ ...current, levelGrowthPoints: event.target.value }))} />
           </label>
           <label>
             <span>{t("app.householdManagement.fields.brushingSessionPoints")}</span>
-            <input type="number" min="1" step="1" value={rewardSettings.brushingSessionPoints} onChange={(event) => setRewardSettings((current) => ({ ...current, brushingSessionPoints: Number(event.target.value) }))} />
+            <input type="number" inputMode="numeric" min="1" step="1" value={rewardSettings.brushingSessionPoints} onChange={(event) => setRewardSettings((current) => ({ ...current, brushingSessionPoints: event.target.value }))} />
           </label>
           <label>
             <span>{t("app.householdManagement.fields.supportRoutinePoints")}</span>
-            <input type="number" min="1" step="1" value={rewardSettings.supportRoutinePoints} onChange={(event) => setRewardSettings((current) => ({ ...current, supportRoutinePoints: Number(event.target.value) }))} />
+            <input type="number" inputMode="numeric" min="1" step="1" value={rewardSettings.supportRoutinePoints} onChange={(event) => setRewardSettings((current) => ({ ...current, supportRoutinePoints: event.target.value }))} />
           </label>
           <label>
             <span>{t("app.householdManagement.fields.toothMilestonePoints")}</span>
-            <input type="number" min="1" step="1" value={rewardSettings.toothMilestonePoints} onChange={(event) => setRewardSettings((current) => ({ ...current, toothMilestonePoints: Number(event.target.value) }))} />
+            <input type="number" inputMode="numeric" min="1" step="1" value={rewardSettings.toothMilestonePoints} onChange={(event) => setRewardSettings((current) => ({ ...current, toothMilestonePoints: event.target.value }))} />
           </label>
           <label>
             <span>{t("app.householdManagement.fields.routineVarietyPoints")}</span>
-            <input type="number" min="0" step="1" value={rewardSettings.routineVarietyPoints} onChange={(event) => setRewardSettings((current) => ({ ...current, routineVarietyPoints: Number(event.target.value) }))} />
+            <input type="number" inputMode="numeric" min="0" step="1" value={rewardSettings.routineVarietyPoints} onChange={(event) => setRewardSettings((current) => ({ ...current, routineVarietyPoints: event.target.value }))} />
           </label>
           <label>
             <span>{t("app.householdManagement.fields.weeklyBrushingSessions")}</span>
-            <input type="number" min="1" step="1" value={goalSettings.weeklyBrushingSessions} onChange={(event) => setGoalSettings((current) => ({ ...current, weeklyBrushingSessions: Number(event.target.value) }))} />
+            <input type="number" inputMode="numeric" min="1" step="1" value={goalSettings.weeklyBrushingSessions} onChange={(event) => setGoalSettings((current) => ({ ...current, weeklyBrushingSessions: event.target.value }))} />
           </label>
           <label>
             <span>{t("app.householdManagement.fields.weeklySupportRoutines")}</span>
-            <input type="number" min="0" step="1" value={goalSettings.weeklySupportRoutines} onChange={(event) => setGoalSettings((current) => ({ ...current, weeklySupportRoutines: Number(event.target.value) }))} />
+            <input type="number" inputMode="numeric" min="0" step="1" value={goalSettings.weeklySupportRoutines} onChange={(event) => setGoalSettings((current) => ({ ...current, weeklySupportRoutines: event.target.value }))} />
           </label>
         </div>
         <p className="household-management-helper-copy">{t("app.householdManagement.rewardSettingsSummary")}</p>
         <div className="household-management-inline-actions">
-          <button type="button" className="action-btn" disabled={saving} onClick={() => onSaveHousehold({ householdName, rewardSettings, goalSettings })}>
+          <button
+            type="button"
+            className="action-btn"
+            disabled={saving}
+            onClick={() => onSaveHousehold({
+              householdName,
+              rewardSettings: {
+                levelBasePoints: parseIntegerInput(rewardSettings.levelBasePoints, 100, 40, 500),
+                levelStepPoints: parseIntegerInput(rewardSettings.levelStepPoints, 120, 40, 500),
+                levelGrowthPoints: parseIntegerInput(rewardSettings.levelGrowthPoints, 20, 0, 120),
+                brushingSessionPoints: parseIntegerInput(rewardSettings.brushingSessionPoints, 12, 1, 100),
+                supportRoutinePoints: parseIntegerInput(rewardSettings.supportRoutinePoints, 8, 1, 100),
+                toothMilestonePoints: parseIntegerInput(rewardSettings.toothMilestonePoints, 18, 1, 120),
+                routineVarietyPoints: parseIntegerInput(rewardSettings.routineVarietyPoints, 10, 0, 80)
+              },
+              goalSettings: {
+                weeklyBrushingSessions: parseIntegerInput(goalSettings.weeklyBrushingSessions, 14, 1, 40),
+                weeklySupportRoutines: parseIntegerInput(goalSettings.weeklySupportRoutines, 5, 0, 20)
+              }
+            })}
+          >
             {saving ? t("app.householdManagement.saving") : t("common.buttons.save")}
           </button>
         </div>
@@ -253,11 +325,11 @@ export default function HouseholdManagementPanel({
           </label>
           <label>
             <span>{t("app.householdManagement.fields.topTeeth")}</span>
-            <input type="number" min="0" max="16" value={newMemberDraft.topTeethCount} onChange={(event) => setNewMemberDraft((current) => ({ ...current, topTeethCount: Number(event.target.value) }))} />
+            <input type="number" inputMode="numeric" min="0" max="16" value={newMemberDraft.topTeethCount} onChange={(event) => setNewMemberDraft((current) => ({ ...current, topTeethCount: event.target.value }))} />
           </label>
           <label>
             <span>{t("app.householdManagement.fields.bottomTeeth")}</span>
-            <input type="number" min="0" max="16" value={newMemberDraft.bottomTeethCount} onChange={(event) => setNewMemberDraft((current) => ({ ...current, bottomTeethCount: Number(event.target.value) }))} />
+            <input type="number" inputMode="numeric" min="0" max="16" value={newMemberDraft.bottomTeethCount} onChange={(event) => setNewMemberDraft((current) => ({ ...current, bottomTeethCount: event.target.value }))} />
           </label>
           <label>
             <span>{t("app.householdManagement.fields.language")}</span>
@@ -274,7 +346,12 @@ export default function HouseholdManagementPanel({
             className="action-btn"
             disabled={saving || !newMemberDraft.name.trim()}
             onClick={async () => {
-              await onSaveMember(null, newMemberDraft);
+              await onSaveMember(null, {
+                ...newMemberDraft,
+                topTeethCount: parseIntegerInput(newMemberDraft.topTeethCount, 16, 0, 16),
+                bottomTeethCount: parseIntegerInput(newMemberDraft.bottomTeethCount, 16, 0, 16),
+                brushDurationSeconds: parseIntegerInput(newMemberDraft.brushDurationSeconds, 120, 30, 600)
+              });
               setNewMemberDraft(buildEmptyMemberDraft());
             }}
           >

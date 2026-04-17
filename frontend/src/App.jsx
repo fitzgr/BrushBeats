@@ -297,6 +297,7 @@ function App() {
   const [householdOverview, setHouseholdOverview] = useState(null);
   const [householdManagement, setHouseholdManagement] = useState(null);
   const [householdManagementSaving, setHouseholdManagementSaving] = useState(false);
+  const [householdManagementNotice, setHouseholdManagementNotice] = useState("");
   const [progressDashboard, setProgressDashboard] = useState(null);
   const [recentUnlockedAchievements, setRecentUnlockedAchievements] = useState([]);
   const [progressDashboardFilters, setProgressDashboardFilters] = useState({ timeRange: "30d", activityType: "all" });
@@ -479,9 +480,17 @@ function App() {
       return;
     }
 
-    setValues(session.values);
-    setSongFilters(session.filters);
-    setDraftSongFilters(session.filters);
+    const nextValues = {
+      top: Number(session.values?.top ?? session.topTeethCount ?? DEFAULT_VALUES.top),
+      bottom: Number(session.values?.bottom ?? session.bottomTeethCount ?? DEFAULT_VALUES.bottom)
+    };
+    const nextFilters = session.filters && Number.isFinite(Number(session.filters.tolerance))
+      ? session.filters
+      : createInitialSongPreferences(nextValues.top + nextValues.bottom);
+
+    setValues(nextValues);
+    setSongFilters(nextFilters);
+    setDraftSongFilters(nextFilters);
     setKeyword(session.keyword || "");
     setBrushingHand(session.brushingHand || "right");
     setBrushType(session.brushType || "manual");
@@ -1142,6 +1151,7 @@ function App() {
     }
 
     setHouseholdManagementSaving(true);
+    setHouseholdManagementNotice("");
     try {
       const updatedHousehold = await saveHouseholdSettings(householdProfile.householdId, {
         householdName: nextSettings?.householdName?.trim() || "BrushBeats Household",
@@ -1155,6 +1165,7 @@ function App() {
         setProgressDashboard(await loadUserProgressDashboard(activeHouseholdUser.userId, progressDashboardFilters, updatedHousehold.rewardSettings, updatedHousehold.goalSettings));
       }
       setError("");
+      setHouseholdManagementNotice(t("app.householdManagement.saved"));
     } catch (householdError) {
       setError(householdError?.message || t("app.householdSetup.saveFailed"));
     } finally {
@@ -1168,6 +1179,7 @@ function App() {
     }
 
     setHouseholdManagementSaving(true);
+    setHouseholdManagementNotice("");
     try {
       const member = await saveHouseholdMember(householdProfile.householdId, {
         userId,
@@ -1188,6 +1200,7 @@ function App() {
 
       setPersistedStateRevision((current) => current + 1);
       setError("");
+      setHouseholdManagementNotice(t("app.householdManagement.saved"));
     } catch (memberError) {
       setError(memberError?.message || t("app.householdSetup.saveFailed"));
     } finally {
@@ -2396,6 +2409,7 @@ function App() {
           management={householdManagement}
           activeUserId={activeHouseholdUser?.userId}
           saving={householdManagementSaving}
+          saveNotice={householdManagementNotice}
           onSaveHousehold={handleSaveHouseholdSettings}
           onSaveMember={handleSaveHouseholdMember}
           onArchiveMember={handleArchiveHouseholdMember}

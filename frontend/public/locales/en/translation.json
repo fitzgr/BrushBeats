@@ -314,6 +314,7 @@
       "title": "Manage household and member settings",
       "subtitle": "Household-level settings now live separately from each member's brushing defaults and history.",
       "saving": "Saving...",
+      "saved": "Changes saved.",
       "activate": "Make active",
       "archive": "Archive",
       "restore": "Restore",

@@ -314,6 +314,7 @@
       "title": "Gestiona el hogar y los ajustes de miembros",
       "subtitle": "Los ajustes del hogar ahora estan separados de los valores, perfiles e historial de cada miembro.",
       "saving": "Guardando...",
+      "saved": "Cambios guardados.",
       "activate": "Activar",
       "archive": "Archivar",
       "restore": "Restaurar",

@@ -4,22 +4,43 @@ import { STORE_NAMES } from "./indexedDbService";
 import { deleteItem, getAchievementsByUser, getHousehold, getToothHistoryByUser, getUsersByHousehold, setActiveUser, updateHousehold, createUser, updateUser, getSessionsByUser, getUserById } from "./storeHelpers";
 import { getUserScopedState, saveUserScopedDefaults } from "./userScopedStateService";
 
+const DEFAULT_SCOPED_FILTERS = {
+  tolerance: 4,
+  danceability: 50,
+  acousticness: 50
+};
+
 function buildStageFromCounts(topTeethCount, bottomTeethCount) {
   return estimateAgeFromTeethFull(Number(topTeethCount || 0) + Number(bottomTeethCount || 0))?.phase || "unknown";
 }
 
-function buildDefaultScopedState(member) {
+function normalizeScopedFilters(filters) {
+  if (!filters || typeof filters !== "object") {
+    return { ...DEFAULT_SCOPED_FILTERS };
+  }
+
+  return {
+    tolerance: Number.isFinite(Number(filters.tolerance)) ? Number(filters.tolerance) : DEFAULT_SCOPED_FILTERS.tolerance,
+    danceability: Number.isFinite(Number(filters.danceability)) ? Number(filters.danceability) : DEFAULT_SCOPED_FILTERS.danceability,
+    acousticness: Number.isFinite(Number(filters.acousticness)) ? Number(filters.acousticness) : DEFAULT_SCOPED_FILTERS.acousticness
+  };
+}
+
+function buildDefaultScopedState(member, existingDefaults = {}) {
+  const topTeethCount = Number(member.topTeethCount ?? existingDefaults.values?.top ?? 0);
+  const bottomTeethCount = Number(member.bottomTeethCount ?? existingDefaults.values?.bottom ?? 0);
+
   return {
     values: {
-      top: Number(member.topTeethCount || 0),
-      bottom: Number(member.bottomTeethCount || 0)
+      top: topTeethCount,
+      bottom: bottomTeethCount
     },
-    filters: member.filters || null,
-    keyword: member.keyword || "",
-    brushingHand: member.brushingHand || "right",
-    brushType: member.brushType || "manual",
-    brushDurationSeconds: Number(member.brushDurationSeconds || 120),
-    preferredLanguage: member.preferredLanguage || "en",
+    filters: normalizeScopedFilters(member.filters || existingDefaults.filters),
+    keyword: member.keyword ?? existingDefaults.keyword ?? "",
+    brushingHand: member.brushingHand || existingDefaults.brushingHand || "right",
+    brushType: member.brushType || existingDefaults.brushType || "manual",
+    brushDurationSeconds: Number(member.brushDurationSeconds || existingDefaults.brushDurationSeconds || 120),
+    preferredLanguage: member.preferredLanguage || existingDefaults.preferredLanguage || "en",
     savedAt: Date.now()
   };
 }
@@ -33,7 +54,7 @@ async function hydrateMember(user) {
     brushType: scopedState.defaults?.brushType || "manual",
     brushDurationSeconds: Number(scopedState.defaults?.brushDurationSeconds || 120),
     keyword: scopedState.defaults?.keyword || "",
-    filters: scopedState.defaults?.filters || null,
+    filters: normalizeScopedFilters(scopedState.defaults?.filters),
     values: scopedState.defaults?.values || {
       top: Number(user.topTeethCount || 0),
       bottom: Number(user.bottomTeethCount || 0)
@@ -85,6 +106,8 @@ export async function saveHouseholdMember(householdId, input = {}) {
     ? await updateUser(input.userId, memberPayload)
     : await createUser({ householdId, ...memberPayload, isActive: false });
 
+  const scopedState = await getUserScopedState(member.userId, {});
+
   await saveUserScopedDefaults(member.userId, buildDefaultScopedState({
     ...member,
     preferredLanguage: input.preferredLanguage,
@@ -93,7 +116,7 @@ export async function saveHouseholdMember(householdId, input = {}) {
     brushDurationSeconds: input.brushDurationSeconds,
     keyword: input.keyword,
     filters: input.filters
-  }));
+  }, scopedState.defaults));
 
   return hydrateMember(member);
 }
