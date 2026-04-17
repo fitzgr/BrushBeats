@@ -77,6 +77,20 @@ export function getGeoCountry() {
   return request("/api/geo/country");
 }
 
+export function getHouseholdSnapshot(householdId) {
+  return request(`/api/households/${encodeURIComponent(householdId)}`);
+}
+
+export function syncHouseholdSnapshot(householdId, payload) {
+  return requestWithOptions(`/api/households/${encodeURIComponent(householdId)}/sync`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+}
+
 export function getAdminLocale(language, password) {
   return requestWithOptions(`/api/admin/locales/${encodeURIComponent(language)}`, {
     headers: {

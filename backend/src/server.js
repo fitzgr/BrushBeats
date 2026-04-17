@@ -12,6 +12,7 @@ const youtubeRoute = require("./routes/youtube");
 const adminLocalesRoute = require("./routes/adminLocales");
 const geoRoute = require("./routes/geo");
 const healthRoute = require("./routes/health");
+const householdsRoute = require("./routes/households");
 
 const app = express();
 const port = Number(process.env.PORT || 4000);
@@ -38,6 +39,7 @@ app.use("/api/songs", songsRoute);
 app.use("/api/youtube", youtubeRoute);
 app.use("/api/admin/locales", adminLocalesRoute);
 app.use("/api/geo", geoRoute);
+app.use("/api/households", householdsRoute);
 
 app.use((error, _req, res, _next) => {
   console.error(error);

@@ -1,6 +1,7 @@
 import { estimateAgeFromTeethFull } from "../lib/teethAge";
 import { nowIso } from "./indexedDbService";
-import { createUser, getUserById, logToothChange, setActiveUser, setAppSetting, updateHousehold, updateUser } from "./storeHelpers";
+import { trySyncHouseholdSnapshot } from "./householdSyncService";
+import { createUser, getHousehold, getUserById, logToothChange, setActiveUser, setAppSetting, updateHousehold, updateUser } from "./storeHelpers";
 
 export const HOUSEHOLD_ONBOARDING_SETTING_KEY = "system.householdOnboarding";
 export const HOUSEHOLD_ONBOARDING_UI_SETTING_KEY = "system.householdOnboardingUi";
@@ -197,8 +198,11 @@ export async function completeHouseholdOnboarding({ household, activeUser, draft
   });
   await setAppSetting(HOUSEHOLD_ONBOARDING_DRAFT_SETTING_KEY, null);
 
+  await trySyncHouseholdSnapshot(household.householdId);
+  const latestHousehold = await getHousehold(household.householdId);
+
   return {
-    household: updatedHousehold,
+    household: latestHousehold || updatedHousehold,
     user: nextUser,
     additionalUsers,
     defaults: {

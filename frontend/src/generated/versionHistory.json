@@ -1,5 +1,29 @@
 [
   {
+    "id": "commit-b234e838dd1e7a2603da2a3c58a6f67baf966d02",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "b234e838dd1e7a2603da2a3c58a6f67baf966d02",
+    "shortSha": "b234e83",
+    "timestamp": "2026-04-17T14:13:26-04:00",
+    "date": "2026-04-17",
+    "author": "Grant Fitz",
+    "subject": "Add backend Postgres integration scaffolding",
+    "body": ""
+  },
+  {
+    "id": "commit-eb9abde684205860863927fcef57651c9f1777c0",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "eb9abde684205860863927fcef57651c9f1777c0",
+    "shortSha": "eb9abde",
+    "timestamp": "2026-04-16T20:11:46-04:00",
+    "date": "2026-04-16",
+    "author": "Grant Fitz",
+    "subject": "Fix household management form behavior",
+    "body": ""
+  },
+  {
     "id": "commit-f266c695395927f4b8a3c7e7d6b8560237f34e8b",
     "kind": "commit",
     "source": "git-history",

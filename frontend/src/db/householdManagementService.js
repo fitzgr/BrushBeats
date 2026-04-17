@@ -1,4 +1,5 @@
 import { estimateAgeFromTeethFull } from "../lib/teethAge";
+import { trySyncHouseholdSnapshot } from "./householdSyncService";
 import { normalizeGoalSettings, normalizeRewardSettings } from "./rewardProgressionService";
 import { STORE_NAMES } from "./indexedDbService";
 import { deleteItem, getAchievementsByUser, getHousehold, getToothHistoryByUser, getUsersByHousehold, setActiveUser, updateHousehold, createUser, updateUser, getSessionsByUser, getUserById } from "./storeHelpers";
@@ -83,11 +84,14 @@ export async function loadHouseholdManagement(householdId) {
 }
 
 export async function saveHouseholdSettings(householdId, updates = {}) {
-  return updateHousehold(householdId, {
+  const updatedHousehold = await updateHousehold(householdId, {
     ...updates,
     rewardSettings: normalizeRewardSettings(updates.rewardSettings),
     goalSettings: normalizeGoalSettings(updates.goalSettings)
   });
+
+  await trySyncHouseholdSnapshot(householdId);
+  return getHousehold(updatedHousehold.householdId);
 }
 
 export async function saveHouseholdMember(householdId, input = {}) {
@@ -118,6 +122,7 @@ export async function saveHouseholdMember(householdId, input = {}) {
     filters: input.filters
   }, scopedState.defaults));
 
+  await trySyncHouseholdSnapshot(householdId);
   return hydrateMember(member);
 }
 
@@ -142,11 +147,13 @@ export async function archiveHouseholdMember(householdId, userId) {
     }
   }
 
+  await trySyncHouseholdSnapshot(householdId);
   return loadHouseholdManagement(householdId);
 }
 
 export async function restoreHouseholdMember(householdId, userId) {
   await updateUser(userId, { isArchived: false });
+  await trySyncHouseholdSnapshot(householdId);
   return loadHouseholdManagement(householdId);
 }
 
@@ -179,5 +186,6 @@ export async function removeHouseholdMember(householdId, userId) {
   }
 
   await deleteItem(STORE_NAMES.users, userId);
+  await trySyncHouseholdSnapshot(householdId);
   return loadHouseholdManagement(householdId);
 }
