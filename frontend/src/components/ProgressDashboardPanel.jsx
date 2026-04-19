@@ -75,13 +75,13 @@ function formatCaregiverNudge(t, nudge) {
   return t(`app.progressDashboard.nudges.${nudge.key}`, nudge.values);
 }
 
-export default function ProgressDashboardPanel({ t, dashboard, activeUserName, filters, onFilterChange, onLogActivity }) {
+export default function ProgressDashboardPanel({ t, dashboard, activeUserName, filters, onFilterChange, onLogActivity, readOnly = false, previewLabel = "" }) {
   if (!dashboard) {
     return null;
   }
 
   return (
-    <section className="progress-dashboard-panel" aria-label={t("app.progressDashboard.ariaLabel")}>
+    <section className={`progress-dashboard-panel${readOnly ? " readonly-preview" : ""}`} aria-label={t("app.progressDashboard.ariaLabel")}>
       <div className="progress-dashboard-header">
         <div>
           <p className="progress-dashboard-eyebrow">{t("app.progressDashboard.eyebrow")}</p>
@@ -89,9 +89,10 @@ export default function ProgressDashboardPanel({ t, dashboard, activeUserName, f
           <p>{t("app.progressDashboard.subtitle")}</p>
         </div>
         <div className="progress-dashboard-filters">
+          {previewLabel && <span className="progress-dashboard-preview-badge">{previewLabel}</span>}
           <label>
             <span>{t("app.progressDashboard.filters.timeRange")}</span>
-            <select value={filters.timeRange} onChange={(event) => onFilterChange("timeRange", event.target.value)}>
+            <select value={filters.timeRange} onChange={(event) => onFilterChange("timeRange", event.target.value)} disabled={readOnly}>
               <option value="7d">{t("app.progressDashboard.filters.options.7d")}</option>
               <option value="30d">{t("app.progressDashboard.filters.options.30d")}</option>
               <option value="all">{t("app.progressDashboard.filters.options.all")}</option>
@@ -99,7 +100,7 @@ export default function ProgressDashboardPanel({ t, dashboard, activeUserName, f
           </label>
           <label>
             <span>{t("app.progressDashboard.filters.activityType")}</span>
-            <select value={filters.activityType} onChange={(event) => onFilterChange("activityType", event.target.value)}>
+            <select value={filters.activityType} onChange={(event) => onFilterChange("activityType", event.target.value)} disabled={readOnly}>
               <option value="all">{t("app.progressDashboard.filters.options.allActivities")}</option>
               <option value="brushing">{t("app.progressDashboard.filters.options.brushing")}</option>
               <option value="flossing">{t("app.progressDashboard.filters.options.flossing")}</option>
@@ -205,10 +206,10 @@ export default function ProgressDashboardPanel({ t, dashboard, activeUserName, f
       <div className="progress-dashboard-quick-actions">
         <strong>{t("app.progressDashboard.quickActionsTitle")}</strong>
         <div className="progress-dashboard-quick-action-list">
-          <button type="button" className="action-btn secondary" onClick={() => onLogActivity("flossing")}>
+          <button type="button" className="action-btn secondary" onClick={() => onLogActivity("flossing")} disabled={readOnly}>
             {t("app.progressDashboard.quickActions.flossing")}
           </button>
-          <button type="button" className="action-btn secondary" onClick={() => onLogActivity("water-picking")}>
+          <button type="button" className="action-btn secondary" onClick={() => onLogActivity("water-picking")} disabled={readOnly}>
             {t("app.progressDashboard.quickActions.waterPicking")}
           </button>
         </div>

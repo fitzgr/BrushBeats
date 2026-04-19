@@ -81,6 +81,8 @@
   margin-top: 1rem;
   display: flex;
   justify-content: flex-end;
+  gap: 0.55rem;
+  flex-wrap: wrap;
 }
 
 .header-utility-btn {
@@ -93,6 +95,12 @@
   cursor: pointer;
   padding: 0.55rem 0.9rem;
   cursor: pointer;
+}
+
+.header-utility-btn.active {
+  background: linear-gradient(145deg, rgba(255, 241, 220, 0.96), rgba(255, 249, 240, 0.98));
+  border-color: rgba(202, 95, 22, 0.3);
+  color: #8a4716;
 }
 
 .state-chip {
@@ -139,6 +147,18 @@
 
 .mode-chip.desktop {
   color: #40545a;
+}
+
+.simulation-chip {
+  margin: 0.4rem 0 0;
+  display: inline-flex;
+  padding: 0.32rem 0.68rem;
+  border-radius: 999px;
+  border: 1px solid rgba(234, 127, 51, 0.32);
+  background: rgba(255, 245, 229, 0.9);
+  color: #8a4716;
+  font-size: 0.75rem;
+  font-weight: 800;
 }
 
 .geo-debug-chip {
@@ -884,6 +904,18 @@
   flex-wrap: wrap;
 }
 
+.progress-dashboard-preview-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(255, 240, 217, 0.92);
+  border: 1px solid rgba(202, 95, 22, 0.24);
+  color: #8a4716;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
 .progress-dashboard-filters label {
   display: grid;
   gap: 0.25rem;
@@ -1101,6 +1133,136 @@
   margin-top: 0.12rem;
   color: #5b6d76;
   font-size: 0.8rem;
+}
+
+.progress-dashboard-panel.readonly-preview {
+  background: linear-gradient(145deg, rgba(252, 248, 240, 0.96), rgba(244, 249, 252, 0.94));
+  border-style: dashed;
+}
+
+.progress-dashboard-panel.readonly-preview button:disabled,
+.progress-dashboard-panel.readonly-preview select:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.app-shell.age-theme-infant .app-header,
+.app-shell.age-theme-toddler .app-header {
+  background:
+    radial-gradient(circle at top right, rgba(255, 233, 149, 0.55), transparent 30%),
+    radial-gradient(circle at left 20%, rgba(126, 214, 255, 0.35), transparent 35%),
+    linear-gradient(140deg, rgba(212, 244, 255, 0.96), rgba(255, 245, 209, 0.94), rgba(255, 231, 238, 0.92));
+}
+
+.app-shell.age-theme-infant .calculator,
+.app-shell.age-theme-toddler .calculator,
+.app-shell.age-theme-infant .progress-dashboard-panel,
+.app-shell.age-theme-toddler .progress-dashboard-panel {
+  border-radius: 24px;
+}
+
+.app-shell.age-theme-infant .profile-summary,
+.app-shell.age-theme-toddler .profile-summary {
+  background: linear-gradient(135deg, rgba(240, 251, 255, 0.96), rgba(255, 244, 202, 0.95), rgba(255, 230, 239, 0.92));
+  border-color: rgba(58, 131, 186, 0.22);
+}
+
+.app-shell.age-theme-infant .teeth-growth-scale,
+.app-shell.age-theme-toddler .teeth-growth-scale {
+  background: linear-gradient(180deg, rgba(255, 253, 245, 0.96), rgba(242, 251, 255, 0.92));
+}
+
+.app-shell.age-theme-infant .achievement-badge-card,
+.app-shell.age-theme-toddler .achievement-badge-card {
+  background: linear-gradient(145deg, rgba(255, 244, 210, 0.98), rgba(241, 250, 255, 0.98));
+}
+
+.app-shell.age-theme-primary .app-header {
+  background: linear-gradient(130deg, rgba(204, 240, 255, 0.88), rgba(255, 250, 229, 0.92));
+}
+
+.experience-simulator-card {
+  display: grid;
+  gap: 0.8rem;
+  margin: 0 0 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 16px;
+  border: 1px dashed rgba(16, 33, 37, 0.18);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.experience-simulator-card.active {
+  border-color: rgba(234, 127, 51, 0.34);
+  background: linear-gradient(145deg, rgba(255, 247, 232, 0.96), rgba(245, 251, 255, 0.94));
+}
+
+.experience-simulator-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.experience-simulator-header p,
+.experience-simulator-preview-copy span {
+  margin: 0.18rem 0 0;
+  color: #54656b;
+  font-size: 0.84rem;
+}
+
+.experience-simulator-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.experience-simulator-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.65rem;
+  align-items: end;
+}
+
+.experience-simulator-controls label {
+  display: grid;
+  gap: 0.22rem;
+}
+
+.experience-simulator-controls input,
+.experience-simulator-controls select {
+  border-radius: 10px;
+  border: 1px solid rgba(16, 33, 37, 0.14);
+  background: rgba(255, 255, 255, 0.92);
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+}
+
+.experience-simulator-preview {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.simulation-dashboard-shell {
+  grid-column: 1 / -1;
+}
+
+.experience-simulator-preview-copy {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.profile-summary-note,
+.teeth-growth-age-caption,
+.teeth-age-band small {
+  color: #556972;
+  font-size: 0.78rem;
+}
+
+.teeth-growth-age-caption {
+  text-align: right;
 }
 
 .progress-dashboard-grid {
@@ -2896,6 +3058,10 @@
 
 .teeth-age-band strong {
   color: #1d4b78;
+}
+
+.teeth-age-band small {
+  display: block;
 }
 
 .next-step-card {

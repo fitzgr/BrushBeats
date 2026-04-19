@@ -47,7 +47,7 @@ import {
   setStorageBannerDismissed,
   setStorageConsent
 } from "./lib/storagePreference";
-import { estimateAgeFromTeethFull } from "./lib/teethAge";
+import { buildAgeEstimateFromActualAge, estimateAgeFromTeethFull, inferMusicAgeBucket } from "./lib/teethAge";
 import { useDeviceContext } from "./lib/deviceContext";
 import { buildUserMusicContext } from "./lib/userMusicContext";
 import "./App.css";
@@ -56,6 +56,7 @@ const DEFAULT_VALUES = { top: 16, bottom: 16 };
 const DEFAULT_BRUSH_DURATION_SECONDS = 120;
 const BRUSH_DURATION_OPTIONS = [90, 120, 150, 180];
 const START_DELAY_SECONDS = 5;
+const DEFAULT_AGE_SIMULATION = { active: false, value: 2, unit: "years" };
 
 function clampValue(value, min, max) {
   return Math.min(max, Math.max(min, value));
@@ -87,6 +88,12 @@ function createInitialSongPreferences(totalTeeth = DEFAULT_VALUES.top + DEFAULT_
 function formatAgeDescription(t, ageEstimate) {
   if (!ageEstimate) {
     return t("age.descriptions.unknownRange");
+  }
+
+  if (ageEstimate.simulated && Number.isFinite(Number(ageEstimate.exactAge))) {
+    return ageEstimate.unit === "months"
+      ? t("age.descriptions.monthExact", { value: ageEstimate.exactAge })
+      : t("age.descriptions.yearExact", { value: ageEstimate.exactAge });
   }
 
   if (ageEstimate.unit === "months") {
@@ -229,8 +236,167 @@ function buildCompletionCelebrationMessage(t, fallbackMessage, unlockedAchieveme
   return fallbackMessage;
 }
 
+function daysAgoIso(daysAgo) {
+  const date = new Date();
+  date.setDate(date.getDate() - daysAgo);
+  return date.toISOString();
+}
+
+function buildMockProgressDashboard(phase = "adult") {
+  const presets = {
+    infant: {
+      totals: { totalSessions: 12, completionRate: 92, streakDays: 4, monthlySessions: 16 },
+      progression: { currentLevel: 2, points: 84, nextLevelPoints: 120, pointsToNextLevel: 36, progressPercent: 70 },
+      weeklyBrushing: { current: 6, target: 7, remaining: 1, percent: 86, complete: false },
+      weeklySupport: { current: 2, target: 3, remaining: 1, percent: 67, complete: false },
+      routineCoverage: { current: 2, target: 3, missingTypes: ["water-picking"] },
+      tierCounts: { bronze: 2, silver: 1, gold: 0 },
+      momentum: "starting",
+      nextAchievement: { achievementType: "routine-mix", progress: { measure: "distinctRoutineTypes", remaining: 1, target: 3 } },
+      caregiverNudges: [
+        { key: "weeklyBrushing", priority: 1, values: { remaining: 1, target: 7, current: 6 } },
+        { key: "nextAchievement", priority: 2, values: { achievementType: "routine-mix", remaining: 1, target: 3 } }
+      ],
+      achievements: [
+        { achievementId: "preview-first", achievementType: "first-session", tier: "bronze", pointsAwarded: 15 },
+        { achievementId: "preview-streak3", achievementType: "streak-3", tier: "silver", pointsAwarded: 40 }
+      ],
+      toothMilestones: [
+        { toothHistoryId: "preview-m1", label: "tooth-added", recordedAt: daysAgoIso(8), newToothStage: "infant" },
+        { toothHistoryId: "preview-m2", label: "manual-adjustment", recordedAt: daysAgoIso(21), newToothStage: "infant" }
+      ]
+    },
+    toddler: {
+      totals: { totalSessions: 26, completionRate: 94, streakDays: 7, monthlySessions: 20 },
+      progression: { currentLevel: 4, points: 176, nextLevelPoints: 220, pointsToNextLevel: 44, progressPercent: 80 },
+      weeklyBrushing: { current: 8, target: 8, remaining: 0, percent: 100, complete: true },
+      weeklySupport: { current: 2, target: 3, remaining: 1, percent: 67, complete: false },
+      routineCoverage: { current: 2, target: 3, missingTypes: ["water-picking"] },
+      tierCounts: { bronze: 3, silver: 2, gold: 1 },
+      momentum: "building",
+      nextAchievement: { achievementType: "stage-transition", progress: { measure: "stageTransitions", remaining: 1, target: 1 } },
+      caregiverNudges: [
+        { key: "weeklySupport", priority: 1, values: { remaining: 1, target: 3, current: 2 } },
+        { key: "stageTransition", priority: 2, values: { previousStage: "infant", newStage: "toddler" } }
+      ],
+      achievements: [
+        { achievementId: "preview-first", achievementType: "first-session", tier: "bronze", pointsAwarded: 15 },
+        { achievementId: "preview-routine-mix", achievementType: "routine-mix", tier: "silver", pointsAwarded: 45 },
+        { achievementId: "preview-stage", achievementType: "stage-transition", tier: "gold", pointsAwarded: 90 }
+      ],
+      toothMilestones: [
+        { toothHistoryId: "preview-m1", label: "stage-changed", recordedAt: daysAgoIso(6), previousToothStage: "infant", newToothStage: "toddler" },
+        { toothHistoryId: "preview-m2", label: "tooth-added", recordedAt: daysAgoIso(18), newToothStage: "toddler" }
+      ]
+    },
+    primary: {
+      totals: { totalSessions: 39, completionRate: 91, streakDays: 9, monthlySessions: 24 },
+      progression: { currentLevel: 5, points: 258, nextLevelPoints: 320, pointsToNextLevel: 62, progressPercent: 81 },
+      weeklyBrushing: { current: 9, target: 10, remaining: 1, percent: 90, complete: false },
+      weeklySupport: { current: 3, target: 3, remaining: 0, percent: 100, complete: true },
+      routineCoverage: { current: 3, target: 3, missingTypes: [] },
+      tierCounts: { bronze: 3, silver: 3, gold: 1 },
+      momentum: "building",
+      nextAchievement: { achievementType: "ten-sessions", progress: { measure: "completedSessions", remaining: 1, target: 10 } },
+      caregiverNudges: [
+        { key: "weeklyBrushing", priority: 1, values: { remaining: 1, target: 10, current: 9 } },
+        { key: "nextAchievement", priority: 2, values: { achievementType: "ten-sessions", remaining: 1, target: 10 } }
+      ],
+      achievements: [
+        { achievementId: "preview-streak7", achievementType: "streak-7", tier: "silver", pointsAwarded: 70 },
+        { achievementId: "preview-ten", achievementType: "ten-sessions", tier: "silver", pointsAwarded: 60 }
+      ],
+      toothMilestones: [
+        { toothHistoryId: "preview-m1", label: "tooth-added", recordedAt: daysAgoIso(9), newToothStage: "primary" },
+        { toothHistoryId: "preview-m2", label: "manual-adjustment", recordedAt: daysAgoIso(28), newToothStage: "primary" }
+      ]
+    },
+    mixed: {
+      totals: { totalSessions: 48, completionRate: 89, streakDays: 11, monthlySessions: 28 },
+      progression: { currentLevel: 6, points: 344, nextLevelPoints: 420, pointsToNextLevel: 76, progressPercent: 82 },
+      weeklyBrushing: { current: 10, target: 10, remaining: 0, percent: 100, complete: true },
+      weeklySupport: { current: 4, target: 4, remaining: 0, percent: 100, complete: true },
+      routineCoverage: { current: 3, target: 3, missingTypes: [] },
+      tierCounts: { bronze: 3, silver: 3, gold: 2 },
+      momentum: "strong",
+      nextAchievement: { achievementType: "twenty-sessions", progress: { measure: "completedSessions", remaining: 2, target: 20 } },
+      caregiverNudges: [
+        { key: "goalsComplete", priority: 0, values: { brushing: 10, support: 4 } },
+        { key: "nextAchievement", priority: 1, values: { achievementType: "twenty-sessions", remaining: 2, target: 20 } }
+      ],
+      achievements: [
+        { achievementId: "preview-streak7", achievementType: "streak-7", tier: "silver", pointsAwarded: 70 },
+        { achievementId: "preview-routine-mix", achievementType: "routine-mix", tier: "gold", pointsAwarded: 90 },
+        { achievementId: "preview-stage", achievementType: "stage-transition", tier: "gold", pointsAwarded: 100 }
+      ],
+      toothMilestones: [
+        { toothHistoryId: "preview-m1", label: "stage-changed", recordedAt: daysAgoIso(12), previousToothStage: "primary", newToothStage: "mixed" },
+        { toothHistoryId: "preview-m2", label: "tooth-added", recordedAt: daysAgoIso(24), newToothStage: "mixed" }
+      ]
+    },
+    adult: {
+      totals: { totalSessions: 62, completionRate: 93, streakDays: 15, monthlySessions: 31 },
+      progression: { currentLevel: 8, points: 512, nextLevelPoints: 620, pointsToNextLevel: 108, progressPercent: 83 },
+      weeklyBrushing: { current: 10, target: 10, remaining: 0, percent: 100, complete: true },
+      weeklySupport: { current: 3, target: 4, remaining: 1, percent: 75, complete: false },
+      routineCoverage: { current: 2, target: 3, missingTypes: ["water-picking"] },
+      tierCounts: { bronze: 3, silver: 4, gold: 3 },
+      momentum: "strong",
+      nextAchievement: { achievementType: "twenty-sessions", progress: { measure: "completedSessions", remaining: 1, target: 20 } },
+      caregiverNudges: [
+        { key: "weeklySupport", priority: 1, values: { remaining: 1, target: 4, current: 3 } },
+        { key: "nextAchievement", priority: 2, values: { achievementType: "twenty-sessions", remaining: 1, target: 20 } }
+      ],
+      achievements: [
+        { achievementId: "preview-ten", achievementType: "ten-sessions", tier: "silver", pointsAwarded: 60 },
+        { achievementId: "preview-twenty", achievementType: "twenty-sessions", tier: "gold", pointsAwarded: 110 },
+        { achievementId: "preview-stage", achievementType: "stage-transition", tier: "gold", pointsAwarded: 100 }
+      ],
+      toothMilestones: [
+        { toothHistoryId: "preview-m1", label: "stage-changed", recordedAt: daysAgoIso(16), previousToothStage: "mixed", newToothStage: "adult" },
+        { toothHistoryId: "preview-m2", label: "manual-adjustment", recordedAt: daysAgoIso(31), newToothStage: "adult" }
+      ]
+    }
+  };
+
+  const preset = presets[phase] || presets.adult;
+
+  return {
+    totals: preset.totals,
+    progression: {
+      ...preset.progression,
+      pointsBreakdown: [
+        { key: "brushing", points: Math.round(preset.progression.points * 0.34) },
+        { key: "support", points: Math.round(preset.progression.points * 0.18) },
+        { key: "milestones", points: Math.round(preset.progression.points * 0.16) },
+        { key: "variety", points: Math.round(preset.progression.points * 0.12) },
+        { key: "achievements", points: Math.round(preset.progression.points * 0.2) }
+      ]
+    },
+    goals: {
+      weeklyBrushing: preset.weeklyBrushing,
+      weeklySupport: preset.weeklySupport
+    },
+    nextAchievement: preset.nextAchievement,
+    caregiverSummary: {
+      routineCoverage: preset.routineCoverage,
+      tierCounts: preset.tierCounts,
+      momentum: preset.momentum
+    },
+    caregiverNudges: preset.caregiverNudges,
+    recentAchievements: preset.achievements,
+    recentSessions: [
+      { sessionId: `${phase}-s1`, sessionType: "brushing", songTitle: "Dance Around the Sink", completedAt: daysAgoIso(1), targetDurationSeconds: 120 },
+      { sessionId: `${phase}-s2`, sessionType: "flossing", completedAt: daysAgoIso(3), targetDurationSeconds: 90 },
+      { sessionId: `${phase}-s3`, sessionType: "water-picking", completedAt: daysAgoIso(5), targetDurationSeconds: 60 }
+    ],
+    toothMilestones: preset.toothMilestones
+  };
+}
+
 function App() {
   const { t, i18n } = useTranslation();
+  const ageSimulationAvailable = true;
   const [dbStatus, setDbStatus] = useState(() => {
     if (typeof window === "undefined") {
       return { ready: false, mode: "legacy-storage-fallback" };
@@ -308,6 +474,22 @@ function App() {
   const [householdSetupSaving, setHouseholdSetupSaving] = useState(false);
   const [persistedStateRevision, setPersistedStateRevision] = useState(0);
   const [queuedStoredSongKey, setQueuedStoredSongKey] = useState("");
+  const [ageSimulation, setAgeSimulation] = useState(() => {
+    if (typeof window === "undefined") {
+      return DEFAULT_AGE_SIMULATION;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const unit = params.get("simAgeUnit") === "months" ? "months" : "years";
+    const rawValue = Number(params.get("simAge"));
+
+    return {
+      active: params.get("simulateAge") === "1",
+      value: Number.isFinite(rawValue) ? rawValue : DEFAULT_AGE_SIMULATION.value,
+      unit
+    };
+  });
+  const [showAgeExperienceLab, setShowAgeExperienceLab] = useState(() => ageSimulation.active);
   const seenSongsByQueryRef = useRef(new Map());
   const playedSongsRef = useRef(new Set());
   const queuedSongRef = useRef(null);
@@ -329,10 +511,25 @@ function App() {
   const analyticsAvailable = useMemo(() => analyticsEnabled(), []);
   const device = useDeviceContext();
   const totalTeeth = values.top + values.bottom;
-  const ageEstimate = bpmData?.ageEstimate || estimateAgeFromTeethFull(totalTeeth);
+  const toothAgeEstimate = bpmData?.ageEstimate || estimateAgeFromTeethFull(totalTeeth);
+  const simulatedAgeEstimate = useMemo(
+    () => ageSimulationAvailable && ageSimulation.active
+      ? buildAgeEstimateFromActualAge(ageSimulation.value, ageSimulation.unit)
+      : null,
+    [ageSimulation.active, ageSimulation.unit, ageSimulation.value, ageSimulationAvailable]
+  );
+  const effectiveAgeEstimate = simulatedAgeEstimate || toothAgeEstimate;
   const detectedBrusherProfile = useMemo(
-    () => buildLocalizedBrusherProfile(t, totalTeeth, ageEstimate),
-    [ageEstimate, t, totalTeeth]
+    () => buildLocalizedBrusherProfile(t, totalTeeth, effectiveAgeEstimate),
+    [effectiveAgeEstimate, t, totalTeeth]
+  );
+  const actualBrusherProfile = useMemo(
+    () => buildLocalizedBrusherProfile(t, totalTeeth, toothAgeEstimate),
+    [t, toothAgeEstimate, totalTeeth]
+  );
+  const simulationPreviewDashboard = useMemo(
+    () => ageSimulation.active ? buildMockProgressDashboard(effectiveAgeEstimate?.phase || "adult") : null,
+    [ageSimulation.active, effectiveAgeEstimate?.phase]
   );
   const selectedBrushBpm = Number(selectedSong?.bpm || bpmData?.searchBpm || 120);
   const supportedLanguageOptions = useMemo(
@@ -355,9 +552,29 @@ function App() {
   const hideRestoredReadyCue = device.isMobile && autoRestoredBrushView && (!brushControlCue || brushControlCue.kind === "ready");
   const showCompactRoutine = isReturningVisitor && !isRoutineExpanded;
   const reinforcementPool = useMemo(
-    () => buildReinforcementPool(ageEstimate?.phase, totalTeeth, brushType),
-    [ageEstimate?.phase, brushType, totalTeeth]
+    () => buildReinforcementPool(effectiveAgeEstimate?.phase, totalTeeth, brushType),
+    [effectiveAgeEstimate?.phase, brushType, totalTeeth]
   );
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const url = new URL(window.location.href);
+
+    if (ageSimulation.active) {
+      url.searchParams.set("simulateAge", "1");
+      url.searchParams.set("simAge", String(ageSimulation.value));
+      url.searchParams.set("simAgeUnit", ageSimulation.unit);
+    } else {
+      url.searchParams.delete("simulateAge");
+      url.searchParams.delete("simAge");
+      url.searchParams.delete("simAgeUnit");
+    }
+
+    window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+  }, [ageSimulation.active, ageSimulation.unit, ageSimulation.value]);
+
   const ageGroupCount = getAgeMessageGroupCount();
   const completionBannerMessage = useMemo(
     () => buildCompletionCelebrationMessage(t, completionMessage || t("app.success", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) }), recentUnlockedAchievements, progressDashboard),
@@ -722,16 +939,16 @@ function App() {
       userId: activeHouseholdUser.userId,
       top: Number(activeHouseholdUser.topTeethCount ?? values.top ?? 0),
       bottom: Number(activeHouseholdUser.bottomTeethCount ?? values.bottom ?? 0),
-      stage: activeHouseholdUser.toothStage || ageEstimate?.phase || "unknown"
+      stage: activeHouseholdUser.toothStage || toothAgeEstimate?.phase || "unknown"
     };
-  }, [activeHouseholdUser?.bottomTeethCount, activeHouseholdUser?.topTeethCount, activeHouseholdUser?.toothStage, activeHouseholdUser?.userId, ageEstimate?.phase, values.bottom, values.top]);
+  }, [activeHouseholdUser?.bottomTeethCount, activeHouseholdUser?.topTeethCount, activeHouseholdUser?.toothStage, activeHouseholdUser?.userId, toothAgeEstimate?.phase, values.bottom, values.top]);
 
   useEffect(() => {
     const nextSnapshot = {
       userId: activeHouseholdUser?.userId || null,
       top: Number(values.top || 0),
       bottom: Number(values.bottom || 0),
-      stage: ageEstimate?.phase || "unknown"
+      stage: toothAgeEstimate?.phase || "unknown"
     };
 
     if (
@@ -808,7 +1025,7 @@ function App() {
     })().catch((trackingError) => {
       setError(trackingError?.message || t("app.householdSetup.saveFailed"));
     });
-  }, [activeHouseholdUser?.userId, ageEstimate?.phase, dbStatus.ready, householdOnboardingState?.completedAt, householdProfile?.householdId, progressDashboardFilters, storageConsent, t, values.bottom, values.top]);
+  }, [activeHouseholdUser?.userId, toothAgeEstimate?.phase, dbStatus.ready, householdOnboardingState?.completedAt, householdProfile?.householdId, progressDashboardFilters, storageConsent, t, values.bottom, values.top]);
 
   useEffect(() => {
     if (storageConsent !== "granted" || !preferencesHydratedRef.current) {
@@ -918,7 +1135,7 @@ function App() {
         sourceContext: {
           sessionType: "brushing",
           brushType,
-          toothStage: ageEstimate?.phase || "unknown"
+          toothStage: toothAgeEstimate?.phase || "unknown"
         }
       });
       setRecentUnlockedAchievements(unlockedAchievements);
@@ -927,7 +1144,7 @@ function App() {
     })().catch((sessionError) => {
       setError(sessionError?.message || t("app.householdSetup.saveFailed"));
     });
-  }, [activeHouseholdUser?.userId, bpmData?.searchBpm, bpmData?.totalBrushingSeconds, brushDurationSeconds, brushingMusicElapsedSeconds, brushingPhase, dbStatus.ready, householdProfile?.householdId, progressDashboardFilters, selectedSong?.artist, selectedSong?.bpm, selectedSong?.title, storageConsent, t, values.bottom, values.top]);
+  }, [activeHouseholdUser?.userId, bpmData?.searchBpm, bpmData?.totalBrushingSeconds, brushDurationSeconds, brushingMusicElapsedSeconds, brushingPhase, dbStatus.ready, householdProfile?.householdId, progressDashboardFilters, selectedSong?.artist, selectedSong?.bpm, selectedSong?.title, storageConsent, t, toothAgeEstimate?.phase, values.bottom, values.top]);
 
   async function handleAllowStorage() {
     const nextStatus = setStorageConsent(true);
@@ -1349,7 +1566,7 @@ function App() {
         sourceContext: {
           sessionType,
           brushType,
-          toothStage: ageEstimate?.phase || "unknown"
+          toothStage: toothAgeEstimate?.phase || "unknown"
         }
       });
       if (unlockedAchievements.length > 0) {
@@ -1651,7 +1868,8 @@ function App() {
           countryCode: geoCountry?.countryCode,
           targetBpm: Number(bpmData.searchBpm || 120),
           toothCount: totalTeeth,
-          genreHint: keyword
+          genreHint: keyword,
+          ageBucket: inferMusicAgeBucket(effectiveAgeEstimate)
         });
         const result = await getSongs({
           bpm: bpmData.searchBpm,
@@ -1663,7 +1881,8 @@ function App() {
           seed: songRefreshSeed,
           browserLanguage: userMusicContext.browserLanguage,
           countryCode: userMusicContext.countryCode,
-          genreHint: userMusicContext.genreHint
+          genreHint: userMusicContext.genreHint,
+          ageBucket: userMusicContext.ageBucket
         });
         const queryKey = `${totalTeeth}:${Math.round(bpmData.searchBpm)}:${songFilters.tolerance}:${songFilters.danceability}:${songFilters.acousticness}:${keyword.trim().toLowerCase()}`;
         const seenForQuery = seenSongsByQueryRef.current.get(queryKey) || new Set();
@@ -1709,7 +1928,44 @@ function App() {
       cancelled = true;
       window.clearTimeout(timeout);
     };
-  }, [bpmData?.searchBpm, brushingPhase, geoCountry?.countryCode, keyword, songFilters, songRefreshSeed, totalTeeth, workflowStep]);
+  }, [bpmData?.searchBpm, brushingPhase, effectiveAgeEstimate, geoCountry?.countryCode, keyword, songFilters, songRefreshSeed, totalTeeth, workflowStep]);
+
+  function handleSimulationChange(field, value) {
+    setAgeSimulation((current) => {
+      if (field === "unit") {
+        return {
+          ...current,
+          unit: value === "months" ? "months" : "years"
+        };
+      }
+
+      return {
+        ...current,
+        value: Number.isFinite(Number(value)) ? Number(value) : current.value
+      };
+    });
+  }
+
+  function handleSimulationToggle(active) {
+    setAgeSimulation((current) => ({
+      ...current,
+      active: Boolean(active)
+    }));
+
+    if (active) {
+      setShowAgeExperienceLab(true);
+    }
+  }
+
+  function handleSimulationReset() {
+    setAgeSimulation(DEFAULT_AGE_SIMULATION);
+  }
+
+  function handleToggleAgeExperienceLab() {
+    setAppView("brush");
+    setWorkflowStep("teeth");
+    setShowAgeExperienceLab((current) => !current);
+  }
 
   function updateDraftSongFilter(key, value) {
     setDraftSongFilters((prev) => ({ ...prev, [key]: value }));
@@ -2084,9 +2340,9 @@ function App() {
       bpm: Math.round(bpmData.searchBpm),
       secondsPerTooth: bpmData.secondsPerTooth,
       transitionSeconds: bpmData.transitionBufferSeconds,
-      ageText: formatAgeDescription(t, ageEstimate)
+      ageText: formatAgeDescription(t, effectiveAgeEstimate)
     });
-  }, [ageEstimate, bpmData, detectedBrusherProfile.description, detectedBrusherProfile.label, t]);
+  }, [bpmData, detectedBrusherProfile.description, detectedBrusherProfile.label, effectiveAgeEstimate, t]);
 
   const phaseLabel = useMemo(() => {
     if (brushingPhase === "running") {
@@ -2157,7 +2413,7 @@ function App() {
     householdManagement?.household;
 
   return (
-    <main className={`app-shell ${device.isMobile ? "mobile-shell" : "desktop-shell"}${appView === "workshop" && !device.isMobile ? " workshop-shell" : ""}`}>
+    <main className={`app-shell ${device.isMobile ? "mobile-shell" : "desktop-shell"}${appView === "workshop" && !device.isMobile ? " workshop-shell" : ""} age-theme-${effectiveAgeEstimate?.phase || "adult"}${ageSimulation.active ? " debug-simulation-active" : ""}`}>
       {!(appView === "workshop" && !device.isMobile) && (
       <header className="app-header">
         <p className="eyebrow">
@@ -2170,6 +2426,9 @@ function App() {
         <p>{subtitle}</p>
         <p className={`state-chip ${brushingPhase}`}>{t("app.status.label", { state: phaseLabel })}</p>
         <p className={`mode-chip ${device.mode}`}>{device.isMobile ? t("common.layouts.mobile") : t("common.layouts.desktop")}</p>
+        {ageSimulation.active && (
+          <p className="simulation-chip" aria-live="polite">{t("settings.experienceSimulator.headerChip", { label: detectedBrusherProfile.label })}</p>
+        )}
         <p className="geo-debug-chip" aria-live="polite">
           {t("app.geoDebug", {
             country: geoCountry?.country || "Unknown",
@@ -2178,8 +2437,15 @@ function App() {
             source: geoCountry?.source || "pending"
           })}
         </p>
-        {!device.isMobile && (
-          <div className="header-utility-row">
+        <div className="header-utility-row">
+          <button
+            type="button"
+            className={`header-utility-btn${showAgeExperienceLab ? " active" : ""}`}
+            onClick={handleToggleAgeExperienceLab}
+          >
+            {showAgeExperienceLab ? t("common.buttons.hideAgeExperienceLab") : t("common.buttons.openAgeExperienceLab")}
+          </button>
+          {!device.isMobile && (
             <button
               type="button"
               className="header-utility-btn"
@@ -2187,8 +2453,8 @@ function App() {
             >
               {appView === "workshop" || appView === "history" ? "Return to brushing flow" : "Open translation workshop"}
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </header>
       )}
 
@@ -2423,6 +2689,7 @@ function App() {
         <section className={`layout-grid ${device.isMobile ? "mobile-mode" : "desktop-mode desktop-step-layout"}`}>
           <BPMCalculator
             brusherProfile={detectedBrusherProfile}
+            actualBrusherProfile={actualBrusherProfile}
             values={values}
             onChange={updateValue}
             onContinueToMusic={() => setWorkflowStep("music")}
@@ -2430,7 +2697,26 @@ function App() {
             brushDurationSeconds={brushDurationSeconds}
             loading={loading.bpm}
             isMobile={device.isMobile}
+            showSimulationControls={ageSimulationAvailable && showAgeExperienceLab}
+            simulation={ageSimulation}
+            onSimulationToggle={handleSimulationToggle}
+            onSimulationChange={handleSimulationChange}
+            onSimulationReset={handleSimulationReset}
           />
+          {showAgeExperienceLab && ageSimulation.active && simulationPreviewDashboard && (
+            <div className="simulation-dashboard-shell">
+              <ProgressDashboardPanel
+                t={t}
+                dashboard={simulationPreviewDashboard}
+                activeUserName={t("settings.experienceSimulator.previewUser", { label: detectedBrusherProfile.label })}
+                filters={progressDashboardFilters}
+                onFilterChange={handleProgressDashboardFilterChange}
+                onLogActivity={() => {}}
+                readOnly
+                previewLabel={t("settings.experienceSimulator.previewBadge")}
+              />
+            </div>
+          )}
         </section>
       )}
 

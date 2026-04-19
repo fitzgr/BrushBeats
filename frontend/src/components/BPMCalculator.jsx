@@ -1,8 +1,37 @@
 import { useTranslation } from "react-i18next";
+import AchievementBadgeList from "./AchievementBadgeList";
 import { teethToAgeFullChart } from "../lib/teethAge";
+
+function buildSimulationPreviewAchievements(phase) {
+  const setsByPhase = {
+    infant: [
+      { achievementId: "simulation-first-session", achievementType: "first-session", tier: "bronze", pointsAwarded: 15 },
+      { achievementId: "simulation-streak-3", achievementType: "streak-3", tier: "silver", pointsAwarded: 40 }
+    ],
+    toddler: [
+      { achievementId: "simulation-first-session", achievementType: "first-session", tier: "bronze", pointsAwarded: 15 },
+      { achievementId: "simulation-routine-mix", achievementType: "routine-mix", tier: "silver", pointsAwarded: 45 }
+    ],
+    primary: [
+      { achievementId: "simulation-streak-3", achievementType: "streak-3", tier: "bronze", pointsAwarded: 30 },
+      { achievementId: "simulation-ten-sessions", achievementType: "ten-sessions", tier: "silver", pointsAwarded: 60 }
+    ],
+    mixed: [
+      { achievementId: "simulation-streak-7", achievementType: "streak-7", tier: "silver", pointsAwarded: 70 },
+      { achievementId: "simulation-routine-mix", achievementType: "routine-mix", tier: "gold", pointsAwarded: 90 }
+    ],
+    adult: [
+      { achievementId: "simulation-ten-sessions", achievementType: "ten-sessions", tier: "silver", pointsAwarded: 60 },
+      { achievementId: "simulation-stage-transition", achievementType: "stage-transition", tier: "gold", pointsAwarded: 100 }
+    ]
+  };
+
+  return setsByPhase[phase] || setsByPhase.adult;
+}
 
 function BPMCalculator({
   brusherProfile,
+  actualBrusherProfile,
   values,
   onChange,
   onContinueToMusic,
@@ -10,6 +39,11 @@ function BPMCalculator({
   brushDurationSeconds,
   loading,
   isMobile,
+  showSimulationControls,
+  simulation,
+  onSimulationToggle,
+  onSimulationChange,
+  onSimulationReset,
 }) {
   const { t } = useTranslation();
   const toothRange = { min: 0, max: 16, hint: t("settings.toothRangeHint") };
@@ -18,10 +52,18 @@ function BPMCalculator({
   const perRowMarkers = [0, 2, 4, 6, 8, 10, 12, 14, 16];
   const linearMarkers = [0, 4, 8, 12, 16, 20, 24, 28, 32];
   const ageTimelineMarkers = [...teethToAgeFullChart].sort((left, right) => left.max - right.max);
+  const selectedEstimate = brusherProfile?.estimate;
+  const simulationPreviewAchievements = buildSimulationPreviewAchievements(brusherProfile?.estimate?.phase);
 
   function formatApproximateAge(estimate) {
     if (!estimate) {
       return "";
+    }
+
+    if (estimate.simulated && Number.isFinite(Number(estimate.exactAge))) {
+      return estimate.unit === "months"
+        ? t("age.descriptions.monthExact", { value: estimate.exactAge })
+        : t("age.descriptions.yearExact", { value: estimate.exactAge });
     }
 
     const unit = t(`age.units.${estimate.unit}`);
@@ -49,6 +91,11 @@ function BPMCalculator({
               {formatApproximateAge(brusherProfile.estimate)}
             </span>
           )}
+          {simulation?.active && actualBrusherProfile?.label && (
+            <span className="profile-summary-note">
+              {t("settings.experienceSimulator.actualStage", { label: actualBrusherProfile.label })}
+            </span>
+          )}
         </div>
 
         <div className="bpm-pill" data-loading={loading}>
@@ -67,6 +114,69 @@ function BPMCalculator({
           </span>
         </div>
       </div>
+
+      {showSimulationControls && (
+        <section className={`experience-simulator-card${simulation?.active ? " active" : ""}`} aria-label={t("settings.experienceSimulator.ariaLabel")}>
+          <div className="experience-simulator-header">
+            <div>
+              <span className="profile-summary-label">{t("settings.experienceSimulator.label")}</span>
+              <strong>{t("settings.experienceSimulator.title")}</strong>
+              <p>{t("settings.experienceSimulator.hint")}</p>
+            </div>
+            <label className="experience-simulator-toggle">
+              <span>{t("settings.experienceSimulator.toggle")}</span>
+              <input
+                type="checkbox"
+                checked={Boolean(simulation?.active)}
+                onChange={(event) => onSimulationToggle?.(event.target.checked)}
+              />
+            </label>
+          </div>
+
+          <div className="experience-simulator-controls">
+            <label>
+              <span>{t("settings.experienceSimulator.ageValue")}</span>
+              <input
+                type="number"
+                min="0"
+                max={simulation?.unit === "months" ? "216" : "99"}
+                value={simulation?.value ?? ""}
+                onChange={(event) => onSimulationChange?.("value", Number(event.target.value))}
+                disabled={!simulation?.active}
+              />
+            </label>
+            <label>
+              <span>{t("settings.experienceSimulator.ageUnit")}</span>
+              <select
+                value={simulation?.unit || "years"}
+                onChange={(event) => onSimulationChange?.("unit", event.target.value)}
+                disabled={!simulation?.active}
+              >
+                <option value="months">{t("age.units.months")}</option>
+                <option value="years">{t("age.units.years")}</option>
+              </select>
+            </label>
+            <button type="button" className="action-btn secondary" onClick={onSimulationReset} disabled={!simulation?.active}>
+              {t("settings.experienceSimulator.reset")}
+            </button>
+          </div>
+
+          {simulation?.active && selectedEstimate && (
+            <div className="experience-simulator-preview">
+              <div className="experience-simulator-preview-copy">
+                <strong>{t("settings.experienceSimulator.previewTitle", { label: brusherProfile?.label || t("age.stages.adultSmile") })}</strong>
+                <span>{t("settings.experienceSimulator.previewBody", { age: formatApproximateAge(selectedEstimate) })}</span>
+              </div>
+              <AchievementBadgeList
+                t={t}
+                achievements={simulationPreviewAchievements}
+                title={t("settings.experienceSimulator.badgesTitle")}
+                compact
+              />
+            </div>
+          )}
+        </section>
+      )}
 
       <div className="controls-grid">
         <label className="tooth-count-control">
@@ -150,8 +260,13 @@ function BPMCalculator({
 
       <div className="teeth-growth-scale" aria-label="Total teeth to age scale">
         <div className="teeth-growth-header">
-          <span className="profile-summary-label">{t("settings.totalTeethSelected")}</span>
-          <strong>{t("settings.totalTeethValue", { count: totalTeeth })}</strong>
+          <div>
+            <span className="profile-summary-label">{t("settings.totalTeethSelected")}</span>
+            <strong>{t("settings.totalTeethValue", { count: totalTeeth })}</strong>
+          </div>
+          {selectedEstimate && (
+            <span className="teeth-growth-age-caption">{formatApproximateAge(selectedEstimate)}</span>
+          )}
         </div>
         <div className="teeth-growth-track">
           <span className="teeth-growth-fill" style={{ width: `${(totalTeeth / 32) * 100}%` }} />
@@ -175,6 +290,7 @@ function BPMCalculator({
             <span key={`${marker.min}-${marker.max}`} className="teeth-age-band">
               <strong>{marker.min}-{marker.max}</strong>
               <span>{t(`age.phases.${marker.phase}`)}</span>
+              <small>{formatApproximateAge(marker)}</small>
             </span>
           ))}
         </div>

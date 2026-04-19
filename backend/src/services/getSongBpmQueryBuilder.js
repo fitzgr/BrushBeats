@@ -8,6 +8,16 @@ function normalizeLanguageTag(language) {
   return `${primary.toLowerCase()}-${region.toUpperCase()}`;
 }
 
+function normalizeAgeBucket(ageBucket, toothCount) {
+  const normalized = String(ageBucket || "").trim().toLowerCase();
+
+  if (["child", "teen", "adult", "senior"].includes(normalized)) {
+    return normalized;
+  }
+
+  return inferAgeBucketFromToothCount(toothCount);
+}
+
 function dedupeTerms(terms) {
   const seen = new Set();
   const output = [];
@@ -36,7 +46,7 @@ function buildSongSearchContext(input = {}) {
   const languagePrimary = browserLanguage.split("-")[0];
   const countryCode = normalizeCountryCode(input.countryCode || "US");
   const toothCount = Math.max(0, Math.min(32, Math.floor(Number(input.toothCount) || 0)));
-  const ageBucket = inferAgeBucketFromToothCount(toothCount);
+  const ageBucket = normalizeAgeBucket(input.ageBucket, toothCount);
   const targetBpm = Math.max(60, Math.min(220, Math.round(Number(input.targetBpm) || 120)));
   const genreHint = String(input.genreHint || "").trim();
 

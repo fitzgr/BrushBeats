@@ -232,7 +232,8 @@ async function fetchSongsByBpm({
   limit = 25,
   browserLanguage = "en-US",
   countryCode = "US",
-  genreHint = ""
+  genreHint = "",
+  ageBucket
 }) {
   const targetBpm = Number(bpm);
   const safeTolerance = Math.max(1, Math.min(20, Number(tolerance) || 5));
@@ -241,7 +242,8 @@ async function fetchSongsByBpm({
     countryCode,
     toothCount: totalTeeth,
     targetBpm,
-    genreHint
+    genreHint,
+    ageBucket
   });
   const enrichedQuery = buildGetSongBpmQuery(songSearchContext, keyword);
   const profilePreference = {

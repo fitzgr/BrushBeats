@@ -4,6 +4,10 @@ function normalizeLanguageTag(language) {
   return `${primary.toLowerCase()}-${region.toUpperCase()}`;
 }
 
+function normalizeAgeBucket(ageBucket) {
+  return ["child", "teen", "adult", "senior"].includes(ageBucket) ? ageBucket : undefined;
+}
+
 export function detectBrowserLanguage() {
   if (typeof window === "undefined" || typeof navigator === "undefined") {
     return "en-US";
@@ -16,12 +20,13 @@ export function detectBrowserLanguage() {
   return normalizeLanguageTag(languages[0]);
 }
 
-export function buildUserMusicContext({ countryCode, targetBpm, toothCount, genreHint }) {
+export function buildUserMusicContext({ countryCode, targetBpm, toothCount, genreHint, ageBucket }) {
   return {
     browserLanguage: detectBrowserLanguage(),
     countryCode: String(countryCode || "").trim().toUpperCase() || "--",
     targetBpm: Math.max(60, Math.min(220, Math.round(Number(targetBpm) || 120))),
     toothCount: Math.max(0, Math.min(32, Math.floor(Number(toothCount) || 0))),
+    ageBucket: normalizeAgeBucket(ageBucket),
     genreHint: String(genreHint || "").trim() || undefined
   };
 }

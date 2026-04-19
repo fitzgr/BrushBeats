@@ -1,5 +1,17 @@
 [
   {
+    "id": "commit-b2ce5637b71958a9339dcca48ce39b3ef73e24e3",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "b2ce5637b71958a9339dcca48ce39b3ef73e24e3",
+    "shortSha": "b2ce563",
+    "timestamp": "2026-04-17T15:46:38-04:00",
+    "date": "2026-04-17",
+    "author": "Grant Fitz",
+    "subject": "Enforce household cloud sync gate",
+    "body": ""
+  },
+  {
     "id": "commit-f2b8ee5502d5c16bf84f5eee465e359360134e60",
     "kind": "commit",
     "source": "git-history",

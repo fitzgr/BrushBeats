@@ -34,6 +34,7 @@ router.get("/", async (req, res, next) => {
     const browserLanguage = (req.query.browserLanguage || "").trim();
     const countryCodeInput = (req.query.countryCode || "").trim();
     const genreHint = (req.query.genreHint || "").trim();
+    const ageBucket = (req.query.ageBucket || "").trim().toLowerCase();
 
     if (!Number.isFinite(bpm) || bpm <= 0) {
       return res.status(400).json({ error: "bpm query param is required" });
@@ -50,7 +51,7 @@ router.get("/", async (req, res, next) => {
     }
 
     const cacheKey = `songs:${totalTeeth}:${bpm}:${tolerance}:${danceability}:${acousticness}:${keyword.toLowerCase()}:${seed}`;
-    const contextCacheKey = `${browserLanguage.toLowerCase()}:${countryCode}:${genreHint.toLowerCase()}`;
+    const contextCacheKey = `${browserLanguage.toLowerCase()}:${countryCode}:${genreHint.toLowerCase()}:${ageBucket}`;
     const fullCacheKey = `${cacheKey}:${contextCacheKey}`;
     const cached = songsCache.get(fullCacheKey);
 
@@ -68,7 +69,8 @@ router.get("/", async (req, res, next) => {
       seed,
       browserLanguage,
       countryCode,
-      genreHint
+      genreHint,
+      ageBucket
     });
     const shuffled = {
       ...result,
@@ -77,6 +79,7 @@ router.get("/", async (req, res, next) => {
         browserLanguage,
         countryCode,
         genreHint,
+        ageBucket,
         targetBpm: Math.round(bpm),
         toothCount: totalTeeth
       },

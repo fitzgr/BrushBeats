@@ -24,6 +24,8 @@
       "privacyPolicy": "Privacy Policy",
       "versionHistory": "Version History",
       "householdSetup": "Household Setup",
+      "openAgeExperienceLab": "Open age experience lab",
+      "hideAgeExperienceLab": "Hide age experience lab",
       "continueLater": "Continue Later",
       "addMember": "Add Member",
       "removeMember": "Remove Member",
@@ -417,6 +419,23 @@
     "headlineEmpty": "Adjust teeth counts to calculate BPM.",
     "nextStepTitle": "Next: 2. Music",
     "nextStepDescription": "Use this detected stage and tempo target to queue songs that fit the brusher naturally.",
+    "experienceSimulator": {
+      "ariaLabel": "Age experience simulator",
+      "label": "Debug simulator",
+      "title": "Simulate age-based experience",
+      "hint": "Session-only override for testing stage copy, song context, reward styling, and younger-age presentation without changing saved tooth counts.",
+      "toggle": "Use simulated age",
+      "ageValue": "Age value",
+      "ageUnit": "Age unit",
+      "reset": "Reset simulation",
+      "previewTitle": "Previewing {{label}} experience",
+      "previewBody": "This preview is using {{age}} while keeping the selected tooth counts unchanged.",
+      "badgesTitle": "Gamification preview",
+      "headerChip": "Simulating: {{label}}",
+      "actualStage": "Actual tooth-based stage: {{label}}",
+      "previewBadge": "Preview only",
+      "previewUser": "{{label}} preview"
+    },
     "approximateAge": {
       "range": "Approximate age: {{min}}-{{max}} {{unit}}",
       "plus": "Approximate age: {{min}}+ {{unit}}"
@@ -647,6 +666,8 @@
       "monthRange": "About {{min}}-{{max}} months old",
       "yearRange": "About {{min}}-{{max}} years old",
       "yearsPlus": "{{min}}+ years old",
+      "monthExact": "{{value}} months old",
+      "yearExact": "{{value}} years old",
       "unknownRange": "age range unknown"
     },
     "phases": {

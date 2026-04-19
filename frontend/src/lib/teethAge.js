@@ -2,6 +2,22 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
+function normalizeAgeUnit(unit) {
+  return unit === "months" ? "months" : "years";
+}
+
+function normalizeAgeValue(value, unit) {
+  const numericValue = Number(value);
+  const fallback = unit === "months" ? 24 : 2;
+  const max = unit === "months" ? 216 : 99;
+
+  if (!Number.isFinite(numericValue)) {
+    return fallback;
+  }
+
+  return clamp(Math.round(numericValue), 0, max);
+}
+
 export const teethToAgeFullChart = [
   { min: 28, max: 28, minAge: 12, maxAge: 99, unit: "years", phase: "adult" },
   { min: 29, max: 32, minAge: 17, maxAge: 25, unit: "years", phase: "adult" },
@@ -19,6 +35,60 @@ export function estimateAgeFromTeethFull(teethCount) {
   const safeTeeth = clamp(Math.floor(Number(teethCount) || 0), 0, 32);
 
   return teethToAgeFullChart.find((range) => safeTeeth >= range.min && safeTeeth <= range.max) || null;
+}
+
+export function buildAgeEstimateFromActualAge(value, unit = "years") {
+  const normalizedUnit = normalizeAgeUnit(unit);
+  const exactAge = normalizeAgeValue(value, normalizedUnit);
+  const ageInMonths = normalizedUnit === "months" ? exactAge : exactAge * 12;
+
+  let phase = "adult";
+
+  if (ageInMonths <= 14) {
+    phase = "infant";
+  } else if (ageInMonths <= 22) {
+    phase = "toddler";
+  } else if (ageInMonths <= 59) {
+    phase = "primary";
+  } else if (ageInMonths <= 144) {
+    phase = "mixed";
+  }
+
+  return {
+    phase,
+    unit: normalizedUnit,
+    minAge: exactAge,
+    maxAge: exactAge,
+    exactAge,
+    ageInMonths,
+    simulated: true
+  };
+}
+
+export function inferMusicAgeBucket(ageEstimate) {
+  if (!ageEstimate) {
+    return "adult";
+  }
+
+  const ageInMonths = Number.isFinite(Number(ageEstimate.ageInMonths))
+    ? Number(ageEstimate.ageInMonths)
+    : ageEstimate.unit === "months"
+      ? Number(ageEstimate.maxAge || ageEstimate.minAge || 0)
+      : Number(ageEstimate.maxAge || ageEstimate.minAge || 0) * 12;
+
+  if (ageInMonths >= 65 * 12) {
+    return "senior";
+  }
+
+  if (ageInMonths >= 13 * 12 && ageInMonths < 18 * 12) {
+    return "teen";
+  }
+
+  if (ageInMonths >= 18 * 12) {
+    return "adult";
+  }
+
+  return "child";
 }
 
 export function describeTeethStage(teethCount) {
