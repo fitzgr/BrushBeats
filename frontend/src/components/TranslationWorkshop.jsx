@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { getAdminLocale, saveAdminLocale } from "../api/client";
+import { buildAgeEstimateFromActualAge } from "../lib/teethAge";
 
 const ADMIN_SESSION_KEY = "brushbeats_workshop_password";
 const ADMIN_WORKSHOP_STATE_COOKIE = "brushbeats_workshop_state";
@@ -55,6 +56,102 @@ const SAMPLE_VALUES = {
   value: 7
 };
 
+const DEFAULT_WORKSHOP_AGE_SIMULATION = {
+  enabled: false,
+  value: 7,
+  unit: "years"
+};
+
+function formatWorkshopAgeText(ageEstimate) {
+  if (!ageEstimate) {
+    return SAMPLE_VALUES.ageText;
+  }
+
+  if (ageEstimate.unit === "months") {
+    return `${ageEstimate.exactAge} months old`;
+  }
+
+  return `${ageEstimate.exactAge} years old`;
+}
+
+function buildWorkshopSampleValues(ageSimulation) {
+  const ageEstimate = ageSimulation?.enabled
+    ? buildAgeEstimateFromActualAge(ageSimulation.value, ageSimulation.unit)
+    : null;
+
+  const phase = ageEstimate?.phase || "mixed";
+  const presetByPhase = {
+    infant: {
+      ageText: formatWorkshopAgeText(ageEstimate),
+      artist: "The Wiggles",
+      bpm: 96,
+      bottom: 3,
+      count: 6,
+      description: "Infant Teeth",
+      label: "Infant Teeth",
+      top: 3,
+      totalTeeth: 6
+    },
+    toddler: {
+      ageText: formatWorkshopAgeText(ageEstimate),
+      artist: "Raffi",
+      bpm: 104,
+      bottom: 8,
+      count: 16,
+      description: "Toddler Teeth",
+      label: "Toddler Teeth",
+      top: 8,
+      totalTeeth: 16
+    },
+    primary: {
+      ageText: formatWorkshopAgeText(ageEstimate),
+      artist: "Kidz Bop",
+      bpm: 112,
+      bottom: 10,
+      count: 20,
+      description: "Primary Teeth",
+      label: "Primary Teeth",
+      top: 10,
+      totalTeeth: 20
+    },
+    mixed: {
+      ageText: formatWorkshopAgeText(ageEstimate) || SAMPLE_VALUES.ageText,
+      artist: "Dua Lipa",
+      bpm: 120,
+      bottom: 12,
+      count: 24,
+      description: "Mixed Dentition",
+      label: "Mixed Dentition",
+      top: 12,
+      totalTeeth: 24
+    },
+    adult: {
+      ageText: formatWorkshopAgeText(ageEstimate),
+      artist: "Harry Styles",
+      bpm: 128,
+      bottom: 16,
+      count: 32,
+      description: "Full Adult Smile",
+      label: "Full Adult Smile",
+      top: 16,
+      totalTeeth: 32
+    }
+  };
+
+  const preset = presetByPhase[phase] || presetByPhase.mixed;
+
+  return {
+    ...SAMPLE_VALUES,
+    ...preset,
+    min: ageEstimate?.exactAge ?? SAMPLE_VALUES.min,
+    max: ageEstimate?.exactAge ?? SAMPLE_VALUES.max,
+    unit: ageEstimate?.unit || SAMPLE_VALUES.unit,
+    value: ageEstimate?.exactAge ?? SAMPLE_VALUES.value,
+    phase,
+    simulationEnabled: Boolean(ageSimulation?.enabled)
+  };
+}
+
 function isPlainObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
@@ -97,10 +194,10 @@ function expandTranslations(flattenedEntries) {
   return root;
 }
 
-function interpolateTemplate(template) {
+function interpolateTemplate(template, sampleValues = SAMPLE_VALUES) {
   return String(template || "").replace(/\{\{\s*([^}]+?)\s*\}\}/g, (_, token) => {
     const trimmedToken = token.trim();
-    return SAMPLE_VALUES[trimmedToken] ?? `{{${trimmedToken}}}`;
+    return sampleValues[trimmedToken] ?? `{{${trimmedToken}}}`;
   });
 }
 
@@ -215,8 +312,8 @@ function labelForLanguage(language, languageOptions) {
   return languageOptions.find((option) => option.value === language)?.label || language.toUpperCase();
 }
 
-function buildPreviewReader(entries, fallbackEntries) {
-  return (path) => interpolateTemplate(entries[path] || fallbackEntries[path] || path);
+function buildPreviewReader(entries, fallbackEntries, sampleValues) {
+  return (path) => interpolateTemplate(entries[path] || fallbackEntries[path] || path, sampleValues);
 }
 
 function CopyText({
@@ -282,7 +379,7 @@ function WorkflowTabs({ activeWorkflow, onSelect, className = "translation-workf
   );
 }
 
-function TeethScreen({ read, selectedPath, onSelectPath, interactive }) {
+function TeethScreen({ read, selectedPath, onSelectPath, interactive, sampleValues }) {
   return (
     <>
       <section className="workshop-phone-hero">
@@ -334,6 +431,12 @@ function TeethScreen({ read, selectedPath, onSelectPath, interactive }) {
       <section className="workshop-preview-card workshop-preview-inputs">
         <CopyText path="settings.resultsTitleMobile" read={read} onSelect={onSelectPath} selectedPath={selectedPath} as="strong" />
         <CopyText path="settings.topBottomIntroMobile" read={read} onSelect={onSelectPath} selectedPath={selectedPath} as="p" />
+        {sampleValues?.simulationEnabled && (
+          <section className="workshop-preview-notice info workshop-preview-age-lab">
+            <CopyText path="settings.experienceSimulator.previewTitle" read={read} onSelect={onSelectPath} selectedPath={selectedPath} as="strong" />
+            <CopyText path="settings.experienceSimulator.previewBody" read={read} onSelect={onSelectPath} selectedPath={selectedPath} as="p" />
+          </section>
+        )}
         <CopyText path="settings.topTeeth" read={read} onSelect={onSelectPath} selectedPath={selectedPath} as="strong" />
         <div className="workshop-preview-slider" />
         <CopyText path="settings.bottomTeeth" read={read} onSelect={onSelectPath} selectedPath={selectedPath} as="strong" />
@@ -354,7 +457,7 @@ function TeethScreen({ read, selectedPath, onSelectPath, interactive }) {
   );
 }
 
-function MusicScreen({ read, selectedPath, onSelectPath, interactive }) {
+function MusicScreen({ read, selectedPath, onSelectPath, interactive, sampleValues }) {
   return (
     <>
       <section className="workshop-phone-hero compact-hero">
@@ -376,6 +479,9 @@ function MusicScreen({ read, selectedPath, onSelectPath, interactive }) {
         <CopyText path="music.resultsTitleMobile" read={read} onSelect={onSelectPath} selectedPath={selectedPath} as="strong" />
         <CopyText path="music.introMobile" read={read} onSelect={onSelectPath} selectedPath={selectedPath} as="p" />
         <CopyText path="music.noteMobile" read={read} onSelect={onSelectPath} selectedPath={selectedPath} as="small" />
+        {sampleValues?.simulationEnabled && (
+          <CopyText path="settings.experienceSimulator.headerChip" read={read} onSelect={onSelectPath} selectedPath={selectedPath} as="span" textClassName="workshop-preview-age-chip" wrapperClassName="inline-hit" />
+        )}
         <div className="workshop-preview-metric-grid">
           <CopyText path="music.tolerance" read={read} onSelect={onSelectPath} selectedPath={selectedPath} as="span" wrapperClassName="metric-hit" />
           <CopyText path="music.danceability" read={read} onSelect={onSelectPath} selectedPath={selectedPath} as="span" wrapperClassName="metric-hit" />
@@ -409,7 +515,7 @@ function MusicScreen({ read, selectedPath, onSelectPath, interactive }) {
   );
 }
 
-function BrushScreen({ read, selectedPath, onSelectPath, interactive }) {
+function BrushScreen({ read, selectedPath, onSelectPath, interactive, sampleValues }) {
   return (
     <>
       <section className="workshop-phone-hero compact-hero">
@@ -427,6 +533,9 @@ function BrushScreen({ read, selectedPath, onSelectPath, interactive }) {
 
       <section className="workshop-preview-card workshop-preview-brush">
         <CopyText path="brushing.controlsTitle" read={read} onSelect={onSelectPath} selectedPath={selectedPath} as="strong" />
+        {sampleValues?.simulationEnabled && (
+          <CopyText path="settings.experienceSimulator.headerChip" read={read} onSelect={onSelectPath} selectedPath={selectedPath} as="span" textClassName="workshop-preview-age-chip" wrapperClassName="inline-hit" />
+        )}
         <CopyText path="brushing.selectedSong" read={read} onSelect={onSelectPath} selectedPath={selectedPath} as="span" textClassName="workshop-preview-selected-song" />
         <div className="workshop-preview-option-grid">
           <CopyText path="brushing.handPreference" read={read} onSelect={onSelectPath} selectedPath={selectedPath} as="span" wrapperClassName="option-hit" />
@@ -481,9 +590,10 @@ function WorkshopPhone({
   activeWorkflow,
   onSelectWorkflow,
   interactive = true,
-  helperLabel = "Click any string"
+  helperLabel = "Click any string",
+  sampleValues = SAMPLE_VALUES
 }) {
-  const read = useMemo(() => buildPreviewReader(entries, fallbackEntries), [entries, fallbackEntries]);
+  const read = useMemo(() => buildPreviewReader(entries, fallbackEntries, sampleValues), [entries, fallbackEntries, sampleValues]);
 
   return (
     <article className={`workshop-phone-card${interactive ? "" : " readonly-preview"}`}>
@@ -500,10 +610,10 @@ function WorkshopPhone({
       />
       <div className="workshop-phone-shell expanded">
         <div className="workshop-phone-notch" />
-        <div className="workshop-phone-screen">
-          {activeWorkflow === "teeth" && <TeethScreen read={read} selectedPath={selectedPath} onSelectPath={onSelectPath} interactive={interactive} />}
-          {activeWorkflow === "music" && <MusicScreen read={read} selectedPath={selectedPath} onSelectPath={onSelectPath} interactive={interactive} />}
-          {activeWorkflow === "brush" && <BrushScreen read={read} selectedPath={selectedPath} onSelectPath={onSelectPath} interactive={interactive} />}
+        <div className={`workshop-phone-screen phase-${sampleValues.phase || "mixed"}${sampleValues.simulationEnabled ? " simulated-age" : ""}`}>
+          {activeWorkflow === "teeth" && <TeethScreen read={read} selectedPath={selectedPath} onSelectPath={onSelectPath} interactive={interactive} sampleValues={sampleValues} />}
+          {activeWorkflow === "music" && <MusicScreen read={read} selectedPath={selectedPath} onSelectPath={onSelectPath} interactive={interactive} sampleValues={sampleValues} />}
+          {activeWorkflow === "brush" && <BrushScreen read={read} selectedPath={selectedPath} onSelectPath={onSelectPath} interactive={interactive} sampleValues={sampleValues} />}
         </div>
       </div>
     </article>
@@ -527,6 +637,11 @@ function TranslationWorkshop({ initialTargetLanguage, languageOptions, onExit })
   const [draftEntries, setDraftEntries] = useState({});
   const [loadedTargetEntries, setLoadedTargetEntries] = useState({});
   const [searchTerm, setSearchTerm] = useState(() => storedWorkshopState.searchTerm || "");
+  const [ageSimulation, setAgeSimulation] = useState(() => ({
+    enabled: Boolean(storedWorkshopState.ageSimulationEnabled),
+    value: Number.isFinite(Number(storedWorkshopState.ageSimulationValue)) ? Number(storedWorkshopState.ageSimulationValue) : DEFAULT_WORKSHOP_AGE_SIMULATION.value,
+    unit: storedWorkshopState.ageSimulationUnit === "months" ? "months" : DEFAULT_WORKSHOP_AGE_SIMULATION.unit
+  }));
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -622,6 +737,7 @@ function TranslationWorkshop({ initialTargetLanguage, languageOptions, onExit })
   const completedCount = Math.max(0, totalStrings - missingCount);
   const completionPercent = totalStrings ? Math.round((completedCount / totalStrings) * 100) : 0;
   const targetLabel = labelForLanguage(targetLanguage, languageOptions);
+  const workshopSampleValues = useMemo(() => buildWorkshopSampleValues(ageSimulation), [ageSimulation]);
 
   useEffect(() => {
     if (!isUnlocked) {
@@ -632,9 +748,35 @@ function TranslationWorkshop({ initialTargetLanguage, languageOptions, onExit })
       activeWorkflow,
       searchTerm,
       selectedPath,
-      targetLanguage
+      targetLanguage,
+      ageSimulationEnabled: ageSimulation.enabled,
+      ageSimulationValue: ageSimulation.value,
+      ageSimulationUnit: ageSimulation.unit
     });
-  }, [activeWorkflow, isUnlocked, searchTerm, selectedPath, targetLanguage]);
+  }, [activeWorkflow, ageSimulation.enabled, ageSimulation.unit, ageSimulation.value, isUnlocked, searchTerm, selectedPath, targetLanguage]);
+
+  function handleAgeSimulationChange(field, value) {
+    setAgeSimulation((current) => {
+      if (field === "enabled") {
+        return {
+          ...current,
+          enabled: Boolean(value)
+        };
+      }
+
+      if (field === "unit") {
+        return {
+          ...current,
+          unit: value === "months" ? "months" : "years"
+        };
+      }
+
+      return {
+        ...current,
+        value: Number.isFinite(Number(value)) ? Number(value) : current.value
+      };
+    });
+  }
 
   function updateEntry(path, value) {
     setDraftEntries((previous) => ({ ...previous, [path]: value }));
@@ -810,6 +952,43 @@ function TranslationWorkshop({ initialTargetLanguage, languageOptions, onExit })
         <div className="translation-stat card compact"><strong>{missingCount}</strong><span>Blank or missing</span></div>
       </section>
 
+      <section className="translation-workshop-age-lab card compact">
+        <div className="translation-age-lab-copy">
+          <strong>{englishEntries["settings.experienceSimulator.title"] || "Simulate age-based experience"}</strong>
+          <span>{englishEntries["settings.experienceSimulator.hint"] || "Session-only preview controls for the workshop phone screens."}</span>
+        </div>
+        <label className="translation-age-lab-toggle">
+          <span>{englishEntries["settings.experienceSimulator.toggle"] || "Use simulated age"}</span>
+          <input
+            type="checkbox"
+            checked={ageSimulation.enabled}
+            onChange={(event) => handleAgeSimulationChange("enabled", event.target.checked)}
+          />
+        </label>
+        <label className="translation-inline-control">
+          <span>{englishEntries["settings.experienceSimulator.ageValue"] || "Age value"}</span>
+          <input
+            type="number"
+            min="0"
+            max={ageSimulation.unit === "months" ? "216" : "99"}
+            value={ageSimulation.value}
+            onChange={(event) => handleAgeSimulationChange("value", Number(event.target.value))}
+            disabled={!ageSimulation.enabled}
+          />
+        </label>
+        <label className="translation-inline-control">
+          <span>{englishEntries["settings.experienceSimulator.ageUnit"] || "Age unit"}</span>
+          <select
+            value={ageSimulation.unit}
+            onChange={(event) => handleAgeSimulationChange("unit", event.target.value)}
+            disabled={!ageSimulation.enabled}
+          >
+            <option value="months">months</option>
+            <option value="years">years</option>
+          </select>
+        </label>
+      </section>
+
       <section className="translation-tri-layout">
         <div className="translation-column preview-column">
           <WorkshopPhone
@@ -821,6 +1000,7 @@ function TranslationWorkshop({ initialTargetLanguage, languageOptions, onExit })
             activeWorkflow={activeWorkflow}
             onSelectWorkflow={setActiveWorkflow}
             helperLabel="English template"
+            sampleValues={workshopSampleValues}
           />
         </div>
 
@@ -834,6 +1014,7 @@ function TranslationWorkshop({ initialTargetLanguage, languageOptions, onExit })
             activeWorkflow={activeWorkflow}
             onSelectWorkflow={setActiveWorkflow}
             helperLabel="Translated preview"
+            sampleValues={workshopSampleValues}
           />
         </div>
 

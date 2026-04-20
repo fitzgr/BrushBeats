@@ -1788,6 +1788,31 @@
   justify-content: start;
 }
 
+.translation-workshop-age-lab {
+  display: grid;
+  grid-template-columns: minmax(240px, 1.4fr) auto auto auto;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.translation-age-lab-copy {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.translation-age-lab-copy span {
+  color: #607175;
+  font-size: 0.82rem;
+}
+
+.translation-age-lab-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
 .translation-stat {
   display: flex;
   align-items: center;
@@ -2292,6 +2317,18 @@
   background: linear-gradient(170deg, rgba(184, 219, 229, 0.92), rgba(255, 249, 239, 0.98));
 }
 
+.workshop-phone-screen.simulated-age.phase-infant,
+.workshop-phone-screen.simulated-age.phase-toddler {
+  background:
+    radial-gradient(circle at top right, rgba(255, 232, 150, 0.45), transparent 28%),
+    radial-gradient(circle at left 20%, rgba(122, 215, 255, 0.28), transparent 32%),
+    linear-gradient(170deg, rgba(219, 245, 255, 0.95), rgba(255, 247, 214, 0.98), rgba(255, 236, 244, 0.96));
+}
+
+.workshop-phone-screen.simulated-age.phase-primary {
+  background: linear-gradient(170deg, rgba(211, 243, 255, 0.94), rgba(255, 249, 227, 0.98));
+}
+
 .workshop-phone-hero {
   display: grid;
   gap: 0.35rem;
@@ -2459,6 +2496,22 @@
 .workshop-preview-notice.info {
   background: #fff2dc;
   color: #7f4f1d;
+}
+
+.workshop-preview-age-lab {
+  border-style: dashed;
+}
+
+.workshop-preview-age-chip {
+  display: inline-flex;
+  justify-self: start;
+  padding: 0.28rem 0.52rem;
+  border-radius: 999px;
+  background: rgba(255, 240, 217, 0.92);
+  border: 1px solid rgba(202, 95, 22, 0.24);
+  color: #8a4716;
+  font-size: 0.7rem;
+  font-weight: 800;
 }
 
 .workshop-preview-notice.error {
