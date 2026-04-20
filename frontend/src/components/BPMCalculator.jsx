@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import AgeThemePanel from "./AgeThemePanel";
 import AchievementBadgeList from "./AchievementBadgeList";
 import { teethToAgeFullChart } from "../lib/teethAge";
 
@@ -32,6 +33,7 @@ function buildSimulationPreviewAchievements(phase) {
 function BPMCalculator({
   brusherProfile,
   actualBrusherProfile,
+  ageUiProfile,
   values,
   onChange,
   onContinueToMusic,
@@ -114,6 +116,8 @@ function BPMCalculator({
           </span>
         </div>
       </div>
+
+      <AgeThemePanel profile={ageUiProfile} variant="spotlight" className="calculator-age-spotlight" />
 
       {showSimulationControls && (
         <section className={`experience-simulator-card${simulation?.active ? " active" : ""}`} aria-label={t("settings.experienceSimulator.ariaLabel")}>

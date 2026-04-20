@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import AgeThemePanel from "./AgeThemePanel";
 import { getBrushTechniqueTips } from "../lib/reinforcementMessages";
 
 function toRadians(degrees) {
@@ -418,7 +419,7 @@ function getCountdownSignal(remainingMs, totalMs) {
   };
 }
 
-function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, playbackSeconds, brushingMusicElapsedSeconds, startCountdownTotalMs = 5000, startCountdownRemainingMs = 0, brushingHand, brushType = "manual", hideIntro = false, onCueChange, completionMessage = "", brushControlCue, primaryBrushActionLabel, onPrimaryBrushAction, onRestartBrushing }) {
+function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, playbackSeconds, brushingMusicElapsedSeconds, startCountdownTotalMs = 5000, startCountdownRemainingMs = 0, brushingHand, brushType = "manual", hideIntro = false, onCueChange, completionMessage = "", brushControlCue, primaryBrushActionLabel, onPrimaryBrushAction, onRestartBrushing, ageUiProfile }) {
   const { t } = useTranslation();
   const totalSeconds = Number(bpmData?.totalBrushingSeconds || 120);
   const topTeeth = Number(values?.top || 16);
@@ -483,7 +484,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
     if (total <= 28) return "mixed";
     return "adult";
   }, [topTeeth, bottomTeeth]);
-  const tips = useMemo(() => getBrushTechniqueTips(brushType, agePhase), [brushType, agePhase]);
+  const tips = useMemo(() => getBrushTechniqueTips(brushType, ageUiProfile?.phase || agePhase), [agePhase, ageUiProfile?.phase, brushType]);
   const [activeTip, setActiveTip] = useState("");
   const tipIndexRef = useRef(0);
 
@@ -857,7 +858,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
   }
 
   return (
-    <section className="card guide">
+    <section className={`card guide ${ageUiProfile?.themeClassName || ""}`.trim()}>
       <h2>{t("brushing.guide.title")}</h2>
       {!hideIntro && (
         <p>
@@ -891,7 +892,9 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
         )}
 
 
-      <div className="mouth-map" role="img" aria-label={t("brushing.guide.mouthMapAria")}>
+      <div className="guide-map-shell">
+        <AgeThemePanel profile={ageUiProfile} variant="guide" className="guide-age-overlay" chipLimit={2} />
+        <div className="mouth-map" role="img" aria-label={t("brushing.guide.mouthMapAria")}>
         <svg viewBox="0 0 360 420" preserveAspectRatio="xMidYMid meet">
           <ellipse cx="180" cy="210" rx="150" ry="170" className="mouth-outline" />
 
@@ -1063,6 +1066,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
             </text>
           )}
         </svg>
+        </div>
       </div>
 
       <div className="map-legend" aria-label={t("brushing.guide.legendAria")}>

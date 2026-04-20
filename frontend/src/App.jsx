@@ -4,6 +4,7 @@ import BPMCalculator from "./components/BPMCalculator";
 import SongList from "./components/SongList";
 import Player from "./components/Player";
 import BrushingGuide from "./components/BrushingGuide";
+import AgeThemePanel from "./components/AgeThemePanel";
 import HouseholdSetupPanel from "./components/HouseholdSetupPanel";
 import HouseholdOverviewPanel from "./components/HouseholdOverviewPanel";
 import HouseholdManagementPanel from "./components/HouseholdManagementPanel";
@@ -48,6 +49,7 @@ import {
   setStorageConsent
 } from "./lib/storagePreference";
 import { buildAgeEstimateFromActualAge, estimateAgeFromTeethFull, inferMusicAgeBucket } from "./lib/teethAge";
+import { buildAgeUiProfile } from "./lib/ageUiProfile";
 import { useDeviceContext } from "./lib/deviceContext";
 import { buildUserMusicContext } from "./lib/userMusicContext";
 import "./App.css";
@@ -526,6 +528,14 @@ function App() {
   const actualBrusherProfile = useMemo(
     () => buildLocalizedBrusherProfile(t, totalTeeth, toothAgeEstimate),
     [t, toothAgeEstimate, totalTeeth]
+  );
+  const ageUiProfile = useMemo(
+    () => buildAgeUiProfile(t, effectiveAgeEstimate, {
+      stageLabel: detectedBrusherProfile.label,
+      ageText: formatAgeDescription(t, effectiveAgeEstimate),
+      simulated: ageSimulation.active
+    }),
+    [ageSimulation.active, detectedBrusherProfile.label, effectiveAgeEstimate, t]
   );
   const simulationPreviewDashboard = useMemo(
     () => ageSimulation.active ? buildMockProgressDashboard(effectiveAgeEstimate?.phase || "adult") : null,
@@ -2413,7 +2423,10 @@ function App() {
     householdManagement?.household;
 
   return (
-    <main className={`app-shell ${device.isMobile ? "mobile-shell" : "desktop-shell"}${appView === "workshop" && !device.isMobile ? " workshop-shell" : ""} age-theme-${effectiveAgeEstimate?.phase || "adult"}${ageSimulation.active ? " debug-simulation-active" : ""}`}>
+    <main
+      className={`app-shell ${device.isMobile ? "mobile-shell" : "desktop-shell"}${appView === "workshop" && !device.isMobile ? " workshop-shell" : ""} ${ageUiProfile.shellClassName} ${ageUiProfile.themeClassName}${ageSimulation.active ? " debug-simulation-active" : ""}`}
+      style={ageUiProfile.cssVars}
+    >
       {!(appView === "workshop" && !device.isMobile) && (
       <header className="app-header">
         <p className="eyebrow">
@@ -2424,6 +2437,7 @@ function App() {
         </p>
         <h1>{device.isMobile ? t("app.title.mobile") : t("app.title.desktop")}</h1>
         <p>{subtitle}</p>
+        <AgeThemePanel profile={ageUiProfile} className="header-age-theme-panel" />
         <p className={`state-chip ${brushingPhase}`}>{t("app.status.label", { state: phaseLabel })}</p>
         <p className={`mode-chip ${device.mode}`}>{device.isMobile ? t("common.layouts.mobile") : t("common.layouts.desktop")}</p>
         {ageSimulation.active && (
@@ -2492,7 +2506,7 @@ function App() {
           </button>
       </nav>
 
-      <section className={`care-routine-strip${showCompactRoutine ? " compact" : ""}`} aria-label={t("app.routine.ariaLabel")}>
+      <section className={`care-routine-strip ${ageUiProfile.themeClassName}${showCompactRoutine ? " compact" : ""}`} aria-label={t("app.routine.ariaLabel")}>
         <div className="care-routine-header">
           <strong>{t("app.routine.title")}</strong>
           {isReturningVisitor && (
@@ -2690,6 +2704,7 @@ function App() {
           <BPMCalculator
             brusherProfile={detectedBrusherProfile}
             actualBrusherProfile={actualBrusherProfile}
+            ageUiProfile={ageUiProfile}
             values={values}
             onChange={updateValue}
             onContinueToMusic={() => setWorkflowStep("music")}
@@ -2723,7 +2738,7 @@ function App() {
       {workflowStep === "music" && (
         <section className={`layout-grid ${device.isMobile ? "mobile-mode" : "desktop-mode desktop-step-layout"}`}>
           {storageConsent === "granted" && (lastSession?.song || favoriteSongs.length > 0) && (
-            <section className="stored-picks-panel" aria-live="polite">
+            <section className={`stored-picks-panel ${ageUiProfile.themeClassName}`} aria-live="polite">
               <strong>{t("music.favorites.title")}</strong>
               {lastSession?.song && (
                 <div className="stored-pick-row">
@@ -2801,7 +2816,7 @@ function App() {
 
       {workflowStep === "brush" && (
         <section className={`layout-grid ${device.isMobile ? "mobile-mode" : "desktop-mode desktop-brush-layout"}`}>
-          <section className={`card brush-actions-card ${device.isMobile ? "" : "desktop-step-card"}`.trim()}>
+          <section className={`card brush-actions-card ${ageUiProfile.themeClassName} ${device.isMobile ? "" : "desktop-step-card"}`.trim()}>
             <h2>{t("brushing.controlsTitle")}</h2>
             <p>{t("brushing.controlsIntro")}</p>
             <div className="brush-type-picker" role="group" aria-label={t("brushing.brushType")}>
@@ -2958,6 +2973,7 @@ function App() {
             primaryBrushActionLabel={primaryBrushActionLabel}
             onPrimaryBrushAction={handlePrimaryBrushAction}
             onRestartBrushing={restartBrushing}
+            ageUiProfile={ageUiProfile}
           />
         </section>
       )}
