@@ -65,6 +65,24 @@ export function buildAgeEstimateFromActualAge(value, unit = "years") {
   };
 }
 
+export function buildAgeEstimateFromPhase(phase = "adult") {
+  const representativeByPhase = {
+    infant: { unit: "months", value: 10 },
+    toddler: { unit: "months", value: 18 },
+    primary: { unit: "years", value: 3 },
+    mixed: { unit: "years", value: 9 },
+    adult: { unit: "years", value: 24 }
+  };
+  const selected = representativeByPhase[phase] || representativeByPhase.adult;
+  const estimate = buildAgeEstimateFromActualAge(selected.value, selected.unit);
+
+  return {
+    ...estimate,
+    phase: representativeByPhase[phase] ? phase : "adult",
+    simulatedFromPhase: true
+  };
+}
+
 export function inferMusicAgeBucket(ageEstimate) {
   if (!ageEstimate) {
     return "adult";

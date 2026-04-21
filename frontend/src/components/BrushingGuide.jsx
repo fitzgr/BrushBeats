@@ -28,38 +28,40 @@ function createArcPoints({ count, cx, cy, rx, ry, startDeg, endDeg }) {
 
 const TOOTH_SHAPES = {
   molar: {
-    path: "M0 -11 C7 -11 11 -8 11 -2 C11 5 8 9 4 11 C1 12 -1 12 -4 11 C-8 9 -11 5 -11 -2 C-11 -8 -7 -11 0 -11 Z",
+    path: "M0 -26 C14 -27 24 -19 26 -7 C27 10 20 24 10 30 C4 33 -4 33 -10 30 C-20 24 -27 10 -26 -7 C-24 -19 -14 -27 0 -26 Z",
     grooves: [
-      { type: "ellipse", cx: 0, cy: 0, rx: 5.2, ry: 3.2 },
-      { type: "path", d: "M-3 -4 C-2 -1 -2 1 -3 4" },
-      { type: "path", d: "M3 -4 C2 -1 2 1 3 4" }
+      { type: "path", d: "M-13 -4 C-8 -13 8 -13 13 -4" },
+      { type: "path", d: "M-10 9 C-5 2 5 2 10 9" },
+      { type: "path", d: "M-3 -12 C-1 -3 -1 6 -3 14" },
+      { type: "path", d: "M6 -10 C4 -2 4 7 6 14" }
     ],
-    scale: 1.06
+    grooveStroke: "#d7ccbd",
+    scale: 0.44
   },
   premolar: {
-    path: "M0 -11 C5 -11 8 -8 8 -2 C8 4 6 8 3 11 C1 12 -1 12 -3 11 C-6 8 -8 4 -8 -2 C-8 -8 -5 -11 0 -11 Z",
+    path: "M0 -24 C12 -24 20 -17 21 -5 C21 10 14 22 6 27 C2 29 -2 29 -6 27 C-14 22 -21 10 -21 -5 C-20 -17 -12 -24 0 -24 Z",
     grooves: [
-      { type: "ellipse", cx: 0, cy: 0, rx: 3.8, ry: 2.4 },
-      { type: "path", d: "M-2 -3 C-1 -1 -1 1 -2 3" },
-      { type: "path", d: "M2 -3 C1 -1 1 1 2 3" }
+      { type: "path", d: "M-10 -5 C-6 -12 6 -12 10 -5" },
+      { type: "path", d: "M0 -10 C-2 -2 -2 6 0 13" }
     ],
-    scale: 0.98
+    grooveStroke: "#d9cebf",
+    scale: 0.42
   },
   canine: {
-    path: "M0 -13 C3 -13 6 -8 5 -2 C5 4 4 8 2 12 C1 13 -1 13 -2 12 C-4 8 -5 4 -5 -2 C-6 -8 -3 -13 0 -13 Z",
+    path: "M0 -24 C9 -24 16 -18 17 -6 C17 10 10 21 3 27 C1 29 -1 29 -3 27 C-10 21 -17 10 -17 -6 C-16 -18 -9 -24 0 -24 Z",
     grooves: [
-      { type: "path", d: "M0 -5 C0 -1 0 2 0 6" }
+      { type: "path", d: "M0 -18 L0 12" }
     ],
-    scale: 0.9
+    grooveStroke: "#e6ddd0",
+    scale: 0.4
   },
   incisor: {
-    path: "M0 -11 C3 -11 5 -8 5 -2 C5 4 4 9 2 11 C1 12 -1 12 -2 11 C-4 9 -5 4 -5 -2 C-5 -8 -3 -11 0 -11 Z",
+    path: "M0 -22 C10 -22 17 -16 17 -4 C17 10 11 20 4 25 C2 27 -2 27 -4 25 C-11 20 -17 10 -17 -4 C-17 -16 -10 -22 0 -22 Z",
     grooves: [
-      { type: "ellipse", cx: 0, cy: 1, rx: 2.6, ry: 1.7 },
-      { type: "path", d: "M-1 -3 C0 -1 0 2 -1 4" },
-      { type: "path", d: "M1 -3 C0 -1 0 2 1 4" }
+      { type: "path", d: "M-7 -12 C-4 -17 4 -17 7 -12" }
     ],
-    scale: 0.84
+    grooveStroke: "#e6ddd0",
+    scale: 0.38
   }
 };
 
@@ -821,13 +823,13 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
         <title>{toothLabel}</title>
         <defs>
           <clipPath id={`${toothId}-back-surface`}>
-            <rect x="-14" y="-14" width="28" height="14" />
+            <rect x="-30" y="-30" width="60" height="30" />
           </clipPath>
           <clipPath id={`${toothId}-front-surface`}>
-            <rect x="-14" y="0" width="28" height="15" />
+            <rect x="-30" y="-1" width="60" height="38" />
           </clipPath>
         </defs>
-        <path className="tooth-body-base" d={toothShape.path} />
+        <path className="tooth-body-base" d={toothShape.path} fill="url(#toothFill)" filter="url(#softShadow)" />
         <path
           className={`tooth-face back-face${state.backDone ? " clean" : ""}${activeSurface === "back" ? " active-surface" : ""}`}
           d={toothShape.path}
@@ -848,9 +850,10 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
               cy={groove.cy}
               rx={groove.rx}
               ry={groove.ry}
+              stroke={toothShape.grooveStroke}
             />
           ) : (
-            <path key={`${toothId}-groove-${grooveIndex}`} className="tooth-groove" d={groove.d} />
+            <path key={`${toothId}-groove-${grooveIndex}`} className="tooth-groove" d={groove.d} stroke={toothShape.grooveStroke} />
           )
         ))}
       </g>
@@ -896,6 +899,15 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
         <AgeThemePanel profile={ageUiProfile} variant="guide" className="guide-age-overlay" chipLimit={2} />
         <div className="mouth-map" role="img" aria-label={t("brushing.guide.mouthMapAria")}>
         <svg viewBox="0 0 360 420" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0.6" dy="1.2" stdDeviation="1.2" floodColor="#b7aa95" floodOpacity="0.35" />
+            </filter>
+            <linearGradient id="toothFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#fffdf9" />
+              <stop offset="100%" stopColor="#f4efe6" />
+            </linearGradient>
+          </defs>
           <ellipse cx="180" cy="210" rx="150" ry="170" className="mouth-outline" />
 
           {topPoints.map((point, index) => renderTooth(point, "top", topToothChart[index], index))}

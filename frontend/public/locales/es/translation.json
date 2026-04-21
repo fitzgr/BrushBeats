@@ -417,6 +417,30 @@
     "headlineEmpty": "Ajusta la cantidad de dientes para calcular el BPM.",
     "nextStepTitle": "Siguiente: 2. Musica",
     "nextStepDescription": "Usa esta etapa detectada y el tempo objetivo para poner en cola canciones que le queden naturalmente a quien se cepilla.",
+    "experienceSimulator": {
+      "ariaLabel": "Simulador de experiencia por edad",
+      "label": "Simulador de depuracion",
+      "title": "Simular experiencia basada en la edad",
+      "hint": "Anulacion solo para esta sesion para probar la copia de etapa, el contexto musical, el estilo de recompensas y la presentacion para edades tempranas sin cambiar los dientes guardados.",
+      "toggle": "Usar edad simulada",
+      "previewMode": "Modo de vista previa",
+      "ageGroup": "Grupo de edad",
+      "ageValue": "Valor de edad",
+      "ageUnit": "Unidad de edad",
+      "modes": {
+        "exact": "Edad exacta",
+        "phase": "Grupo de edad"
+      },
+      "reset": "Restablecer simulacion",
+      "previewTitle": "Vista previa de la experiencia {{label}}",
+      "previewBody": "Esta vista previa usa {{age}} mientras mantiene sin cambios la cantidad de dientes seleccionada.",
+      "phasePreviewNote": "La vista previa por grupo de edad fuerza directamente el tema de la etapa para que puedas cambiar entre experiencias de UI.",
+      "badgesTitle": "Vista previa de gamificacion",
+      "headerChip": "Simulando: {{label}}",
+      "actualStage": "Etapa real basada en dientes: {{label}}",
+      "previewBadge": "Solo vista previa",
+      "previewUser": "Vista previa de {{label}}"
+    },
     "approximateAge": {
       "range": "Edad aproximada: {{min}}-{{max}} {{unit}}",
       "plus": "Edad aproximada: {{min}}+ {{unit}}"

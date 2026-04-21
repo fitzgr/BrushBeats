@@ -48,7 +48,7 @@ import {
   setStorageBannerDismissed,
   setStorageConsent
 } from "./lib/storagePreference";
-import { buildAgeEstimateFromActualAge, estimateAgeFromTeethFull, inferMusicAgeBucket } from "./lib/teethAge";
+import { buildAgeEstimateFromActualAge, buildAgeEstimateFromPhase, estimateAgeFromTeethFull, inferMusicAgeBucket } from "./lib/teethAge";
 import { buildAgeUiProfile } from "./lib/ageUiProfile";
 import { useDeviceContext } from "./lib/deviceContext";
 import { buildUserMusicContext } from "./lib/userMusicContext";
@@ -58,7 +58,7 @@ const DEFAULT_VALUES = { top: 16, bottom: 16 };
 const DEFAULT_BRUSH_DURATION_SECONDS = 120;
 const BRUSH_DURATION_OPTIONS = [90, 120, 150, 180];
 const START_DELAY_SECONDS = 5;
-const DEFAULT_AGE_SIMULATION = { active: false, value: 2, unit: "years" };
+const DEFAULT_AGE_SIMULATION = { active: false, mode: "exact", phase: "primary", value: 2, unit: "years" };
 
 function clampValue(value, min, max) {
   return Math.min(max, Math.max(min, value));
@@ -484,9 +484,15 @@ function App() {
     const params = new URLSearchParams(window.location.search);
     const unit = params.get("simAgeUnit") === "months" ? "months" : "years";
     const rawValue = Number(params.get("simAge"));
+    const mode = params.get("simAgeMode") === "phase" ? "phase" : "exact";
+    const phase = ["infant", "toddler", "primary", "mixed", "adult"].includes(params.get("simAgePhase"))
+      ? params.get("simAgePhase")
+      : DEFAULT_AGE_SIMULATION.phase;
 
     return {
       active: params.get("simulateAge") === "1",
+      mode,
+      phase,
       value: Number.isFinite(rawValue) ? rawValue : DEFAULT_AGE_SIMULATION.value,
       unit
     };
@@ -516,9 +522,11 @@ function App() {
   const toothAgeEstimate = bpmData?.ageEstimate || estimateAgeFromTeethFull(totalTeeth);
   const simulatedAgeEstimate = useMemo(
     () => ageSimulationAvailable && ageSimulation.active
-      ? buildAgeEstimateFromActualAge(ageSimulation.value, ageSimulation.unit)
+      ? ageSimulation.mode === "phase"
+        ? buildAgeEstimateFromPhase(ageSimulation.phase)
+        : buildAgeEstimateFromActualAge(ageSimulation.value, ageSimulation.unit)
       : null,
-    [ageSimulation.active, ageSimulation.unit, ageSimulation.value, ageSimulationAvailable]
+    [ageSimulation.active, ageSimulation.mode, ageSimulation.phase, ageSimulation.unit, ageSimulation.value, ageSimulationAvailable]
   );
   const effectiveAgeEstimate = simulatedAgeEstimate || toothAgeEstimate;
   const detectedBrusherProfile = useMemo(
@@ -574,16 +582,20 @@ function App() {
 
     if (ageSimulation.active) {
       url.searchParams.set("simulateAge", "1");
+      url.searchParams.set("simAgeMode", ageSimulation.mode);
+      url.searchParams.set("simAgePhase", ageSimulation.phase);
       url.searchParams.set("simAge", String(ageSimulation.value));
       url.searchParams.set("simAgeUnit", ageSimulation.unit);
     } else {
       url.searchParams.delete("simulateAge");
+      url.searchParams.delete("simAgeMode");
+      url.searchParams.delete("simAgePhase");
       url.searchParams.delete("simAge");
       url.searchParams.delete("simAgeUnit");
     }
 
     window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
-  }, [ageSimulation.active, ageSimulation.unit, ageSimulation.value]);
+  }, [ageSimulation.active, ageSimulation.mode, ageSimulation.phase, ageSimulation.unit, ageSimulation.value]);
 
   const ageGroupCount = getAgeMessageGroupCount();
   const completionBannerMessage = useMemo(
@@ -1942,15 +1954,34 @@ function App() {
 
   function handleSimulationChange(field, value) {
     setAgeSimulation((current) => {
+      if (field === "mode") {
+        return {
+          ...current,
+          mode: value === "phase" ? "phase" : "exact"
+        };
+      }
+
+      if (field === "phase") {
+        return {
+          ...current,
+          phase: ["infant", "toddler", "primary", "mixed", "adult"].includes(value)
+            ? value
+            : current.phase,
+          mode: "phase"
+        };
+      }
+
       if (field === "unit") {
         return {
           ...current,
+          mode: "exact",
           unit: value === "months" ? "months" : "years"
         };
       }
 
       return {
         ...current,
+        mode: "exact",
         value: Number.isFinite(Number(value)) ? Number(value) : current.value
       };
     });

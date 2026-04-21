@@ -56,6 +56,7 @@ function BPMCalculator({
   const ageTimelineMarkers = [...teethToAgeFullChart].sort((left, right) => left.max - right.max);
   const selectedEstimate = brusherProfile?.estimate;
   const simulationPreviewAchievements = buildSimulationPreviewAchievements(brusherProfile?.estimate?.phase);
+  const simulationMode = simulation?.mode || "exact";
 
   function formatApproximateAge(estimate) {
     if (!estimate) {
@@ -139,6 +140,31 @@ function BPMCalculator({
 
           <div className="experience-simulator-controls">
             <label>
+              <span>{t("settings.experienceSimulator.previewMode")}</span>
+              <select
+                value={simulationMode}
+                onChange={(event) => onSimulationChange?.("mode", event.target.value)}
+                disabled={!simulation?.active}
+              >
+                <option value="exact">{t("settings.experienceSimulator.modes.exact")}</option>
+                <option value="phase">{t("settings.experienceSimulator.modes.phase")}</option>
+              </select>
+            </label>
+            <label>
+              <span>{t("settings.experienceSimulator.ageGroup")}</span>
+              <select
+                value={simulation?.phase || "primary"}
+                onChange={(event) => onSimulationChange?.("phase", event.target.value)}
+                disabled={!simulation?.active}
+              >
+                <option value="infant">{t("age.stages.infant")}</option>
+                <option value="toddler">{t("age.stages.toddler")}</option>
+                <option value="primary">{t("age.stages.primary")}</option>
+                <option value="mixed">{t("age.stages.mixed")}</option>
+                <option value="adult">{t("age.stages.adultSmile")}</option>
+              </select>
+            </label>
+            <label>
               <span>{t("settings.experienceSimulator.ageValue")}</span>
               <input
                 type="number"
@@ -146,7 +172,7 @@ function BPMCalculator({
                 max={simulation?.unit === "months" ? "216" : "99"}
                 value={simulation?.value ?? ""}
                 onChange={(event) => onSimulationChange?.("value", Number(event.target.value))}
-                disabled={!simulation?.active}
+                disabled={!simulation?.active || simulationMode === "phase"}
               />
             </label>
             <label>
@@ -154,7 +180,7 @@ function BPMCalculator({
               <select
                 value={simulation?.unit || "years"}
                 onChange={(event) => onSimulationChange?.("unit", event.target.value)}
-                disabled={!simulation?.active}
+                disabled={!simulation?.active || simulationMode === "phase"}
               >
                 <option value="months">{t("age.units.months")}</option>
                 <option value="years">{t("age.units.years")}</option>
@@ -170,6 +196,9 @@ function BPMCalculator({
               <div className="experience-simulator-preview-copy">
                 <strong>{t("settings.experienceSimulator.previewTitle", { label: brusherProfile?.label || t("age.stages.adultSmile") })}</strong>
                 <span>{t("settings.experienceSimulator.previewBody", { age: formatApproximateAge(selectedEstimate) })}</span>
+                {simulationMode === "phase" && (
+                  <span className="experience-simulator-phase-note">{t("settings.experienceSimulator.phasePreviewNote")}</span>
+                )}
               </div>
               <AchievementBadgeList
                 t={t}

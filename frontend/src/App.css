@@ -1370,6 +1370,11 @@
   gap: 0.22rem;
 }
 
+.experience-simulator-controls label:has(input:disabled),
+.experience-simulator-controls label:has(select:disabled) {
+  opacity: 0.72;
+}
+
 .experience-simulator-controls input,
 .experience-simulator-controls select {
   border-radius: 10px;
@@ -1391,6 +1396,12 @@
 .experience-simulator-preview-copy {
   display: grid;
   gap: 0.15rem;
+}
+
+.experience-simulator-phase-note {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #7a531f;
 }
 
 .profile-summary-note,
@@ -3956,20 +3967,16 @@ select {
   stroke-width: 1.5;
 }
 
-.tooth-svg .tooth-body-base {
-  fill: #d9bf97;
-}
-
 .tooth-svg .tooth-face {
   transition: fill 220ms ease, opacity 220ms ease;
 }
 
 .tooth-svg .front-face {
-  fill: #ead6b4;
+  fill: #f7f1e7;
 }
 
 .tooth-svg .back-face {
-  fill: #d4b286;
+  fill: #f1e7d8;
 }
 
 .tooth-svg .tooth-face.clean {
@@ -3977,19 +3984,20 @@ select {
 }
 
 .tooth-svg .tooth-face.active-surface {
-  fill: #fff4df;
+  fill: #ffe79a;
 }
 
 .tooth-svg .tooth-outline {
   fill: none;
-  stroke: #c4a885;
+  stroke: #3f3830;
   stroke-width: 1.2;
 }
 
 .tooth-svg .tooth-groove {
   fill: none;
-  stroke: rgba(150, 130, 105, 0.55);
-  stroke-width: 0.9;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .active-brush-tail {

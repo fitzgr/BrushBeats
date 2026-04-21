@@ -417,6 +417,30 @@
     "headlineEmpty": "BPM hesaplamak için diş sayılarını ayarlayın.",
     "nextStepTitle": "Sonraki: 2. Müzik",
     "nextStepDescription": "Bu algılanan aşamayı ve hedef tempoyu, fırçalayana doğal gelen şarkıları sıraya almak için kullanın.",
+    "experienceSimulator": {
+      "ariaLabel": "Yaşa göre deneyim simülatörü",
+      "label": "Hata ayıklama simülatörü",
+      "title": "Yaşa bağlı deneyimi simüle et",
+      "hint": "Kaydedilmiş diş sayılarını değiştirmeden aşama metnini, müzik bağlamını, ödül stilini ve küçük yaş sunumunu test etmek için yalnızca bu oturuma özel geçersiz kılma.",
+      "toggle": "Simüle edilmiş yaşı kullan",
+      "previewMode": "Önizleme modu",
+      "ageGroup": "Yaş grubu",
+      "ageValue": "Yaş değeri",
+      "ageUnit": "Yaş birimi",
+      "modes": {
+        "exact": "Tam yaş",
+        "phase": "Yaş grubu"
+      },
+      "reset": "Simülasyonu sıfırla",
+      "previewTitle": "{{label}} deneyimi önizleniyor",
+      "previewBody": "Bu önizleme seçili diş sayılarını değiştirmeden {{age}} kullanıyor.",
+      "phasePreviewNote": "Yaş grubu önizlemesi, kullanıcı arayüzü deneyimleri arasında atlayabilmeniz için aşama temasını doğrudan zorlar.",
+      "badgesTitle": "Oyunlaştırma önizlemesi",
+      "headerChip": "Simüle ediliyor: {{label}}",
+      "actualStage": "Gerçek diş tabanlı aşama: {{label}}",
+      "previewBadge": "Yalnızca önizleme",
+      "previewUser": "{{label}} önizlemesi"
+    },
     "approximateAge": {
       "range": "Yaklaşık yaş: {{min}}-{{max}} {{unit}}",
       "plus": "Yaklaşık yaş: {{min}}+ {{unit}}"

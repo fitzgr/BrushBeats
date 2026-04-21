@@ -425,11 +425,18 @@
       "title": "Simulate age-based experience",
       "hint": "Session-only override for testing stage copy, song context, reward styling, and younger-age presentation without changing saved tooth counts.",
       "toggle": "Use simulated age",
+      "previewMode": "Preview mode",
+      "ageGroup": "Age group",
       "ageValue": "Age value",
       "ageUnit": "Age unit",
+      "modes": {
+        "exact": "Exact age",
+        "phase": "Age group"
+      },
       "reset": "Reset simulation",
       "previewTitle": "Previewing {{label}} experience",
       "previewBody": "This preview is using {{age}} while keeping the selected tooth counts unchanged.",
+      "phasePreviewNote": "Age-group preview is forcing the stage theme directly so you can jump between UI experiences.",
       "badgesTitle": "Gamification preview",
       "headerChip": "Simulating: {{label}}",
       "actualStage": "Actual tooth-based stage: {{label}}",
