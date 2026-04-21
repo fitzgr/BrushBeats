@@ -384,25 +384,16 @@ function formatMinutes(totalSeconds) {
   return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
-function selectVisibleIndices(length, count) {
+function selectVisibleToothData(chart, layout, count) {
+  const length = Math.min(chart.length, layout.length);
   const safeCount = Math.max(0, Math.min(length, count));
 
   if (safeCount === 0) {
-    return [];
+    return { chart: [], layout: [] };
   }
 
-  if (safeCount === length) {
-    return Array.from({ length }, (_, index) => index);
-  }
-
-  return Array.from({ length: safeCount }, (_, index) => {
-    const position = Math.floor(((index + 0.5) * length) / safeCount);
-    return Math.max(0, Math.min(length - 1, position));
-  });
-}
-
-function selectVisibleToothData(chart, layout, count) {
-  const indices = selectVisibleIndices(Math.min(chart.length, layout.length), count);
+  const start = Math.floor((length - safeCount) / 2);
+  const indices = Array.from({ length: safeCount }, (_, index) => start + index);
 
   return {
     chart: indices.map((index) => chart[index]),
