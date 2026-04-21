@@ -158,7 +158,7 @@ const ADULT_TOP_TOOTH_LAYOUT = buildReferenceToothLayout([
   [606.9, 290.9, 81.0, 0.800],
   [599.1, 256.9, 73.0, 0.820],
   [586.6, 224.3, 65.0, 0.860]
-], { sourceCenterX: 360, sourceCenterY: 330 });
+], { sourceCenterX: 360, sourceCenterY: 330, targetCenterY: 165 });
 
 const ADULT_BOTTOM_TOOTH_LAYOUT = buildReferenceToothLayout([
   [133.4, 435.7, 425.0, 0.860],
@@ -177,7 +177,7 @@ const ADULT_BOTTOM_TOOTH_LAYOUT = buildReferenceToothLayout([
   [548.7, 494.0, 311.0, 0.800],
   [569.7, 466.2, 303.0, 0.820],
   [586.6, 435.7, 295.0, 0.860]
-], { sourceCenterX: 360, sourceCenterY: 330 });
+], { sourceCenterX: 360, sourceCenterY: 330, targetCenterY: 255 });
 
 const CHILD_TOP_TOOTH_LAYOUT = buildReferenceToothLayout([
   [994.2, 243.4, 295.0, 0.920],
@@ -190,7 +190,7 @@ const CHILD_TOP_TOOTH_LAYOUT = buildReferenceToothLayout([
   [1381.9, 365.6, 100.0, 0.840],
   [1381.9, 294.4, 80.0, 0.880],
   [1365.8, 243.4, 65.0, 0.920]
-], { sourceCenterX: 1180, sourceCenterY: 330 });
+], { sourceCenterX: 1180, sourceCenterY: 330, targetCenterY: 165 });
 
 const CHILD_BOTTOM_TOOTH_LAYOUT = buildReferenceToothLayout([
   [994.2, 416.6, 425.0, 0.920],
@@ -203,7 +203,7 @@ const CHILD_BOTTOM_TOOTH_LAYOUT = buildReferenceToothLayout([
   [1288.6, 503.8, 328.0, 0.840],
   [1337.0, 461.8, 310.0, 0.880],
   [1365.8, 416.6, 295.0, 0.920]
-], { sourceCenterX: 1180, sourceCenterY: 330 });
+], { sourceCenterX: 1180, sourceCenterY: 330, targetCenterY: 255 });
 
 const SEGMENT_LABEL_KEYS = {
   "Front Top Left": "brushing.segments.frontTopLeft",
