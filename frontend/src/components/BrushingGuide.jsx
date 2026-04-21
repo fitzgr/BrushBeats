@@ -384,16 +384,30 @@ function formatMinutes(totalSeconds) {
   return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
-function selectVisibleToothChart(chart, count) {
-  const safeCount = Math.max(0, Math.min(chart.length, count));
-  const start = Math.floor((chart.length - safeCount) / 2);
-  return chart.slice(start, start + safeCount);
+function selectVisibleIndices(length, count) {
+  const safeCount = Math.max(0, Math.min(length, count));
+
+  if (safeCount === 0) {
+    return [];
+  }
+
+  if (safeCount === length) {
+    return Array.from({ length }, (_, index) => index);
+  }
+
+  return Array.from({ length: safeCount }, (_, index) => {
+    const position = Math.floor(((index + 0.5) * length) / safeCount);
+    return Math.max(0, Math.min(length - 1, position));
+  });
 }
 
-function selectVisibleToothLayout(layout, count) {
-  const safeCount = Math.max(0, Math.min(layout.length, count));
-  const start = Math.floor((layout.length - safeCount) / 2);
-  return layout.slice(start, start + safeCount);
+function selectVisibleToothData(chart, layout, count) {
+  const indices = selectVisibleIndices(Math.min(chart.length, layout.length), count);
+
+  return {
+    chart: indices.map((index) => chart[index]),
+    layout: indices.map((index) => layout[index])
+  };
 }
 
 function getToothLabel(t, tooth) {
@@ -510,8 +524,16 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
   const topTeeth = Number(values?.top || 16);
   const bottomTeeth = Number(values?.bottom || 16);
   const useChildToothChart = topTeeth <= 10 && bottomTeeth <= 10 && topTeeth + bottomTeeth <= 20;
-  const topToothChart = selectVisibleToothChart(useChildToothChart ? CHILD_TOP_TOOTH_CHART : ADULT_TOP_TOOTH_CHART, topTeeth);
-  const bottomToothChart = selectVisibleToothChart(useChildToothChart ? CHILD_BOTTOM_TOOTH_CHART : ADULT_BOTTOM_TOOTH_CHART, bottomTeeth);
+  const topSourceChart = useChildToothChart ? CHILD_TOP_TOOTH_CHART : ADULT_TOP_TOOTH_CHART;
+  const bottomSourceChart = useChildToothChart ? CHILD_BOTTOM_TOOTH_CHART : ADULT_BOTTOM_TOOTH_CHART;
+  const topSourceLayout = useChildToothChart ? CHILD_TOP_TOOTH_LAYOUT : ADULT_TOP_TOOTH_LAYOUT;
+  const bottomSourceLayout = useChildToothChart ? CHILD_BOTTOM_TOOTH_LAYOUT : ADULT_BOTTOM_TOOTH_LAYOUT;
+  const topVisible = selectVisibleToothData(topSourceChart, topSourceLayout, topTeeth);
+  const bottomVisible = selectVisibleToothData(bottomSourceChart, bottomSourceLayout, bottomTeeth);
+  const topToothChart = topVisible.chart;
+  const bottomToothChart = bottomVisible.chart;
+  const topPoints = topVisible.layout;
+  const bottomPoints = bottomVisible.layout;
   const safeBpm = Math.max(40, Math.min(240, Number(selectedBpm) || 120));
   const toothDurationSeconds = Number(bpmData?.secondsPerTooth || totalSeconds / Math.max(1, (topTeeth + bottomTeeth) * 2));
   const transitionBufferSeconds = Number(bpmData?.transitionBufferSeconds || 1);
@@ -722,15 +744,6 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
     onCueChange(null);
   }, [activeEntry, activeToothEntry, brushingHand, brushingPhase, nextMoveSeconds, onCueChange, startCountdownRemainingMs, t, timer.running]);
 
-  const topPoints = selectVisibleToothLayout(
-    useChildToothChart ? CHILD_TOP_TOOTH_LAYOUT : ADULT_TOP_TOOTH_LAYOUT,
-    topTeeth
-  );
-
-  const bottomPoints = selectVisibleToothLayout(
-    useChildToothChart ? CHILD_BOTTOM_TOOTH_LAYOUT : ADULT_BOTTOM_TOOTH_LAYOUT,
-    bottomTeeth
-  );
   const activeToothPoint = activeToothEntry
     ? activeToothEntry.jaw === "top"
       ? topPoints[activeToothEntry.mapIndex]
