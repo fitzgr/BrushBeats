@@ -21,9 +21,21 @@ function createArcPoints({ count, cx, cy, rx, ry, startDeg, endDeg }) {
       index,
       x: cx + rx * Math.cos(angle),
       y: cy + ry * Math.sin(angle),
-      angleDeg
+      angleDeg,
+      rotationDeg: angleDeg - 90,
+      layoutScale: 1
     };
   });
+}
+
+function buildReferenceToothLayout(entries, { sourceCenterX, sourceCenterY, targetCenterX = 180, targetCenterY = 214, positionScale = 0.5 }) {
+  return entries.map(([x, y, rotationDeg, layoutScale], index) => ({
+    index,
+    x: targetCenterX + (x - sourceCenterX) * positionScale,
+    y: targetCenterY + (y - sourceCenterY) * positionScale,
+    rotationDeg,
+    layoutScale
+  }));
 }
 
 const TOOTH_SHAPES = {
@@ -128,6 +140,71 @@ const CHILD_BOTTOM_TOOTH_CHART = [
   { number: "L", nameKey: "firstMolar", type: "molar" },
   { number: "K", nameKey: "secondMolar", type: "molar" }
 ];
+
+const ADULT_TOP_TOOTH_LAYOUT = buildReferenceToothLayout([
+  [133.4, 224.3, 295.0, 0.860],
+  [120.9, 256.9, 287.0, 0.820],
+  [113.1, 290.9, 279.0, 0.800],
+  [110.0, 330.0, 270.0, 0.780],
+  [113.1, 369.1, 261.0, 0.760],
+  [125.1, 415.5, 250.0, 0.740],
+  [145.7, 458.8, 239.0, 0.720],
+  [174.2, 497.3, 228.0, 0.700],
+  [545.8, 497.3, 132.0, 0.700],
+  [574.3, 458.8, 121.0, 0.720],
+  [594.9, 415.5, 110.0, 0.740],
+  [606.9, 369.1, 99.0, 0.760],
+  [610.0, 330.0, 90.0, 0.780],
+  [606.9, 290.9, 81.0, 0.800],
+  [599.1, 256.9, 73.0, 0.820],
+  [586.6, 224.3, 65.0, 0.860]
+], { sourceCenterX: 360, sourceCenterY: 330 });
+
+const ADULT_BOTTOM_TOOTH_LAYOUT = buildReferenceToothLayout([
+  [133.4, 435.7, 425.0, 0.860],
+  [150.3, 466.2, 417.0, 0.820],
+  [171.3, 494.0, 409.0, 0.800],
+  [199.3, 521.5, 400.0, 0.780],
+  [235.0, 546.5, 390.0, 0.760],
+  [278.6, 566.4, 379.0, 0.740],
+  [316.6, 576.2, 370.0, 0.720],
+  [351.3, 579.8, 362.0, 0.700],
+  [368.7, 579.8, 358.0, 0.700],
+  [403.4, 576.2, 350.0, 0.720],
+  [441.4, 566.4, 341.0, 0.740],
+  [485.0, 546.5, 330.0, 0.760],
+  [520.7, 521.5, 320.0, 0.780],
+  [548.7, 494.0, 311.0, 0.800],
+  [569.7, 466.2, 303.0, 0.820],
+  [586.6, 435.7, 295.0, 0.860]
+], { sourceCenterX: 360, sourceCenterY: 330 });
+
+const CHILD_TOP_TOOTH_LAYOUT = buildReferenceToothLayout([
+  [994.2, 243.4, 295.0, 0.920],
+  [978.1, 294.4, 280.0, 0.880],
+  [978.1, 365.6, 260.0, 0.840],
+  [999.0, 426.2, 242.0, 0.820],
+  [1023.0, 461.8, 230.0, 0.820],
+  [1337.0, 461.8, 130.0, 0.820],
+  [1361.0, 426.2, 118.0, 0.820],
+  [1381.9, 365.6, 100.0, 0.840],
+  [1381.9, 294.4, 80.0, 0.880],
+  [1365.8, 243.4, 65.0, 0.920]
+], { sourceCenterX: 1180, sourceCenterY: 330 });
+
+const CHILD_BOTTOM_TOOTH_LAYOUT = buildReferenceToothLayout([
+  [994.2, 416.6, 425.0, 0.920],
+  [1023.0, 461.8, 410.0, 0.880],
+  [1071.4, 503.8, 392.0, 0.840],
+  [1109.9, 522.6, 380.0, 0.820],
+  [1151.5, 533.0, 368.0, 0.820],
+  [1208.5, 533.0, 352.0, 0.820],
+  [1250.1, 522.6, 340.0, 0.820],
+  [1288.6, 503.8, 328.0, 0.840],
+  [1337.0, 461.8, 310.0, 0.880],
+  [1365.8, 416.6, 295.0, 0.920]
+], { sourceCenterX: 1180, sourceCenterY: 330 });
+
 const SEGMENT_LABEL_KEYS = {
   "Front Top Left": "brushing.segments.frontTopLeft",
   "Front Top Right": "brushing.segments.frontTopRight",
@@ -311,6 +388,12 @@ function selectVisibleToothChart(chart, count) {
   const safeCount = Math.max(0, Math.min(chart.length, count));
   const start = Math.floor((chart.length - safeCount) / 2);
   return chart.slice(start, start + safeCount);
+}
+
+function selectVisibleToothLayout(layout, count) {
+  const safeCount = Math.max(0, Math.min(layout.length, count));
+  const start = Math.floor((layout.length - safeCount) / 2);
+  return layout.slice(start, start + safeCount);
 }
 
 function getToothLabel(t, tooth) {
@@ -639,25 +722,15 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
     onCueChange(null);
   }, [activeEntry, activeToothEntry, brushingHand, brushingPhase, nextMoveSeconds, onCueChange, startCountdownRemainingMs, t, timer.running]);
 
-  const topPoints = createArcPoints({
-    count: topTeeth,
-    cx: 180,
-    cy: useChildToothChart ? 194 : 190,
-    rx: useChildToothChart ? 108 : 128,
-    ry: useChildToothChart ? 88 : 106,
-    startDeg: useChildToothChart ? 210 : 200,
-    endDeg: useChildToothChart ? 330 : 340
-  });
+  const topPoints = selectVisibleToothLayout(
+    useChildToothChart ? CHILD_TOP_TOOTH_LAYOUT : ADULT_TOP_TOOTH_LAYOUT,
+    topTeeth
+  );
 
-  const bottomPoints = createArcPoints({
-    count: bottomTeeth,
-    cx: 180,
-    cy: useChildToothChart ? 226 : 230,
-    rx: useChildToothChart ? 108 : 128,
-    ry: useChildToothChart ? 88 : 106,
-    startDeg: useChildToothChart ? 150 : 160,
-    endDeg: useChildToothChart ? 30 : 20
-  });
+  const bottomPoints = selectVisibleToothLayout(
+    useChildToothChart ? CHILD_BOTTOM_TOOTH_LAYOUT : ADULT_BOTTOM_TOOTH_LAYOUT,
+    bottomTeeth
+  );
   const activeToothPoint = activeToothEntry
     ? activeToothEntry.jaw === "top"
       ? topPoints[activeToothEntry.mapIndex]
@@ -817,7 +890,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
     return (
       <g
         key={toothId}
-        transform={`translate(${point.x} ${point.y}) rotate(${point.angleDeg - 90}) scale(${toothShape.scale})`}
+        transform={`translate(${point.x} ${point.y}) rotate(${point.rotationDeg ?? point.angleDeg - 90}) scale(${toothShape.scale * (point.layoutScale || 1)})`}
         className={`tooth-svg ${meta?.type || "molar"}`}
       >
         <title>{toothLabel}</title>
