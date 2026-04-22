@@ -3912,11 +3912,11 @@ select {
 }
 
 .mouth-map {
-  width: min(100%, 360px);
+  width: min(100%, 420px);
   margin: 0 auto;
   border-radius: 24px;
   background: var(--age-map-gradient);
-  padding: 0.5rem;
+  padding: 0;
 }
 
 .age-ui-infant .mouth-map,
@@ -3963,8 +3963,8 @@ select {
 
 .mouth-outline {
   fill: none;
-  stroke: rgba(199, 220, 255, 0.25);
-  stroke-width: 1.5;
+  stroke: transparent;
+  stroke-width: 0;
 }
 
 .tooth-svg .tooth-face {
