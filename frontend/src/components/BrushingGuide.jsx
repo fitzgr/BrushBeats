@@ -1215,7 +1215,14 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
             </text>
           )}
           {showElectricLiftCue && (
-            <text x="180" y="252" textAnchor="middle" className="map-electric-cue" aria-hidden="true">
+            <text
+              key={`electric-cue-${activeEntry?.key || "idle"}`}
+              x="180"
+              y="252"
+              textAnchor="middle"
+              className="map-electric-cue pulse-once"
+              aria-hidden="true"
+            >
               Lift + Place
             </text>
           )}
