@@ -3902,6 +3902,15 @@ select {
 
 .guide-map-shell {
   position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+}
+
+.guide-map-age-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
 }
 
 .guide-age-overlay {
@@ -3917,6 +3926,8 @@ select {
   border-radius: 24px;
   background: var(--age-map-gradient);
   padding: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .age-ui-infant .mouth-map,
@@ -3929,6 +3940,372 @@ select {
   width: 100%;
   height: auto;
   display: block;
+  position: relative;
+  z-index: 2;
+}
+
+:root {
+  --overlay-z-bg: 0;
+  --overlay-z-pattern: 1;
+  --overlay-z-decor: 2;
+  --overlay-z-phase: 3;
+  --overlay-bg-1: #f5fbfa;
+  --overlay-bg-2: #eef7ff;
+  --overlay-accent-1: #7fe0d0;
+  --overlay-accent-2: #9dbdff;
+  --overlay-accent-3: #ffffff;
+  --overlay-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  --overlay-pattern-opacity: 0.08;
+  --overlay-motion-multiplier: 1;
+  --overlay-pattern-scale: 1;
+  --overlay-decor-opacity: 0.75;
+}
+
+.age-overlay,
+.age-overlay * {
+  pointer-events: none;
+  user-select: none;
+}
+
+.age-overlay {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.age-overlay__bg,
+.age-overlay__pattern,
+.age-overlay__glow,
+.age-overlay__decor-layer,
+.age-overlay__phase-accent,
+.age-overlay__celebration {
+  position: absolute;
+  inset: 0;
+}
+
+.age-overlay__bg {
+  z-index: var(--overlay-z-bg);
+  background:
+    radial-gradient(circle at 20% 15%, color-mix(in srgb, var(--overlay-accent-1) 22%, transparent), transparent 28%),
+    radial-gradient(circle at 80% 20%, color-mix(in srgb, var(--overlay-accent-2) 18%, transparent), transparent 30%),
+    linear-gradient(180deg, var(--overlay-bg-1), var(--overlay-bg-2));
+}
+
+.age-overlay__pattern {
+  z-index: var(--overlay-z-pattern);
+  opacity: var(--overlay-pattern-opacity);
+  transform: scale(var(--overlay-pattern-scale));
+}
+
+.age-overlay__glow {
+  z-index: var(--overlay-z-pattern);
+  box-shadow: inset 0 0 80px rgba(255, 255, 255, 0.15);
+}
+
+.age-overlay__decor-layer {
+  z-index: var(--overlay-z-decor);
+}
+
+.age-overlay__phase-accent {
+  z-index: var(--overlay-z-phase);
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+
+.age-overlay__celebration {
+  z-index: var(--overlay-z-phase);
+  opacity: 0;
+  animation: overlayCelebrate 900ms ease forwards;
+}
+
+.age-overlay__decor {
+  position: absolute;
+  display: block;
+  opacity: var(--overlay-decor-opacity);
+  filter: drop-shadow(var(--overlay-shadow));
+}
+
+.age-overlay__decor--infant {
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.75) 45%, rgba(255, 255, 255, 0.15) 100%);
+  animation: overlayFloat calc(11s * var(--overlay-motion-multiplier)) ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+
+.age-overlay__decor--toddler {
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.4) 30%, transparent 31%),
+    radial-gradient(circle at 55% 58%, var(--overlay-accent-1), var(--overlay-accent-2));
+  animation: overlayBounceSoft calc(4.8s * var(--overlay-motion-multiplier)) ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+
+.age-overlay__decor--primary {
+  clip-path: polygon(50% 0%, 62% 34%, 100% 35%, 70% 57%, 82% 100%, 50% 74%, 18% 100%, 30% 57%, 0% 35%, 38% 34%);
+  background: linear-gradient(135deg, var(--overlay-accent-1), var(--overlay-accent-2));
+  animation: overlayTwinkleDrift calc(6s * var(--overlay-motion-multiplier)) ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+
+.age-overlay__decor--mixed {
+  border-radius: 10px;
+  transform: rotate(18deg);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--overlay-accent-1) 80%, white), color-mix(in srgb, var(--overlay-accent-2) 85%, white));
+  animation: overlayGlide calc(7s * var(--overlay-motion-multiplier)) ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+
+.age-overlay__decor--adult {
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.06));
+  animation: overlayBreathe calc(9s * var(--overlay-motion-multiplier)) ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+
+.theme-infant {
+  --overlay-bg-1: #f9f8ff;
+  --overlay-bg-2: #eef8f5;
+  --overlay-accent-1: #bfdcf6;
+  --overlay-accent-2: #d8c7f1;
+  --overlay-accent-3: #fffdfd;
+  --overlay-pattern-opacity: 0.09;
+  --overlay-motion-multiplier: 0.95;
+  --overlay-decor-opacity: 0.72;
+}
+
+.theme-toddler {
+  --overlay-bg-1: #fffdf3;
+  --overlay-bg-2: #eefcff;
+  --overlay-accent-1: #ffcf59;
+  --overlay-accent-2: #46d6bf;
+  --overlay-accent-3: #ff8b8b;
+  --overlay-pattern-opacity: 0.18;
+  --overlay-motion-multiplier: 1.18;
+  --overlay-pattern-scale: 1.07;
+  --overlay-decor-opacity: 0.95;
+}
+
+.theme-primary {
+  --overlay-bg-1: #f3f9ff;
+  --overlay-bg-2: #f8f3ff;
+  --overlay-accent-1: #5ec8ff;
+  --overlay-accent-2: #8e77ff;
+  --overlay-accent-3: #ffd64a;
+  --overlay-pattern-opacity: 0.16;
+  --overlay-motion-multiplier: 1.12;
+  --overlay-pattern-scale: 1.08;
+  --overlay-decor-opacity: 0.9;
+}
+
+.theme-mixed {
+  --overlay-bg-1: #f5fbff;
+  --overlay-bg-2: #f8f8fe;
+  --overlay-accent-1: #30d1c6;
+  --overlay-accent-2: #688dff;
+  --overlay-accent-3: #ff7ec9;
+  --overlay-pattern-opacity: 0.08;
+  --overlay-motion-multiplier: 0.85;
+  --overlay-pattern-scale: 1.01;
+  --overlay-decor-opacity: 0.66;
+}
+
+.theme-adult {
+  --overlay-bg-1: #f7fafd;
+  --overlay-bg-2: #eef3f8;
+  --overlay-accent-1: #7bcfca;
+  --overlay-accent-2: #9ab3c9;
+  --overlay-accent-3: #ffffff;
+  --overlay-pattern-opacity: 0.04;
+  --overlay-motion-multiplier: 0.65;
+  --overlay-decor-opacity: 0.42;
+}
+
+.theme-infant .age-overlay__pattern {
+  background:
+    radial-gradient(circle at 25% 30%, rgba(255, 255, 255, 0.9) 0 12px, transparent 13px),
+    radial-gradient(circle at 72% 24%, rgba(255, 255, 255, 0.7) 0 10px, transparent 11px),
+    radial-gradient(circle at 58% 78%, rgba(255, 255, 255, 0.7) 0 8px, transparent 9px);
+}
+
+.theme-toddler .age-overlay__pattern {
+  background:
+    radial-gradient(circle at 12px 12px, color-mix(in srgb, var(--overlay-accent-1) 60%, transparent) 0 4px, transparent 5px),
+    radial-gradient(circle at 36px 28px, color-mix(in srgb, var(--overlay-accent-2) 60%, transparent) 0 3px, transparent 4px),
+    radial-gradient(circle at 20px 44px, color-mix(in srgb, var(--overlay-accent-3) 55%, transparent) 0 4px, transparent 5px);
+  background-size: 64px 64px;
+}
+
+.theme-primary .age-overlay__pattern {
+  background:
+    linear-gradient(135deg, transparent 0 46%, rgba(255, 255, 255, 0.18) 47% 53%, transparent 54%),
+    radial-gradient(circle at 24px 24px, color-mix(in srgb, var(--overlay-accent-3) 45%, transparent) 0 4px, transparent 5px);
+  background-size: 72px 72px;
+}
+
+.theme-mixed .age-overlay__pattern {
+  background:
+    linear-gradient(135deg, transparent 0 44%, rgba(255, 255, 255, 0.18) 45% 55%, transparent 56%),
+    linear-gradient(45deg, transparent 0 47%, rgba(255, 255, 255, 0.12) 48% 52%, transparent 53%);
+  background-size: 88px 88px;
+}
+
+.theme-adult .age-overlay__pattern {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent 60%),
+    repeating-linear-gradient(135deg, transparent 0 18px, rgba(255, 255, 255, 0.12) 19px 20px);
+  background-size: 100% 100%, 72px 72px;
+}
+
+.phase-start .age-overlay__phase-accent {
+  opacity: 0.34;
+  background: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--overlay-accent-1) 30%, transparent), transparent 45%);
+  animation: overlayPulseOnce 700ms ease-out 1;
+}
+
+.phase-mid .age-overlay__phase-accent {
+  opacity: 0.2;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--overlay-accent-2) 18%, transparent), transparent);
+  animation: overlaySweep calc(5s * var(--overlay-motion-multiplier)) linear infinite;
+}
+
+.phase-nearComplete .age-overlay__phase-accent {
+  opacity: 0.3;
+  background: radial-gradient(circle at 50% 80%, color-mix(in srgb, var(--overlay-accent-3) 30%, transparent), transparent 42%);
+  animation: overlayBreathe calc(2.8s * var(--overlay-motion-multiplier)) ease-in-out infinite;
+}
+
+.phase-complete .age-overlay__phase-accent {
+  opacity: 0.42;
+  background: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--overlay-accent-3) 36%, transparent), transparent 48%);
+}
+
+.phase-complete .age-overlay__celebration {
+  opacity: 1;
+}
+
+.theme-infant .age-overlay__celebration {
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.45), transparent 20%),
+    radial-gradient(circle at 70% 40%, rgba(255, 255, 255, 0.35), transparent 22%),
+    radial-gradient(circle at 50% 70%, rgba(255, 255, 255, 0.28), transparent 26%);
+}
+
+.theme-toddler .age-overlay__celebration {
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255, 207, 89, 0.6), transparent 12%),
+    radial-gradient(circle at 70% 25%, rgba(70, 214, 191, 0.6), transparent 10%),
+    radial-gradient(circle at 50% 72%, rgba(255, 139, 139, 0.55), transparent 14%);
+}
+
+.theme-primary .age-overlay__celebration {
+  background:
+    radial-gradient(circle at 18% 22%, rgba(255, 214, 74, 0.55), transparent 10%),
+    radial-gradient(circle at 76% 28%, rgba(94, 200, 255, 0.55), transparent 12%),
+    radial-gradient(circle at 50% 72%, rgba(142, 119, 255, 0.55), transparent 14%);
+}
+
+.theme-mixed .age-overlay__celebration {
+  background:
+    radial-gradient(circle at 22% 26%, rgba(48, 209, 198, 0.4), transparent 11%),
+    radial-gradient(circle at 78% 30%, rgba(104, 141, 255, 0.35), transparent 11%);
+}
+
+.theme-adult .age-overlay__celebration {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 45%),
+    radial-gradient(circle at 50% 40%, rgba(123, 207, 202, 0.18), transparent 24%);
+}
+
+@keyframes overlayFloat {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(0, -8px, 0) scale(1.03); }
+}
+
+@keyframes overlayBounceSoft {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  30% { transform: translate3d(0, -5px, 0) scale(1.04); }
+  60% { transform: translate3d(0, 2px, 0) scale(0.98); }
+}
+
+@keyframes overlayTwinkleDrift {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0.7; }
+  50% { transform: translate3d(0, -6px, 0) rotate(8deg); opacity: 1; }
+}
+
+@keyframes overlayGlide {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(18deg); }
+  50% { transform: translate3d(4px, -4px, 0) rotate(28deg); }
+}
+
+@keyframes overlayBreathe {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.04); opacity: 1; }
+}
+
+@keyframes overlaySweep {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes overlayPulseOnce {
+  0% { transform: scale(0.94); opacity: 0; }
+  40% { transform: scale(1); opacity: 0.45; }
+  100% { transform: scale(1.05); opacity: 0; }
+}
+
+@keyframes overlayCelebrate {
+  0% { opacity: 0; transform: scale(0.96); }
+  35% { opacity: 1; }
+  100% { opacity: 0.95; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .age-overlay,
+  .age-overlay * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .age-overlay__decor {
+    transform: none !important;
+  }
+
+  .age-overlay__phase-accent {
+    opacity: 0.14 !important;
+  }
+}
+
+.is-reduced-motion .age-overlay__decor,
+.is-reduced-motion .age-overlay__phase-accent,
+.is-reduced-motion .age-overlay__celebration,
+.is-low-power .age-overlay__decor,
+.is-low-power .age-overlay__phase-accent,
+.is-low-power .age-overlay__celebration {
+  animation: none !important;
+  transition: none !important;
+}
+
+.is-low-power .age-overlay__pattern {
+  opacity: calc(var(--overlay-pattern-opacity) * 0.65);
+}
+
+.is-low-power .age-overlay__decor-layer .age-overlay__decor:nth-child(n+4) {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .age-overlay__decor {
+    opacity: calc(var(--overlay-decor-opacity) * 0.9);
+  }
+
+  .theme-toddler .age-overlay__pattern,
+  .theme-primary .age-overlay__pattern {
+    background-size: 56px 56px;
+  }
 }
 
 .map-legend {
@@ -3972,11 +4349,11 @@ select {
 }
 
 .tooth-svg .front-face {
-  fill: #f7f1e7;
+  fill: #f7e9be;
 }
 
 .tooth-svg .back-face {
-  fill: #f1e7d8;
+  fill: #f3e0ab;
 }
 
 .tooth-svg .tooth-face.clean {
@@ -3984,7 +4361,40 @@ select {
 }
 
 .tooth-svg .tooth-face.active-surface {
-  fill: #ffe79a;
+  fill: #ffd868;
+}
+
+.map-electric-cue {
+  font-size: 11px;
+  font-weight: 900;
+  fill: #fff6d8;
+  paint-order: stroke fill;
+  stroke: rgba(4, 19, 41, 0.72);
+  stroke-width: 1.1px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.map-coaching {
+  font-size: 10.6px;
+  font-weight: 800;
+  fill: #fef9ee;
+  paint-order: stroke fill;
+  stroke: rgba(2, 16, 36, 0.62);
+  stroke-width: 1px;
+  letter-spacing: 0.01em;
+}
+
+@media (max-width: 480px) {
+  .map-electric-cue {
+    font-size: 12.2px;
+    stroke-width: 1.2px;
+  }
+
+  .map-coaching {
+    font-size: 11.6px;
+    stroke-width: 1.1px;
+  }
 }
 
 .tooth-svg .tooth-outline {

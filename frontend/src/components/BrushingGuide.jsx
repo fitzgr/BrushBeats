@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import AgeThemePanel from "./AgeThemePanel";
+import AgeOverlay from "./AgeOverlay";
 import { getBrushTechniqueTips } from "../lib/reinforcementMessages";
 
 function toRadians(degrees) {
@@ -212,6 +213,63 @@ const SEGMENT_LABEL_KEYS = {
   "Front Bottom Right": "brushing.segments.frontBottomRight",
   "Back Bottom Right": "brushing.segments.backBottomRight",
   "Back Bottom Left": "brushing.segments.backBottomLeft"
+};
+
+const AGE_HYGIENE_COACHING = {
+  manual: {
+    infant: [
+      { do: "Do: Use tiny gentle circles with caregiver help.", avoid: "Avoid: Hard scrubbing on gums." },
+      { do: "Do: Brush the gumline softly.", avoid: "Avoid: Skipping the back teeth." },
+      { do: "Do: Keep the brush angled at 45 degrees.", avoid: "Avoid: Sharing toothbrushes." }
+    ],
+    toddler: [
+      { do: "Do: Count slow circles on each tooth.", avoid: "Avoid: Biting or chewing the brush." },
+      { do: "Do: Clean front and back surfaces.", avoid: "Avoid: Rushing only the front teeth." },
+      { do: "Do: Spit and rinse after brushing.", avoid: "Avoid: Swallowing toothpaste foam." }
+    ],
+    primary: [
+      { do: "Do: Use a pea-size toothpaste amount.", avoid: "Avoid: Fast side-to-side scrubbing." },
+      { do: "Do: Follow the full top and bottom route.", avoid: "Avoid: Missing the inner surfaces." },
+      { do: "Do: Brush your tongue at the end.", avoid: "Avoid: Pressing too hard on enamel." }
+    ],
+    mixed: [
+      { do: "Do: Keep gentle pressure at the gumline.", avoid: "Avoid: Scrubbing with a flat angle." },
+      { do: "Do: Track each surface before moving on.", avoid: "Avoid: Skipping erupting molars." },
+      { do: "Do: Replace your brush every 3 months.", avoid: "Avoid: Using frayed bristles." }
+    ],
+    adult: [
+      { do: "Do: Keep short, controlled circles.", avoid: "Avoid: Over-brushing one hot spot." },
+      { do: "Do: Finish both inner and outer rows.", avoid: "Avoid: Ignoring back molars." },
+      { do: "Do: Let bristles do the work gently.", avoid: "Avoid: Heavy pressure near gums." }
+    ]
+  },
+  electric: {
+    infant: [
+      { do: "Do: Place and pause on each surface.", avoid: "Avoid: Dragging the head across gums." },
+      { do: "Do: Lift then place at each next tooth.", avoid: "Avoid: Sliding tooth-to-tooth quickly." },
+      { do: "Do: Keep very light pressure.", avoid: "Avoid: Pressing hard with the motor on." }
+    ],
+    toddler: [
+      { do: "Do: Let the brush do the motion for you.", avoid: "Avoid: Scrubbing like a manual brush." },
+      { do: "Do: Lift and place between each tooth.", avoid: "Avoid: Sliding over contact points." },
+      { do: "Do: Pause 1 to 2 seconds per surface.", avoid: "Avoid: Rushing past inner surfaces." }
+    ],
+    primary: [
+      { do: "Do: Hold the head still, then move on.", avoid: "Avoid: Side-to-side wrist scrubbing." },
+      { do: "Do: Lift before each position switch.", avoid: "Avoid: Sweeping continuously across rows." },
+      { do: "Do: Keep the gumline angle steady.", avoid: "Avoid: Pressing until bristles flatten." }
+    ],
+    mixed: [
+      { do: "Do: Guide slowly tooth-by-tooth.", avoid: "Avoid: Sliding over several teeth at once." },
+      { do: "Do: Lift and reseat at each contact point.", avoid: "Avoid: Continuous dragging across enamel." },
+      { do: "Do: Use timer beats for each area.", avoid: "Avoid: Overworking only front teeth." }
+    ],
+    adult: [
+      { do: "Do: Place, pause, lift, then reposition.", avoid: "Avoid: Scrub-sliding across the arch." },
+      { do: "Do: Keep gentle pressure at 45 degrees.", avoid: "Avoid: Pressing hard into the gumline." },
+      { do: "Do: Treat each surface as a separate pass.", avoid: "Avoid: One-pass sweeping over all surfaces." }
+    ]
+  }
 };
 
 function splitArch(count) {
@@ -864,6 +922,24 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
         direction: t(`brushing.guide.directions.${brushFacingDirection}`)
       })
     : "";
+  const activeAgePhase = ageUiProfile?.phase || agePhase;
+  const coachingMode = brushType === "electric" ? "electric" : "manual";
+  const coachingSet = AGE_HYGIENE_COACHING[coachingMode][activeAgePhase] || AGE_HYGIENE_COACHING[coachingMode].adult;
+  const coachingIndex = Math.floor(Math.max(0, elapsedSeconds) / 14) % coachingSet.length;
+  const activeCoaching = coachingSet[coachingIndex] || coachingSet[0];
+  const showMapCoaching = brushingPhase === "countdown" || brushingPhase === "running" || brushingPhase === "paused";
+  const showElectricLiftCue = brushType === "electric" && activeEntry?.type === "transition";
+  const overlayPhase = brushingPhase === "complete"
+    ? "complete"
+    : brushingPhase === "running" || brushingPhase === "paused"
+      ? progress >= 82
+        ? "nearComplete"
+        : progress >= 18
+          ? "mid"
+          : "start"
+      : brushingPhase === "countdown"
+        ? "start"
+        : "idle";
 
   function renderTooth(point, jaw, meta, mapIndex) {
     const state = getToothState(jaw, mapIndex);
@@ -954,6 +1030,11 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
 
 
       <div className="guide-map-shell">
+        <AgeOverlay
+          ageGroup={ageUiProfile?.phase || "adult"}
+          phase={overlayPhase}
+          className="guide-map-age-overlay"
+        />
         <AgeThemePanel profile={ageUiProfile} variant="guide" className="guide-age-overlay" chipLimit={2} />
         <div className="mouth-map" role="img" aria-label={t("brushing.guide.mouthMapAria")}>
         <svg viewBox="0 0 360 420" preserveAspectRatio="xMidYMid meet">
@@ -1131,6 +1212,17 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
               style={brushingPhase === "countdown" ? { fill: countdownSignal.label } : undefined}
             >
               {centerLabel}
+            </text>
+          )}
+          {showElectricLiftCue && (
+            <text x="180" y="252" textAnchor="middle" className="map-electric-cue" aria-hidden="true">
+              Lift + Place
+            </text>
+          )}
+          {showMapCoaching && activeCoaching && (
+            <text x="180" y="264" textAnchor="middle" className="map-coaching" aria-hidden="true">
+              <tspan x="180" dy="0">{activeCoaching.do}</tspan>
+              <tspan x="180" dy="14">{activeCoaching.avoid}</tspan>
             </text>
           )}
         </svg>
