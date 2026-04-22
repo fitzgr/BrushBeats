@@ -4349,11 +4349,11 @@ select {
 }
 
 .tooth-svg .front-face {
-  fill: #f7e9be;
+  fill: #f8edd0;
 }
 
 .tooth-svg .back-face {
-  fill: #f3e0ab;
+  fill: #f5e6bd;
 }
 
 .tooth-svg .tooth-face.clean {
@@ -4361,7 +4361,7 @@ select {
 }
 
 .tooth-svg .tooth-face.active-surface {
-  fill: #ffd868;
+  fill: #ffe08a;
 }
 
 .map-electric-cue {
