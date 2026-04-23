@@ -1,0 +1,176 @@
+{
+  "version": 1,
+  "description": "Starter image overlay manifest for young-person BrushBeats themes. Each theme uses consistent overlay slots so the UI can lazy-load only the selected theme.",
+  "basePath": "assets/overlays/kids/",
+  "slots": [
+    "background",
+    "frame",
+    "mascot",
+    "progressMarker",
+    "quadrantReward",
+    "completionReward",
+    "beatAccent"
+  ],
+  "themes": [
+    {
+      "id": "space-adventure",
+      "name": "Space Adventure",
+      "ageBands": ["kids", "preteens"],
+      "mood": "Curious, heroic, cosmic",
+      "paletteHint": ["midnight blue", "purple", "yellow", "white"],
+      "overlays": {
+        "background": "space-adventure/background.svg",
+        "frame": "space-adventure/frame.svg",
+        "mascot": "space-adventure/rocket-mascot.svg",
+        "progressMarker": "space-adventure/planet-progress.svg",
+        "quadrantReward": "space-adventure/shooting-star.svg",
+        "completionReward": "space-adventure/mission-complete-badge.svg",
+        "beatAccent": "space-adventure/music-satellite.svg"
+      }
+    },
+    {
+      "id": "jungle-safari",
+      "name": "Jungle Safari",
+      "ageBands": ["kids"],
+      "mood": "Playful, leafy, animal-discovery",
+      "paletteHint": ["leaf green", "lime", "orange", "sky blue"],
+      "overlays": {
+        "background": "jungle-safari/background.svg",
+        "frame": "jungle-safari/vine-frame.svg",
+        "mascot": "jungle-safari/monkey-mascot.svg",
+        "progressMarker": "jungle-safari/paw-progress.svg",
+        "quadrantReward": "jungle-safari/butterfly-reward.svg",
+        "completionReward": "jungle-safari/safari-badge.svg",
+        "beatAccent": "jungle-safari/toucan-music-note.svg"
+      }
+    },
+    {
+      "id": "underwater-ocean",
+      "name": "Underwater Ocean",
+      "ageBands": ["kids", "preteens"],
+      "mood": "Calm, bubbly, ocean explorer",
+      "paletteHint": ["aqua", "teal", "coral", "sand"],
+      "overlays": {
+        "background": "underwater-ocean/background.svg",
+        "frame": "underwater-ocean/coral-frame.svg",
+        "mascot": "underwater-ocean/turtle-mascot.svg",
+        "progressMarker": "underwater-ocean/bubble-progress.svg",
+        "quadrantReward": "underwater-ocean/fish-reward.svg",
+        "completionReward": "underwater-ocean/treasure-chest.svg",
+        "beatAccent": "underwater-ocean/music-bubbles.svg"
+      }
+    },
+    {
+      "id": "dinosaur-dig",
+      "name": "Dinosaur Dig",
+      "ageBands": ["kids"],
+      "mood": "Fossil hunt, chunky, adventurous",
+      "paletteHint": ["sand", "stone", "green", "volcano orange"],
+      "overlays": {
+        "background": "dinosaur-dig/background.svg",
+        "frame": "dinosaur-dig/stone-frame.svg",
+        "mascot": "dinosaur-dig/triceratops-mascot.svg",
+        "progressMarker": "dinosaur-dig/footprint-progress.svg",
+        "quadrantReward": "dinosaur-dig/fossil-piece.svg",
+        "completionReward": "dinosaur-dig/fossil-badge.svg",
+        "beatAccent": "dinosaur-dig/excavation-brush-note.svg"
+      }
+    },
+    {
+      "id": "superhero-city",
+      "name": "Superhero City",
+      "ageBands": ["kids", "preteens"],
+      "mood": "Fast, brave, comic-book energy",
+      "paletteHint": ["blue", "red", "yellow", "black"],
+      "overlays": {
+        "background": "superhero-city/background.svg",
+        "frame": "superhero-city/comic-frame.svg",
+        "mascot": "superhero-city/cape-mascot.svg",
+        "progressMarker": "superhero-city/shield-progress.svg",
+        "quadrantReward": "superhero-city/pow-burst.svg",
+        "completionReward": "superhero-city/hero-badge.svg",
+        "beatAccent": "superhero-city/lightning-note.svg"
+      }
+    },
+    {
+      "id": "fairy-tale-castle",
+      "name": "Fairy Tale Castle",
+      "ageBands": ["kids"],
+      "mood": "Soft, magical, storybook",
+      "paletteHint": ["lavender", "pink", "gold", "cloud white"],
+      "overlays": {
+        "background": "fairy-tale-castle/background.svg",
+        "frame": "fairy-tale-castle/storybook-frame.svg",
+        "mascot": "fairy-tale-castle/magic-wand-mascot.svg",
+        "progressMarker": "fairy-tale-castle/gem-progress.svg",
+        "quadrantReward": "fairy-tale-castle/sparkle-reward.svg",
+        "completionReward": "fairy-tale-castle/crown-badge.svg",
+        "beatAccent": "fairy-tale-castle/magic-music-note.svg"
+      }
+    },
+    {
+      "id": "sports-arena",
+      "name": "Sports Arena",
+      "ageBands": ["kids", "preteens"],
+      "mood": "Training, scoreboard, team win",
+      "paletteHint": ["field green", "white", "orange", "blue"],
+      "overlays": {
+        "background": "sports-arena/background.svg",
+        "frame": "sports-arena/arena-frame.svg",
+        "mascot": "sports-arena/trophy-mascot.svg",
+        "progressMarker": "sports-arena/ball-progress.svg",
+        "quadrantReward": "sports-arena/score-pop.svg",
+        "completionReward": "sports-arena/trophy-badge.svg",
+        "beatAccent": "sports-arena/whistle-note.svg"
+      }
+    },
+    {
+      "id": "music-dance-party",
+      "name": "Music Dance Party",
+      "ageBands": ["kids", "preteens", "teens"],
+      "mood": "Concert, dance floor, beat-driven",
+      "paletteHint": ["purple", "cyan", "pink", "black"],
+      "overlays": {
+        "background": "music-dance-party/background.svg",
+        "frame": "music-dance-party/stage-light-frame.svg",
+        "mascot": "music-dance-party/headphones-mascot.svg",
+        "progressMarker": "music-dance-party/equalizer-progress.svg",
+        "quadrantReward": "music-dance-party/disco-spark.svg",
+        "completionReward": "music-dance-party/backstage-pass-badge.svg",
+        "beatAccent": "music-dance-party/floating-music-note.svg"
+      }
+    },
+    {
+      "id": "western-trail",
+      "name": "Western Trail",
+      "ageBands": ["kids"],
+      "mood": "Frontier map, sheriff stars, trail ride",
+      "paletteHint": ["sunset orange", "sand", "brown", "sky blue"],
+      "overlays": {
+        "background": "western-trail/background.svg",
+        "frame": "western-trail/rope-frame.svg",
+        "mascot": "western-trail/cowboy-hat-mascot.svg",
+        "progressMarker": "western-trail/horseshoe-progress.svg",
+        "quadrantReward": "western-trail/sheriff-star.svg",
+        "completionReward": "western-trail/trail-complete-badge.svg",
+        "beatAccent": "western-trail/tumbleweed-note.svg"
+      }
+    },
+    {
+      "id": "winter-arctic",
+      "name": "Winter Arctic",
+      "ageBands": ["kids", "preteens"],
+      "mood": "Snowy, cozy, Canadian winter adventure",
+      "paletteHint": ["ice blue", "white", "navy", "aurora green"],
+      "overlays": {
+        "background": "winter-arctic/background.svg",
+        "frame": "winter-arctic/ice-frame.svg",
+        "mascot": "winter-arctic/penguin-mascot.svg",
+        "progressMarker": "winter-arctic/snowflake-progress.svg",
+        "quadrantReward": "winter-arctic/aurora-spark.svg",
+        "completionReward": "winter-arctic/snow-fort-badge.svg",
+        "beatAccent": "winter-arctic/snow-note.svg"
+      }
+    }
+  ]
+}
