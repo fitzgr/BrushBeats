@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <defs>
+    <symbol id="overlay-star" viewBox="0 0 100 100">
+      <polygon points="50,5 61,36 94,36 67,56 78,90 50,70 22,90 33,56 6,36 39,36" fill="currentColor"/>
+    </symbol>
+
+    <symbol id="overlay-music-note" viewBox="0 0 100 100">
+      <path d="M62 8v55a18 18 0 1 1-10-16V24l34-8v42a18 18 0 1 1-10-16V8z" fill="currentColor"/>
+    </symbol>
+
+    <symbol id="overlay-rocket" viewBox="0 0 100 100">
+      <path d="M55 8c18 6 30 23 34 49L66 79 42 55C48 30 53 14 55 8z" fill="currentColor"/>
+      <circle cx="63" cy="34" r="8" fill="white" opacity="0.85"/>
+      <path d="M37 61 20 69l11-24zM60 84l-8 17-9-24z" fill="currentColor" opacity="0.7"/>
+      <path d="M35 70c-7 5-12 12-15 21 9-3 16-8 21-15z" fill="currentColor" opacity="0.45"/>
+    </symbol>
+
+    <symbol id="overlay-planet" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="28" fill="currentColor"/>
+      <ellipse cx="50" cy="50" rx="45" ry="12" fill="none" stroke="currentColor" stroke-width="8" opacity="0.55" transform="rotate(-18 50 50)"/>
+    </symbol>
+
+    <symbol id="overlay-leaf" viewBox="0 0 100 100">
+      <path d="M88 12C48 13 19 32 15 79c42 2 72-23 73-67z" fill="currentColor"/>
+      <path d="M23 76C42 54 60 37 83 17" fill="none" stroke="white" stroke-width="5" opacity="0.65"/>
+    </symbol>
+
+    <symbol id="overlay-paw" viewBox="0 0 100 100">
+      <circle cx="30" cy="28" r="10" fill="currentColor"/>
+      <circle cx="50" cy="22" r="11" fill="currentColor"/>
+      <circle cx="70" cy="28" r="10" fill="currentColor"/>
+      <circle cx="36" cy="47" r="9" fill="currentColor"/>
+      <circle cx="64" cy="47" r="9" fill="currentColor"/>
+      <path d="M50 48c19 0 31 14 27 30-3 14-18 12-27 7-9 5-24 7-27-7-4-16 8-30 27-30z" fill="currentColor"/>
+    </symbol>
+
+    <symbol id="overlay-bubble" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="7"/>
+      <circle cx="39" cy="35" r="8" fill="currentColor" opacity="0.35"/>
+    </symbol>
+
+    <symbol id="overlay-fish" viewBox="0 0 100 100">
+      <path d="M12 50c20-23 48-23 68 0-20 23-48 23-68 0z" fill="currentColor"/>
+      <path d="M78 50 98 32v36z" fill="currentColor" opacity="0.8"/>
+      <circle cx="34" cy="43" r="4" fill="white"/>
+    </symbol>
+
+    <symbol id="overlay-dino-footprint" viewBox="0 0 100 100">
+      <ellipse cx="50" cy="57" rx="23" ry="30" fill="currentColor"/>
+      <path d="M27 28 37 8l10 24zM48 25 54 3l13 22zM69 30 88 14l-2 25z" fill="currentColor"/>
+    </symbol>
+
+    <symbol id="overlay-fossil" viewBox="0 0 100 100">
+      <path d="M16 52c17-28 51-34 74-16-10 33-41 49-74 16z" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+      <path d="M31 55c18-4 31-10 44-23M45 52l-8-16M58 45l-6-18M69 38l7 14" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="overlay-shield" viewBox="0 0 100 100">
+      <path d="M50 6 86 20v25c0 23-13 39-36 49C27 84 14 68 14 45V20z" fill="currentColor"/>
+      <path d="M50 18v58" stroke="white" stroke-width="6" opacity="0.45"/>
+    </symbol>
+
+    <symbol id="overlay-lightning" viewBox="0 0 100 100">
+      <path d="M56 4 18 56h28L36 96l46-58H54z" fill="currentColor"/>
+    </symbol>
+
+    <symbol id="overlay-crown" viewBox="0 0 100 100">
+      <path d="M10 78h80l-6-48-22 25-12-39-12 39-22-25z" fill="currentColor"/>
+      <rect x="16" y="78" width="68" height="12" rx="5" fill="currentColor" opacity="0.8"/>
+    </symbol>
+
+    <symbol id="overlay-sparkle" viewBox="0 0 100 100">
+      <path d="M50 4c6 27 19 40 46 46-27 6-40 19-46 46C44 69 31 56 4 50c27-6 40-19 46-46z" fill="currentColor"/>
+    </symbol>
+
+    <symbol id="overlay-ball" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="38" fill="currentColor"/>
+      <path d="M14 50h72M50 12c-14 19-14 57 0 76M50 12c14 19 14 57 0 76" stroke="white" stroke-width="6" fill="none" opacity="0.65"/>
+    </symbol>
+
+    <symbol id="overlay-trophy" viewBox="0 0 100 100">
+      <path d="M30 14h40v22c0 20-8 32-20 32S30 56 30 36z" fill="currentColor"/>
+      <path d="M30 24H12c1 18 9 29 23 32M70 24h18c-1 18-9 29-23 32" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+      <path d="M46 68h8v14h18v10H28V82h18z" fill="currentColor"/>
+    </symbol>
+
+    <symbol id="overlay-equalizer" viewBox="0 0 100 100">
+      <rect x="12" y="48" width="10" height="38" rx="4" fill="currentColor"/>
+      <rect x="30" y="26" width="10" height="60" rx="4" fill="currentColor"/>
+      <rect x="48" y="38" width="10" height="48" rx="4" fill="currentColor"/>
+      <rect x="66" y="14" width="10" height="72" rx="4" fill="currentColor"/>
+      <rect x="84" y="58" width="10" height="28" rx="4" fill="currentColor"/>
+    </symbol>
+
+    <symbol id="overlay-disco" viewBox="0 0 100 100">
+      <circle cx="50" cy="54" r="33" fill="currentColor"/>
+      <path d="M50 4v17M25 54h50M31 32h38M31 76h38M50 21c-8 12-8 54 0 66M50 21c8 12 8 54 0 66" stroke="white" stroke-width="4" opacity="0.55"/>
+    </symbol>
+
+    <symbol id="overlay-horseshoe" viewBox="0 0 100 100">
+      <path d="M26 20h17v42c0 9 4 14 7 14s7-5 7-14V20h17v43c0 21-10 33-24 33S26 84 26 63z" fill="currentColor"/>
+      <circle cx="34" cy="28" r="4" fill="white" opacity="0.7"/>
+      <circle cx="66" cy="28" r="4" fill="white" opacity="0.7"/>
+    </symbol>
+
+    <symbol id="overlay-sheriff-star" viewBox="0 0 100 100">
+      <path d="M50 5 62 33l31-4-19 25 19 25-31-4-12 28-12-28-31 4 19-25L7 29l31 4z" fill="currentColor"/>
+      <circle cx="50" cy="54" r="16" fill="white" opacity="0.28"/>
+    </symbol>
+
+    <symbol id="overlay-snowflake" viewBox="0 0 100 100">
+      <path d="M50 8v84M15 29l70 42M85 29 15 71M34 16l16 14 16-14M34 84l16-14 16 14M14 48l20-5-5-20M86 52l-20 5 5 20" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </symbol>
+
+    <symbol id="overlay-penguin" viewBox="0 0 100 100">
+      <ellipse cx="50" cy="52" rx="28" ry="42" fill="currentColor"/>
+      <ellipse cx="50" cy="61" rx="18" ry="26" fill="white" opacity="0.9"/>
+      <circle cx="40" cy="34" r="4" fill="white"/>
+      <circle cx="60" cy="34" r="4" fill="white"/>
+      <path d="M45 43h10l-5 7z" fill="orange"/>
+    </symbol>
+  </defs>
+</svg>
