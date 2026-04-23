@@ -3949,6 +3949,46 @@ select {
   z-index: 1;
 }
 
+.map-hand-orientation-layer {
+  position: absolute;
+  left: 50%;
+  top: 112px;
+  transform: translateX(-50%);
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.82;
+}
+
+.map-hand-orientation-layer.facing-left .brush-hand-orientation-visual {
+  flex-direction: row-reverse;
+}
+
+.map-hand-orientation-layer .brush-hand-orientation-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+}
+
+.map-hand-orientation-layer .brush-hand-orientation-handle {
+  width: 78px;
+  height: 10px;
+}
+
+.map-hand-orientation-layer .brush-hand-orientation-neck {
+  width: 11px;
+}
+
+.map-hand-orientation-layer .brush-hand-orientation-hand {
+  width: 24px;
+  height: 20px;
+}
+
+.map-hand-orientation-layer .brush-hand-orientation-head {
+  width: 26px;
+  height: 18px;
+}
+
 .age-ui-infant .mouth-map,
 .age-ui-toddler .mouth-map,
 .age-ui-primary .mouth-map {

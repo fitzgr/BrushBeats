@@ -39,6 +39,14 @@ export default function HouseholdSetupPanel({
 }) {
   const totalTeethCount = Number(draft?.topTeethCount || 0) + Number(draft?.bottomTeethCount || 0);
   const ageEstimate = estimateAgeFromTeethFull(totalTeethCount);
+  const stageKey = ageEstimate?.phase === "adult"
+    ? totalTeethCount >= 29 ? "fullAdultSmile" : "adultSmile"
+    : ["infant", "toddler", "primary", "mixed"].includes(ageEstimate?.phase)
+      ? ageEstimate.phase
+      : "unknown";
+  const stageLabel = stageKey === "unknown"
+    ? t("age.stages.unknown.label")
+    : t(`age.stages.${stageKey}`);
 
   return (
     <section className="household-setup-panel" aria-label={t("app.householdSetup.ariaLabel")}>
@@ -49,7 +57,7 @@ export default function HouseholdSetupPanel({
         <div className="household-setup-summary">
           <span>{t("app.householdSetup.summary.mode", { mode: requiresMigrationReview ? t("app.householdSetup.summary.review") : t("app.householdSetup.summary.setup") })}</span>
           <span>{t("app.householdSetup.summary.teeth", { count: totalTeethCount })}</span>
-          <span>{t("app.householdSetup.summary.stage", { stage: t(`age.stages.${ageEstimate?.phase || "unknown"}.label`) })}</span>
+          <span>{t("app.householdSetup.summary.stage", { stage: stageLabel })}</span>
         </div>
       </div>
       <form className="household-setup-form" onSubmit={onSubmit}>

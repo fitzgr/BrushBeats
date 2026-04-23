@@ -1,5 +1,17 @@
 [
   {
+    "id": "commit-c225a7cea5db19652055fab7cbb28bc8cae26fc4",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "c225a7cea5db19652055fab7cbb28bc8cae26fc4",
+    "shortSha": "c225a7c",
+    "timestamp": "2026-04-23T07:18:36-04:00",
+    "date": "2026-04-23",
+    "author": "Grant Fitz",
+    "subject": "security: harden user input handling and add backend tests",
+    "body": ""
+  },
+  {
     "id": "commit-b02a212d364fac2d979056575923e51670ef35b3",
     "kind": "commit",
     "source": "git-history",

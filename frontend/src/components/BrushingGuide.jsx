@@ -916,12 +916,6 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
     : [];
   const countdownSignal = getCountdownSignal(startCountdownRemainingMs, startCountdownTotalMs);
   const [countdownWhole = "0", countdownFraction = "0"] = centerValue.split(".");
-  const handOrientationText = brushFacingDirection
-    ? t("brushing.guide.handOrientationCompact", {
-        hand: t(`common.hands.${brushingHand}`),
-        direction: t(`brushing.guide.directions.${brushFacingDirection}`)
-      })
-    : "";
   const activeAgePhase = ageUiProfile?.phase || agePhase;
   const coachingMode = brushType === "electric" ? "electric" : "manual";
   const coachingSet = AGE_HYGIENE_COACHING[coachingMode][activeAgePhase] || AGE_HYGIENE_COACHING[coachingMode].adult;
@@ -1038,6 +1032,18 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
         />
         <AgeThemePanel profile={ageUiProfile} variant="guide" className="guide-age-overlay" chipLimit={2} />
         <div className="mouth-map" role="img" aria-label={t("brushing.guide.mouthMapAria")}>
+        {brushFacingDirection && (
+          <div className={`map-hand-orientation-layer ${brushFacingDirection === "left" ? "facing-left" : "facing-right"}`} aria-hidden="true">
+            <div className="brush-hand-orientation-visual" aria-hidden="true">
+              <span className="brush-hand-orientation-hand" />
+              <span className="brush-hand-orientation-handle" />
+              <span className="brush-hand-orientation-neck" />
+              <span className="brush-hand-orientation-head">
+                <span className="brush-hand-orientation-bristles" />
+              </span>
+            </div>
+          </div>
+        )}
         <svg viewBox="0 0 360 420" preserveAspectRatio="xMidYMid meet">
           <defs>
             <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
@@ -1236,20 +1242,6 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
         </svg>
         </div>
       </div>
-
-      {handOrientationText && (
-        <div className={`brush-hand-orientation ${brushFacingDirection === "left" ? "facing-left" : "facing-right"}`}>
-          <span className="brush-hand-orientation-title">{t("brushing.guide.handOrientation")}</span>
-          <div className="brush-hand-orientation-visual" aria-hidden="true">
-            <span className="brush-hand-orientation-hand" />
-            <span className="brush-hand-orientation-handle" />
-            <span className="brush-hand-orientation-neck" />
-            <span className="brush-hand-orientation-head">
-              <span className="brush-hand-orientation-bristles" />
-            </span>
-          </div>
-        </div>
-      )}
       {guideStatusText && !(brushingPhase === "complete" && completionMessage) && <p className={`guide-callout${brushingPhase === "complete" ? " complete" : ""}`}>{guideStatusText}</p>}
       {inactiveGuideText && <p className="guide-callout">{inactiveGuideText}</p>}
       {brushingPhase === "running" && activeTip && (
