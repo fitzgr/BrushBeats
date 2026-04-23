@@ -4191,6 +4191,225 @@ select {
   --overlay-decor-opacity: 0.42;
 }
 
+[data-overlay-theme="space-explorers"] {
+  --overlay-pattern-opacity: 0.3;
+  --overlay-pattern-scale: 1.18;
+  --overlay-motion-multiplier: 1.26;
+  --overlay-decor-opacity: 1;
+}
+
+[data-overlay-theme="underwater-adventure"] {
+  --overlay-pattern-opacity: 0.34;
+  --overlay-pattern-scale: 1.12;
+  --overlay-motion-multiplier: 1.08;
+  --overlay-decor-opacity: 0.98;
+}
+
+[data-overlay-theme="jungle-safari"] {
+  --overlay-pattern-opacity: 0.28;
+  --overlay-pattern-scale: 1.15;
+  --overlay-motion-multiplier: 1.18;
+  --overlay-decor-opacity: 0.96;
+}
+
+[data-overlay-theme="magical-kingdom"] {
+  --overlay-pattern-opacity: 0.36;
+  --overlay-pattern-scale: 1.08;
+  --overlay-motion-multiplier: 1.2;
+  --overlay-decor-opacity: 1;
+}
+
+[data-overlay-theme="fairy-garden"] {
+  --overlay-pattern-opacity: 0.33;
+  --overlay-pattern-scale: 1.11;
+  --overlay-motion-multiplier: 1.06;
+  --overlay-decor-opacity: 0.96;
+}
+
+[data-overlay-theme="superhero-city"] {
+  --overlay-pattern-opacity: 0.31;
+  --overlay-pattern-scale: 1.14;
+  --overlay-motion-multiplier: 1.32;
+  --overlay-decor-opacity: 1;
+}
+
+[data-overlay-theme="dinosaur-land"] {
+  --overlay-pattern-opacity: 0.32;
+  --overlay-pattern-scale: 1.14;
+  --overlay-motion-multiplier: 1.04;
+  --overlay-decor-opacity: 0.97;
+}
+
+[data-overlay-theme="pirate-voyage"] {
+  --overlay-pattern-opacity: 0.29;
+  --overlay-pattern-scale: 1.2;
+  --overlay-motion-multiplier: 1.16;
+  --overlay-decor-opacity: 0.96;
+}
+
+[data-overlay-theme="outer-wild-west"] {
+  --overlay-pattern-opacity: 0.27;
+  --overlay-pattern-scale: 1.09;
+  --overlay-motion-multiplier: 1.03;
+  --overlay-decor-opacity: 0.94;
+}
+
+[data-overlay-theme="enchanted-robots"] {
+  --overlay-pattern-opacity: 0.35;
+  --overlay-pattern-scale: 1.13;
+  --overlay-motion-multiplier: 1.28;
+  --overlay-decor-opacity: 0.99;
+}
+
+[data-overlay-theme="calm-clinic"] {
+  --overlay-pattern-opacity: 0.12;
+  --overlay-pattern-scale: 1;
+  --overlay-motion-multiplier: 0.72;
+  --overlay-decor-opacity: 0.58;
+}
+
+[data-overlay-theme="space-explorers"] .age-overlay__decor-token,
+[data-overlay-theme="underwater-adventure"] .age-overlay__decor-token,
+[data-overlay-theme="jungle-safari"] .age-overlay__decor-token,
+[data-overlay-theme="magical-kingdom"] .age-overlay__decor-token,
+[data-overlay-theme="fairy-garden"] .age-overlay__decor-token,
+[data-overlay-theme="superhero-city"] .age-overlay__decor-token,
+[data-overlay-theme="dinosaur-land"] .age-overlay__decor-token,
+[data-overlay-theme="pirate-voyage"] .age-overlay__decor-token,
+[data-overlay-theme="outer-wild-west"] .age-overlay__decor-token,
+[data-overlay-theme="enchanted-robots"] .age-overlay__decor-token,
+[data-overlay-theme="calm-clinic"] .age-overlay__decor-token {
+  padding: 0.16rem 0.34rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+[data-overlay-theme="space-explorers"] .age-overlay__decor-token {
+  background: linear-gradient(135deg, #f7d46a, #ffe9b0);
+  color: #173266;
+}
+
+[data-overlay-theme="underwater-adventure"] .age-overlay__decor-token {
+  background: linear-gradient(135deg, #7ee9ff, #d8fbff);
+  color: #0b4e6a;
+}
+
+[data-overlay-theme="jungle-safari"] .age-overlay__decor-token {
+  background: linear-gradient(135deg, #bce67f, #ecffd0);
+  color: #2c5b1f;
+}
+
+[data-overlay-theme="magical-kingdom"] .age-overlay__decor-token {
+  background: linear-gradient(135deg, #ffd89a, #ffeed0);
+  color: #59337c;
+}
+
+[data-overlay-theme="fairy-garden"] .age-overlay__decor-token {
+  background: linear-gradient(135deg, #ffc6df, #ffe8f3);
+  color: #6c3b57;
+}
+
+[data-overlay-theme="superhero-city"] .age-overlay__decor-token {
+  background: linear-gradient(135deg, #ffd76b, #fff1c3);
+  color: #2e3f8e;
+}
+
+[data-overlay-theme="dinosaur-land"] .age-overlay__decor-token {
+  background: linear-gradient(135deg, #ffd57c, #fff0cc);
+  color: #694b1f;
+}
+
+[data-overlay-theme="pirate-voyage"] .age-overlay__decor-token {
+  background: linear-gradient(135deg, #ffc86a, #ffefca);
+  color: #24557a;
+}
+
+[data-overlay-theme="outer-wild-west"] .age-overlay__decor-token {
+  background: linear-gradient(135deg, #ffd287, #fff1d2);
+  color: #764621;
+}
+
+[data-overlay-theme="enchanted-robots"] .age-overlay__decor-token {
+  background: linear-gradient(135deg, #9af3d5, #dffff1);
+  color: #24606a;
+}
+
+[data-overlay-theme="calm-clinic"] .age-overlay__decor-token {
+  background: linear-gradient(135deg, #b8d9e5, #e8f4f9);
+  color: #30566b;
+}
+
+[data-overlay-theme="space-explorers"] .age-overlay__bg {
+  background:
+    radial-gradient(circle at 22% 18%, rgba(255, 233, 154, 0.42), transparent 20%),
+    radial-gradient(circle at 78% 28%, rgba(153, 219, 255, 0.35), transparent 24%),
+    linear-gradient(180deg, rgba(5, 16, 60, 0.9), rgba(12, 55, 120, 0.64));
+}
+
+[data-overlay-theme="underwater-adventure"] .age-overlay__bg {
+  background:
+    radial-gradient(circle at 22% 14%, rgba(123, 240, 255, 0.36), transparent 24%),
+    radial-gradient(circle at 76% 76%, rgba(156, 246, 255, 0.32), transparent 22%),
+    linear-gradient(180deg, rgba(3, 73, 110, 0.88), rgba(10, 131, 165, 0.58));
+}
+
+[data-overlay-theme="jungle-safari"] .age-overlay__bg {
+  background:
+    radial-gradient(circle at 20% 16%, rgba(202, 246, 131, 0.34), transparent 22%),
+    radial-gradient(circle at 82% 72%, rgba(255, 212, 114, 0.24), transparent 26%),
+    linear-gradient(180deg, rgba(24, 90, 34, 0.86), rgba(90, 145, 42, 0.56));
+}
+
+[data-overlay-theme="magical-kingdom"] .age-overlay__bg {
+  background:
+    radial-gradient(circle at 24% 16%, rgba(255, 214, 154, 0.38), transparent 22%),
+    radial-gradient(circle at 78% 24%, rgba(240, 183, 255, 0.34), transparent 24%),
+    linear-gradient(180deg, rgba(72, 39, 118, 0.9), rgba(139, 80, 185, 0.56));
+}
+
+[data-overlay-theme="fairy-garden"] .age-overlay__bg {
+  background:
+    radial-gradient(circle at 24% 18%, rgba(255, 205, 226, 0.38), transparent 22%),
+    radial-gradient(circle at 76% 76%, rgba(255, 230, 170, 0.28), transparent 24%),
+    linear-gradient(180deg, rgba(61, 106, 69, 0.86), rgba(130, 184, 121, 0.52));
+}
+
+[data-overlay-theme="superhero-city"] .age-overlay__bg {
+  background:
+    radial-gradient(circle at 23% 16%, rgba(255, 221, 116, 0.4), transparent 18%),
+    radial-gradient(circle at 78% 26%, rgba(255, 124, 147, 0.36), transparent 24%),
+    linear-gradient(180deg, rgba(16, 44, 103, 0.9), rgba(74, 91, 179, 0.56));
+}
+
+[data-overlay-theme="dinosaur-land"] .age-overlay__bg {
+  background:
+    radial-gradient(circle at 22% 20%, rgba(212, 244, 126, 0.34), transparent 22%),
+    radial-gradient(circle at 82% 70%, rgba(255, 216, 125, 0.3), transparent 24%),
+    linear-gradient(180deg, rgba(92, 68, 20, 0.88), rgba(146, 116, 49, 0.56));
+}
+
+[data-overlay-theme="pirate-voyage"] .age-overlay__bg {
+  background:
+    radial-gradient(circle at 24% 14%, rgba(122, 223, 255, 0.35), transparent 22%),
+    radial-gradient(circle at 78% 72%, rgba(255, 202, 118, 0.32), transparent 24%),
+    linear-gradient(180deg, rgba(15, 72, 114, 0.88), rgba(32, 121, 166, 0.56));
+}
+
+[data-overlay-theme="outer-wild-west"] .age-overlay__bg {
+  background:
+    radial-gradient(circle at 24% 16%, rgba(255, 215, 140, 0.37), transparent 22%),
+    radial-gradient(circle at 79% 74%, rgba(255, 188, 124, 0.3), transparent 24%),
+    linear-gradient(180deg, rgba(103, 57, 23, 0.88), rgba(159, 96, 47, 0.54));
+}
+
+[data-overlay-theme="enchanted-robots"] .age-overlay__bg {
+  background:
+    radial-gradient(circle at 23% 16%, rgba(168, 245, 226, 0.36), transparent 20%),
+    radial-gradient(circle at 80% 24%, rgba(167, 234, 255, 0.32), transparent 22%),
+    linear-gradient(180deg, rgba(19, 66, 84, 0.9), rgba(42, 122, 146, 0.56));
+}
+
 [data-overlay-pattern="orbits"] .age-overlay__pattern {
   background:
     radial-gradient(circle at 20px 20px, var(--overlay-pattern-color) 0 4px, transparent 5px),

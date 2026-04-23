@@ -1,5 +1,17 @@
 [
   {
+    "id": "commit-b3f740c01062bca103c96262561d7b9394a9c51f",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "b3f740c01062bca103c96262561d7b9394a9c51f",
+    "shortSha": "b3f740c",
+    "timestamp": "2026-04-23T07:36:03-04:00",
+    "date": "2026-04-23",
+    "author": "Grant Fitz",
+    "subject": "fix: localize stage label and move hand orientation into map",
+    "body": ""
+  },
+  {
     "id": "commit-c225a7cea5db19652055fab7cbb28bc8cae26fc4",
     "kind": "commit",
     "source": "git-history",

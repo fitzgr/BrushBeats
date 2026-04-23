@@ -504,6 +504,7 @@ function App() {
   const seenSongsByQueryRef = useRef(new Map());
   const playedSongsRef = useRef(new Set());
   const queuedSongRef = useRef(null);
+  const brushMapSectionRef = useRef(null);
   const lastPlaybackTickRef = useRef(null);
   const playbackSecondsRef = useRef(0);
   const countdownDeadlineRef = useRef(null);
@@ -1672,7 +1673,7 @@ function App() {
     }
 
     setAppView("brush");
-    setWorkflowStep("music");
+    setWorkflowStep("brush");
     await handleSelectSong(song, source);
     trackEvent("stored_song_queued", {
       source,
@@ -2108,7 +2109,8 @@ function App() {
   async function handleSelectSong(song, source = "generated") {
     trackEvent("song_selected", { title: song.title, artist: song.artist, source });
     setAutoRestoredBrushView(false);
-    setWorkflowStep("music");
+    setAppView("brush");
+    setWorkflowStep("brush");
     setQueuedStoredSongKey(source === "favorites" || source === "lastSession" ? toSongKey(song) : "");
     setSongsDebugInfo((previous) => ({
       ...(previous || {}),
@@ -2125,6 +2127,16 @@ function App() {
     }
     return handleSelectSongWithOptions(song, { autoplay: false, source });
   }
+
+  useEffect(() => {
+    if (workflowStep !== "brush" || !selectedSong) {
+      return;
+    }
+
+    window.requestAnimationFrame(() => {
+      brushMapSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, [selectedSong, workflowStep]);
 
   async function handleSelectSongWithOptions(song, options = { autoplay: false, source: "generated" }) {
     const lookupId = latestVideoLookupRef.current + 1;
@@ -2868,7 +2880,7 @@ function App() {
       )}
 
       {workflowStep === "brush" && (
-        <section className={`layout-grid ${device.isMobile ? "mobile-mode" : "desktop-mode desktop-brush-layout"}`}>
+        <section ref={brushMapSectionRef} className={`layout-grid ${device.isMobile ? "mobile-mode" : "desktop-mode desktop-brush-layout"}`}>
           <section className={`card brush-actions-card ${ageUiProfile.themeClassName} ${device.isMobile ? "" : "desktop-step-card"}`.trim()}>
             <h2>{t("brushing.controlsTitle")}</h2>
             <p>{t("brushing.controlsIntro")}</p>
