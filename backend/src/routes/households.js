@@ -1,5 +1,6 @@
 const express = require("express");
 const { getPool } = require("../config/database");
+const { isSafeIdentifier, safeJsonByteSize, sanitizeText, toBoundedNumber } = require("../utils/inputValidation");
 
 const router = express.Router();
 
@@ -31,8 +32,7 @@ function ensureCloudSyncEnabled(res, householdId) {
 }
 
 function normalizeInteger(value, fallback = 0) {
-  const numericValue = Number(value);
-  return Number.isFinite(numericValue) ? Math.round(numericValue) : fallback;
+  return toBoundedNumber(value, { min: 0, max: 10_000, fallback, integer: true });
 }
 
 function normalizeBoolean(value) {
@@ -46,10 +46,10 @@ function normalizeObject(value, fallback = {}) {
 function normalizeHouseholdSnapshot(householdId, household = {}) {
   return {
     householdId,
-    householdName: String(household.householdName || household.name || "BrushBeats Household").trim() || "BrushBeats Household",
-    subscriptionTier: String(household.subscriptionTier || "free"),
+    householdName: sanitizeText(household.householdName || household.name || "BrushBeats Household", { maxLength: 80, fallback: "BrushBeats Household" }) || "BrushBeats Household",
+    subscriptionTier: sanitizeText(household.subscriptionTier || "free", { maxLength: 24, fallback: "free", toLowerCase: true }),
     activeUserId: household.activeUserId ? String(household.activeUserId) : null,
-    migrationSource: String(household.migrationSource || "manual"),
+    migrationSource: sanitizeText(household.migrationSource || "manual", { maxLength: 32, fallback: "manual", toLowerCase: true }),
     syncStatus: "connected",
     rewardSettings: normalizeObject(household.rewardSettings),
     goalSettings: normalizeObject(household.goalSettings),
@@ -62,16 +62,22 @@ function normalizeMemberSnapshot(householdId, member = {}) {
   const preferences = normalizeObject(member.preferences);
 
   return {
-    userId: String(member.userId || "").trim(),
+    userId: sanitizeText(member.userId, { maxLength: 64 }),
     householdId,
-    name: String(member.name || "Household Member").trim() || "Household Member",
+    name: sanitizeText(member.name || "Household Member", { maxLength: 80, fallback: "Household Member" }) || "Household Member",
     avatar: member.avatar || null,
     birthYear: Number.isFinite(Number(member.birthYear)) ? Number(member.birthYear) : null,
-    ageGroup: String(member.ageGroup || member.toothStage || "unknown"),
-    toothStage: String(member.toothStage || "unknown"),
-    topTeethCount: normalizeInteger(member.topTeethCount, 0),
-    bottomTeethCount: normalizeInteger(member.bottomTeethCount, 0),
-    totalTeethCount: normalizeInteger(member.totalTeethCount, normalizeInteger(member.topTeethCount, 0) + normalizeInteger(member.bottomTeethCount, 0)),
+    ageGroup: sanitizeText(member.ageGroup || member.toothStage || "unknown", { maxLength: 24, fallback: "unknown", toLowerCase: true }),
+    toothStage: sanitizeText(member.toothStage || "unknown", { maxLength: 24, fallback: "unknown", toLowerCase: true }),
+    topTeethCount: toBoundedNumber(member.topTeethCount, { min: 0, max: 16, fallback: 0, integer: true }),
+    bottomTeethCount: toBoundedNumber(member.bottomTeethCount, { min: 0, max: 16, fallback: 0, integer: true }),
+    totalTeethCount: toBoundedNumber(member.totalTeethCount, {
+      min: 0,
+      max: 32,
+      fallback: toBoundedNumber(member.topTeethCount, { min: 0, max: 16, fallback: 0, integer: true })
+        + toBoundedNumber(member.bottomTeethCount, { min: 0, max: 16, fallback: 0, integer: true }),
+      integer: true
+    }),
     isActive: normalizeBoolean(member.isActive),
     isArchived: normalizeBoolean(member.isArchived),
     memberPreferences: preferences,
@@ -156,10 +162,10 @@ async function loadSnapshot(client, householdId) {
 }
 
 router.get("/:householdId", async (req, res, next) => {
-  const householdId = String(req.params.householdId || "").trim();
+  const householdId = sanitizeText(req.params.householdId, { maxLength: 64 });
 
-  if (!householdId) {
-    return res.status(400).json({ error: "householdId is required" });
+  if (!householdId || !isSafeIdentifier(householdId, { maxLength: 64 })) {
+    return res.status(400).json({ error: "householdId is invalid" });
   }
 
   if (!ensureCloudSyncEnabled(res, householdId)) {
@@ -184,17 +190,23 @@ router.get("/:householdId", async (req, res, next) => {
 });
 
 router.post("/:householdId/sync", async (req, res, next) => {
-  const householdId = String(req.params.householdId || "").trim();
+  const householdId = sanitizeText(req.params.householdId, { maxLength: 64 });
+
+  if (!householdId || !isSafeIdentifier(householdId, { maxLength: 64 })) {
+    return res.status(400).json({ error: "householdId is invalid" });
+  }
+
+  if (safeJsonByteSize(req.body) > 1024 * 1024) {
+    return res.status(413).json({ error: "sync payload is too large" });
+  }
+
   const household = normalizeHouseholdSnapshot(householdId, req.body?.household);
   const members = Array.isArray(req.body?.members)
     ? req.body.members
         .map((member) => normalizeMemberSnapshot(householdId, member))
-        .filter((member) => member.userId)
+        .filter((member) => member.userId && isSafeIdentifier(member.userId, { maxLength: 64 }))
+        .slice(0, 20)
     : [];
-
-  if (!householdId) {
-    return res.status(400).json({ error: "householdId is required" });
-  }
 
   if (req.body?.household?.householdId && req.body.household.householdId !== householdId) {
     return res.status(400).json({ error: "householdId path parameter does not match household payload" });

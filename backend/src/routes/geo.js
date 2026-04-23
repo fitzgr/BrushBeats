@@ -4,9 +4,13 @@ const { getClientIp, lookupCountryByIp } = require("../services/geoLocationServi
 const router = express.Router();
 
 router.get("/country", async (req, res) => {
-  const ip = getClientIp(req);
-  const geo = await lookupCountryByIp(ip);
-  return res.json(geo);
+  try {
+    const ip = getClientIp(req);
+    const geo = await lookupCountryByIp(ip);
+    return res.json(geo);
+  } catch {
+    return res.status(200).json({ countryCode: "--", countryName: "Unknown", source: "fallback" });
+  }
 });
 
 module.exports = router;

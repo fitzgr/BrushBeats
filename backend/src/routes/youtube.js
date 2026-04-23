@@ -1,13 +1,14 @@
 const express = require("express");
 const { searchYoutubeVideo } = require("../services/youtubeService");
 const { youtubeCache } = require("../utils/cache");
+const { sanitizeText } = require("../utils/inputValidation");
 
 const router = express.Router();
 
 router.get("/", async (req, res, next) => {
   try {
-    const title = (req.query.title || "").trim();
-    const artist = (req.query.artist || "").trim();
+    const title = sanitizeText(req.query.title, { maxLength: 120 });
+    const artist = sanitizeText(req.query.artist, { maxLength: 120 });
     if (!title || !artist) {
       return res.status(400).json({ error: "title and artist are required" });
     }

@@ -1,6 +1,7 @@
 const express = require("express");
 const fs = require("fs/promises");
 const path = require("path");
+const { isSafeLocaleCode, safeJsonByteSize, sanitizeText } = require("../utils/inputValidation");
 
 const router = express.Router();
 const LOCALES_DIR = path.resolve(__dirname, "../../../frontend/public/locales");
@@ -10,7 +11,8 @@ function getAdminPassword() {
 }
 
 function normalizeLanguage(language) {
-  return String(language || "").trim().toLowerCase();
+  const normalized = sanitizeText(language, { maxLength: 24, toLowerCase: true });
+  return isSafeLocaleCode(normalized) ? normalized : "";
 }
 
 function ensureAuthorized(req, res) {
@@ -21,7 +23,7 @@ function ensureAuthorized(req, res) {
     return false;
   }
 
-  const suppliedPassword = req.get("x-admin-password") || req.body?.password || req.query?.password || "";
+  const suppliedPassword = req.get("x-admin-password") || req.body?.password || "";
 
   if (suppliedPassword !== adminPassword) {
     res.status(401).json({ error: "Unauthorized admin access" });
@@ -97,6 +99,10 @@ router.put("/:language", async (req, res, next) => {
 
   if (!translation || typeof translation !== "object" || Array.isArray(translation)) {
     return res.status(400).json({ error: "translation must be an object" });
+  }
+
+  if (safeJsonByteSize(translation) > 1024 * 1024) {
+    return res.status(413).json({ error: "translation payload is too large" });
   }
 
   try {

@@ -1,5 +1,17 @@
 [
   {
+    "id": "commit-b02a212d364fac2d979056575923e51670ef35b3",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "b02a212d364fac2d979056575923e51670ef35b3",
+    "shortSha": "b02a212",
+    "timestamp": "2026-04-23T07:00:20-04:00",
+    "date": "2026-04-23",
+    "author": "Grant Fitz",
+    "subject": "feat: add age-curated overlay theme system",
+    "body": ""
+  },
+  {
     "id": "commit-76ed13e660c4449f86a757858b0132958d3d3ed3",
     "kind": "commit",
     "source": "git-history",

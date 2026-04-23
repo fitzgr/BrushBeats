@@ -2,6 +2,7 @@ const express = require("express");
 const { fetchSongsByBpm } = require("../services/getSongBpmService");
 const { songsCache } = require("../utils/cache");
 const { getClientIp, lookupCountryByIp, normalizeCountryCode } = require("../services/geoLocationService");
+const { sanitizeText, toBoundedNumber } = require("../utils/inputValidation");
 
 const router = express.Router();
 
@@ -24,21 +25,23 @@ function seededShuffle(songs, seed) {
 
 router.get("/", async (req, res, next) => {
   try {
-    const bpm = Number(req.query.bpm);
-    const tolerance = Number(req.query.tolerance ?? 5);
-    const danceability = Number(req.query.danceability ?? 50);
-    const acousticness = Number(req.query.acousticness ?? 50);
-    const totalTeeth = Number(req.query.totalTeeth ?? 32);
-    const keyword = (req.query.q || "").trim();
-    const seed = Number(req.query.seed ?? 0);
-    const browserLanguage = (req.query.browserLanguage || "").trim();
-    const countryCodeInput = (req.query.countryCode || "").trim();
-    const genreHint = (req.query.genreHint || "").trim();
-    const ageBucket = (req.query.ageBucket || "").trim().toLowerCase();
+    const bpmRaw = Number(req.query.bpm);
+    const tolerance = toBoundedNumber(req.query.tolerance, { min: 1, max: 20, fallback: 5, integer: true });
+    const danceability = toBoundedNumber(req.query.danceability, { min: 0, max: 100, fallback: 50, integer: true });
+    const acousticness = toBoundedNumber(req.query.acousticness, { min: 0, max: 100, fallback: 50, integer: true });
+    const totalTeeth = toBoundedNumber(req.query.totalTeeth, { min: 0, max: 32, fallback: 32, integer: true });
+    const keyword = sanitizeText(req.query.q, { maxLength: 80 });
+    const seed = toBoundedNumber(req.query.seed, { min: 0, max: 2_147_483_647, fallback: 0, integer: true });
+    const browserLanguage = sanitizeText(req.query.browserLanguage, { maxLength: 32, toLowerCase: true });
+    const countryCodeInput = sanitizeText(req.query.countryCode, { maxLength: 8, toLowerCase: true });
+    const genreHint = sanitizeText(req.query.genreHint, { maxLength: 40, toLowerCase: true });
+    const ageBucket = sanitizeText(req.query.ageBucket, { maxLength: 16, toLowerCase: true });
 
-    if (!Number.isFinite(bpm) || bpm <= 0) {
+    if (!Number.isFinite(bpmRaw) || bpmRaw < 40 || bpmRaw > 240) {
       return res.status(400).json({ error: "bpm query param is required" });
     }
+
+    const bpm = Math.round(bpmRaw);
 
     let countryCode = normalizeCountryCode(countryCodeInput);
     let geoSource = "query";

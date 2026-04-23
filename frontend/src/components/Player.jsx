@@ -1,9 +1,16 @@
 import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+const YOUTUBE_VIDEO_ID_REGEX = /^[a-zA-Z0-9_-]{11}$/;
+
+function normalizeVideoId(value) {
+  const candidate = String(value || "").trim();
+  return YOUTUBE_VIDEO_ID_REGEX.test(candidate) ? candidate : null;
+}
+
 function parseVideoId(playerData) {
   if (playerData?.videoId) {
-    return playerData.videoId;
+    return normalizeVideoId(playerData.videoId);
   }
 
   if (!playerData?.embedUrl) {
@@ -12,7 +19,7 @@ function parseVideoId(playerData) {
 
   try {
     const url = new URL(playerData.embedUrl);
-    return url.pathname.split("/").pop() || null;
+    return normalizeVideoId(url.pathname.split("/").pop());
   } catch {
     return null;
   }

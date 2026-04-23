@@ -13,14 +13,34 @@ const adminLocalesRoute = require("./routes/adminLocales");
 const geoRoute = require("./routes/geo");
 const healthRoute = require("./routes/health");
 const householdsRoute = require("./routes/households");
+const { applySecurityHeaders, basicRateLimit } = require("./middleware/security");
 
 const app = express();
 const port = Number(process.env.PORT || 4000);
 
 app.set("trust proxy", true);
+app.disable("x-powered-by");
 
-app.use(cors());
-app.use(express.json());
+const allowedOriginSet = new Set(
+  String(process.env.CORS_ALLOWED_ORIGINS || "http://localhost:5173,http://localhost:5174")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean)
+);
+
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || allowedOriginSet.has(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error("Origin not allowed by CORS policy"));
+  }
+}));
+app.use(express.json({ limit: "200kb" }));
+app.use(applySecurityHeaders);
+app.use(basicRateLimit);
 
 app.get("/", (_req, res) => {
   res.json({
@@ -45,7 +65,7 @@ app.use((error, _req, res, _next) => {
   console.error(error);
   res.status(500).json({
     error: "Something went wrong",
-    detail: error.message
+    detail: process.env.NODE_ENV === "production" ? undefined : error.message
   });
 });
 
