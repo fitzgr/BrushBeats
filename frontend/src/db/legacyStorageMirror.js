@@ -123,6 +123,7 @@ async function syncUserDefaults(payload) {
     userId: user.userId,
     brushingHand: payload.brushingHand,
     brushType: payload.brushType,
+    overlayTheme: payload.overlayTheme,
     brushDurationSeconds: payload.brushDurationSeconds,
     keyword: payload.keyword,
     filters: payload.filters || null,

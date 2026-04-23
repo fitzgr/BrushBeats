@@ -272,6 +272,7 @@ function normalizePreferences(parsed) {
     keyword: typeof parsed.keyword === "string" ? parsed.keyword : "",
     brushingHand: parsed.brushingHand === "left" ? "left" : "right",
     brushType: parsed.brushType === "electric" ? "electric" : "manual",
+    overlayTheme: typeof parsed.overlayTheme === "string" ? parsed.overlayTheme : "auto",
     brushDurationSeconds: clampInteger(parsed.brushDurationSeconds, 90, 180, 120),
     savedAt: Number.isFinite(Number(parsed.savedAt)) ? Number(parsed.savedAt) : undefined
   };

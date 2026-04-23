@@ -75,6 +75,7 @@
     "routine": {
       "ariaLabel": "Hoja de ruta de cuidado dental",
       "title": "Cuidado dental completo",
+      "intro": "Este es el companero completo del ritmo dental de tu hogar: cepillado, hilo dental e irrigador. La rutina de cada persona se sincroniza con la musica, ajustando el ritmo a sus necesidades unicas. Con el tiempo, todos desarrollan habitos naturales, uniformes y consistentes, para que cada diente, cada espacio y cada enjuague reciba el mismo cuidado.",
       "expand": "Ampliar hoja de ruta",
       "collapse": "Reducir hoja de ruta",
       "available": "Disponible ahora",
@@ -425,6 +426,11 @@
       "toggle": "Usar edad simulada",
       "previewMode": "Modo de vista previa",
       "ageGroup": "Grupo de edad",
+      "overlayTheme": "Tema de superposicion",
+      "overlayThemeAuto": "Automatico (recomendado)",
+      "overlayThemeHint": "Se usa {{label}} para esta etapa de edad. Los temas siguen siendo decorativos para que el mapa de cepillado siga siendo legible.",
+      "overlayThemeUnavailable": "Las superposiciones tematicas estan reservadas para etapas mas pequenas. El modo adulto mantiene la superposicion mas calmada y con menos ruido visual.",
+      "themeChip": "Superposicion: {{label}}",
       "ageValue": "Valor de edad",
       "ageUnit": "Unidad de edad",
       "modes": {

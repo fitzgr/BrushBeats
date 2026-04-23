@@ -75,6 +75,7 @@
     "routine": {
       "ariaLabel": "Ağız bakımı yol haritası",
       "title": "Tam diş bakımı",
+      "intro": "Bu, hanenizin tam dis ritmi yol arkadasidir: fircalama, dis ipi ve agiz dusu. Her kullanicinin rutini muzige senkronize olur ve ritim kendi ihtiyacina gore uyarlanir. Zamanla herkes dogal, dengeli ve tutarli aliskanliklar gelistirir; boylece her dis, her aralik ve her durulama esit ozen gorur.",
       "expand": "Yol haritasını genişlet",
       "collapse": "Yol haritasını daralt",
       "available": "Şimdi kullanılabilir",
@@ -425,6 +426,11 @@
       "toggle": "Simüle edilmiş yaşı kullan",
       "previewMode": "Önizleme modu",
       "ageGroup": "Yaş grubu",
+      "overlayTheme": "Kaplama temasi",
+      "overlayThemeAuto": "Otomatik (onerilen)",
+      "overlayThemeHint": "Bu yas asamasi icin {{label}} kullaniliyor. Fircalama haritasi okunabilir kalsin diye temalar dekoratif kalir.",
+      "overlayThemeUnavailable": "Tema kaplamalari daha kucuk yas asamalari icindir. Yetiskin modunda daha sakin ve dusuk gorsel yogunluklu kaplama kullanilir.",
+      "themeChip": "Kaplama: {{label}}",
       "ageValue": "Yaş değeri",
       "ageUnit": "Yaş birimi",
       "modes": {

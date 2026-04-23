@@ -77,6 +77,7 @@
     "routine": {
       "ariaLabel": "Dental care roadmap",
       "title": "Complete dental care",
+      "intro": "This is your household's complete dental rhythm companion-brushing, flossing, and water picking. Each user's routine syncs to music, matching rhythm to their unique needs. Over time, everyone naturally develops even, consistent habits-ensuring every tooth, every gap, and every rinse gets equal care.",
       "expand": "Expand roadmap",
       "collapse": "Collapse roadmap",
       "available": "Available now",
@@ -427,6 +428,11 @@
       "toggle": "Use simulated age",
       "previewMode": "Preview mode",
       "ageGroup": "Age group",
+      "overlayTheme": "Overlay theme",
+      "overlayThemeAuto": "Auto (recommended)",
+      "overlayThemeHint": "Using {{label}} for this age stage. Themes stay decorative so the brush map remains readable.",
+      "overlayThemeUnavailable": "Theme overlays are reserved for younger stages. Adult mode keeps the calmer low-noise overlay.",
+      "themeChip": "Overlay: {{label}}",
       "ageValue": "Age value",
       "ageUnit": "Age unit",
       "modes": {

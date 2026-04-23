@@ -1032,6 +1032,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
       <div className="guide-map-shell">
         <AgeOverlay
           ageGroup={ageUiProfile?.phase || "adult"}
+          themeId={ageUiProfile?.overlayThemeId}
           phase={overlayPhase}
           className="guide-map-age-overlay"
         />

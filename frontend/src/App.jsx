@@ -51,6 +51,7 @@ import {
 import { buildAgeEstimateFromActualAge, buildAgeEstimateFromPhase, estimateAgeFromTeethFull, inferMusicAgeBucket } from "./lib/teethAge";
 import { buildAgeUiProfile } from "./lib/ageUiProfile";
 import { useDeviceContext } from "./lib/deviceContext";
+import { getOverlayThemeOptions, OVERLAY_THEME_AUTO } from "./lib/overlayThemes";
 import { buildUserMusicContext } from "./lib/userMusicContext";
 import "./App.css";
 
@@ -167,6 +168,7 @@ function buildHouseholdSetupDraft({ household, activeUser, onboardingDraft, user
     bottomTeethCount,
     brushingHand: onboardingDraft?.brushingHand || userDefaults?.brushingHand || "right",
     brushType: onboardingDraft?.brushType || userDefaults?.brushType || "manual",
+    overlayTheme: onboardingDraft?.overlayTheme || userDefaults?.overlayTheme || OVERLAY_THEME_AUTO,
     brushDurationSeconds: Number(onboardingDraft?.brushDurationSeconds || userDefaults?.brushDurationSeconds || DEFAULT_BRUSH_DURATION_SECONDS),
     keyword: onboardingDraft?.keyword || userDefaults?.keyword || "",
     filters: onboardingDraft?.filters || userDefaults?.filters || createInitialSongPreferences(totalTeethCount),
@@ -450,6 +452,7 @@ function App() {
   const [workflowStep, setWorkflowStep] = useState("teeth");
   const [brushingHand, setBrushingHand] = useState("right");
   const [brushType, setBrushType] = useState("manual");
+  const [overlayThemeChoice, setOverlayThemeChoice] = useState(OVERLAY_THEME_AUTO);
   const [expandedRoutineCard, setExpandedRoutineCard] = useState(null);
   const [brushDurationSeconds, setBrushDurationSeconds] = useState(DEFAULT_BRUSH_DURATION_SECONDS);
   const [brushControlCue, setBrushControlCue] = useState(null);
@@ -541,9 +544,14 @@ function App() {
     () => buildAgeUiProfile(t, effectiveAgeEstimate, {
       stageLabel: detectedBrusherProfile.label,
       ageText: formatAgeDescription(t, effectiveAgeEstimate),
-      simulated: ageSimulation.active
+      simulated: ageSimulation.active,
+      overlayTheme: overlayThemeChoice
     }),
-    [ageSimulation.active, detectedBrusherProfile.label, effectiveAgeEstimate, t]
+    [ageSimulation.active, detectedBrusherProfile.label, effectiveAgeEstimate, overlayThemeChoice, t]
+  );
+  const overlayThemeOptions = useMemo(
+    () => getOverlayThemeOptions(ageUiProfile.phase),
+    [ageUiProfile.phase]
   );
   const simulationPreviewDashboard = useMemo(
     () => ageSimulation.active ? buildMockProgressDashboard(effectiveAgeEstimate?.phase || "adult") : null,
@@ -733,6 +741,7 @@ function App() {
     setKeyword(session.keyword || "");
     setBrushingHand(session.brushingHand || "right");
     setBrushType(session.brushType || "manual");
+    setOverlayThemeChoice(session.overlayTheme || OVERLAY_THEME_AUTO);
     setBrushDurationSeconds(session.brushDurationSeconds || DEFAULT_BRUSH_DURATION_SECONDS);
   }
 
@@ -1060,10 +1069,11 @@ function App() {
       keyword,
       brushingHand,
       brushType,
+      overlayTheme: overlayThemeChoice,
       brushDurationSeconds,
       savedAt: Date.now()
     });
-  }, [brushDurationSeconds, brushingHand, brushType, keyword, songFilters, storageConsent, values]);
+  }, [brushDurationSeconds, brushingHand, brushType, keyword, overlayThemeChoice, songFilters, storageConsent, values]);
 
   useEffect(() => {
     if (storageConsent !== "granted" || !dbStatus.ready || !activeHouseholdUser?.userId || !preferencesHydratedRef.current) {
@@ -1076,10 +1086,11 @@ function App() {
       keyword,
       brushingHand,
       brushType,
+      overlayTheme: overlayThemeChoice,
       brushDurationSeconds,
       savedAt: Date.now()
     });
-  }, [activeHouseholdUser?.userId, brushDurationSeconds, brushingHand, brushType, dbStatus.ready, keyword, songFilters, storageConsent, values]);
+  }, [activeHouseholdUser?.userId, brushDurationSeconds, brushingHand, brushType, dbStatus.ready, keyword, overlayThemeChoice, songFilters, storageConsent, values]);
 
   useEffect(() => {
     if (storageConsent !== "granted" || !dbStatus.ready || !activeHouseholdUser?.userId || !preferencesHydratedRef.current) {
@@ -1459,7 +1470,7 @@ function App() {
         loadHouseholdOverview(householdProfile.householdId),
         management.household.activeUserId
           ? getUserScopedState(management.household.activeUserId, {
-              defaults: { values, filters: songFilters, keyword, brushingHand, brushType, brushDurationSeconds },
+              defaults: { values, filters: songFilters, keyword, brushingHand, brushType, overlayTheme: overlayThemeChoice, brushDurationSeconds },
               lastSession,
               favoriteSongs
             })
@@ -1521,7 +1532,7 @@ function App() {
         loadHouseholdOverview(householdProfile.householdId),
         management?.household?.activeUserId
           ? getUserScopedState(management.household.activeUserId, {
-              defaults: { values, filters: songFilters, keyword, brushingHand, brushType, brushDurationSeconds },
+              defaults: { values, filters: songFilters, keyword, brushingHand, brushType, overlayTheme: overlayThemeChoice, brushDurationSeconds },
               lastSession,
               favoriteSongs
             })
@@ -2002,6 +2013,10 @@ function App() {
     setAgeSimulation(DEFAULT_AGE_SIMULATION);
   }
 
+  function handleOverlayThemeChange(value) {
+    setOverlayThemeChoice(value || OVERLAY_THEME_AUTO);
+  }
+
   function handleToggleAgeExperienceLab() {
     setAppView("brush");
     setWorkflowStep("teeth");
@@ -2259,6 +2274,7 @@ function App() {
         keyword,
         brushingHand,
         brushType,
+        overlayTheme: overlayThemeChoice,
         brushDurationSeconds,
         savedAt: sessionToSave.savedAt
       });
@@ -2539,7 +2555,10 @@ function App() {
 
       <section className={`care-routine-strip ${ageUiProfile.themeClassName}${showCompactRoutine ? " compact" : ""}`} aria-label={t("app.routine.ariaLabel")}>
         <div className="care-routine-header">
-          <strong>{t("app.routine.title")}</strong>
+          <div className="care-routine-copy">
+            <strong>{t("app.routine.title")}</strong>
+            <p>{t("app.routine.intro")}</p>
+          </div>
           {isReturningVisitor && (
             <button
               type="button"
@@ -2748,6 +2767,9 @@ function App() {
             onSimulationToggle={handleSimulationToggle}
             onSimulationChange={handleSimulationChange}
             onSimulationReset={handleSimulationReset}
+            overlayThemeChoice={overlayThemeChoice}
+            overlayThemeOptions={overlayThemeOptions}
+            onOverlayThemeChange={handleOverlayThemeChange}
           />
           {showAgeExperienceLab && ageSimulation.active && simulationPreviewDashboard && (
             <div className="simulation-dashboard-shell">

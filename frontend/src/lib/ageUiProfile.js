@@ -1,3 +1,5 @@
+import { OVERLAY_THEME_AUTO, resolveOverlayTheme } from "./overlayThemes";
+
 function getPhase(ageEstimate) {
   return ageEstimate?.phase || "adult";
 }
@@ -208,6 +210,10 @@ function translateContent(t, phase, profileConfig, variant, values) {
 export function buildAgeUiProfile(t, ageEstimate, options = {}) {
   const phase = getPhase(ageEstimate);
   const profileConfig = AGE_UI_CONFIG[phase] || AGE_UI_CONFIG.adult;
+  const overlayTheme = resolveOverlayTheme({
+    ageGroup: phase,
+    themeId: options.overlayTheme || OVERLAY_THEME_AUTO
+  });
   const stageLabel = options.stageLabel || "Detected stage";
   const ageText = options.ageText || "";
   const values = { stageLabel, ageText };
@@ -220,9 +226,14 @@ export function buildAgeUiProfile(t, ageEstimate, options = {}) {
     stageLabel,
     ageText,
     simulated: Boolean(options.simulated),
+    overlayThemeId: overlayTheme?.id || null,
+    overlayThemeLabel: overlayTheme?.label || null,
     metaChips: [
       stageLabel,
       ageText,
+      phase !== "adult" && overlayTheme?.label
+        ? t("settings.experienceSimulator.themeChip", { defaultValue: "Overlay: {{label}}", label: overlayTheme.label })
+        : null,
       options.simulated
         ? t("ageUi.meta.simulated", { defaultValue: "Simulation active" })
         : t("ageUi.meta.detected", { defaultValue: "Tooth-based stage" })

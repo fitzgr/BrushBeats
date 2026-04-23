@@ -46,6 +46,9 @@ function BPMCalculator({
   onSimulationToggle,
   onSimulationChange,
   onSimulationReset,
+  overlayThemeChoice,
+  overlayThemeOptions,
+  onOverlayThemeChange,
 }) {
   const { t } = useTranslation();
   const toothRange = { min: 0, max: 16, hint: t("settings.toothRangeHint") };
@@ -57,6 +60,8 @@ function BPMCalculator({
   const selectedEstimate = brusherProfile?.estimate;
   const simulationPreviewAchievements = buildSimulationPreviewAchievements(brusherProfile?.estimate?.phase);
   const simulationMode = simulation?.mode || "exact";
+  const themeOptions = Array.isArray(overlayThemeOptions) ? overlayThemeOptions : [];
+  const overlayThemesAvailable = themeOptions.length > 0;
 
   function formatApproximateAge(estimate) {
     if (!estimate) {
@@ -165,6 +170,19 @@ function BPMCalculator({
               </select>
             </label>
             <label>
+              <span>{t("settings.experienceSimulator.overlayTheme")}</span>
+              <select
+                value={overlayThemeChoice || "auto"}
+                onChange={(event) => onOverlayThemeChange?.(event.target.value)}
+                disabled={!overlayThemesAvailable}
+              >
+                <option value="auto">{t("settings.experienceSimulator.overlayThemeAuto")}</option>
+                {themeOptions.map((theme) => (
+                  <option key={theme.id} value={theme.id}>{theme.label}</option>
+                ))}
+              </select>
+            </label>
+            <label>
               <span>{t("settings.experienceSimulator.ageValue")}</span>
               <input
                 type="number"
@@ -190,6 +208,12 @@ function BPMCalculator({
               {t("settings.experienceSimulator.reset")}
             </button>
           </div>
+
+          <p className="experience-simulator-theme-note">
+            {overlayThemesAvailable
+              ? t("settings.experienceSimulator.overlayThemeHint", { label: ageUiProfile?.overlayThemeLabel || themeOptions[0]?.label || "" })
+              : t("settings.experienceSimulator.overlayThemeUnavailable")}
+          </p>
 
           {simulation?.active && selectedEstimate && (
             <div className="experience-simulator-preview">
