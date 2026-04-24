@@ -1,5 +1,41 @@
 [
   {
+    "id": "commit-89ebadb1ce63c0c5b237c1978262f7a364913dbe",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "89ebadb1ce63c0c5b237c1978262f7a364913dbe",
+    "shortSha": "89ebadb",
+    "timestamp": "2026-04-23T18:36:04-04:00",
+    "date": "2026-04-23",
+    "author": "Grant Fitz",
+    "subject": "Continue work + pulled overlay assets",
+    "body": ""
+  },
+  {
+    "id": "commit-5b80480d3b5bf39cbc1ad3c19d9317aabb5f7484",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "5b80480d3b5bf39cbc1ad3c19d9317aabb5f7484",
+    "shortSha": "5b80480",
+    "timestamp": "2026-04-23T18:29:52-04:00",
+    "date": "2026-04-23",
+    "author": "Grant Fitz",
+    "subject": "Add starter kids overlay SVG sprite",
+    "body": ""
+  },
+  {
+    "id": "commit-584836b3e4441dc0c495febc818f4968e3248334",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "584836b3e4441dc0c495febc818f4968e3248334",
+    "shortSha": "584836b",
+    "timestamp": "2026-04-23T18:29:09-04:00",
+    "date": "2026-04-23",
+    "author": "Grant Fitz",
+    "subject": "Add kids theme overlay manifest",
+    "body": ""
+  },
+  {
     "id": "commit-b3f740c01062bca103c96262561d7b9394a9c51f",
     "kind": "commit",
     "source": "git-history",

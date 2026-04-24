@@ -3952,7 +3952,7 @@ select {
 .map-hand-orientation-layer {
   position: absolute;
   left: 50%;
-  top: 112px;
+  top: 128px;
   transform: translateX(-50%);
   z-index: 1;
   pointer-events: none;
