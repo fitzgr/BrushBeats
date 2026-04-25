@@ -1,5 +1,17 @@
 [
   {
+    "id": "commit-b65645bc503c32065abf5f31fa4a729b39f7a178",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "b65645bc503c32065abf5f31fa4a729b39f7a178",
+    "shortSha": "b65645b",
+    "timestamp": "2026-04-25T06:29:52-04:00",
+    "date": "2026-04-25",
+    "author": "Grant Fitz",
+    "subject": "fix: position orientation indicator proportionally between teeth and center",
+    "body": ""
+  },
+  {
     "id": "commit-512d2328f154035f7ccc790115312f5fa2c3bddf",
     "kind": "commit",
     "source": "git-history",
