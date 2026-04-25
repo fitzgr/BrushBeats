@@ -554,7 +554,7 @@ function getCountdownSignal(remainingMs, totalMs) {
   };
 }
 
-function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, playbackSeconds, brushingMusicElapsedSeconds, startCountdownTotalMs = 5000, startCountdownRemainingMs = 0, brushingHand, brushType = "manual", hideIntro = false, onCueChange, completionMessage = "", brushControlCue, primaryBrushActionLabel, onPrimaryBrushAction, onRestartBrushing, ageUiProfile }) {
+function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, playbackSeconds, brushingMusicElapsedSeconds, startCountdownTotalMs = 5000, startCountdownRemainingMs = 0, brushingHand, brushType = "manual", hideIntro = false, onCueChange, completionMessage = "", brushControlCue, primaryBrushActionLabel, onPrimaryBrushAction, onRestartBrushing, ageUiProfile, embedded = false, showThemePanel = true }) {
   const { t } = useTranslation();
   const totalSeconds = Number(bpmData?.totalBrushingSeconds || 120);
   const topTeeth = Number(values?.top || 16);
@@ -988,15 +988,21 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
     );
   }
 
+  const guideClassName = `${embedded ? "guide guide-embedded" : "card guide"} ${ageUiProfile?.themeClassName || ""}`.trim();
+
   return (
-    <section className={`card guide ${ageUiProfile?.themeClassName || ""}`.trim()}>
-      <h2>{t("brushing.guide.title")}</h2>
-      {!hideIntro && (
-        <p>
-          {isMobile
-            ? t("brushing.guide.introMobile", { minutes: formatMinutes(totalSeconds) })
-            : t("brushing.guide.introDesktop", { minutes: formatMinutes(totalSeconds) })}
-        </p>
+    <section className={guideClassName}>
+      {!embedded && (
+        <>
+          <h2>{t("brushing.guide.title")}</h2>
+          {!hideIntro && (
+            <p>
+              {isMobile
+                ? t("brushing.guide.introMobile", { minutes: formatMinutes(totalSeconds) })
+                : t("brushing.guide.introDesktop", { minutes: formatMinutes(totalSeconds) })}
+            </p>
+          )}
+        </>
       )}
 
         {!isMobile && (
@@ -1030,7 +1036,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
           phase={overlayPhase}
           className="guide-map-age-overlay"
         />
-        <AgeThemePanel profile={ageUiProfile} variant="guide" className="guide-age-overlay" chipLimit={2} />
+        {showThemePanel && <AgeThemePanel profile={ageUiProfile} variant="guide" className="guide-age-overlay" chipLimit={2} />}
         <div className="mouth-map" role="img" aria-label={t("brushing.guide.mouthMapAria")}>
         {brushFacingDirection && (
           <div className={`map-hand-orientation-layer ${brushFacingDirection === "left" ? "facing-left" : "facing-right"}`} aria-hidden="true">

@@ -1,5 +1,17 @@
 [
   {
+    "id": "commit-3e5308e77828117b993f7d38446a136fd3581b2f",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "3e5308e77828117b993f7d38446a136fd3581b2f",
+    "shortSha": "3e5308e",
+    "timestamp": "2026-04-24T05:23:18-04:00",
+    "date": "2026-04-24",
+    "author": "Grant Fitz",
+    "subject": "style: lower in-map brush orientation layer",
+    "body": ""
+  },
+  {
     "id": "commit-89ebadb1ce63c0c5b237c1978262f7a364913dbe",
     "kind": "commit",
     "source": "git-history",

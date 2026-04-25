@@ -2948,12 +2948,12 @@
 
 .layout-grid.mobile-mode .player {
   grid-column: span 12;
-  order: 2;
+  order: 1;
 }
 
 .layout-grid.mobile-mode .brush-actions-card {
   grid-column: span 12;
-  order: 1;
+  order: 2;
 }
 
 .layout-grid.mobile-mode .calculator {
@@ -3148,6 +3148,22 @@
 
 .guide {
   grid-column: span 12;
+}
+
+.guide-embedded {
+  margin-top: 0.65rem;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.guide-embedded .guide-map-shell {
+  border-radius: 18px;
+}
+
+.guide-embedded .guide-callout {
+  margin-top: 0.75rem;
 }
 
 .controls-grid {
