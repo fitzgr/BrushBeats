@@ -215,7 +215,7 @@ function Player({
   }, [playbackCommand, stopTickTimer, videoId]);
 
   const playerClassName = `card player${compactMobileFrame ? " compact-mobile-frame" : ""}`;
-  const frameMinHeight = isMobile ? (compactMobileFrame ? "156px" : "180px") : "200px";
+  const frameMinHeight = isMobile ? "0px" : "200px";
 
   return (
     <section className={playerClassName}>

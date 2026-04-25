@@ -1039,7 +1039,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
         {showThemePanel && <AgeThemePanel profile={ageUiProfile} variant="guide" className="guide-age-overlay" chipLimit={2} />}
         <div className="mouth-map" role="img" aria-label={t("brushing.guide.mouthMapAria")}>
         {brushFacingDirection && (
-          <div className={`map-hand-orientation-layer ${brushFacingDirection === "left" ? "facing-left" : "facing-right"}`} aria-hidden="true">
+          <div className={`map-hand-orientation-layer ${brushFacingDirection === "left" ? "facing-left" : "facing-right"}${activeJaw ? ` jaw-${activeJaw}` : ""}`} aria-hidden="true">
             <div className="brush-hand-orientation-visual" aria-hidden="true">
               <span className="brush-hand-orientation-hand" />
               <span className="brush-hand-orientation-handle" />
@@ -1240,7 +1240,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
             </text>
           )}
           {showMapCoaching && activeCoaching && (
-            <text x="180" y="264" textAnchor="middle" className="map-coaching" aria-hidden="true">
+            <text x="180" y={activeJaw === "bottom" ? "154" : "264"} textAnchor="middle" className="map-coaching" aria-hidden="true">
               <tspan x="180" dy="0">{activeCoaching.do}</tspan>
               <tspan x="180" dy="14">{activeCoaching.avoid}</tspan>
             </text>

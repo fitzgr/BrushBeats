@@ -1,5 +1,17 @@
 [
   {
+    "id": "commit-0a0f45e7bdb926e21bae1e094eb6e5bf8125ae9b",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "0a0f45e7bdb926e21bae1e094eb6e5bf8125ae9b",
+    "shortSha": "0a0f45e",
+    "timestamp": "2026-04-25T05:37:56-04:00",
+    "date": "2026-04-25",
+    "author": "Grant Fitz",
+    "subject": "feat: combine mobile brush view into single now-playing + map card",
+    "body": ""
+  },
+  {
     "id": "commit-3e5308e77828117b993f7d38446a136fd3581b2f",
     "kind": "commit",
     "source": "git-history",
