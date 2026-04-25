@@ -3977,16 +3977,16 @@ select {
   transition: top 0.25s ease, bottom 0.25s ease;
 }
 
-/* Brushing top jaw: orientation sits above the SVG center indicator */
+/* Brushing top jaw: orientation sits halfway between top of teeth and center, above "Brush now" text */
 .map-hand-orientation-layer.jaw-top {
-  top: 52px;
+  top: 34%;
   bottom: auto;
 }
 
-/* Brushing bottom jaw: orientation sits near the bottom teeth */
+/* Brushing bottom jaw: orientation sits halfway between "Brush now" and bottom of teeth, below center text */
 .map-hand-orientation-layer.jaw-bottom {
   top: auto;
-  bottom: 28px;
+  bottom: 34%;
 }
 
 .map-hand-orientation-layer.facing-left .brush-hand-orientation-visual {

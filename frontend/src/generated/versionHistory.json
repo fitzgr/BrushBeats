@@ -1,5 +1,17 @@
 [
   {
+    "id": "commit-512d2328f154035f7ccc790115312f5fa2c3bddf",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "512d2328f154035f7ccc790115312f5fa2c3bddf",
+    "shortSha": "512d232",
+    "timestamp": "2026-04-25T05:44:21-04:00",
+    "date": "2026-04-25",
+    "author": "Grant Fitz",
+    "subject": "fix: 16:9 video frame, jaw-aware orientation + coaching hint positioning",
+    "body": ""
+  },
+  {
     "id": "commit-0a0f45e7bdb926e21bae1e094eb6e5bf8125ae9b",
     "kind": "commit",
     "source": "git-history",
