@@ -1,5 +1,17 @@
 [
   {
+    "id": "commit-234527dd19e60d1515093dfd2320ae7e65c1f7ee",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "234527dd19e60d1515093dfd2320ae7e65c1f7ee",
+    "shortSha": "234527d",
+    "timestamp": "2026-04-30T19:58:56-04:00",
+    "date": "2026-04-30",
+    "author": "Grant Fitz",
+    "subject": "feat: add configurable water-flossing voice guidance settings",
+    "body": ""
+  },
+  {
     "id": "commit-6b3609df6e38ec7999dc81c01cfe29852ddaa768",
     "kind": "commit",
     "source": "git-history",

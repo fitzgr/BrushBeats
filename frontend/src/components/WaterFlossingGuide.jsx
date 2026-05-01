@@ -182,6 +182,17 @@ function WaterFlossingGuide({ toothCount, isMobile = false }) {
           </select>
         </label>
 
+        <div className="water-flossing-inline-action">
+          <button
+            type="button"
+            className="action-btn secondary"
+            onClick={handleVoicePreview}
+            disabled={running || voicePreviewState === "playing"}
+          >
+            {voicePreviewState === "playing" ? "Testing voice..." : "Test Voice"}
+          </button>
+        </div>
+
         <label className="water-flossing-duration">
           <span className="profile-summary-label">Voice style / tone</span>
           <select
@@ -258,13 +269,23 @@ function WaterFlossingGuide({ toothCount, isMobile = false }) {
               <option key={option} value={option}>{prettyLabel(option)}</option>
             ))}
           </select>
+          <span className="profile-summary-label">Music vs TTS volume</span>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value={settings.ttsMusicBalance}
+            onChange={(event) => updateSettings({ ttsMusicBalance: Number(event.target.value) })}
+            disabled={running}
+          />
+          <span className="water-flossing-balance-caption">
+            {`Music louder ${100 - Number(settings.ttsMusicBalance || 0)}% / Voice louder ${Number(settings.ttsMusicBalance || 0)}%`}
+          </span>
         </label>
       </div>
 
       <div className="water-flossing-controls">
-        <button type="button" className="action-btn secondary" onClick={handleVoicePreview} disabled={running || voicePreviewState === "playing"}>
-          {voicePreviewState === "playing" ? "Testing voice..." : "Test Voice"}
-        </button>
         <button type="button" className="action-btn" onClick={startSession} disabled={running}>Start</button>
         <button type="button" className="action-btn secondary" onClick={stopSession} disabled={!running}>Stop</button>
       </div>

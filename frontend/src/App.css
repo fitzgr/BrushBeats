@@ -3108,9 +3108,32 @@
   padding: 0.56rem 0.7rem;
 }
 
+.water-flossing-duration input[type="range"] {
+  width: 100%;
+  margin: 0.18rem 0 0;
+  accent-color: #1d6f86;
+}
+
+.water-flossing-inline-action {
+  display: grid;
+  align-content: end;
+}
+
+.water-flossing-inline-action .action-btn {
+  min-height: 40px;
+}
+
+.water-flossing-balance-caption {
+  display: block;
+  margin-top: 0.1rem;
+  font-size: 0.75rem;
+  color: #4a656c;
+  font-weight: 600;
+}
+
 .water-flossing-controls {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.5rem;
 }
 

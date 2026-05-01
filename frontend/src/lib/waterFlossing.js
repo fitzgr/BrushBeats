@@ -56,7 +56,8 @@ const DEFAULT_WATER_FLOSSING_SETTINGS = {
   waterPressureComfort: "normal",
   userFocus: "general",
   guidanceDetail: "standard",
-  musicDucking: "light"
+  musicDucking: "light",
+  ttsMusicBalance: 60
 };
 
 const waterFlossingPrompts = {
@@ -292,6 +293,13 @@ function normalizeSettings(input = {}) {
     merged.musicDucking = DEFAULT_WATER_FLOSSING_SETTINGS.musicDucking;
   }
 
+  const parsedBalance = Number(merged.ttsMusicBalance);
+  if (!Number.isFinite(parsedBalance)) {
+    merged.ttsMusicBalance = DEFAULT_WATER_FLOSSING_SETTINGS.ttsMusicBalance;
+  } else {
+    merged.ttsMusicBalance = Math.max(0, Math.min(100, Math.round(parsedBalance)));
+  }
+
   merged.voiceURI = String(merged.voiceURI || "");
   merged.voiceName = String(merged.voiceName || "");
 
@@ -301,7 +309,7 @@ function normalizeSettings(input = {}) {
 function applyPromptModifiers(category, prompt, settings, profile) {
   const tonePrefixByStyle = {
     calm: "",
-    fun: "Friendly cue: ",
+    fun: "Playful cue: ",
     minimal: "",
     encouraging: "You are doing great. ",
     caregiver: profile.caregiverLed ? "Caregiver cue: " : ""
@@ -465,7 +473,9 @@ export function speakWaterFlossPrompt(text, settings = {}, callbacks = {}) {
   const utterance = new window.SpeechSynthesisUtterance(text);
   utterance.rate = preset.rate;
   utterance.pitch = preset.pitch;
-  utterance.volume = preset.volume;
+  const balanceRatio = Math.max(0, Math.min(100, Number(normalizedSettings.ttsMusicBalance || 0))) / 100;
+  const selectedVolume = 0.35 + balanceRatio * 0.65;
+  utterance.volume = Math.max(0, Math.min(1, Number((preset.volume * selectedVolume).toFixed(2))));
 
   const selectedVoice = findSelectedVoice(normalizedSettings);
   if (selectedVoice) {
