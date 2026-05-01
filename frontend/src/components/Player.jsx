@@ -80,6 +80,23 @@ function Player({
     }, 250);
   });
 
+  const applyPreferredVolume = useEffectEvent(() => {
+    const player = playerRef.current;
+    if (!player) {
+      return;
+    }
+
+    const nextVolume = Math.max(0, Math.min(100, Math.round(Number(preferredVolumeRef.current) || 100)));
+    if (nextVolume <= 0) {
+      player.setVolume?.(0);
+      player.mute?.();
+      return;
+    }
+
+    player.unMute?.();
+    player.setVolume?.(nextVolume);
+  });
+
   useEffect(() => {
     if (window.YT?.Player) {
       return;
@@ -137,7 +154,7 @@ function Player({
       },
       events: {
         onReady: () => {
-          playerRef.current?.setVolume?.(preferredVolumeRef.current);
+          applyPreferredVolume();
           onPlaybackDurationChangeRef.current?.(playerRef.current?.getDuration?.() ?? 0);
           onPlaybackTickRef.current?.(playerRef.current?.getCurrentTime?.() ?? 0);
         },
@@ -148,6 +165,7 @@ function Player({
         },
         onStateChange: (event) => {
           if (event.data === window.YT?.PlayerState?.PLAYING) {
+            applyPreferredVolume();
             startTickTimer();
           }
 
@@ -175,8 +193,8 @@ function Player({
   useEffect(() => {
     const nextVolume = Math.max(0, Math.min(100, Math.round(Number(preferredVolumePercent) || 100)));
     preferredVolumeRef.current = nextVolume;
-    playerRef.current?.setVolume?.(nextVolume);
-  }, [preferredVolumePercent]);
+    applyPreferredVolume();
+  }, [applyPreferredVolume, preferredVolumePercent]);
 
   useEffect(() => {
     if (!autoplayToken || !playerRef.current) {
