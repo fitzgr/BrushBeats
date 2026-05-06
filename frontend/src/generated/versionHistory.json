@@ -1,17 +1,5 @@
 [
   {
-    "id": "commit-c7c5aed3f39f2fe9749b4f58ec2565aa30c11932",
-    "kind": "commit",
-    "source": "git-history",
-    "sha": "c7c5aed3f39f2fe9749b4f58ec2565aa30c11932",
-    "shortSha": "c7c5aed",
-    "timestamp": "2026-04-30T20:28:33-04:00",
-    "date": "2026-04-30",
-    "author": "Grant Fitz",
-    "subject": "fix: make water-flossing mix slider a true music-tts crossfade",
-    "body": ""
-  },
-  {
     "id": "commit-208b3e5576aacd156552ad260a977f3b4fe29356",
     "kind": "commit",
     "source": "git-history",
