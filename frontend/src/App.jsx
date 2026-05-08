@@ -2497,15 +2497,15 @@ function App() {
           >
             {showAgeExperienceLab ? t("common.buttons.hideAgeExperienceLab") : t("common.buttons.openAgeExperienceLab")}
           </button>
+          <button
+            type="button"
+            className="header-utility-btn"
+            onClick={() => setAppView((current) => (current === "story" ? "brush" : "story"))}
+          >
+            {appView === "story" ? "Return to brushing flow" : "My Story About the App"}
+          </button>
           {!device.isMobile && (
             <>
-              <button
-                type="button"
-                className="header-utility-btn"
-                onClick={() => setAppView((current) => (current === "story" ? "brush" : "story"))}
-              >
-                {appView === "story" ? "Return to brushing flow" : "My Story About the App"}
-              </button>
               <button
                 type="button"
                 className="header-utility-btn"
