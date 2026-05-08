@@ -2123,6 +2123,10 @@ function App() {
       addFavoriteSong(song);
       setFavoriteSongs((current) => [{ ...song, savedAt: Date.now() }, ...current.filter((item) => toSongKey(item) !== toSongKey(song))].slice(0, 25));
     }
+    // Navigate to step 3 immediately so the user sees the brush page
+    // while the YouTube lookup runs in the background.
+    setAppView("brush");
+    setWorkflowStep("brush");
     return handleSelectSongWithOptions(song, { autoplay: false, source });
   }
 
@@ -2167,7 +2171,7 @@ function App() {
         youtubeQueryMode: "direct-title-artist"
       }));
 
-      // Move to step 3 only after we have a playable queue target.
+      // Ensure we're on step 3 (already set in handleSelectSong, but guard for direct calls).
       setAppView("brush");
       setWorkflowStep("brush");
 
