@@ -123,19 +123,15 @@ function Player({
   }, []);
 
   useEffect(() => {
-    if (!apiReady || !videoId || !hostRef.current) {
+    if (!apiReady || !hostRef.current || playerRef.current) {
       return;
     }
-
-    setPlayerError("");
-
-    destroyPlayer();
 
     playerRef.current = new window.YT.Player(hostRef.current, {
       width: "100%",
       height: "100%",
       host: "https://www.youtube-nocookie.com",
-      videoId,
+      videoId: videoId || undefined,
       playerVars: {
         rel: 0,
         autoplay: 0,
@@ -177,7 +173,18 @@ function Player({
       stopTickTimer();
       destroyPlayer();
     };
-  }, [apiReady, destroyPlayer, stopTickTimer, videoId]);
+  }, [apiReady, destroyPlayer, selectedSong?.title, startTickTimer, stopTickTimer, t, videoId]);
+
+  useEffect(() => {
+    if (!playerRef.current || !videoId) {
+      return;
+    }
+
+    setPlayerError("");
+    stopTickTimer();
+    playerRef.current.cueVideoById?.(videoId, 0);
+    onPlaybackTickRef.current?.(0);
+  }, [videoId, stopTickTimer]);
 
   useEffect(() => {
     if (!autoplayToken || !playerRef.current) {
@@ -258,7 +265,6 @@ function Player({
           </h3>
           <div className="player-frame-shell" style={{ minHeight: frameMinHeight }}>
             <div
-              key={videoId || "player-host"}
               ref={hostRef}
               className="player-frame"
               aria-label={t("player.frameAria", { title: selectedSong.title, artist: selectedSong.artist })}
