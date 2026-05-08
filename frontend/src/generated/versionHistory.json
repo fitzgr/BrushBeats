@@ -1,5 +1,17 @@
 [
   {
+    "id": "commit-40a58e99928120b0f895844a68672ae0e3ef07a9",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "40a58e99928120b0f895844a68672ae0e3ef07a9",
+    "shortSha": "40a58e9",
+    "timestamp": "2026-05-08T15:56:34-04:00",
+    "date": "2026-05-08",
+    "author": "Grant Fitz",
+    "subject": "fix: prevent youtube player removeChild crash on queue",
+    "body": ""
+  },
+  {
     "id": "commit-6c7c3c5f08256bd1b250343b8f46290ee2da4c1c",
     "kind": "commit",
     "source": "git-history",
