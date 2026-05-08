@@ -1,4 +1,4 @@
-const { describeTeethStage } = require("./teethAge");
+import { describeTeethStage } from "./teethAge";
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
@@ -23,7 +23,6 @@ function createTransitionSchedule(segmentCount, fallbackSeconds = TRANSITION_BUF
     let cue = "transition";
     let seconds = Number(fallbackSeconds) || TRANSITION_BUFFER_SECONDS;
 
-    // Treat the final transition as the "8th switch" for the 8-segment map.
     if (order === 1 || order === safeCount - 1) {
       cue = "switchHand";
       seconds = TRANSITION_BUFFER_SECONDS;
@@ -70,7 +69,7 @@ function createBrushingSegments(top, bottom) {
   return segments.filter((segment) => segment.teeth > 0);
 }
 
-function calculateBpm({ top = 16, bottom = 16, totalBrushingSeconds = DEFAULT_BRUSHING_SECONDS }) {
+export function calculateBpm({ top = 16, bottom = 16, totalBrushingSeconds = DEFAULT_BRUSHING_SECONDS }) {
   const safeTop = clamp(Number(top), 0, 16);
   const safeBottom = clamp(Number(bottom), 0, 16);
   const safeTotalBrushingSeconds = clamp(Number(totalBrushingSeconds), MIN_BRUSHING_SECONDS, MAX_BRUSHING_SECONDS);
@@ -115,7 +114,3 @@ function calculateBpm({ top = 16, bottom = 16, totalBrushingSeconds = DEFAULT_BR
     searchBpm: Number(searchBpm.toFixed(2))
   };
 }
-
-module.exports = {
-  calculateBpm
-};

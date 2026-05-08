@@ -13,6 +13,7 @@ import AchievementBadgeList from "./components/AchievementBadgeList";
 import ProgressDashboardPanel from "./components/ProgressDashboardPanel";
 import TranslationWorkshop from "./components/TranslationWorkshop";
 import VersionHistory from "./components/VersionHistory";
+import MyStoryPage from "./components/MyStoryPage";
 import { clearPersistedPhase2Data, loadPersistedAppState } from "./db/appStateService";
 import { loadHouseholdOverview, switchActiveHouseholdUser } from "./db/householdOverviewService";
 import { awardAchievementsForUser } from "./db/achievementEngineService";
@@ -24,7 +25,8 @@ import { completeHouseholdOnboarding, saveHouseholdOnboardingDraft, setHousehold
 import { createBrushingSession, logToothChange, updateUser } from "./db/storeHelpers";
 import { getUserScopedState, saveUserScopedDefaults, saveUserScopedFavoriteSongs, saveUserScopedLastSession } from "./db/userScopedStateService";
 import { getLanguageFallbackInfo, setPreferredSupportedLanguage } from "./i18n.ts";
-import { getBpm, getGeoCountry, getSongs, getYoutubeVideo } from "./api/client";
+import { getGeoCountry, getSongs, getYoutubeVideo } from "./api/client";
+import { calculateBpm } from "./lib/bpm";
 import { buildReinforcementPool, getAgeMessageGroupCount, pickReinforcementMessage } from "./lib/reinforcementMessages";
 import {
   analyticsEnabled,
@@ -422,7 +424,7 @@ function App() {
     }
 
     const mode = new URLSearchParams(window.location.search).get("mode");
-    return mode === "workshop" || mode === "history" ? mode : "brush";
+    return mode === "workshop" || mode === "history" || mode === "story" ? mode : "brush";
   });
   const [values, setValues] = useState(DEFAULT_VALUES);
   const [bpmData, setBpmData] = useState(null);
@@ -704,6 +706,8 @@ function App() {
       url.searchParams.set("mode", "workshop");
     } else if (appView === "history") {
       url.searchParams.set("mode", "history");
+    } else if (appView === "story") {
+      url.searchParams.set("mode", "story");
     } else {
       url.searchParams.delete("mode");
     }
@@ -1674,8 +1678,6 @@ function App() {
       return;
     }
 
-    setAppView("brush");
-    setWorkflowStep("brush");
     await handleSelectSong(song, source);
     trackEvent("stored_song_queued", {
       source,
@@ -1797,12 +1799,8 @@ function App() {
         restoredSession.brushDurationSeconds === brushDurationSeconds;
 
       if (!restoredMatches) {
-        return () => {
-          cancelled = true;
-        };
-      }
-
-      if (restoredSession.bpmSnapshot) {
+        restoredSessionRef.current = null;
+      } else if (restoredSession.bpmSnapshot) {
         setBpmData(restoredSession.bpmSnapshot);
         restoredSessionRef.current = null;
         return () => {
@@ -1819,10 +1817,10 @@ function App() {
       };
     }
 
-    async function loadBpm() {
+    function loadBpm() {
       try {
         setLoading((prev) => ({ ...prev, bpm: true }));
-        const data = await getBpm({ ...values, duration: brushDurationSeconds });
+        const data = calculateBpm({ ...values, totalBrushingSeconds: brushDurationSeconds });
 
         if (!cancelled) {
           setBpmData(data);
@@ -2111,8 +2109,6 @@ function App() {
   async function handleSelectSong(song, source = "generated") {
     trackEvent("song_selected", { title: song.title, artist: song.artist, source });
     setAutoRestoredBrushView(false);
-    setAppView("brush");
-    setWorkflowStep("brush");
     setQueuedStoredSongKey(source === "favorites" || source === "lastSession" ? toSongKey(song) : "");
     setSongsDebugInfo((previous) => ({
       ...(previous || {}),
@@ -2127,6 +2123,10 @@ function App() {
       addFavoriteSong(song);
       setFavoriteSongs((current) => [{ ...song, savedAt: Date.now() }, ...current.filter((item) => toSongKey(item) !== toSongKey(song))].slice(0, 25));
     }
+    // Navigate to step 3 immediately so the user sees the brush page
+    // while the YouTube lookup runs in the background.
+    setAppView("brush");
+    setWorkflowStep("brush");
     return handleSelectSongWithOptions(song, { autoplay: false, source });
   }
 
@@ -2170,6 +2170,10 @@ function App() {
         youtubeMatchedChannel: video?.channelTitle || null,
         youtubeQueryMode: "direct-title-artist"
       }));
+
+      // Ensure we're on step 3 (already set in handleSelectSong, but guard for direct calls).
+      setAppView("brush");
+      setWorkflowStep("brush");
 
       if (options.autoplay && video?.embedUrl) {
         setAutoplayToken((prev) => prev + 1);
@@ -2521,13 +2525,22 @@ function App() {
             {showAgeExperienceLab ? t("common.buttons.hideAgeExperienceLab") : t("common.buttons.openAgeExperienceLab")}
           </button>
           {!device.isMobile && (
-            <button
-              type="button"
-              className="header-utility-btn"
-              onClick={() => setAppView((current) => (current === "workshop" || current === "history" ? "brush" : "workshop"))}
-            >
-              {appView === "workshop" || appView === "history" ? "Return to brushing flow" : "Open translation workshop"}
-            </button>
+            <>
+              <button
+                type="button"
+                className="header-utility-btn"
+                onClick={() => setAppView((current) => (current === "story" ? "brush" : "story"))}
+              >
+                {appView === "story" ? "Return to brushing flow" : "My Story About the App"}
+              </button>
+              <button
+                type="button"
+                className="header-utility-btn"
+                onClick={() => setAppView((current) => (current === "workshop" || current === "history" ? "brush" : "workshop"))}
+              >
+                {appView === "workshop" || appView === "history" ? "Return to brushing flow" : "Open translation workshop"}
+              </button>
+            </>
           )}
         </div>
       </header>
@@ -2539,6 +2552,8 @@ function App() {
           languageOptions={supportedLanguageOptions}
           onExit={() => setAppView("brush")}
         />
+      ) : appView === "story" ? (
+        <MyStoryPage onExit={() => setAppView("brush")} />
       ) : appView === "history" ? (
         <VersionHistory onExit={() => setAppView("brush")} />
       ) : (
@@ -2769,6 +2784,13 @@ function App() {
             brusherProfile={detectedBrusherProfile}
             actualBrusherProfile={actualBrusherProfile}
             ageUiProfile={ageUiProfile}
+            brushingHand={brushingHand}
+            brushType={brushType}
+            onBrushingHandChange={setBrushingHand}
+            onBrushTypeChange={setBrushType}
+            brushDurationOptions={BRUSH_DURATION_OPTIONS}
+            onBrushDurationChange={handleBrushDurationChange}
+            isBrushControlsLocked={brushingPhase === "running" || brushingPhase === "countdown" || brushingPhase === "paused"}
             values={values}
             onChange={updateValue}
             onContinueToMusic={() => setWorkflowStep("music")}
@@ -2885,26 +2907,6 @@ function App() {
         <section ref={brushMapSectionRef} className={`layout-grid ${device.isMobile ? "mobile-mode" : "desktop-mode desktop-brush-layout"}`}>
           <section className={`card brush-actions-card ${ageUiProfile.themeClassName} ${device.isMobile ? "" : "desktop-step-card"}`.trim()}>
             <h2>{t("brushing.controlsTitle")}</h2>
-            <p>{t("brushing.controlsIntro")}</p>
-            <div className="brush-type-picker" role="group" aria-label={t("brushing.brushType")}>
-              <span className="profile-summary-label">{t("brushing.brushType")}</span>
-              <div className="brush-hand-actions">
-                <button
-                  type="button"
-                  className={`brush-hand-btn${brushType === "manual" ? " active" : ""}`}
-                  onClick={() => setBrushType("manual")}
-                >
-                  {t("brushing.brushTypeManual")}
-                </button>
-                <button
-                  type="button"
-                  className={`brush-hand-btn${brushType === "electric" ? " active" : ""}`}
-                  onClick={() => setBrushType("electric")}
-                >
-                  {t("brushing.brushTypeElectric")}
-                </button>
-              </div>
-            </div>
             {selectedSong && (
               <>
                 <p className="brush-selected-song">{t("brushing.selectedSong", { title: selectedSong.title, artist: selectedSong.artist })}</p>
@@ -2913,40 +2915,6 @@ function App() {
                 )}
               </>
             )}
-            <div className="brush-hand-picker" role="group" aria-label={t("brushing.handPreference")}>
-              <span className="profile-summary-label">{t("brushing.handPreference")}</span>
-              <div className="brush-hand-actions">
-                <button
-                  type="button"
-                  className={`brush-hand-btn${brushingHand === "left" ? " active" : ""}`}
-                  onClick={() => setBrushingHand("left")}
-                >
-                  {t("common.buttons.leftHand")}
-                </button>
-                <button
-                  type="button"
-                  className={`brush-hand-btn${brushingHand === "right" ? " active" : ""}`}
-                  onClick={() => setBrushingHand("right")}
-                >
-                  {t("common.buttons.rightHand")}
-                </button>
-              </div>
-            </div>
-            <label className="brush-duration-picker">
-              <span className="profile-summary-label">{t("brushing.duration")}</span>
-              <select
-                value={brushDurationSeconds}
-                onChange={(event) => handleBrushDurationChange(Number(event.target.value))}
-                disabled={brushingPhase === "running" || brushingPhase === "countdown" || brushingPhase === "paused"}
-              >
-                {BRUSH_DURATION_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    {formatTime(option)}
-                  </option>
-                ))}
-              </select>
-              <span className="brush-duration-hint">{t("brushing.durationHint")}</span>
-            </label>
             <WaterFlossingGuide
               toothCount={Number(values.top || 0) + Number(values.bottom || 0)}
               isMobile={device.isMobile}
