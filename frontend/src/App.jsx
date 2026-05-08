@@ -1673,8 +1673,6 @@ function App() {
       return;
     }
 
-    setAppView("brush");
-    setWorkflowStep("brush");
     await handleSelectSong(song, source);
     trackEvent("stored_song_queued", {
       source,
@@ -2110,8 +2108,6 @@ function App() {
   async function handleSelectSong(song, source = "generated") {
     trackEvent("song_selected", { title: song.title, artist: song.artist, source });
     setAutoRestoredBrushView(false);
-    setAppView("brush");
-    setWorkflowStep("brush");
     setQueuedStoredSongKey(source === "favorites" || source === "lastSession" ? toSongKey(song) : "");
     setSongsDebugInfo((previous) => ({
       ...(previous || {}),
@@ -2169,6 +2165,10 @@ function App() {
         youtubeMatchedChannel: video?.channelTitle || null,
         youtubeQueryMode: "direct-title-artist"
       }));
+
+      // Move to step 3 only after we have a playable queue target.
+      setAppView("brush");
+      setWorkflowStep("brush");
 
       if (options.autoplay && video?.embedUrl) {
         setAutoplayToken((prev) => prev + 1);

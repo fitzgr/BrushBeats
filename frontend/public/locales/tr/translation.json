@@ -664,13 +664,9 @@
     "stages": {
       "unknown": {
         "label": "Bilinmeyen Aşama",
-        "description": "Diş yaş tahmini yok"
-        "monthlySessions": "Son 30 gun",
-        "level": "Seviye"
+        "description": "Diş-yaş tahmini mevcut değil"
+      },
       "infant": "Bebek Dişleri",
-      "levelTitle": "Seviye {{level}} ilerlemesi",
-      "levelSummary": "{{points}} puan kazanildi. Sonraki seviye {{next}} puanda.",
-      "achievementsTitle": "Son rozetler",
       "toddler": "Küçük Çocuk Dişleri",
       "primary": "Süt Dişleri",
       "mixed": "Karışık Dişlenme",
@@ -681,6 +677,8 @@
       "monthRange": "Yaklaşık {{min}}-{{max}} aylık",
       "yearRange": "Yaklaşık {{min}}-{{max}} yaşında",
       "yearsPlus": "{{min}}+ yaş",
+      "monthExact": "{{value}} aylık",
+      "yearExact": "{{value}} yaşında",
       "unknownRange": "yaş aralığı bilinmiyor"
     },
     "phases": {
