@@ -81,6 +81,21 @@ function Player({
     }, 250);
   }, []);
 
+  const destroyPlayer = useCallback(() => {
+    if (!playerRef.current) {
+      return;
+    }
+
+    try {
+      playerRef.current.destroy();
+    } catch (error) {
+      // Some mobile browsers can throw if the iframe node was already detached.
+      console.warn("Failed to destroy YouTube player safely", error);
+    } finally {
+      playerRef.current = null;
+    }
+  }, []);
+
   useEffect(() => {
     if (window.YT?.Player) {
       return;
@@ -114,12 +129,7 @@ function Player({
 
     setPlayerError("");
 
-    hostRef.current.replaceChildren();
-
-    if (playerRef.current) {
-      playerRef.current.destroy();
-      playerRef.current = null;
-    }
+    destroyPlayer();
 
     playerRef.current = new window.YT.Player(hostRef.current, {
       width: "100%",
@@ -165,12 +175,9 @@ function Player({
 
     return () => {
       stopTickTimer();
-      if (playerRef.current) {
-        playerRef.current.destroy();
-        playerRef.current = null;
-      }
+      destroyPlayer();
     };
-  }, [apiReady, videoId]);
+  }, [apiReady, destroyPlayer, stopTickTimer, videoId]);
 
   useEffect(() => {
     if (!autoplayToken || !playerRef.current) {
