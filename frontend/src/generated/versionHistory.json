@@ -1,5 +1,17 @@
 [
   {
+    "id": "commit-c810edd6c6a433f6c341f020caa95454f1fcfcc4",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "c810edd6c6a433f6c341f020caa95454f1fcfcc4",
+    "shortSha": "c810edd",
+    "timestamp": "2026-05-08T17:38:39-04:00",
+    "date": "2026-05-08",
+    "author": "Grant Fitz",
+    "subject": "fix: remove brush status cues and harden player command timing",
+    "body": ""
+  },
+  {
     "id": "commit-7398051d432fcd7854bc8f07896e5cb79146ac50",
     "kind": "commit",
     "source": "git-history",
