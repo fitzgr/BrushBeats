@@ -1,41 +1,5 @@
 [
   {
-    "id": "commit-c7c5aed3f39f2fe9749b4f58ec2565aa30c11932",
-    "kind": "commit",
-    "source": "git-history",
-    "sha": "c7c5aed3f39f2fe9749b4f58ec2565aa30c11932",
-    "shortSha": "c7c5aed",
-    "timestamp": "2026-04-30T20:28:33-04:00",
-    "date": "2026-04-30",
-    "author": "Grant Fitz",
-    "subject": "fix: make water-flossing mix slider a true music-tts crossfade",
-    "body": ""
-  },
-  {
-    "id": "commit-208b3e5576aacd156552ad260a977f3b4fe29356",
-    "kind": "commit",
-    "source": "git-history",
-    "sha": "208b3e5576aacd156552ad260a977f3b4fe29356",
-    "shortSha": "208b3e5",
-    "timestamp": "2026-04-30T20:14:04-04:00",
-    "date": "2026-04-30",
-    "author": "Grant Fitz",
-    "subject": "feat: link water-flossing mix slider to TTS and player volume",
-    "body": ""
-  },
-  {
-    "id": "commit-880f8278f763a345f2c6c8bbcd73078339c9542f",
-    "kind": "commit",
-    "source": "git-history",
-    "sha": "880f8278f763a345f2c6c8bbcd73078339c9542f",
-    "shortSha": "880f827",
-    "timestamp": "2026-04-30T20:06:56-04:00",
-    "date": "2026-04-30",
-    "author": "Grant Fitz",
-    "subject": "refine: reposition voice test and add persisted music-vs-tts balance slider",
-    "body": ""
-  },
-  {
     "id": "commit-234527dd19e60d1515093dfd2320ae7e65c1f7ee",
     "kind": "commit",
     "source": "git-history",

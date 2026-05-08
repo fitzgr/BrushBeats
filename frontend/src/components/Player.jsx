@@ -30,7 +30,6 @@ function Player({
   playerData,
   loading,
   brushingPhase,
-  preferredVolumePercent = 100,
   isMobile,
   compactMobileFrame = false,
   showRestoredSessionBadge = false,
@@ -45,7 +44,6 @@ function Player({
   const hostRef = useRef(null);
   const playerRef = useRef(null);
   const tickTimerRef = useRef(null);
-  const preferredVolumeRef = useRef(Math.max(0, Math.min(100, Math.round(Number(preferredVolumePercent) || 100))));
   const onPlaybackTickRef = useRef(onPlaybackTick);
   const onPlaybackDurationChangeRef = useRef(onPlaybackDurationChange);
   const onSongEndedRef = useRef(onSongEnded);
@@ -78,23 +76,6 @@ function Player({
       const seconds = playerRef.current?.getCurrentTime?.() ?? 0;
       onPlaybackTickRef.current?.(seconds);
     }, 250);
-  });
-
-  const applyPreferredVolume = useEffectEvent(() => {
-    const player = playerRef.current;
-    if (!player) {
-      return;
-    }
-
-    const nextVolume = Math.max(0, Math.min(100, Math.round(Number(preferredVolumeRef.current) || 100)));
-    if (nextVolume <= 0) {
-      player.setVolume?.(0);
-      player.mute?.();
-      return;
-    }
-
-    player.unMute?.();
-    player.setVolume?.(nextVolume);
   });
 
   useEffect(() => {
@@ -154,7 +135,6 @@ function Player({
       },
       events: {
         onReady: () => {
-          applyPreferredVolume();
           onPlaybackDurationChangeRef.current?.(playerRef.current?.getDuration?.() ?? 0);
           onPlaybackTickRef.current?.(playerRef.current?.getCurrentTime?.() ?? 0);
         },
@@ -165,7 +145,6 @@ function Player({
         },
         onStateChange: (event) => {
           if (event.data === window.YT?.PlayerState?.PLAYING) {
-            applyPreferredVolume();
             startTickTimer();
           }
 
@@ -189,12 +168,6 @@ function Player({
       }
     };
   }, [apiReady, videoId]);
-
-  useEffect(() => {
-    const nextVolume = Math.max(0, Math.min(100, Math.round(Number(preferredVolumePercent) || 100)));
-    preferredVolumeRef.current = nextVolume;
-    applyPreferredVolume();
-  }, [applyPreferredVolume, preferredVolumePercent]);
 
   useEffect(() => {
     if (!autoplayToken || !playerRef.current) {

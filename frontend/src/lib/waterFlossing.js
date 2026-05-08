@@ -306,18 +306,6 @@ function normalizeSettings(input = {}) {
   return merged;
 }
 
-export function getWaterFlossingMixVolumes(settings = {}) {
-  const normalized = normalizeSettings(settings);
-  const balance = Math.max(0, Math.min(100, Number(normalized.ttsMusicBalance || 0)));
-  const musicVolume = Math.round(100 - balance);
-  const ttsVolume = Number((balance / 100).toFixed(2));
-
-  return {
-    musicVolume: Math.max(0, Math.min(100, musicVolume)),
-    ttsVolume: Math.max(0, Math.min(1, ttsVolume))
-  };
-}
-
 function applyPromptModifiers(category, prompt, settings, profile) {
   const tonePrefixByStyle = {
     calm: "",
@@ -485,8 +473,9 @@ export function speakWaterFlossPrompt(text, settings = {}, callbacks = {}) {
   const utterance = new window.SpeechSynthesisUtterance(text);
   utterance.rate = preset.rate;
   utterance.pitch = preset.pitch;
-  const { ttsVolume } = getWaterFlossingMixVolumes(normalizedSettings);
-  utterance.volume = Math.max(0, Math.min(1, Number((preset.volume * ttsVolume).toFixed(2))));
+  const balanceRatio = Math.max(0, Math.min(100, Number(normalizedSettings.ttsMusicBalance || 0))) / 100;
+  const selectedVolume = 0.35 + balanceRatio * 0.65;
+  utterance.volume = Math.max(0, Math.min(1, Number((preset.volume * selectedVolume).toFixed(2))));
 
   const selectedVoice = findSelectedVoice(normalizedSettings);
   if (selectedVoice) {
