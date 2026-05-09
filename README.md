@@ -133,7 +133,7 @@ This repo supports a two-branch flow:
   - Uses the GitHub `development` environment and uploads a frontend build artifact.
 - Production deploy workflow: `.github/workflows/deploy-frontend.yml`
   - Runs on pushes to `main`.
-  - Uses the GitHub `production` environment and deploys to GitHub Pages.
+  - Builds with `VITE_BASE_PATH=/${repo-name}/` and deploys to GitHub Pages.
 
 ### GitHub Secrets / Environments
 
