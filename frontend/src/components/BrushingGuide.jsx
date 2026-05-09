@@ -570,7 +570,9 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
   const timeline = buildTimeline(segments, toothDurationSeconds, transitionBufferSeconds);
   const toothEntries = timeline.filter((entry) => entry.type === "tooth");
   const beatDurationMs = Math.max(220, 60000 / safeBpm);
-  const normalizedBeatAnchorMs = (((Math.max(0, Number(playbackSeconds) || 0) * 1000) % beatDurationMs) + beatDurationMs) % beatDurationMs;
+  // Keep tempo unchanged, but phase-shift slightly so tooth landing aligns to the downbeat.
+  const downbeatLandingNudgeMs = beatDurationMs * 0.125;
+  const normalizedBeatAnchorMs = ((((Math.max(0, Number(playbackSeconds) || 0) * 1000) + downbeatLandingNudgeMs) % beatDurationMs) + beatDurationMs) % beatDurationMs;
   const isPaused = brushingPhase === "paused";
   const beatPhaseOffsetMs = timer.running
     ? -normalizedBeatAnchorMs
