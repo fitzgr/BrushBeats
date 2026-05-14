@@ -50,6 +50,9 @@ function MyStoryPage({ onExit }) {
         <p>
           Want to reach me directly? Email <a href="mailto:canadianwindrider@gmail.com">canadianwindrider@gmail.com</a>.
         </p>
+        <p>
+          If you'd like to support the rhythm—fuel my dev sessions with a coffee or two—I'd be genuinely grateful. Head to <a href="https://paypal.me/brushbeats" target="_blank" rel="noreferrer">paypal.me/brushbeats</a>.
+        </p>
         <p className="story-closing">Still building. Still experimenting. Built on rhythm.</p>
       </div>
 
