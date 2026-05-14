@@ -14,8 +14,8 @@ function MyStoryPage({ onExit }) {
         <h3>How BrushBeats Started</h3>
         <p>
           BrushBeats started with a very practical problem: I found myself falling out of sync
-          with how long I was supposed to brush. Even with traditional timers-or the
-          quarter-by-quarter notifications on electric toothbrushes-it was easy to lose rhythm,
+          with how long I was supposed to brush. Even with traditional timers, or the
+          quarter-by-quarter notifications on electric toothbrushes, it was easy to lose rhythm,
           rush through sections, or mentally drift.
         </p>
         <p>
