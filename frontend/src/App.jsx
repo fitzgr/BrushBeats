@@ -13,6 +13,7 @@ import AchievementBadgeList from "./components/AchievementBadgeList";
 import ProgressDashboardPanel from "./components/ProgressDashboardPanel";
 import TranslationWorkshop from "./components/TranslationWorkshop";
 import VersionHistory from "./components/VersionHistory";
+import MyStoryPage from "./components/MyStoryPage";
 import { clearPersistedPhase2Data, loadPersistedAppState } from "./db/appStateService";
 import { loadHouseholdOverview, switchActiveHouseholdUser } from "./db/householdOverviewService";
 import { awardAchievementsForUser } from "./db/achievementEngineService";
@@ -2530,6 +2531,13 @@ function App() {
           >
             {showAgeExperienceLab ? t("common.buttons.hideAgeExperienceLab") : t("common.buttons.openAgeExperienceLab")}
           </button>
+          <button
+            type="button"
+            className="header-utility-btn"
+            onClick={() => setAppView((current) => (current === "story" ? "brush" : "story"))}
+          >
+            {appView === "story" ? "Return to brushing flow" : "My Story About the App"}
+          </button>
           {!device.isMobile && (
             <button
               type="button"
@@ -2549,6 +2557,8 @@ function App() {
           languageOptions={supportedLanguageOptions}
           onExit={() => setAppView("brush")}
         />
+      ) : appView === "story" ? (
+        <MyStoryPage onExit={() => setAppView("brush")} />
       ) : appView === "history" ? (
         <VersionHistory
           onExit={() => setAppView("brush")}
