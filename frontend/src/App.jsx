@@ -2540,7 +2540,10 @@ function App() {
           onExit={() => setAppView("brush")}
         />
       ) : appView === "history" ? (
-        <VersionHistory onExit={() => setAppView("brush")} />
+        <VersionHistory
+          onExit={() => setAppView("brush")}
+          onOpenStory={() => setAppView("story")}
+        />
       ) : (
         <>
       <nav className={`workflow-tabs ${device.isMobile ? "mobile-workflow-tabs" : "desktop-workflow-tabs"}`} aria-label={t("app.workflow.ariaLabel")}>
@@ -3124,6 +3127,9 @@ function App() {
           </button>
           <button type="button" className="privacy-toggle" onClick={() => setAppView("history")}>
             {t("common.buttons.versionHistory")}
+          </button>
+          <button type="button" className="privacy-toggle" onClick={() => setAppView("story")}>
+            About the Developer
           </button>
         </div>
       </footer>
