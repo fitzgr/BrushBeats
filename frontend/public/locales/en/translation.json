@@ -49,7 +49,7 @@
     "eyebrow": "BrushBeats",
     "title": {
       "mobile": "Brush Anywhere. Stay On Tempo.",
-      "desktop": "Two-minute brushing. Perfect tempo. Better vibes."
+      "desktop": "Perfect brushing tempo. Better vibes."
     },
     "subtitle": {
       "withBpm": "{{label}}: {{bpm}} BPM target, {{secondsPerTooth}}s per tooth face, {{transitionSeconds}}s transitions, {{ageText}}.",
