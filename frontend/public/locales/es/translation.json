@@ -47,7 +47,7 @@
     "eyebrow": "BrushBeats",
     "title": {
       "mobile": "Cepillate donde sea y sigue el ritmo.",
-      "desktop": "Dos minutos de cepillado, el ritmo ideal y mejor energia."
+      "desktop": "Tempo de cepillado perfecto. Mejor vibra."
     },
     "subtitle": {
       "withBpm": "{{label}}: meta de {{bpm}} BPM, {{secondsPerTooth}} s por cara dental, transiciones de {{transitionSeconds}} s, {{ageText}}.",

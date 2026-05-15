@@ -47,7 +47,7 @@
     "eyebrow": "BrushBeats",
     "title": {
       "mobile": "Her Yerde Fırçala. Ritmi Koru.",
-      "desktop": "İki dakikalık fırçalama. Doğru tempo. Daha iyi his."
+      "desktop": "Mükemmel fırçalama temposu. Daha iyi his."
     },
     "subtitle": {
       "withBpm": "{{label}}: hedef {{bpm}} BPM, her diş yüzeyi için {{secondsPerTooth}} sn, {{transitionSeconds}} sn geçiş, {{ageText}}.",
