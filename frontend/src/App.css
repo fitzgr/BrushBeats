@@ -5475,6 +5475,93 @@ select {
   justify-content: flex-end;
 }
 
+.storage-toggle-notice {
+  margin: 0.5rem 0 0;
+  color: #1f4d37;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.artist-promo-page {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.artist-promo-header p {
+  margin: 0.3rem 0 0.75rem;
+}
+
+.artist-promo-personalization {
+  font-size: 0.9rem;
+  color: #2f4f59;
+}
+
+.artist-promo-section {
+  margin-top: 1rem;
+  padding: 0.95rem;
+  border-radius: 14px;
+  border: 1px solid rgba(16, 33, 37, 0.12);
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.artist-promo-section h3 {
+  margin: 0 0 0.35rem;
+}
+
+.artist-promo-field {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.7rem;
+}
+
+.artist-promo-field span {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #2f3f43;
+}
+
+.artist-promo-input {
+  width: 100%;
+  border: 1px solid rgba(16, 33, 37, 0.18);
+  border-radius: 10px;
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+  background: #fff;
+}
+
+.artist-promo-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 0.65rem;
+}
+
+.artist-promo-result {
+  border-color: rgba(28, 104, 78, 0.22);
+  background: linear-gradient(130deg, rgba(199, 234, 215, 0.42), rgba(255, 255, 255, 0.9));
+}
+
+.artist-promo-link {
+  display: block;
+  margin-top: 0.35rem;
+  color: #155d49;
+  font-weight: 700;
+  word-break: break-all;
+}
+
+.artist-promo-error {
+  margin-top: 0.65rem;
+  color: #8d2f2f;
+  font-weight: 700;
+}
+
+.artist-promo-copy-message {
+  margin-top: 0.55rem;
+  color: #22573a;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
 @keyframes rise {
   from {
     opacity: 0;
