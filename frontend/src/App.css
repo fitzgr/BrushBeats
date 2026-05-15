@@ -5542,6 +5542,42 @@ select {
   font-size: 0.88rem;
 }
 
+.artist-bpm-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.75rem;
+  font-size: 0.88rem;
+  border: 1px solid rgba(16, 33, 37, 0.12);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.artist-bpm-table thead {
+  background: linear-gradient(130deg, rgba(184, 219, 229, 0.35), rgba(255, 249, 239, 0.4));
+  border-bottom: 2px solid rgba(16, 33, 37, 0.15);
+}
+
+.artist-bpm-table th {
+  padding: 0.65rem 0.7rem;
+  text-align: left;
+  font-weight: 700;
+  color: #155d49;
+}
+
+.artist-bpm-table td {
+  padding: 0.6rem 0.7rem;
+  border-bottom: 1px solid rgba(16, 33, 37, 0.08);
+}
+
+.artist-bpm-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.artist-bpm-table tbody tr:hover {
+  background: rgba(199, 234, 215, 0.18);
+}
+
 .artist-search-results {
   margin-top: 0.8rem;
   display: grid;

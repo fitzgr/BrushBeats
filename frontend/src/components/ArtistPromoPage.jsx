@@ -272,6 +272,42 @@ export default function ArtistPromoPage({
       </div>
 
       <div className="artist-promo-section">
+        <h3>Artist-Friendly BPM Bands</h3>
+        <p>Choose a song that matches your target audience for the best engagement:</p>
+        <table className="artist-bpm-table">
+          <thead>
+            <tr>
+              <th>Audience</th>
+              <th>Reach</th>
+              <th>Recommended BPM Band</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Infants / Parent-assisted</td>
+              <td>~2%</td>
+              <td>86–120 BPM</td>
+            </tr>
+            <tr>
+              <td>Toddlers</td>
+              <td>~4%</td>
+              <td>72–102 BPM</td>
+            </tr>
+            <tr>
+              <td>Kids / Tweens</td>
+              <td>~11%</td>
+              <td>89–115 BPM</td>
+            </tr>
+            <tr>
+              <td>Mainstream Adults</td>
+              <td>70–85%</td>
+              <td>119–136 BPM</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div className="artist-promo-section">
         <h3>1) Find Your Video</h3>
         <p>Search YouTube in this page, then click a result to auto-fill the video field below.</p>
         <div className="artist-promo-row">
