@@ -803,7 +803,6 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
       : bottomPoints[activeToothEntry.mapIndex]
     : null;
   const activeBounceStartPoint = activeToothPoint ? mapCenter : null;
-  const showMapHandOrientation = Boolean(isMobile && brushFacingDirection);
   // Ball phase = tooth progress: 0 = tooth just became active (downbeat, ball at tooth),
   // 0.5 = halfway through tooth time (ball returns to center), 1 = tooth done (ball back at tooth).
   // Slow the bounce timing by 2x so movement feels less rushed.
@@ -865,6 +864,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
         ? "right"
         : "left"
     : null;
+  const showMapHandOrientation = Boolean(isMobile && brushFacingDirection);
   const transitionFromSide = activeEntry?.type === "transition" ? getLabelSide(activeEntry.fromLabel) : null;
   const transitionToSide = activeEntry?.type === "transition" ? getLabelSide(activeEntry.toLabel) : null;
   const transitionFromJaw = activeEntry?.type === "transition" ? getLabelJaw(activeEntry.fromLabel) : null;
