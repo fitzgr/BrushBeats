@@ -575,16 +575,17 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
   const beatDurationMs = Math.max(220, 60000 / safeBpm);
   const normalizedBeatAnchorMs = (((Math.max(0, Number(playbackSeconds) || 0) * 1000) % beatDurationMs) + beatDurationMs) % beatDurationMs;
   const isPaused = brushingPhase === "paused";
+  const hasActiveBrushTimeline = brushingPhase === "running" || isPaused || timer.running;
   const beatPhaseOffsetMs = timer.running
     ? -normalizedBeatAnchorMs
     : 0;
   const elapsedSeconds = brushingPhase === "complete"
     ? totalSeconds
-    : (timer.running || isPaused)
-      ? Math.min(totalSeconds, Math.max(0, brushingMusicElapsedSeconds))
+    : hasActiveBrushTimeline
+      ? Math.min(totalSeconds, Math.max(0, Number(brushingMusicElapsedSeconds) || 0))
       : 0;
   const completedToothEntries = toothEntries.filter((entry) => entry.endsAt <= elapsedSeconds).length;
-  const activeEntry = (timer.running || isPaused)
+  const activeEntry = hasActiveBrushTimeline
     ? timeline.find((entry) => elapsedSeconds >= entry.startsAt && elapsedSeconds < entry.endsAt) || null
     : null;
   const activeToothEntry = activeEntry?.type === "tooth" ? activeEntry : null;
@@ -601,7 +602,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
   const activeJaw = getLabelJaw(orientationLabel);
   const isFrontSurface = activeToothEntry?.surface === "front";
   const nextMoveSeconds = activeEntry ? Math.max(1, Math.ceil(activeEntry.endsAt - elapsedSeconds)) : null;
-  const nextTransition = (timer.running || isPaused)
+  const nextTransition = hasActiveBrushTimeline
     ? timeline.find((entry) => entry.type === "transition" && entry.startsAt >= elapsedSeconds)
     : null;
   const nextSectionSeconds = nextTransition ? Math.max(1, Math.ceil(nextTransition.startsAt - elapsedSeconds)) : null;
@@ -829,7 +830,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
       activeSurface: null
     };
 
-    if (!timer.running && brushingPhase !== "paused") {
+    if (!hasActiveBrushTimeline) {
       return state;
     }
 
@@ -1045,7 +1046,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
 
           {bottomPoints.map((point, index) => renderTooth(point, "bottom", bottomToothChart[index], index))}
 
-          {(timer.running || isPaused) && activeToothPoint && activeBounceStartPoint && liveBouncePoint && (
+          {hasActiveBrushTimeline && activeToothPoint && activeBounceStartPoint && liveBouncePoint && (
             <g>
               {liveTailPoints[0] && (
                 <circle
