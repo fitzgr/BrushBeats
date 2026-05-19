@@ -50,7 +50,10 @@ function normalizeHistoryEntries(historyData) {
       date,
       author: cleanHistoryText(entry?.author) || "BrushBeats",
       subject,
-      body: cleanHistoryText(entry?.body)
+      body: cleanHistoryText(entry?.body),
+      tags: Array.isArray(entry?.tags)
+        ? entry.tags.map((tag) => cleanHistoryText(tag)).filter(Boolean)
+        : []
     };
   };
 
@@ -82,6 +85,30 @@ function summarizeReleaseNotes(items) {
 }
 
 function buildReleaseHistory(entries, t) {
+  const taggedReleases = entries
+    .flatMap((entry) =>
+      (entry?.tags || []).map((tagName) => ({
+        id: `tag-${tagName}`,
+        version: tagName,
+        releasedAt: entry?.timestamp || entry?.date,
+        notes: summarizeReleaseNotes([entry])
+      }))
+    )
+    .filter((release) => release.version && release.releasedAt)
+    .sort((left, right) => String(right.releasedAt).localeCompare(String(left.releasedAt)));
+
+  if (taggedReleases.length > 0) {
+    const seen = new Set();
+    return taggedReleases.filter((release) => {
+      if (seen.has(release.version)) {
+        return false;
+      }
+
+      seen.add(release.version);
+      return true;
+    });
+  }
+
   const groupedByDate = new Map();
 
   entries.forEach((entry) => {
@@ -113,7 +140,7 @@ function buildReleaseHistory(entries, t) {
   return releases.reverse();
 }
 
-function VersionHistory({ onExit }) {
+function VersionHistory({ onExit, onOpenStory }) {
   const { t } = useTranslation();
   const entries = useMemo(() => normalizeHistoryEntries(versionHistory), []);
   const releaseHistory = useMemo(() => buildReleaseHistory(entries, t), [entries, t]);
@@ -127,9 +154,14 @@ function VersionHistory({ onExit }) {
           <h2>{t("history.title")}</h2>
           <p>{t("history.intro")}</p>
         </div>
-        <button type="button" className="action-btn secondary" onClick={onExit}>
-          {t("history.backToApp")}
-        </button>
+        <div className="version-history-header-actions">
+          <button type="button" className="action-btn secondary" onClick={onOpenStory}>
+            About the Developer
+          </button>
+          <button type="button" className="action-btn secondary" onClick={onExit}>
+            {t("history.backToApp")}
+          </button>
+        </div>
       </div>
 
       <div className="version-history-grid">

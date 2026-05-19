@@ -4,6 +4,20 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
+// Dynamic multiplier by tooth count to target 86+ BPM
+const TOOTH_MULTIPLIER_TIERS = [
+  { maxTeeth: 4, multiplier: 5.1 },   // 0–4 teeth: ~86 BPM
+  { maxTeeth: 8, multiplier: 2.55 },  // 5–8 teeth: ~86 BPM
+  { maxTeeth: 12, multiplier: 1.7 },  // 9–12 teeth: ~88 BPM
+  { maxTeeth: 16, multiplier: 1.3 },  // 13–16 teeth: ~90 BPM
+  { maxTeeth: 32, multiplier: 1.0 }   // 17–32 teeth: use base BPM (already 86+)
+];
+
+function getToothMultiplier(totalTeeth) {
+  const tier = TOOTH_MULTIPLIER_TIERS.find((t) => totalTeeth <= t.maxTeeth);
+  return tier ? tier.multiplier : 1.0;
+}
+
 const DEFAULT_BRUSHING_SECONDS = 120;
 const MIN_BRUSHING_SECONDS = 60;
 const MAX_BRUSHING_SECONDS = 300;
@@ -87,10 +101,11 @@ function calculateBpm({ top = 16, bottom = 16, totalBrushingSeconds = DEFAULT_BR
   const totalToothTimeSeconds = safeTotalBrushingSeconds - totalTransitionSeconds;
   const secondsPerTooth = totalToothActions > 0 ? totalToothTimeSeconds / totalToothActions : 0;
   const rawBpm = secondsPerTooth > 0 ? 60 / secondsPerTooth : 0;
-  const toothCoverageRatio = clamp(totalTeeth / 32, 0, 1);
-  const beatsPerTooth = Number((MIN_BEATS_PER_TOOTH + toothCoverageRatio * (MAX_BEATS_PER_TOOTH - MIN_BEATS_PER_TOOTH)).toFixed(2));
-  const unconstrainedSearchBpm = secondsPerTooth > 0 ? (60 * beatsPerTooth) / secondsPerTooth : 0;
-  const searchBpm = clamp(unconstrainedSearchBpm, MIN_TARGET_BPM, MAX_TARGET_BPM);
+  const searchBpm = secondsPerTooth > 0 ? (60 * BEATS_PER_TOOTH) / secondsPerTooth : 0;
+  
+  // Apply dynamic multiplier to target 86+ BPM for younger children
+  const toothMultiplier = getToothMultiplier(totalTeeth);
+  const adjustedBpm = Number((searchBpm * toothMultiplier).toFixed(2));
 
   return {
     top: safeTop,
@@ -108,11 +123,12 @@ function calculateBpm({ top = 16, bottom = 16, totalBrushingSeconds = DEFAULT_BR
     brushingSegments,
     totalBrushingSeconds: safeTotalBrushingSeconds,
     secondsPerTooth: Number(secondsPerTooth.toFixed(2)),
-    beatsPerTooth,
+    beatsPerTooth: BEATS_PER_TOOTH,
+    toothMultiplier: Number(toothMultiplier.toFixed(2)),
     rawBpm: Number(rawBpm.toFixed(2)),
-    baseBpm: Number(unconstrainedSearchBpm.toFixed(2)),
-    musicBpm: Number(searchBpm.toFixed(2)),
-    searchBpm: Number(searchBpm.toFixed(2))
+    baseBpm: Number(searchBpm.toFixed(2)),
+    musicBpm: adjustedBpm,
+    searchBpm: adjustedBpm
   };
 }
 

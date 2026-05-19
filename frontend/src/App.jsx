@@ -14,6 +14,7 @@ import ProgressDashboardPanel from "./components/ProgressDashboardPanel";
 import TranslationWorkshop from "./components/TranslationWorkshop";
 import VersionHistory from "./components/VersionHistory";
 import MyStoryPage from "./components/MyStoryPage";
+import ArtistPromoPage from "./components/ArtistPromoPage";
 import { clearPersistedPhase2Data, loadPersistedAppState } from "./db/appStateService";
 import { loadHouseholdOverview, switchActiveHouseholdUser } from "./db/householdOverviewService";
 import { awardAchievementsForUser } from "./db/achievementEngineService";
@@ -63,6 +64,21 @@ const DEFAULT_BRUSH_DURATION_SECONDS = 120;
 const BRUSH_DURATION_OPTIONS = [90, 120, 150, 180];
 const START_DELAY_SECONDS = 5;
 const DEFAULT_AGE_SIMULATION = { active: false, mode: "exact", phase: "primary", value: 2, unit: "years" };
+const YOUTUBE_VIDEO_ID_REGEX = /^[a-zA-Z0-9_-]{11}$/;
+
+function normalizeYoutubeVideoId(value) {
+  const candidate = String(value || "").trim();
+  return YOUTUBE_VIDEO_ID_REGEX.test(candidate) ? candidate : null;
+}
+
+function buildYoutubeEmbedUrl(videoId) {
+  const safeVideoId = normalizeYoutubeVideoId(videoId);
+  if (!safeVideoId) {
+    return null;
+  }
+
+  return `https://www.youtube-nocookie.com/embed/${safeVideoId}?rel=0`;
+}
 
 function clampValue(value, min, max) {
   return Math.min(max, Math.max(min, value));
@@ -424,7 +440,7 @@ function App() {
     }
 
     const mode = new URLSearchParams(window.location.search).get("mode");
-    return mode === "workshop" || mode === "history" || mode === "story" ? mode : "brush";
+    return mode === "workshop" || mode === "history" || mode === "artists" ? mode : "brush";
   });
   const [values, setValues] = useState(DEFAULT_VALUES);
   const [bpmData, setBpmData] = useState(null);
@@ -452,6 +468,8 @@ function App() {
   const [lastSession, setLastSession] = useState(null);
   const [languageFallbackState, setLanguageFallbackState] = useState(() => getLanguageFallbackInfo());
   const [activeModal, setActiveModal] = useState(null);
+  const [storageToggleRequest, setStorageToggleRequest] = useState(null);
+  const [storageToggleNotice, setStorageToggleNotice] = useState("");
   const [workflowStep, setWorkflowStep] = useState("teeth");
   const [brushingHand, setBrushingHand] = useState("right");
   const [brushType, setBrushType] = useState("manual");
@@ -523,6 +541,7 @@ function App() {
   const sessionStartedAtRef = useRef(null);
   const loggedCompletedSessionRef = useRef(null);
   const previousTrackedTeethRef = useRef(null);
+  const appliedSharedVideoRef = useRef("");
   const analyticsAvailable = useMemo(() => analyticsEnabled(), []);
   const device = useDeviceContext();
   const totalTeeth = values.top + values.bottom;
@@ -702,16 +721,38 @@ function App() {
 
     if (!device.isMobile && appView === "workshop") {
       url.searchParams.set("mode", "workshop");
-    } else if (appView === "history") {
-      url.searchParams.set("mode", "history");
-    } else if (appView === "story") {
-      url.searchParams.set("mode", "story");
+    } else if (appView === "history" || appView === "artists") {
+      url.searchParams.set("mode", appView);
     } else {
       url.searchParams.delete("mode");
     }
 
     window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
   }, [appView, device.isMobile]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    if (appView === "story" || appView === "history" || appView === "artists" || (appView === "workshop" && !device.isMobile)) {
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+  }, [appView, device.isMobile]);
+
+  useEffect(() => {
+    if (!storageToggleNotice) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setStorageToggleNotice("");
+    }, 7000);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [storageToggleNotice]);
 
   useEffect(() => {
     setLanguageFallbackState(getLanguageFallbackInfo());
@@ -1237,6 +1278,22 @@ function App() {
   function handleDismissStorageBanner() {
     setStorageBannerDismissed(true);
     setStorageBannerDismissedState(true);
+  }
+
+  async function handleConfirmStorageToggle() {
+    if (storageToggleRequest === "enable") {
+      await handleAllowStorage();
+      setStorageToggleNotice("Session storage enabled: BrushBeats will remember your preferences, last session, and favorites on this device.");
+    } else if (storageToggleRequest === "disable") {
+      await handleDeclineStorage();
+      setStorageToggleNotice("Session storage disabled: saved preferences, last session, and favorites were cleared on this device.");
+    }
+
+    setStorageToggleRequest(null);
+  }
+
+  function handleCancelStorageToggle() {
+    setStorageToggleRequest(null);
   }
 
   function handleHouseholdSetupDraftChange(field, value) {
@@ -2128,6 +2185,73 @@ function App() {
     return handleSelectSongWithOptions(song, { autoplay: false, source });
   }
 
+  function preloadSharedYoutubeVideo(videoId, videoTitle = "Artist Spotlight Video", source = "shared-video-id") {
+    const safeVideoId = normalizeYoutubeVideoId(videoId);
+    const embedUrl = buildYoutubeEmbedUrl(safeVideoId);
+
+    if (!safeVideoId || !embedUrl) {
+      return false;
+    }
+
+    const normalizedTitle = String(videoTitle || "").trim() || "Artist Spotlight Video";
+    const artistLabel = activeHouseholdUser?.name
+      ? `${activeHouseholdUser.name} spotlight`
+      : "YouTube creator";
+
+    setAppView("brush");
+    setWorkflowStep("brush");
+    setAutoRestoredBrushView(false);
+    setQueuedStoredSongKey("");
+    queuedSongRef.current = null;
+    setQueuedSongPreview(null);
+
+    setSelectedSong({
+      title: normalizedTitle,
+      artist: artistLabel,
+      bpm: Number(bpmData?.searchBpm || 120)
+    });
+    setPlayerData({
+      videoId: safeVideoId,
+      embedUrl,
+      title: normalizedTitle,
+      channelTitle: "Shared YouTube Link"
+    });
+    setSongsDebugInfo((previous) => ({
+      ...(previous || {}),
+      selectionSource: source,
+      selectedTitle: normalizedTitle,
+      selectedArtist: artistLabel,
+      youtubeMatchedTitle: normalizedTitle,
+      youtubeMatchedChannel: "Shared YouTube Link",
+      youtubeQueryMode: "direct-video-id"
+    }));
+    setError("");
+    return true;
+  }
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const rawVideoId = params.get("videoId") || params.get("yt") || params.get("v");
+    const sharedVideoId = normalizeYoutubeVideoId(rawVideoId);
+    if (!sharedVideoId || appliedSharedVideoRef.current === sharedVideoId) {
+      return;
+    }
+
+    const sharedTitle = params.get("videoTitle") || params.get("title") || "Artist Spotlight Video";
+    const applied = preloadSharedYoutubeVideo(sharedVideoId, sharedTitle, "shared-link");
+    if (applied) {
+      appliedSharedVideoRef.current = sharedVideoId;
+    }
+  }, [activeHouseholdUser?.name, bpmData?.searchBpm]);
+
+  function handlePreviewArtistVideo({ videoId, title }) {
+    preloadSharedYoutubeVideo(videoId, title, "artist-page-preview");
+  }
+
   useEffect(() => {
     if (workflowStep !== "brush" || !selectedSong) {
       return;
@@ -2527,8 +2651,18 @@ function App() {
         />
       ) : appView === "story" ? (
         <MyStoryPage onExit={() => setAppView("brush")} />
+      ) : appView === "artists" ? (
+        <ArtistPromoPage
+          onExit={() => setAppView("brush")}
+          onPreviewVideo={handlePreviewArtistVideo}
+          profileLabel={detectedBrusherProfile?.label}
+          activeUserName={activeHouseholdUser?.name}
+        />
       ) : appView === "history" ? (
-        <VersionHistory onExit={() => setAppView("brush")} />
+        <VersionHistory
+          onExit={() => setAppView("brush")}
+          onOpenStory={() => setAppView("story")}
+        />
       ) : (
         <>
       <nav className={`workflow-tabs ${device.isMobile ? "mobile-workflow-tabs" : "desktop-workflow-tabs"}`} aria-label={t("app.workflow.ariaLabel")}>
@@ -2680,10 +2814,10 @@ function App() {
             </button>
           </p>
           <div className="consent-actions">
-            <button type="button" className="action-btn" onClick={handleAllowStorage}>
+            <button type="button" className="action-btn" onClick={() => setStorageToggleRequest("enable")}>
               {t("common.buttons.allowStorage")}
             </button>
-            <button type="button" className="action-btn secondary" onClick={handleDeclineStorage}>
+            <button type="button" className="action-btn secondary" onClick={() => setStorageToggleRequest("disable")}>
               {t("common.buttons.optOut")}
             </button>
             <button type="button" className="action-btn secondary" onClick={handleDismissStorageBanner}>
@@ -3035,13 +3169,20 @@ function App() {
           </div>
         )}
         <div className="privacy-controls">
+          <button
+            type="button"
+            className="privacy-toggle"
+            onClick={() => setAppView((current) => (current === "artists" ? "brush" : "artists"))}
+          >
+            {appView === "artists" ? "Return to brushing flow" : "For Artists"}
+          </button>
           <span>{t("footer.sessionStorage", { state: storageConsent === "granted" ? t("common.states.on") : t("common.states.off") })}</span>
           {storageConsent === "granted" ? (
-            <button type="button" className="privacy-toggle" onClick={handleDeclineStorage}>
+            <button type="button" className="privacy-toggle" onClick={() => setStorageToggleRequest("disable")}>
               {t("common.buttons.turnOff")}
             </button>
           ) : (
-            <button type="button" className="privacy-toggle" onClick={handleAllowStorage}>
+            <button type="button" className="privacy-toggle" onClick={() => setStorageToggleRequest("enable")}>
               {t("common.buttons.turnOn")}
             </button>
           )}
@@ -3056,8 +3197,57 @@ function App() {
           <button type="button" className="privacy-toggle" onClick={() => setAppView("history")}>
             {t("common.buttons.versionHistory")}
           </button>
+          <button
+            type="button"
+            className="privacy-toggle"
+            onClick={() => setAppView((current) => (current === "story" ? "brush" : "story"))}
+          >
+            {appView === "story" ? "Return to brushing flow" : "About the Developer"}
+          </button>
         </div>
+        {storageToggleNotice && <p className="storage-toggle-notice" aria-live="polite">{storageToggleNotice}</p>}
       </footer>
+
+      {storageToggleRequest && (
+        <div className="privacy-modal-overlay" role="presentation" onClick={handleCancelStorageToggle}>
+          <section
+            className="privacy-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Session storage confirmation"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h2>Confirm Session Storage Change</h2>
+            {storageToggleRequest === "enable" ? (
+              <>
+                <p>
+                  Turning this on stores your preferences, recent session, and favorite songs on this device so your experience can resume quickly.
+                </p>
+                <p>
+                  This can include playback choices and profile-related settings used to personalize brushing flow.
+                </p>
+              </>
+            ) : (
+              <>
+                <p>
+                  Turning this off clears locally saved preferences, recent session data, and favorites for this browser.
+                </p>
+                <p>
+                  You can still use BrushBeats, but personalization and restore features will be limited until storage is re-enabled.
+                </p>
+              </>
+            )}
+            <div className="privacy-modal-actions">
+              <button type="button" className="action-btn secondary" onClick={handleCancelStorageToggle}>
+                Cancel
+              </button>
+              <button type="button" className="action-btn" onClick={handleConfirmStorageToggle}>
+                {storageToggleRequest === "enable" ? "Enable session storage" : "Disable session storage"}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
 
       {activeModal && (
         <div className="privacy-modal-overlay" role="presentation" onClick={closePrivacyModal}>

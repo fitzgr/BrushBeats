@@ -737,6 +737,13 @@
   align-items: flex-start;
 }
 
+.version-history-header-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .version-history-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -972,6 +979,15 @@
 }
 
 @media (max-width: 900px) {
+  .version-history-header {
+    flex-direction: column;
+  }
+
+  .version-history-header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
   .version-history-grid {
     grid-template-columns: 1fr;
   }
@@ -3813,6 +3829,28 @@ select {
   isolation: isolate;
 }
 
+.player-disclaimer {
+  margin: 0.55rem 0 0.7rem;
+  border-radius: 12px;
+  border: 1px solid rgba(29, 75, 120, 0.16);
+  background: rgba(29, 75, 120, 0.06);
+}
+
+.player-disclaimer summary {
+  cursor: pointer;
+  padding: 0.6rem 0.8rem;
+  color: #1d4b78;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.player-disclaimer p {
+  margin: 0;
+  padding: 0 0.8rem 0.75rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
 .player iframe,
 .player .player-frame {
   width: 100%;
@@ -5495,6 +5533,325 @@ select {
   justify-content: flex-end;
 }
 
+.storage-toggle-notice {
+  margin: 0.5rem 0 0;
+  color: #1f4d37;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.artist-promo-page {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.artist-promo-header p {
+  margin: 0.3rem 0 0.75rem;
+}
+
+.artist-promo-personalization {
+  font-size: 0.9rem;
+  color: #2f4f59;
+}
+
+.artist-promo-section {
+  margin-top: 1rem;
+  padding: 0.95rem;
+  border-radius: 14px;
+  border: 1px solid rgba(16, 33, 37, 0.12);
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.artist-promo-section h3 {
+  margin: 0 0 0.35rem;
+}
+
+.artist-promo-field {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.7rem;
+}
+
+.artist-promo-field span {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #2f3f43;
+}
+
+.artist-promo-input {
+  width: 100%;
+  border: 1px solid rgba(16, 33, 37, 0.18);
+  border-radius: 10px;
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+  background: #fff;
+}
+
+.artist-promo-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 0.65rem;
+}
+
+.artist-promo-search-message {
+  margin: 0.65rem 0 0;
+  color: #334b53;
+  font-size: 0.88rem;
+}
+
+.artist-bpm-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.75rem;
+  font-size: 0.88rem;
+  border: 1px solid rgba(16, 33, 37, 0.12);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.artist-bpm-table thead {
+  background: linear-gradient(130deg, rgba(184, 219, 229, 0.35), rgba(255, 249, 239, 0.4));
+  border-bottom: 2px solid rgba(16, 33, 37, 0.15);
+}
+
+.artist-bpm-table th {
+  padding: 0.65rem 0.7rem;
+  text-align: left;
+  font-weight: 700;
+  color: #155d49;
+}
+
+.artist-bpm-table td {
+  padding: 0.6rem 0.7rem;
+  border-bottom: 1px solid rgba(16, 33, 37, 0.08);
+}
+
+.artist-bpm-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.artist-bpm-table tbody tr:hover {
+  background: rgba(199, 234, 215, 0.18);
+}
+
+.artist-search-results {
+  margin-top: 0.8rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.artist-search-result {
+  display: grid;
+  grid-template-columns: 128px minmax(0, 1fr);
+  gap: 0.65rem;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(16, 33, 37, 0.16);
+  background: #fff;
+  cursor: pointer;
+}
+
+.artist-search-result:hover {
+  border-color: rgba(21, 93, 73, 0.45);
+  box-shadow: 0 8px 18px rgba(16, 33, 37, 0.08);
+}
+
+.artist-search-result.selected {
+  border-color: rgba(21, 93, 73, 0.7);
+  background: linear-gradient(130deg, rgba(199, 234, 215, 0.55), rgba(255, 255, 255, 0.95));
+  animation: artistResultPulse 420ms ease-out;
+}
+
+@keyframes artistResultPulse {
+  0% { box-shadow: 0 0 0 0 rgba(21, 93, 73, 0.42); }
+  60% { box-shadow: 0 0 0 7px rgba(21, 93, 73, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(21, 93, 73, 0); }
+}
+
+.artist-search-result.selected strong {
+  color: #155d49;
+}
+
+/* ── Artist debug panel ─────────────────────────────────── */
+.artist-debug-panel {
+  margin-top: 28px;
+  border-top: 1px dashed rgba(16, 33, 37, 0.15);
+  padding-top: 10px;
+}
+
+.artist-debug-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.78rem;
+  color: rgba(16, 33, 37, 0.45);
+  padding: 4px 0;
+}
+
+.artist-debug-toggle:hover {
+  color: rgba(16, 33, 37, 0.75);
+}
+
+.artist-debug-body {
+  margin-top: 10px;
+  background: rgba(16, 33, 37, 0.035);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 0.78rem;
+}
+
+.artist-debug-warning {
+  margin: 0 0 10px;
+  padding: 7px 9px;
+  border-left: 3px solid #c27d00;
+  border-radius: 6px;
+  background: rgba(194, 125, 0, 0.12);
+  color: #5b3a00;
+  font-weight: 600;
+}
+
+.artist-debug-env {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 3px 12px;
+  margin: 0 0 10px;
+}
+
+.artist-debug-env dt {
+  font-weight: 600;
+  color: rgba(16, 33, 37, 0.55);
+  white-space: nowrap;
+}
+
+.artist-debug-env dd {
+  margin: 0;
+  word-break: break-all;
+}
+
+.artist-debug-env code {
+  font-size: 0.75rem;
+  background: rgba(16, 33, 37, 0.07);
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+
+.artist-debug-copy-btn {
+  display: inline-block;
+  margin-bottom: 8px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  border: 1px solid rgba(21, 93, 73, 0.4);
+  border-radius: 6px;
+  background: rgba(21, 93, 73, 0.07);
+  color: #155d49;
+  cursor: pointer;
+}
+
+.artist-debug-copy-btn:hover {
+  background: rgba(21, 93, 73, 0.14);
+}
+
+.artist-debug-empty {
+  color: rgba(16, 33, 37, 0.45);
+  font-style: italic;
+  margin: 0;
+}
+
+.artist-debug-log {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.artist-debug-entry {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.6);
+  border-left: 3px solid rgba(16, 33, 37, 0.15);
+}
+
+.artist-debug-entry.ok { border-left-color: #2a9d6f; }
+.artist-debug-entry.error { border-left-color: #c0392b; background: rgba(192, 57, 43, 0.05); }
+.artist-debug-entry.pending { border-left-color: #e67e22; }
+
+.artist-debug-status {
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+}
+
+.artist-debug-entry.ok .artist-debug-status { color: #2a9d6f; }
+.artist-debug-entry.error .artist-debug-status { color: #c0392b; }
+.artist-debug-entry.pending .artist-debug-status { color: #e67e22; }
+
+.artist-debug-query { font-weight: 500; }
+.artist-debug-duration { color: rgba(16, 33, 37, 0.5); font-size: 0.72rem; }
+.artist-debug-http { color: #8a4f00; font-size: 0.72rem; font-weight: 600; }
+.artist-debug-code { color: #6c5ce7; font-size: 0.72rem; font-weight: 600; }
+.artist-debug-count { color: #2a9d6f; font-size: 0.72rem; }
+.artist-debug-error { color: #c0392b; font-size: 0.72rem; width: 100%; word-break: break-word; }
+.artist-debug-time { color: rgba(16, 33, 37, 0.35); font-size: 0.68rem; margin-left: auto; }
+
+.artist-search-result img {
+  width: 128px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.artist-search-result span {
+  display: grid;
+  gap: 0.22rem;
+}
+
+.artist-search-result strong {
+  font-size: 0.95rem;
+  line-height: 1.25;
+  color: #1c2d34;
+}
+
+.artist-search-result small {
+  color: #4b666f;
+}
+
+.artist-promo-result {
+  border-color: rgba(28, 104, 78, 0.22);
+  background: linear-gradient(130deg, rgba(199, 234, 215, 0.42), rgba(255, 255, 255, 0.9));
+}
+
+.artist-promo-link {
+  display: block;
+  margin-top: 0.35rem;
+  color: #155d49;
+  font-weight: 700;
+  word-break: break-all;
+}
+
+.artist-promo-error {
+  margin-top: 0.65rem;
+  color: #8d2f2f;
+  font-weight: 700;
+}
+
+.artist-promo-copy-message {
+  margin-top: 0.55rem;
+  color: #22573a;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
 @keyframes rise {
   from {
     opacity: 0;
@@ -5544,6 +5901,14 @@ select {
   .player .player-frame-shell {
     min-height: 240px;
     aspect-ratio: 16 / 9;
+  }
+
+  .artist-search-result {
+    grid-template-columns: 104px minmax(0, 1fr);
+  }
+
+  .artist-search-result img {
+    width: 104px;
   }
 
   .player iframe,

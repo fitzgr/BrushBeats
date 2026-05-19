@@ -47,7 +47,7 @@
     "eyebrow": "BrushBeats",
     "title": {
       "mobile": "Cepillate donde sea y sigue el ritmo.",
-      "desktop": "Dos minutos de cepillado, el ritmo ideal y mejor energia."
+      "desktop": "Tempo de cepillado perfecto. Mejor vibra."
     },
     "subtitle": {
       "withBpm": "{{label}}: meta de {{bpm}} BPM, {{secondsPerTooth}} s por cara dental, transiciones de {{transitionSeconds}} s, {{ageText}}.",
@@ -485,6 +485,8 @@
     "titleMobile": "Reproduciendo ahora",
     "introDesktop": "Elige una cancion y reproducela dentro de la app con el iframe de YouTube.",
     "introMobile": "Reproduce aqui la cancion seleccionada.",
+    "artistRightsSummary": "Derechos de artistas y reproduccion en YouTube",
+    "artistRightsBody": "BrushBeats inserta los videos directamente desde YouTube para que los artistas y titulares de derechos mantengan el credito y la monetizacion habituales de YouTube. Cualquier ingreso de la app financia el desarrollo futuro de BrushBeats, no la musica en si.",
     "matchingYoutube": "Buscando la cancion en YouTube...",
     "selectSong": "Selecciona una cancion para comenzar la reproduccion.",
     "noEmbed": "No se pudo encontrar un video insertable para {{title}}.",

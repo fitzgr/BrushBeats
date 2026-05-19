@@ -31,10 +31,22 @@ async function requestWithOptions(path, options = {}) {
   }
 
   if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    const error = new Error(body.error || "Request failed");
+    const contentType = String(response.headers.get("content-type") || "").toLowerCase();
+    const isJson = contentType.includes("application/json");
+    const body = isJson ? await response.json().catch(() => ({})) : {};
+    const rawText = isJson ? "" : await response.text().catch(() => "");
+    const statusLabel = `HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ""}`;
+    const messageFromBody = body.error || body.message || "";
+    const detailFromBody = body.detail
+      ? (typeof body.detail === "string" ? body.detail : JSON.stringify(body.detail))
+      : "";
+    const rawSnippet = String(rawText || "").replace(/\s+/g, " ").trim().slice(0, 180);
+    const errorMessage = messageFromBody || detailFromBody || rawSnippet || statusLabel || "Request failed";
+    const error = new Error(errorMessage);
     error.status = response.status;
     error.code = body.code || null;
+    error.detail = detailFromBody || rawSnippet || null;
+    error.statusLabel = statusLabel;
     throw error;
   }
 
@@ -75,6 +87,15 @@ export function getYoutubeVideo({ title, artist }) {
     artist
   });
   return request(`/api/youtube?${params.toString()}`);
+}
+
+export function searchYoutubeVideos({ query, maxResults = 8 }) {
+  const params = new URLSearchParams({
+    q: String(query || "").trim(),
+    maxResults: String(Math.max(1, Math.min(15, Math.round(Number(maxResults) || 8))))
+  });
+
+  return request(`/api/youtube/search?${params.toString()}`);
 }
 
 export function getGeoCountry() {
