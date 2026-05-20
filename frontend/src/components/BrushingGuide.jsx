@@ -601,6 +601,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isM
       ? Math.min(100, ((completedToothEntries + activeToothProgress) / toothEntries.length) * 100)
       : 0;
   const orientationLabel = activeEntry?.type === "transition" ? activeEntry.toLabel : activeToothEntry?.label;
+  const activeSide = getLabelSide(orientationLabel);
   const activeJaw = getLabelJaw(orientationLabel);
   const isFrontSurface = activeToothEntry?.surface === "front";
   const nextMoveSeconds = activeEntry ? Math.max(1, Math.ceil(activeEntry.endsAt - elapsedSeconds)) : null;
