@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import AgeThemePanel from "./AgeThemePanel";
 import AgeOverlay from "./AgeOverlay";
@@ -394,6 +394,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
   const toothDurationSeconds = hasAlignedBpmSnapshot ? Number(bpmData.secondsPerTooth) : fallbackSecondsPerTooth;
   const timingSourceLabel = hasAlignedBpmSnapshot ? "snapshot" : "live-fallback";
   const showTimingDebug = import.meta.env.DEV;
+  const [showCompletionFlash, setShowCompletionFlash] = useState(false);
   const transitionBufferSeconds = Number(bpmData?.transitionBufferSeconds || 1);
   const segments = buildSegments(topTeeth, bottomTeeth);
   const timeline = buildTimeline(segments, toothDurationSeconds, transitionBufferSeconds);
@@ -431,6 +432,22 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
   const tips = useMemo(() => getBrushTechniqueTips(brushType, ageUiProfile?.phase || agePhase), [agePhase, ageUiProfile?.phase, brushType]);
   const tipIndex = Math.floor(Math.max(0, elapsedSeconds) / 18) % Math.max(1, tips.length);
   const activeTip = brushingPhase === "running" ? (tips[tipIndex] || "") : "";
+
+  useEffect(() => {
+    if (brushingPhase !== "complete") {
+      setShowCompletionFlash(false);
+      return;
+    }
+
+    setShowCompletionFlash(true);
+    const completionFlashTimer = window.setTimeout(() => {
+      setShowCompletionFlash(false);
+    }, 1800);
+
+    return () => {
+      window.clearTimeout(completionFlashTimer);
+    };
+  }, [brushingPhase]);
 
   useEffect(() => {
     if (!onCueChange) {
@@ -768,7 +785,11 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
           className="guide-map-age-overlay"
         />
         {showThemePanel && <AgeThemePanel profile={ageUiProfile} variant="guide" className="guide-age-overlay" chipLimit={2} />}
-        <div className="mouth-map" role="img" aria-label={t("brushing.guide.mouthMapAria")}>
+        <div
+          className={`mouth-map${brushingPhase === "complete" ? " completion-finished" : ""}${showCompletionFlash ? " completion-flash" : ""}`}
+          role="img"
+          aria-label={t("brushing.guide.mouthMapAria")}
+        >
         {showMapHandOrientation && (
           <div className={`map-hand-orientation-layer ${brushFacingDirection === "left" ? "facing-left" : "facing-right"}${activeJaw ? ` jaw-${activeJaw}` : ""}`} aria-hidden="true">
             <div className="brush-hand-orientation-visual" aria-hidden="true">
