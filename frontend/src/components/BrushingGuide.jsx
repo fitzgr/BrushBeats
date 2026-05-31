@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import AgeThemePanel from "./AgeThemePanel";
 import AgeOverlay from "./AgeOverlay";
@@ -355,6 +355,15 @@ function toRgb(channels) {
   return `rgb(${channels[0]} ${channels[1]} ${channels[2]})`;
 }
 
+function getActiveToothPulseMs(bpm) {
+  const safeBpm = Number(bpm);
+  if (!Number.isFinite(safeBpm) || safeBpm <= 0) {
+    return 760;
+  }
+
+  return clampNumber(Math.round((60 / safeBpm) * 1000), 375, 1200);
+}
+
 function getCountdownSignal(remainingMs, totalMs) {
   const safeTotalMs = Math.max(1, Number(totalMs) || 0);
   const progress = clampNumber(1 - (Number(remainingMs) || 0) / safeTotalMs, 0, 1);
@@ -395,6 +404,8 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
   const timingSourceLabel = hasAlignedBpmSnapshot ? "snapshot" : "live-fallback";
   const showTimingDebug = import.meta.env.DEV;
   const [showCompletionFlash, setShowCompletionFlash] = useState(false);
+  const completionTonePlayedRef = useRef(false);
+  const audioContextRef = useRef(null);
   const transitionBufferSeconds = Number(bpmData?.transitionBufferSeconds || 1);
   const segments = buildSegments(topTeeth, bottomTeeth);
   const timeline = buildTimeline(segments, toothDurationSeconds, transitionBufferSeconds);
@@ -432,14 +443,66 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
   const tips = useMemo(() => getBrushTechniqueTips(brushType, ageUiProfile?.phase || agePhase), [agePhase, ageUiProfile?.phase, brushType]);
   const tipIndex = Math.floor(Math.max(0, elapsedSeconds) / 18) % Math.max(1, tips.length);
   const activeTip = brushingPhase === "running" ? (tips[tipIndex] || "") : "";
+  const activeToothPulseMs = getActiveToothPulseMs(bpmData?.searchBpm || bpmData?.musicBpm || bpmData?.baseBpm || bpmData?.rawBpm);
+
+  useEffect(() => {
+    return () => {
+      if (audioContextRef.current && typeof audioContextRef.current.close === "function") {
+        audioContextRef.current.close().catch(() => {});
+        audioContextRef.current = null;
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (brushingPhase !== "complete") {
       setShowCompletionFlash(false);
+      completionTonePlayedRef.current = false;
       return;
     }
 
     setShowCompletionFlash(true);
+
+    if (!completionTonePlayedRef.current && typeof window !== "undefined") {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+
+      if (AudioContextClass) {
+        try {
+          const audioContext = audioContextRef.current || new AudioContextClass();
+          audioContextRef.current = audioContext;
+
+          const startTone = () => {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            const now = audioContext.currentTime;
+
+            oscillator.type = "square";
+            oscillator.frequency.setValueAtTime(1174.66, now);
+
+            gainNode.gain.setValueAtTime(0.0001, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.42, now + 0.02);
+            gainNode.gain.exponentialRampToValueAtTime(0.26, now + 0.14);
+            gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.62);
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.start(now);
+            oscillator.stop(now + 0.64);
+          };
+
+          if (audioContext.state === "suspended") {
+            audioContext.resume().then(startTone).catch(() => {});
+          } else {
+            startTone();
+          }
+
+          completionTonePlayedRef.current = true;
+        } catch {
+          completionTonePlayedRef.current = true;
+        }
+      }
+    }
+
     const completionFlashTimer = window.setTimeout(() => {
       setShowCompletionFlash(false);
     }, 1800);
@@ -789,6 +852,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
           className={`mouth-map${brushingPhase === "complete" ? " completion-finished" : ""}${showCompletionFlash ? " completion-flash" : ""}`}
           role="img"
           aria-label={t("brushing.guide.mouthMapAria")}
+          style={{ "--active-tooth-pulse-duration": `${activeToothPulseMs}ms` }}
         >
         {showMapHandOrientation && (
           <div className={`map-hand-orientation-layer ${brushFacingDirection === "left" ? "facing-left" : "facing-right"}${activeJaw ? ` jaw-${activeJaw}` : ""}`} aria-hidden="true">

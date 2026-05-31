@@ -4964,7 +4964,7 @@ select {
 }
 
 .tooth-svg.active-tooth .tooth-face.active-surface {
-  animation: activeToothSurfacePulse 760ms ease-in-out infinite;
+  animation: activeToothSurfacePulse var(--active-tooth-pulse-duration, 760ms) ease-in-out infinite;
 }
 
 .tooth-svg.active-tooth .tooth-outline {
