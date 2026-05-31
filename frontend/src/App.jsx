@@ -3060,8 +3060,8 @@ function App() {
             onPlaybackDurationChange={handlePlaybackDurationChange}
             onSongEnded={handleSongEnded}
           >
-            {device.isMobile && (
-              <>
+            <>
+              {device.isMobile && (
                 <div className="session-actions compact-mobile-actions">
                   <button
                     type="button"
@@ -3074,73 +3074,47 @@ function App() {
                     {t("brushing.stop")}
                   </button>
                 </div>
-                <BrushingGuide
-                  key={`guide-mobile-${values.top}-${values.bottom}-${brushDurationSeconds}`}
-                  bpmData={bpmData}
-                  timer={timer}
-                  brushingPhase={brushingPhase}
-                  values={values}
-                  selectedBpm={selectedBrushBpm}
-                  isMobile={device.isMobile}
-                  playbackSeconds={playbackSeconds}
-                  brushingMusicElapsedSeconds={brushingMusicElapsedSeconds}
-                  startCountdownTotalMs={START_DELAY_SECONDS * 1000}
-                  startCountdownRemainingMs={countdownRemainingMs}
-                  brushingHand={brushingHand}
-                  brushType={brushType}
-                  hideIntro
-                  onCueChange={setBrushControlCue}
-                  completionMessage={completionMessage}
-                  brushControlCue={brushControlCue}
-                  primaryBrushActionLabel={primaryBrushActionLabel}
-                  onPrimaryBrushAction={handlePrimaryBrushAction}
-                  onRestartBrushing={restartBrushing}
-                  ageUiProfile={ageUiProfile}
-                  embedded
-                  showThemePanel={false}
-                />
-                {brushingPhase === "complete" && (
-                  <section className="success-banner brush-success-banner" aria-live="polite">
-                    <span className="sparkle-stars" aria-hidden="true">✦ ✧ ✦</span>
-                    <p>{completionBannerMessage}</p>
-                    <small>{t("app.successAgeGroups", { count: ageGroupCount })}</small>
-                    <AchievementBadgeList
-                      t={t}
-                      achievements={recentUnlockedAchievements}
-                      title={recentUnlockedAchievements.length > 0 ? t("app.achievements.unlockedTitle") : undefined}
-                      compact
-                    />
-                  </section>
-                )}
-              </>
-            )}
+              )}
+              <BrushingGuide
+                key={`guide-embedded-${device.isMobile ? "mobile" : "desktop"}-${values.top}-${values.bottom}-${brushDurationSeconds}`}
+                bpmData={bpmData}
+                timer={timer}
+                brushingPhase={brushingPhase}
+                values={values}
+                selectedBpm={selectedBrushBpm}
+                isMobile={device.isMobile}
+                playbackSeconds={playbackSeconds}
+                brushingMusicElapsedSeconds={brushingMusicElapsedSeconds}
+                startCountdownTotalMs={START_DELAY_SECONDS * 1000}
+                startCountdownRemainingMs={countdownRemainingMs}
+                brushingHand={brushingHand}
+                brushType={brushType}
+                hideIntro
+                onCueChange={setBrushControlCue}
+                completionMessage={completionMessage}
+                brushControlCue={brushControlCue}
+                primaryBrushActionLabel={primaryBrushActionLabel}
+                onPrimaryBrushAction={handlePrimaryBrushAction}
+                onRestartBrushing={restartBrushing}
+                ageUiProfile={ageUiProfile}
+                embedded
+                showThemePanel={false}
+              />
+              {device.isMobile && brushingPhase === "complete" && (
+                <section className="success-banner brush-success-banner" aria-live="polite">
+                  <span className="sparkle-stars" aria-hidden="true">✦ ✧ ✦</span>
+                  <p>{completionBannerMessage}</p>
+                  <small>{t("app.successAgeGroups", { count: ageGroupCount })}</small>
+                  <AchievementBadgeList
+                    t={t}
+                    achievements={recentUnlockedAchievements}
+                    title={recentUnlockedAchievements.length > 0 ? t("app.achievements.unlockedTitle") : undefined}
+                    compact
+                  />
+                </section>
+              )}
+            </>
           </Player>
-
-          {!device.isMobile && (
-            <BrushingGuide
-              key={`guide-desktop-${values.top}-${values.bottom}-${brushDurationSeconds}`}
-              bpmData={bpmData}
-              timer={timer}
-              brushingPhase={brushingPhase}
-              values={values}
-              selectedBpm={selectedBrushBpm}
-              isMobile={device.isMobile}
-              playbackSeconds={playbackSeconds}
-              brushingMusicElapsedSeconds={brushingMusicElapsedSeconds}
-              startCountdownTotalMs={START_DELAY_SECONDS * 1000}
-              startCountdownRemainingMs={countdownRemainingMs}
-              brushingHand={brushingHand}
-              brushType={brushType}
-              hideIntro={device.isMobile && autoRestoredBrushView}
-              onCueChange={setBrushControlCue}
-              completionMessage={completionMessage}
-              brushControlCue={brushControlCue}
-              primaryBrushActionLabel={primaryBrushActionLabel}
-              onPrimaryBrushAction={handlePrimaryBrushAction}
-              onRestartBrushing={restartBrushing}
-              ageUiProfile={ageUiProfile}
-            />
-          )}
         </section>
       )}
         </>
