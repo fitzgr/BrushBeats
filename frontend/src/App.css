@@ -4225,6 +4225,21 @@ select {
   z-index: 2;
 }
 
+.row-celebration-cascade {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.row-celebration-cascade.active {
+  opacity: 0.95;
+}
+
 :root {
   --overlay-z-bg: 0;
   --overlay-z-pattern: 1;
@@ -4912,6 +4927,41 @@ select {
   fill: #fffdf8;
 }
 
+.tooth-celebration-ripple {
+  opacity: 0;
+  mix-blend-mode: screen;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: rowCompletionRipple 1120ms ease-out 1;
+  animation-delay: var(--row-ripple-delay, 0ms);
+}
+
+.tooth-celebration-ripple.front-ripple {
+  fill: rgba(109, 181, 255, 0.2);
+}
+
+.tooth-celebration-ripple.back-ripple {
+  fill: rgba(86, 162, 247, 0.16);
+}
+
+@keyframes rowCompletionRipple {
+  0% {
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0.5;
+  }
+
+  65% {
+    opacity: 0.24;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
 .mouth-map.completion-finished .tooth-svg .tooth-face {
   fill: #fffdf8;
 }
@@ -5154,8 +5204,13 @@ select {
 @media (prefers-reduced-motion: reduce) {
   .tooth-svg.active-tooth .tooth-face.active-surface,
   .map-score-label.beat-pulse,
-  .mouth-map.completion-flash .tooth-svg .tooth-face {
+  .mouth-map.completion-flash .tooth-svg .tooth-face,
+  .tooth-celebration-ripple {
     animation: none;
+  }
+
+  .row-celebration-cascade {
+    display: none;
   }
 }
 

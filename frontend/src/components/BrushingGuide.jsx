@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import AgeThemePanel from "./AgeThemePanel";
 import AgeOverlay from "./AgeOverlay";
@@ -364,6 +364,199 @@ function getActiveToothPulseMs(bpm) {
   return clampNumber(Math.round((60 / safeBpm) * 1000), 375, 1200);
 }
 
+const ROW_CELEBRATION_DURATION_MS = 2000;
+const TOTAL_BRUSH_ROWS = 4;
+
+function getRowNumberFromLabel(label) {
+  if (!label) {
+    return null;
+  }
+
+  if (label.includes("Front Top")) {
+    return 1;
+  }
+
+  if (label.includes("Back Top")) {
+    return 2;
+  }
+
+  if (label.includes("Front Bottom")) {
+    return 3;
+  }
+
+  if (label.includes("Back Bottom")) {
+    return 4;
+  }
+
+  return null;
+}
+
+function getRowSurfaceTarget(rowNumber) {
+  if (rowNumber === 1) {
+    return { jaw: "top", surface: "front" };
+  }
+
+  if (rowNumber === 2) {
+    return { jaw: "top", surface: "back" };
+  }
+
+  if (rowNumber === 3) {
+    return { jaw: "bottom", surface: "front" };
+  }
+
+  if (rowNumber === 4) {
+    return { jaw: "bottom", surface: "back" };
+  }
+
+  return null;
+}
+
+function getRippleDirectionFromLabel(label) {
+  if (!label) {
+    return "ltr";
+  }
+
+  return label.includes("Left") ? "rtl" : "ltr";
+}
+
+function getRowRippleDelayMs(x, direction) {
+  const normalizedX = clampNumber((Number(x) - 32) / 296, 0, 1);
+  const sweepProgress = direction === "rtl" ? 1 - normalizedX : normalizedX;
+  return Math.round(sweepProgress * 760);
+}
+
+function detectLowPerformanceCelebrationMode() {
+  if (typeof navigator === "undefined") {
+    return false;
+  }
+
+  const cores = Number(navigator.hardwareConcurrency || 0);
+  const memory = Number(navigator.deviceMemory || 0);
+  return (Number.isFinite(cores) && cores > 0 && cores <= 4) || (Number.isFinite(memory) && memory > 0 && memory <= 2);
+}
+
+function drawCascadeTooth(ctx, x, y, size, alpha) {
+  const scale = size / 18;
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(scale, scale);
+  ctx.beginPath();
+  ctx.moveTo(0, -9);
+  ctx.bezierCurveTo(6, -9, 9, -4, 8, 1);
+  ctx.bezierCurveTo(8, 6, 4, 9, 2, 9);
+  ctx.bezierCurveTo(1, 9, 0, 7, 0, 5);
+  ctx.bezierCurveTo(0, 7, -1, 9, -2, 9);
+  ctx.bezierCurveTo(-4, 9, -8, 6, -8, 1);
+  ctx.bezierCurveTo(-9, -4, -6, -9, 0, -9);
+  ctx.closePath();
+  ctx.fillStyle = `rgba(197, 224, 255, ${alpha})`;
+  ctx.strokeStyle = `rgba(90, 151, 232, ${Math.min(0.52, alpha * 1.1)})`;
+  ctx.lineWidth = 1.3;
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+}
+
+function RowCelebrationCascade({ celebration, reducedMotion, lowPerformanceMode }) {
+  const canvasRef = useRef(null);
+  const frameRef = useRef(0);
+
+  useEffect(() => {
+    return () => {
+      if (frameRef.current) {
+        window.cancelAnimationFrame(frameRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
+    }
+
+    const context = canvas.getContext("2d");
+    if (!context) {
+      return;
+    }
+
+    if (frameRef.current) {
+      window.cancelAnimationFrame(frameRef.current);
+      frameRef.current = 0;
+    }
+
+    const width = Math.max(1, canvas.clientWidth || 360);
+    const height = Math.max(1, canvas.clientHeight || 420);
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+    context.setTransform(dpr, 0, 0, dpr, 0, 0);
+    context.clearRect(0, 0, width, height);
+
+    if (!celebration || reducedMotion) {
+      return;
+    }
+
+    const particleCount = lowPerformanceMode ? 7 : 12;
+    const particles = Array.from({ length: particleCount }, () => {
+      const size = 8 + Math.random() * 6;
+      const speed = lowPerformanceMode ? 0.06 + Math.random() * 0.05 : 0.08 + Math.random() * 0.08;
+      return {
+        x: width * (0.08 + Math.random() * 0.84),
+        yStart: -size - Math.random() * height * 0.2,
+        drift: (Math.random() - 0.5) * 14,
+        sway: 8 + Math.random() * 10,
+        swaySpeed: 0.003 + Math.random() * 0.004,
+        speed,
+        size,
+        alpha: 0.14 + Math.random() * 0.18
+      };
+    });
+
+    const startTime = performance.now();
+    const durationMs = Number(celebration.durationMs || ROW_CELEBRATION_DURATION_MS);
+
+    const paintFrame = (timestamp) => {
+      const elapsedMs = timestamp - startTime;
+      const progress = clampNumber(elapsedMs / durationMs, 0, 1);
+      context.clearRect(0, 0, width, height);
+
+      for (const particle of particles) {
+        const travelY = particle.yStart + particle.speed * elapsedMs;
+        const waveX = Math.sin(elapsedMs * particle.swaySpeed + particle.x * 0.02) * particle.sway;
+        const x = particle.x + particle.drift * progress + waveX;
+        const y = travelY;
+        const fadeProgress = clampNumber(progress * 1.18, 0, 1);
+        const lowerFade = clampNumber((y - height * 0.55) / (height * 0.5), 0, 1);
+        const alpha = particle.alpha * (1 - fadeProgress) * (1 - lowerFade * 0.9);
+
+        if (alpha > 0.015 && y < height * 1.02) {
+          drawCascadeTooth(context, x, y, particle.size, alpha);
+        }
+      }
+
+      if (elapsedMs < durationMs) {
+        frameRef.current = window.requestAnimationFrame(paintFrame);
+      } else {
+        context.clearRect(0, 0, width, height);
+      }
+    };
+
+    frameRef.current = window.requestAnimationFrame(paintFrame);
+
+    return () => {
+      if (frameRef.current) {
+        window.cancelAnimationFrame(frameRef.current);
+        frameRef.current = 0;
+      }
+      context.clearRect(0, 0, width, height);
+    };
+  }, [celebration, reducedMotion, lowPerformanceMode]);
+
+  return <canvas className={`row-celebration-cascade${celebration ? " active" : ""}`} ref={canvasRef} aria-hidden="true" />;
+}
+
 function getCountdownSignal(remainingMs, totalMs) {
   const safeTotalMs = Math.max(1, Number(totalMs) || 0);
   const progress = clampNumber(1 - (Number(remainingMs) || 0) / safeTotalMs, 0, 1);
@@ -404,8 +597,12 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
   const timingSourceLabel = hasAlignedBpmSnapshot ? "snapshot" : "live-fallback";
   const showTimingDebug = import.meta.env.DEV;
   const [showCompletionFlash, setShowCompletionFlash] = useState(false);
+  const [rowCelebration, setRowCelebration] = useState(null);
+  const [reducedMotion, setReducedMotion] = useState(false);
   const completionTonePlayedRef = useRef(false);
   const audioContextRef = useRef(null);
+  const celebrationTimerRef = useRef(0);
+  const lastCelebratedTransitionRef = useRef("");
   const transitionBufferSeconds = Number(bpmData?.transitionBufferSeconds || 1);
   const segments = buildSegments(topTeeth, bottomTeeth);
   const timeline = buildTimeline(segments, toothDurationSeconds, transitionBufferSeconds);
@@ -444,6 +641,51 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
   const tipIndex = Math.floor(Math.max(0, elapsedSeconds) / 18) % Math.max(1, tips.length);
   const activeTip = brushingPhase === "running" ? (tips[tipIndex] || "") : "";
   const activeToothPulseMs = getActiveToothPulseMs(bpmData?.searchBpm || bpmData?.musicBpm || bpmData?.baseBpm || bpmData?.rawBpm);
+  const lowPerformanceCelebrationMode = useMemo(() => detectLowPerformanceCelebrationMode(), []);
+  const celebrationSurfaceTarget = useMemo(() => getRowSurfaceTarget(rowCelebration?.rowNumber), [rowCelebration?.rowNumber]);
+
+  const triggerRowCompletionCelebration = useCallback((rowNumber, options = {}) => {
+    const safeRow = Number(rowNumber);
+    if (!Number.isFinite(safeRow) || safeRow < 1 || safeRow >= TOTAL_BRUSH_ROWS || reducedMotion) {
+      return;
+    }
+
+    const direction = options.direction === "rtl" ? "rtl" : "ltr";
+    const celebrationId = `${safeRow}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    setRowCelebration({
+      id: celebrationId,
+      rowNumber: safeRow,
+      direction,
+      durationMs: ROW_CELEBRATION_DURATION_MS,
+      theme: options.theme || "classic"
+    });
+
+    if (celebrationTimerRef.current) {
+      window.clearTimeout(celebrationTimerRef.current);
+    }
+
+    celebrationTimerRef.current = window.setTimeout(() => {
+      setRowCelebration((current) => (current?.id === celebrationId ? null : current));
+    }, ROW_CELEBRATION_DURATION_MS);
+  }, [reducedMotion]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const applyMotionPreference = () => {
+      setReducedMotion(Boolean(mediaQuery.matches));
+    };
+
+    applyMotionPreference();
+    mediaQuery.addEventListener("change", applyMotionPreference);
+
+    return () => {
+      mediaQuery.removeEventListener("change", applyMotionPreference);
+    };
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -451,8 +693,43 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
         audioContextRef.current.close().catch(() => {});
         audioContextRef.current = null;
       }
+      if (celebrationTimerRef.current) {
+        window.clearTimeout(celebrationTimerRef.current);
+      }
     };
   }, []);
+
+  useEffect(() => {
+    if (brushingPhase === "idle" || brushingPhase === "countdown" || brushingPhase === "awaitingPlayback") {
+      lastCelebratedTransitionRef.current = "";
+      setRowCelebration(null);
+      if (celebrationTimerRef.current) {
+        window.clearTimeout(celebrationTimerRef.current);
+      }
+    }
+  }, [brushingPhase]);
+
+  useEffect(() => {
+    if (reducedMotion || activeEntry?.type !== "transition") {
+      return;
+    }
+
+    const transitionKey = String(activeEntry.key || `${activeEntry.fromLabel}-${activeEntry.toLabel}-${activeEntry.startsAt}-${activeEntry.endsAt}`);
+    if (lastCelebratedTransitionRef.current === transitionKey) {
+      return;
+    }
+
+    lastCelebratedTransitionRef.current = transitionKey;
+    const completedRow = getRowNumberFromLabel(activeEntry.fromLabel);
+    const nextRow = getRowNumberFromLabel(activeEntry.toLabel);
+    if (!completedRow || !nextRow || completedRow === nextRow || completedRow >= TOTAL_BRUSH_ROWS) {
+      return;
+    }
+
+    triggerRowCompletionCelebration(completedRow, {
+      direction: getRippleDirectionFromLabel(activeEntry.fromLabel)
+    });
+  }, [activeEntry, reducedMotion, triggerRowCompletionCelebration]);
 
   useEffect(() => {
     if (brushingPhase !== "complete") {
@@ -752,6 +1029,9 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
     const toothShape = TOOTH_SHAPES[meta?.type || "molar"];
     const toothLabel = getToothLabel(t, meta);
     const isActiveTooth = activeToothEntry?.jaw === jaw && activeToothEntry.mapIndex === mapIndex;
+    const rippleDelayMs = rowCelebration ? getRowRippleDelayMs(point.x, rowCelebration.direction) : 0;
+    const celebrateFrontSurface = Boolean(rowCelebration && celebrationSurfaceTarget?.jaw === jaw && celebrationSurfaceTarget?.surface === "front");
+    const celebrateBackSurface = Boolean(rowCelebration && celebrationSurfaceTarget?.jaw === jaw && celebrationSurfaceTarget?.surface === "back");
 
     return (
       <g
@@ -779,6 +1059,22 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
           d={toothShape.path}
           clipPath={`url(#${toothId}-front-surface)`}
         />
+        {celebrateBackSurface && (
+          <path
+            className="tooth-celebration-ripple back-ripple"
+            d={toothShape.path}
+            clipPath={`url(#${toothId}-back-surface)`}
+            style={{ "--row-ripple-delay": `${rippleDelayMs}ms` }}
+          />
+        )}
+        {celebrateFrontSurface && (
+          <path
+            className="tooth-celebration-ripple front-ripple"
+            d={toothShape.path}
+            clipPath={`url(#${toothId}-front-surface)`}
+            style={{ "--row-ripple-delay": `${rippleDelayMs}ms` }}
+          />
+        )}
         <path className="tooth-outline" d={toothShape.path} />
         {toothShape.grooves.map((groove, grooveIndex) => (
           groove.type === "ellipse" ? (
@@ -854,6 +1150,11 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
           aria-label={t("brushing.guide.mouthMapAria")}
           style={{ "--active-tooth-pulse-duration": `${activeToothPulseMs}ms` }}
         >
+        <RowCelebrationCascade
+          celebration={rowCelebration}
+          reducedMotion={reducedMotion}
+          lowPerformanceMode={lowPerformanceCelebrationMode}
+        />
         {showMapHandOrientation && (
           <div className={`map-hand-orientation-layer ${brushFacingDirection === "left" ? "facing-left" : "facing-right"}${activeJaw ? ` jaw-${activeJaw}` : ""}`} aria-hidden="true">
             <div className="brush-hand-orientation-visual" aria-hidden="true">
