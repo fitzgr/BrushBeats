@@ -718,22 +718,29 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
           audioContextRef.current = audioContext;
 
           const startTone = () => {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
             const now = audioContext.currentTime;
+            const pulseSpacingSeconds = 0.26;
+            const pulseDurationSeconds = 0.2;
+            const pulseFrequencies = [1174.66, 1318.51, 1567.98];
 
-            oscillator.type = "square";
-            oscillator.frequency.setValueAtTime(1174.66, now);
+            pulseFrequencies.forEach((frequency, index) => {
+              const pulseStart = now + index * pulseSpacingSeconds;
+              const oscillator = audioContext.createOscillator();
+              const gainNode = audioContext.createGain();
 
-            gainNode.gain.setValueAtTime(0.0001, now);
-            gainNode.gain.exponentialRampToValueAtTime(0.42, now + 0.02);
-            gainNode.gain.exponentialRampToValueAtTime(0.26, now + 0.14);
-            gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.62);
+              oscillator.type = "square";
+              oscillator.frequency.setValueAtTime(frequency, pulseStart);
 
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            oscillator.start(now);
-            oscillator.stop(now + 0.64);
+              gainNode.gain.setValueAtTime(0.0001, pulseStart);
+              gainNode.gain.exponentialRampToValueAtTime(0.48, pulseStart + 0.02);
+              gainNode.gain.exponentialRampToValueAtTime(0.24, pulseStart + 0.11);
+              gainNode.gain.exponentialRampToValueAtTime(0.0001, pulseStart + pulseDurationSeconds);
+
+              oscillator.connect(gainNode);
+              gainNode.connect(audioContext.destination);
+              oscillator.start(pulseStart);
+              oscillator.stop(pulseStart + pulseDurationSeconds + 0.02);
+            });
           };
 
           if (audioContext.state === "suspended") {
@@ -751,7 +758,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
 
     const completionFlashTimer = window.setTimeout(() => {
       setShowCompletionFlash(false);
-    }, 1800);
+    }, 2400);
 
     return () => {
       window.clearTimeout(completionFlashTimer);

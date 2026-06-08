@@ -4322,7 +4322,7 @@ select {
 
 .row-celebration-cascade.active {
   opacity: 1;
-  filter: saturate(1.32) brightness(1.18) contrast(1.08);
+  filter: saturate(1.4) brightness(1.24) contrast(1.14) drop-shadow(0 0 14px rgba(121, 188, 255, 0.52));
 }
 
 :root {
@@ -5019,18 +5019,19 @@ select {
   transform-origin: center;
   animation: rowCompletionRipple 1800ms ease-out 1;
   animation-delay: var(--row-ripple-delay, 0ms);
+  filter: drop-shadow(0 0 8px rgba(145, 208, 255, 0.55));
 }
 
 .tooth-celebration-ripple.front-ripple {
-  fill: rgba(109, 181, 255, 0.5);
-  stroke: rgba(211, 236, 255, 0.72);
-  stroke-width: 0.9;
+  fill: rgba(109, 181, 255, 0.62);
+  stroke: rgba(224, 243, 255, 0.84);
+  stroke-width: 1.1;
 }
 
 .tooth-celebration-ripple.back-ripple {
-  fill: rgba(86, 162, 247, 0.44);
-  stroke: rgba(188, 225, 255, 0.64);
-  stroke-width: 0.8;
+  fill: rgba(86, 162, 247, 0.54);
+  stroke: rgba(203, 234, 255, 0.76);
+  stroke-width: 1;
 }
 
 @keyframes rowCompletionRipple {
@@ -5039,15 +5040,15 @@ select {
   }
 
   18% {
-    opacity: 0.9;
+    opacity: 0.98;
   }
 
   52% {
-    opacity: 0.72;
+    opacity: 0.84;
   }
 
   78% {
-    opacity: 0.24;
+    opacity: 0.44;
   }
 
   100% {
@@ -5060,7 +5061,8 @@ select {
 }
 
 .mouth-map.completion-flash .tooth-svg .tooth-face {
-  animation: completionBlueTripleFlash 1800ms ease-in-out 1;
+  animation: completionBlueTripleFlash 2400ms ease-in-out 1;
+  filter: drop-shadow(0 0 10px rgba(55, 155, 255, 0.72));
 }
 
 @keyframes completionBlueTripleFlash {
@@ -5068,24 +5070,28 @@ select {
     fill: #fffdf8;
   }
 
-  15% {
-    fill: #2f80ff;
+  14% {
+    fill: #1492ff;
   }
 
-  30% {
+  28% {
     fill: #fffdf8;
   }
 
-  47% {
-    fill: #2f80ff;
+  46% {
+    fill: #1492ff;
   }
 
-  62% {
+  60% {
     fill: #fffdf8;
   }
 
-  80% {
-    fill: #2f80ff;
+  78% {
+    fill: #1492ff;
+  }
+
+  90% {
+    fill: #5db7ff;
   }
 
   100% {
