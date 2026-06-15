@@ -1,5 +1,18 @@
 [
   {
+    "id": "commit-460aaa7a69b6bfd810995c89c6588de61aae4ecf",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "460aaa7a69b6bfd810995c89c6588de61aae4ecf",
+    "shortSha": "460aaa7",
+    "timestamp": "2026-06-15T06:34:33-04:00",
+    "date": "2026-06-15",
+    "author": "Grant Fitz",
+    "subject": "Add rotating countdown start-position preview toggle",
+    "body": "",
+    "tags": []
+  },
+  {
     "id": "commit-51c8e730f16949fb25d4f1191f01aa9979c36dae",
     "kind": "commit",
     "source": "git-history",
@@ -2583,19 +2596,6 @@
     "date": "2026-04-12",
     "author": "Grant Fitz",
     "subject": "Add GetSongBPM query debug chip in music step",
-    "body": "",
-    "tags": []
-  },
-  {
-    "id": "commit-abbb0c53d53fd3ba627c351d1ad76592de6efdf4",
-    "kind": "commit",
-    "source": "git-history",
-    "sha": "abbb0c53d53fd3ba627c351d1ad76592de6efdf4",
-    "shortSha": "abbb0c5",
-    "timestamp": "2026-04-12T08:34:50-04:00",
-    "date": "2026-04-12",
-    "author": "Grant Fitz",
-    "subject": "Personalize GetSongBPM query with locale and age context",
     "body": "",
     "tags": []
   }

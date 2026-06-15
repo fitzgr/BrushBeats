@@ -573,19 +573,10 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
   const celebrationTimerRef = useRef(0);
   const lastCelebratedTransitionRef = useRef("");
   const transitionBufferSeconds = Number(bpmData?.transitionBufferSeconds || 1);
-  const rawSegments = useMemo(() => buildSegments(topTeeth, bottomTeeth), [bottomTeeth, topTeeth]);
-  const segments = useMemo(() => {
-    if (!sessionStartSegmentKey) {
-      return rawSegments;
-    }
-
-    const startIndex = rawSegments.findIndex((segment) => segment.key === sessionStartSegmentKey);
-    if (startIndex <= 0) {
-      return rawSegments;
-    }
-
-    return [...rawSegments.slice(startIndex), ...rawSegments.slice(0, startIndex)];
-  }, [rawSegments, sessionStartSegmentKey]);
+  const segments = useMemo(
+    () => buildSegments(topTeeth, bottomTeeth, sessionStartSegmentKey),
+    [bottomTeeth, sessionStartSegmentKey, topTeeth]
+  );
   const timeline = buildTimeline(segments, toothDurationSeconds, transitionBufferSeconds);
   const toothEntries = timeline.filter((entry) => entry.type === "tooth");
   const isPaused = brushingPhase === "paused";
