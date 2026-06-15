@@ -277,6 +277,30 @@ function daysAgoIso(daysAgo) {
   return date.toISOString();
 }
 
+function mergeStoredDefaults(userDefaults, legacyPreferences) {
+  if (!userDefaults && !legacyPreferences) {
+    return null;
+  }
+
+  const merged = {
+    ...(legacyPreferences || {}),
+    ...(userDefaults || {})
+  };
+
+  merged.values = userDefaults?.values || legacyPreferences?.values || merged.values;
+  merged.filters = userDefaults?.filters || legacyPreferences?.filters || merged.filters;
+  merged.rotatingStartEnabled = Boolean(
+    userDefaults?.rotatingStartEnabled ?? legacyPreferences?.rotatingStartEnabled ?? false
+  );
+  merged.rotatingStartIndex = clampValue(
+    Math.floor(Number(userDefaults?.rotatingStartIndex ?? legacyPreferences?.rotatingStartIndex ?? 0) || 0),
+    0,
+    ROTATING_START_SEGMENT_SEQUENCE.length - 1
+  );
+
+  return merged;
+}
+
 function buildMockProgressDashboard(phase = "adult") {
   const presets = {
     infant: {
@@ -851,12 +875,12 @@ function App() {
 
         const scopedState = dbStatus.ready && persistedState.activeUser?.userId
           ? await getUserScopedState(persistedState.activeUser.userId, {
-              defaults: persistedState.userDefaults || persistedState.preferences,
+              defaults: mergeStoredDefaults(persistedState.userDefaults, persistedState.preferences),
               lastSession: persistedState.lastSession,
               favoriteSongs: persistedState.favoriteSongs || []
             })
           : {
-              defaults: persistedState.userDefaults || persistedState.preferences,
+              defaults: mergeStoredDefaults(persistedState.userDefaults, persistedState.preferences),
               lastSession: persistedState.lastSession,
               favoriteSongs: persistedState.favoriteSongs || []
             };
@@ -908,7 +932,7 @@ function App() {
                 household: persistedState.household,
                 activeUser: persistedState.activeUser,
                 onboardingDraft: persistedState.onboardingDraft,
-                userDefaults: persistedState.userDefaults || persistedState.preferences,
+                userDefaults: mergeStoredDefaults(persistedState.userDefaults, persistedState.preferences),
                 migrationState: persistedState.migrationState
               })
             : null

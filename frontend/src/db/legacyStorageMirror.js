@@ -123,6 +123,8 @@ async function syncUserDefaults(payload) {
     userId: user.userId,
     brushingHand: payload.brushingHand,
     brushType: payload.brushType,
+    rotatingStartEnabled: Boolean(payload.rotatingStartEnabled),
+    rotatingStartIndex: Number.isFinite(Number(payload.rotatingStartIndex)) ? Number(payload.rotatingStartIndex) : 0,
     overlayTheme: payload.overlayTheme,
     brushDurationSeconds: payload.brushDurationSeconds,
     keyword: payload.keyword,

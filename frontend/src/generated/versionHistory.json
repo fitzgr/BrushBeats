@@ -1,5 +1,18 @@
 [
   {
+    "id": "commit-ec9b4bf40fadc6f7bce7a26bbad1cc7eda002c7c",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "ec9b4bf40fadc6f7bce7a26bbad1cc7eda002c7c",
+    "shortSha": "ec9b4bf",
+    "timestamp": "2026-06-15T16:58:34-04:00",
+    "date": "2026-06-15",
+    "author": "Grant Fitz",
+    "subject": "Fix rotating start progression direction by segment",
+    "body": "",
+    "tags": []
+  },
+  {
     "id": "commit-460aaa7a69b6bfd810995c89c6588de61aae4ecf",
     "kind": "commit",
     "source": "git-history",
@@ -2583,19 +2596,6 @@
     "date": "2026-04-12",
     "author": "Grant Fitz",
     "subject": "Improve brush-map transition orientation and in-map progress cues",
-    "body": "",
-    "tags": []
-  },
-  {
-    "id": "commit-1bd081f417cdd5e1670fba1b34518f6aa9440b52",
-    "kind": "commit",
-    "source": "git-history",
-    "sha": "1bd081f417cdd5e1670fba1b34518f6aa9440b52",
-    "shortSha": "1bd081f",
-    "timestamp": "2026-04-12T08:35:55-04:00",
-    "date": "2026-04-12",
-    "author": "Grant Fitz",
-    "subject": "Add GetSongBPM query debug chip in music step",
     "body": "",
     "tags": []
   }
