@@ -5208,6 +5208,31 @@ select {
   text-transform: uppercase;
 }
 
+@media (min-width: 760px) {
+  .countdown-start-guide {
+    stroke-width: 2.6;
+  }
+
+  .countdown-start-core {
+    transform: scale(1.08);
+    transform-origin: center;
+  }
+
+  .countdown-start-ring {
+    transform: scale(1.08);
+    transform-origin: center;
+  }
+
+  .countdown-start-label {
+    font-size: 9.1px;
+    stroke-width: 1.25px;
+  }
+
+  .tooth-svg .tooth-face.countdown-preview-surface {
+    animation-duration: 560ms;
+  }
+}
+
 .tooth-svg.active-tooth .tooth-face.active-surface {
   animation: activeToothSurfacePulse var(--active-tooth-pulse-duration, 760ms) ease-in-out infinite;
 }

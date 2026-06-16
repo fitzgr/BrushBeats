@@ -1,5 +1,18 @@
 [
   {
+    "id": "commit-7ecac12bffb4ccab8922c38557eb7b26b6b0880d",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "7ecac12bffb4ccab8922c38557eb7b26b6b0880d",
+    "shortSha": "7ecac12",
+    "timestamp": "2026-06-16T17:38:32-04:00",
+    "date": "2026-06-16",
+    "author": "Grant Fitz",
+    "subject": "Fix countdown start marker initialization order",
+    "body": "",
+    "tags": []
+  },
+  {
     "id": "commit-598ea841e81236f5d74a30d3b390281f1792cbc2",
     "kind": "commit",
     "source": "git-history",
@@ -2583,19 +2596,6 @@
     "date": "2026-04-13",
     "author": "Grant Fitz",
     "subject": "Add brush-type coaching tips and strengthen mobile shortcut favicon contrast",
-    "body": "",
-    "tags": []
-  },
-  {
-    "id": "commit-467ee99dffd4093e1a931bdafcc459f3dfb46989",
-    "kind": "commit",
-    "source": "git-history",
-    "sha": "467ee99dffd4093e1a931bdafcc459f3dfb46989",
-    "shortSha": "467ee99",
-    "timestamp": "2026-04-12T14:36:21-04:00",
-    "date": "2026-04-12",
-    "author": "Grant Fitz",
-    "subject": "Merge GitHub push events with git commit history for ongoing version tracking",
     "body": "",
     "tags": []
   }
