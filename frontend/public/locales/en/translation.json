@@ -540,6 +540,7 @@
       "introDesktop": "Brush all tooth surfaces evenly for the full {{minutes}}-minute brushing time. Hold the bristles at a 45-degree angle toward the gumline and use gentle motions to clean away from the gums, ensuring each quadrant is covered without extending the recommended brushing time.",
       "countdownCallout": "Get your brush in position. Brushing starts in {{seconds}}s.",
       "countdownPathStep": "Path {{step}}/{{total}}",
+      "startOutsideTooth": "Start outside",
       "handOrientation": "Hand Orientation",
       "leftView": "Left-handed view",
       "rightView": "Right-handed view",

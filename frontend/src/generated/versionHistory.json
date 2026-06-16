@@ -1,5 +1,18 @@
 [
   {
+    "id": "commit-fa976dd79eb39408340dddf8198e227186e9ce76",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "fa976dd79eb39408340dddf8198e227186e9ce76",
+    "shortSha": "fa976dd",
+    "timestamp": "2026-06-16T06:52:09-04:00",
+    "date": "2026-06-16",
+    "author": "Grant Fitz",
+    "subject": "Add countdown path step marker for debug",
+    "body": "",
+    "tags": []
+  },
+  {
     "id": "commit-ed4f52df0c18ad68e87880cf55c48a38b1cbde9d",
     "kind": "commit",
     "source": "git-history",
@@ -2583,19 +2596,6 @@
     "date": "2026-04-12",
     "author": "Grant Fitz",
     "subject": "Add version history page and ad-aware brushing start flow",
-    "body": "",
-    "tags": []
-  },
-  {
-    "id": "commit-1574bea639b0e6aebaff17544fa60cdc797610fc",
-    "kind": "commit",
-    "source": "git-history",
-    "sha": "1574bea639b0e6aebaff17544fa60cdc797610fc",
-    "shortSha": "1574bea",
-    "timestamp": "2026-04-12T08:56:36-04:00",
-    "date": "2026-04-12",
-    "author": "Grant Fitz",
-    "subject": "Add cookie-stored favorites with music-step queue from stored picks",
     "body": "",
     "tags": []
   }

@@ -914,6 +914,29 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
 
   const topPoints = createJawToothLayout({ chart: topToothChart, jaw: "top", child: useChildToothChart, mapCenter });
   const bottomPoints = createJawToothLayout({ chart: bottomToothChart, jaw: "bottom", child: useChildToothChart, mapCenter });
+  const countdownStartPoint = useMemo(() => {
+    if (!countdownPreviewTarget) {
+      return null;
+    }
+
+    const pointSet = countdownPreviewTarget.jaw === "top" ? topPoints : bottomPoints;
+    const point = pointSet[countdownPreviewTarget.startMapIndex];
+    if (!point) {
+      return null;
+    }
+
+    const labelOffsetX = countdownPreviewTarget.side === "left" ? -30 : 30;
+    const labelOffsetY = countdownPreviewTarget.jaw === "top" ? -20 : 22;
+
+    return {
+      x: point.x,
+      y: point.y,
+      labelX: point.x + labelOffsetX,
+      labelY: point.y + labelOffsetY,
+      side: countdownPreviewTarget.side,
+      jaw: countdownPreviewTarget.jaw
+    };
+  }, [bottomPoints, countdownPreviewTarget, topPoints]);
 
   function getToothState(jaw, mapIndex) {
     if (brushingPhase === "complete") {
@@ -1247,6 +1270,37 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
           {topPoints.map((point, index) => renderTooth(point, "top", topToothChart[index], index))}
 
           {bottomPoints.map((point, index) => renderTooth(point, "bottom", bottomToothChart[index], index))}
+          {countdownStartPoint && (
+            <g className="countdown-start-indicator" aria-hidden="true">
+              <line
+                x1={mapCenter.x}
+                y1={mapCenter.y}
+                x2={countdownStartPoint.x}
+                y2={countdownStartPoint.y}
+                className="countdown-start-guide"
+              />
+              <circle
+                cx={countdownStartPoint.x}
+                cy={countdownStartPoint.y}
+                r="8"
+                className="countdown-start-core"
+              />
+              <circle
+                cx={countdownStartPoint.x}
+                cy={countdownStartPoint.y}
+                r="14"
+                className="countdown-start-ring"
+              />
+              <text
+                x={countdownStartPoint.labelX}
+                y={countdownStartPoint.labelY}
+                textAnchor="middle"
+                className="countdown-start-label"
+              >
+                {t("brushing.guide.startOutsideTooth")}
+              </text>
+            </g>
+          )}
           {showElectricLiftCue && (
             <text
               key={`electric-cue-${activeEntry?.key || "idle"}`}

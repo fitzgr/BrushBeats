@@ -538,6 +538,7 @@
       "introDesktop": "Tüm diş yüzeylerini seçilen {{minutes}} dakikalık fırçalama süresi boyunca eşit şekilde fırçalayın. Kılları diş eti çizgisine doğru 45 derecelik açıyla tutun ve diş etlerinden uzağa doğru nazik hareketlerle temizleyin; önerilen fırçalama süresini uzatmadan her bölgenin kapsandığından emin olun.",
       "countdownCallout": "Fırçayı konumlandırın. Fırçalama {{seconds}} sn içinde başlıyor.",
       "countdownPathStep": "Yol {{step}}/{{total}}",
+      "startOutsideTooth": "Dis baslangic",
       "handOrientation": "El Yönelimi",
       "leftView": "Sol el görünümü",
       "rightView": "Sağ el görünümü",

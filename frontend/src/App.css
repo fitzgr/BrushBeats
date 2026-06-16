@@ -5178,6 +5178,36 @@ select {
   filter: drop-shadow(0 0 9px rgba(53, 151, 255, 0.76));
 }
 
+.countdown-start-guide {
+  stroke: rgba(67, 151, 255, 0.82);
+  stroke-width: 2.2;
+  stroke-dasharray: 3 5;
+  animation: countdownStartGuideFlow 520ms linear infinite;
+}
+
+.countdown-start-core {
+  fill: #2f80ff;
+  filter: drop-shadow(0 0 7px rgba(53, 151, 255, 0.85));
+}
+
+.countdown-start-ring {
+  fill: rgba(47, 128, 255, 0.16);
+  stroke: rgba(120, 193, 255, 0.98);
+  stroke-width: 1.7;
+  animation: countdownStartRingPulse 780ms ease-out infinite;
+}
+
+.countdown-start-label {
+  font-size: 8.2px;
+  font-weight: 900;
+  fill: #eaf5ff;
+  paint-order: stroke fill;
+  stroke: rgba(8, 33, 63, 0.72);
+  stroke-width: 1.1px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
 .tooth-svg.active-tooth .tooth-face.active-surface {
   animation: activeToothSurfacePulse var(--active-tooth-pulse-duration, 760ms) ease-in-out infinite;
 }
@@ -5217,6 +5247,30 @@ select {
 
   100% {
     fill: #dcebff;
+  }
+}
+
+@keyframes countdownStartRingPulse {
+  0% {
+    opacity: 0.96;
+    transform: scale(0.88);
+    transform-origin: center;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.24);
+    transform-origin: center;
+  }
+}
+
+@keyframes countdownStartGuideFlow {
+  0% {
+    stroke-dashoffset: 0;
+  }
+
+  100% {
+    stroke-dashoffset: -16;
   }
 }
 
