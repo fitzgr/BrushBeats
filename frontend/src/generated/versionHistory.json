@@ -1,5 +1,18 @@
 [
   {
+    "id": "commit-ed4f52df0c18ad68e87880cf55c48a38b1cbde9d",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "ed4f52df0c18ad68e87880cf55c48a38b1cbde9d",
+    "shortSha": "ed4f52d",
+    "timestamp": "2026-06-16T06:50:43-04:00",
+    "date": "2026-06-16",
+    "author": "Grant Fitz",
+    "subject": "Improve countdown cue with blue center-to-start tooth sequence",
+    "body": "",
+    "tags": []
+  },
+  {
     "id": "commit-5e2a0e48fa6fcafe59b637dfaede3e32fc03a29e",
     "kind": "commit",
     "source": "git-history",
@@ -2583,19 +2596,6 @@
     "date": "2026-04-12",
     "author": "Grant Fitz",
     "subject": "Add cookie-stored favorites with music-step queue from stored picks",
-    "body": "",
-    "tags": []
-  },
-  {
-    "id": "commit-602d2419bd21ebee744725735677cf22d126fada",
-    "kind": "commit",
-    "source": "git-history",
-    "sha": "602d2419bd21ebee744725735677cf22d126fada",
-    "shortSha": "602d241",
-    "timestamp": "2026-04-12T08:49:15-04:00",
-    "date": "2026-04-12",
-    "author": "Grant Fitz",
-    "subject": "Replace session label with percent complete in brush map",
     "body": "",
     "tags": []
   }

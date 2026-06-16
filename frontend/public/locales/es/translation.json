@@ -537,6 +537,7 @@
       "introMobile": "Sigue el marcador diente por diente. Las pausas de transicion ya estan incluidas dentro de la misma sesion de {{minutes}} minutos.",
       "introDesktop": "Cepilla todas las superficies dentales de manera uniforme durante todo el tiempo de cepillado de {{minutes}} minutos. Mantén las cerdas en un angulo de 45 grados hacia la linea de la encia y usa movimientos suaves para limpiar alejandote de las encias, asegurando que cada zona quede cubierta sin extender el tiempo recomendado de cepillado.",
       "countdownCallout": "Coloca el cepillo en posicion. El cepillado empieza en {{seconds}} s.",
+      "countdownPathStep": "Ruta {{step}}/{{total}}",
       "handOrientation": "Orientacion de la mano",
       "leftView": "Vista para zurdos",
       "rightView": "Vista para diestros",

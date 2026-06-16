@@ -562,7 +562,7 @@ function RowCelebrationCascade({ celebration, reducedMotion, lowPerformanceMode 
   return <canvas className={`row-celebration-cascade${celebration ? " active" : ""}`} ref={canvasRef} aria-hidden="true" />;
 }
 
-function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushingMusicElapsedSeconds, startCountdownRemainingMs = 0, sessionStartSegmentKey = null, brushingHand, brushType = "manual", hideIntro = false, onCueChange, completionMessage = "", brushControlCue, primaryBrushActionLabel, onPrimaryBrushAction, onRestartBrushing, ageUiProfile, embedded = false, showThemePanel = true }) {
+function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushingMusicElapsedSeconds, startCountdownTotalMs = 5000, startCountdownRemainingMs = 0, sessionStartSegmentKey = null, brushingHand, brushType = "manual", hideIntro = false, onCueChange, completionMessage = "", brushControlCue, primaryBrushActionLabel, onPrimaryBrushAction, onRestartBrushing, ageUiProfile, embedded = false, showThemePanel = true }) {
   const { t } = useTranslation();
   const totalSeconds = Number(bpmData?.totalBrushingSeconds || 120);
   const topTeeth = Number(values?.top || 16);
@@ -995,6 +995,20 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
       startMapIndex
     };
   }, [bottomTeeth, countdownPreviewSegment, topTeeth]);
+  const countdownPathTotalSteps = countdownPreviewSegment?.mapIndices?.length || 0;
+  const countdownPathStepDurationMs = 85;
+  const countdownPathPulseWindowMs = countdownPathTotalSteps * countdownPathStepDurationMs;
+  const countdownElapsedMs = clampNumber(
+    Number(startCountdownTotalMs || 0) - Number(startCountdownRemainingMs || 0),
+    0,
+    Number(startCountdownTotalMs || 0)
+  );
+  const currentCountdownPathStep = brushingPhase === "countdown" && countdownPathTotalSteps > 0
+    ? Math.min(
+      countdownPathTotalSteps,
+      1 + Math.floor((countdownElapsedMs % Math.max(countdownPathStepDurationMs, countdownPathPulseWindowMs)) / countdownPathStepDurationMs)
+    )
+    : null;
   const centerLabel = brushingPhase === "countdown"
     ? t("brushing.guide.startLabel")
     : brushingPhase === "complete"
@@ -1025,6 +1039,12 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
     : brushingPhase === "complete" && completionLines.length > 1
     ? completionLines.slice(1).join(" ")
     : centerLabel;
+  const mapBrushMessageTertiary = brushingPhase === "countdown" && currentCountdownPathStep && countdownPathTotalSteps > 0
+    ? t("brushing.guide.countdownPathStep", {
+      step: currentCountdownPathStep,
+      total: countdownPathTotalSteps
+    })
+    : "";
   const activeAgePhase = ageUiProfile?.phase || agePhase;
   const coachingMode = brushType === "electric" ? "electric" : "manual";
   const coachingSet = AGE_HYGIENE_COACHING[coachingMode][activeAgePhase] || AGE_HYGIENE_COACHING[coachingMode].adult;
@@ -1203,6 +1223,9 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
                 <span className="map-brush-message-primary">{mapBrushMessagePrimary}</span>
                 {mapBrushMessageSecondary ? (
                   <span className="map-brush-message-secondary">{mapBrushMessageSecondary}</span>
+                ) : null}
+                {mapBrushMessageTertiary ? (
+                  <span className="map-brush-message-tertiary">{mapBrushMessageTertiary}</span>
                 ) : null}
               </span>
               <span className="brush-hand-orientation-neck" />
