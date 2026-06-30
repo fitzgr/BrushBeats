@@ -1039,8 +1039,23 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
     : brushingPhase === "running" || brushingPhase === "paused"
       ? `${Math.round(progress)}%`
       : "Tap brush to start/pause. Hold to reset.";
+  const centerTickerMessage = brushingPhase === "complete"
+    ? completionMessage || centerTickerPrimary
+    : brushControlCue?.title || activeTip || centerTickerPrimary;
+  const centerTickerDetail = brushingPhase === "complete"
+    ? ""
+    : brushControlCue?.detail || activeTip || centerTickerSecondary;
   const mapBrushDirectionClass = brushFacingDirection === "left" ? "facing-left" : "facing-right";
-  const brushActionGlyph = brushingPhase === "running" || brushingPhase === "awaitingPlayback" ? "❚❚" : "▶";
+  const brushActionGlyph = brushingPhase === "countdown"
+    ? String(Math.max(1, Math.ceil(startCountdownRemainingMs / 1000)))
+    : brushingPhase === "running" || brushingPhase === "awaitingPlayback"
+      ? "❚❚"
+      : "▶";
+  const brushIndicatorJawClass = brushingPhase === "countdown"
+    ? "jaw-top"
+    : activeJaw
+      ? `jaw-${activeJaw}`
+      : "";
 
   function clearResetHoldTimer() {
     if (resetHoldTimerRef.current) {
@@ -1081,7 +1096,6 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
   const coachingSet = AGE_HYGIENE_COACHING[coachingMode][activeAgePhase] || AGE_HYGIENE_COACHING[coachingMode].adult;
   const coachingIndex = Math.floor(Math.max(0, elapsedSeconds) / 14) % coachingSet.length;
   const activeCoaching = coachingSet[coachingIndex] || coachingSet[0];
-  const showMapCoaching = brushingPhase === "countdown" || brushingPhase === "running" || brushingPhase === "paused";
   const showElectricLiftCue = brushType === "electric" && activeEntry?.type === "transition";
   const overlayPhase = brushingPhase === "complete"
     ? "complete"
@@ -1243,7 +1257,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
           lowPerformanceMode={lowPerformanceCelebrationMode}
         />
         <div
-          className={`map-hand-orientation-layer ${mapBrushDirectionClass}${activeJaw ? ` jaw-${activeJaw}` : ""}${!brushFacingDirection ? " neutral-orientation" : ""}${brushingPhase === "countdown" ? " countdown" : ""}${activeEntry?.type === "transition" ? " transition" : ""}${brushingPhase === "complete" ? " complete" : ""}`}
+          className={`map-hand-orientation-layer ${mapBrushDirectionClass}${brushIndicatorJawClass ? ` ${brushIndicatorJawClass}` : ""}${!brushFacingDirection ? " neutral-orientation" : ""}${brushingPhase === "countdown" ? " countdown" : ""}${activeEntry?.type === "transition" ? " transition" : ""}${brushingPhase === "complete" ? " complete" : ""}`}
           aria-hidden="true"
         >
             <div className="brush-hand-orientation-visual" aria-hidden="true">
@@ -1266,6 +1280,12 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
               </span>
             </div>
         </div>
+        {brushingPhase !== "countdown" && (centerTickerMessage || centerTickerDetail) && (
+          <div className="map-center-ticker" aria-live="polite">
+            <strong>{centerTickerMessage}</strong>
+            {centerTickerDetail ? <span>{centerTickerDetail}</span> : null}
+          </div>
+        )}
         <svg viewBox="0 0 360 420" preserveAspectRatio="xMidYMid meet">
           <defs>
             <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
@@ -1322,11 +1342,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
               Lift + Place
             </text>
           )}
-          <text x="180" y="210" textAnchor="middle" className="map-status-ticker" aria-hidden="true">
-            <tspan x="180" dy="0">{centerTickerPrimary}</tspan>
-            <tspan x="180" dy="14">{centerTickerSecondary}</tspan>
-          </text>
-          {showMapCoaching && activeCoaching && (
+          {false && activeCoaching && (
             <text x="180" y={activeJaw === "bottom" ? "154" : "264"} textAnchor="middle" className="map-coaching" aria-hidden="true">
               <tspan x="180" dy="0">{activeCoaching.do}</tspan>
               <tspan x="180" dy="14">{activeCoaching.avoid}</tspan>

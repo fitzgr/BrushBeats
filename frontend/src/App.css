@@ -4316,12 +4316,39 @@ select {
   line-height: 1;
 }
 
-.map-status-ticker {
-  font-size: 10px;
-  font-weight: 800;
-  fill: rgba(18, 56, 92, 0.9);
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+.map-hand-orientation-layer.countdown .map-brush-action-glyph {
+  font-size: 24px;
+}
+
+.map-center-ticker {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  width: min(74%, 270px);
+  padding: 0.34rem 0.5rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(25, 77, 120, 0.2);
+  box-shadow: 0 5px 14px rgba(15, 43, 66, 0.16);
+  display: grid;
+  gap: 0.08rem;
+  text-align: center;
+  pointer-events: none;
+}
+
+.map-center-ticker strong {
+  font-size: 0.76rem;
+  color: #173f63;
+  line-height: 1.18;
+}
+
+.map-center-ticker span {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #2f5b7a;
+  line-height: 1.2;
 }
 
 .map-hand-orientation-layer.transition {
@@ -4370,8 +4397,22 @@ select {
     font-size: 16px;
   }
 
-  .map-status-ticker {
-    font-size: 9px;
+  .map-hand-orientation-layer.countdown .map-brush-action-glyph {
+    font-size: 20px;
+  }
+
+  .map-center-ticker {
+    width: min(82%, 244px);
+    padding: 0.26rem 0.4rem;
+    border-radius: 10px;
+  }
+
+  .map-center-ticker strong {
+    font-size: 0.7rem;
+  }
+
+  .map-center-ticker span {
+    font-size: 0.62rem;
   }
 
   .map-hand-orientation-layer .map-brush-message-tertiary {
