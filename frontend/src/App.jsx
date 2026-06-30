@@ -62,7 +62,7 @@ import "./App.css";
 const DEFAULT_VALUES = { top: 16, bottom: 16 };
 const DEFAULT_BRUSH_DURATION_SECONDS = 120;
 const BRUSH_DURATION_OPTIONS = [90, 120, 150, 180];
-const START_DELAY_SECONDS = 0;
+const START_DELAY_SECONDS = 5;
 const ROTATING_START_SEGMENT_SEQUENCE = [
   "back-top-left",
   "front-top-left",
@@ -1862,6 +1862,15 @@ function App() {
     setSessionStartSegmentKey(null);
   }
 
+  function beginBrushingCountdown() {
+    const totalSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
+    const startDelayMs = START_DELAY_SECONDS * 1000;
+    countdownDeadlineRef.current = Date.now() + startDelayMs;
+    setCountdownRemainingMs(startDelayMs);
+    setTimer({ running: false, remaining: totalSeconds });
+    setBrushingPhase("countdown");
+  }
+
   function toSongKey(song) {
     return `${(song?.title || "").trim().toLowerCase()}::${(song?.artist || "").trim().toLowerCase()}`;
   }
@@ -1995,6 +2004,31 @@ function App() {
       return { running: false, remaining: nextSeconds };
     });
   }, [bpmData?.totalBrushingSeconds, brushDurationSeconds, brushingPhase, timer.running]);
+
+  useEffect(() => {
+    if (brushingPhase !== "countdown") {
+      return;
+    }
+
+    if (countdownRemainingMs <= 0) {
+      const totalSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
+      countdownDeadlineRef.current = null;
+      setCountdownRemainingMs(0);
+      setTimer({ running: true, remaining: totalSeconds });
+      setBrushingPhase("running");
+      lastPlaybackTickRef.current = playbackSecondsRef.current;
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      const remaining = Math.max(0, (countdownDeadlineRef.current || 0) - Date.now());
+      setCountdownRemainingMs((previous) => (Math.abs(previous - remaining) < 20 ? previous : remaining));
+    }, 100);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [bpmData?.totalBrushingSeconds, brushDurationSeconds, brushingPhase, countdownRemainingMs]);
 
   useEffect(() => {
     if (!bpmData?.searchBpm || (workflowStep !== "music" && brushingPhase !== "running")) {
@@ -2184,9 +2218,7 @@ function App() {
     setPlaybackSeconds(seconds);
 
     if (brushingPhase === "awaitingPlayback" && seconds > 0) {
-      const totalSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
-      setTimer({ running: true, remaining: totalSeconds });
-      setBrushingPhase("running");
+      beginBrushingCountdown();
       lastPlaybackTickRef.current = seconds;
       return;
     }
@@ -2388,27 +2420,29 @@ function App() {
     const totalSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
     const shouldResume = Boolean(options.resumeFromPause);
     const shouldRestartVideo = Boolean(options.restartVideo);
+
     if (shouldResume) {
-      lastPlaybackTickRef.current = playbackSeconds;
-      setTimer((previous) => ({ ...previous, running: true }));
-      setBrushingPhase("running");
+      if (countdownRemainingMs > 0) {
+        countdownDeadlineRef.current = Date.now() + countdownRemainingMs;
+        setBrushingPhase("countdown");
+      } else {
+        lastPlaybackTickRef.current = playbackSeconds;
+        setTimer((previous) => ({ ...previous, running: true }));
+        setBrushingPhase("running");
+      }
     } else {
       prepareNextSessionStartSegment();
       setBrushingMusicElapsedSeconds(0);
       setPlaybackSeconds(shouldRestartVideo ? 0 : playbackSeconds);
       lastPlaybackTickRef.current = shouldRestartVideo ? 0 : playbackSeconds;
       setTimer({ running: false, remaining: totalSeconds });
-
-      if ((shouldRestartVideo ? 0 : playbackSeconds) > 0) {
-        setTimer({ running: true, remaining: totalSeconds });
-        setBrushingPhase("running");
-      } else {
-        setBrushingPhase("awaitingPlayback");
-      }
+      setBrushingPhase("awaitingPlayback");
     }
 
     if (shouldResume) {
-      issuePlayerCommand("play");
+      if (countdownRemainingMs <= 0) {
+        issuePlayerCommand("play");
+      }
     } else if (shouldRestartVideo) {
       issuePlayerCommand("restart");
     } else {
@@ -2478,13 +2512,17 @@ function App() {
   }
 
   function pauseBrushing() {
-    if (brushingPhase !== "running" && brushingPhase !== "awaitingPlayback") {
+    if (brushingPhase !== "running" && brushingPhase !== "countdown" && brushingPhase !== "awaitingPlayback") {
       return;
     }
 
     setTimer((previous) => ({ ...previous, running: false }));
     setBrushingPhase("paused");
     lastPlaybackTickRef.current = playbackSeconds;
+    if (brushingPhase === "countdown" && countdownDeadlineRef.current) {
+      setCountdownRemainingMs(Math.max(0, countdownDeadlineRef.current - Date.now()));
+      countdownDeadlineRef.current = null;
+    }
     issuePlayerCommand("pause");
   }
 
@@ -2527,7 +2565,7 @@ function App() {
   }
 
   function handlePrimaryBrushAction() {
-    if (brushingPhase === "running" || brushingPhase === "awaitingPlayback") {
+    if (brushingPhase === "running" || brushingPhase === "countdown" || brushingPhase === "awaitingPlayback") {
       pauseBrushing();
       return;
     }
@@ -2596,7 +2634,7 @@ function App() {
   }
 
   const primaryBrushActionLabel =
-    brushingPhase === "running" || brushingPhase === "awaitingPlayback"
+    brushingPhase === "running" || brushingPhase === "countdown" || brushingPhase === "awaitingPlayback"
       ? t("brushing.pause")
       : t("brushing.start", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) });
 

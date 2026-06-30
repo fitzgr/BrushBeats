@@ -1021,10 +1021,16 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
       jaw: countdownPreviewTarget.jaw
     };
   }, [bottomPoints, countdownPreviewTarget, topPoints]);
-  const centerTickerPrimary = brushingPhase === "complete"
-    ? t("brushing.guide.cleanShineLabel")
-    : primaryBrushActionLabel;
-  const centerTickerSecondary = activeEntry?.type === "transition"
+  const centerTickerPrimary = brushingPhase === "countdown"
+    ? `${formatTenths(startCountdownRemainingMs / 1000)}s`
+    : brushingPhase === "complete"
+      ? t("brushing.guide.cleanShineLabel")
+      : primaryBrushActionLabel;
+  const centerTickerSecondary = brushingPhase === "countdown"
+    ? countdownPreviewLabel
+      ? `Start: ${countdownPreviewLabel}`
+      : t("brushing.guide.startLabel")
+    : activeEntry?.type === "transition"
     ? activeEntry.transitionCue === "rotate" && transitionDirection
       ? `${t("brushing.switchPrompts.rotate")}: ${transitionDirection}`
       : activeEntry.transitionCue === "transition" && transitionDirection
