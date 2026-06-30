@@ -1045,6 +1045,8 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
   const centerTickerDetail = brushingPhase === "complete"
     ? ""
     : brushControlCue?.detail || activeTip || centerTickerSecondary;
+  const showCenterTicker = brushingPhase === "running" || brushingPhase === "paused" || brushingPhase === "complete";
+  const showBottomTicker = brushingPhase === "idle" || brushingPhase === "awaitingPlayback";
   const mapBrushDirectionClass = brushFacingDirection === "left" ? "facing-left" : "facing-right";
   const brushActionGlyph = brushingPhase === "countdown"
     ? String(Math.max(1, Math.ceil(startCountdownRemainingMs / 1000)))
@@ -1280,8 +1282,14 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
               </span>
             </div>
         </div>
-        {brushingPhase !== "countdown" && (centerTickerMessage || centerTickerDetail) && (
+        {showCenterTicker && (centerTickerMessage || centerTickerDetail) && (
           <div className="map-center-ticker" aria-live="polite">
+            <strong>{centerTickerMessage}</strong>
+            {centerTickerDetail ? <span>{centerTickerDetail}</span> : null}
+          </div>
+        )}
+        {showBottomTicker && (centerTickerMessage || centerTickerDetail) && (
+          <div className="map-center-ticker bottom-slot" aria-live="polite">
             <strong>{centerTickerMessage}</strong>
             {centerTickerDetail ? <span>{centerTickerDetail}</span> : null}
           </div>
