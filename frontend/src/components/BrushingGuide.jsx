@@ -1030,8 +1030,8 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
     : brushingPhase === "idle" || brushingPhase === "awaitingPlayback"
       ? "Tap brush to start/pause. Hold to reset."
       : "";
-  const showCenterTicker = brushingPhase === "running" || brushingPhase === "paused" || brushingPhase === "complete";
-  const showBottomTicker = brushingPhase === "idle" || brushingPhase === "awaitingPlayback";
+  const showCenterTicker = brushingPhase === "running" || brushingPhase === "paused";
+  const showBottomTicker = brushingPhase === "idle" || brushingPhase === "awaitingPlayback" || brushingPhase === "complete";
   const mapBrushDirectionClass = brushFacingDirection
     ? brushFacingDirection === "left"
       ? "facing-left"
