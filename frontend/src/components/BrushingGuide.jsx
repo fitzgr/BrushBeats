@@ -957,10 +957,16 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
     return state;
   }
 
-  const brushFacingDirection = activeSide
+  const effectiveOrientationSide = brushingPhase === "countdown"
+    ? countdownPreviewTarget?.side || activeSide
+    : activeSide;
+  const effectiveOrientationJaw = brushingPhase === "countdown"
+    ? countdownPreviewTarget?.jaw || activeJaw
+    : activeJaw;
+  const brushFacingDirection = effectiveOrientationSide
     ? brushingHand === "right"
-      ? activeSide
-      : activeSide === "left"
+      ? effectiveOrientationSide
+      : effectiveOrientationSide === "left"
         ? "right"
         : "left"
     : null;
@@ -1072,10 +1078,8 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
       : "▶";
   const brushIndicatorJawClass = brushingPhase === "complete"
     ? ""
-    : brushingPhase === "countdown"
-    ? "jaw-top"
-    : activeJaw
-      ? `jaw-${activeJaw}`
+    : effectiveOrientationJaw
+      ? `jaw-${effectiveOrientationJaw}`
       : "";
 
   function clearResetHoldTimer() {
