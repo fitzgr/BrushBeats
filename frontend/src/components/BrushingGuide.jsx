@@ -957,6 +957,31 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
     return state;
   }
 
+  const countdownPreviewSegment = brushingPhase === "countdown" && sessionStartSegmentKey
+    ? segments.find((segment) => segment.key === sessionStartSegmentKey) || null
+    : null;
+  const countdownPreviewLabel = countdownPreviewSegment ? getSegmentLabel(t, countdownPreviewSegment.label) : null;
+  const countdownPreviewTarget = useMemo(() => {
+    if (!countdownPreviewSegment) {
+      return null;
+    }
+
+    const parsed = parseSegmentKey(countdownPreviewSegment.key);
+    if (!parsed) {
+      return null;
+    }
+
+    const jawToothCount = parsed.jaw === "top" ? topTeeth : bottomTeeth;
+    const split = Math.ceil(jawToothCount / 2);
+    const startMapIndex = parsed.side === "left" ? 0 : Math.max(0, jawToothCount - 1);
+
+    return {
+      ...parsed,
+      jawToothCount,
+      split,
+      startMapIndex
+    };
+  }, [bottomTeeth, countdownPreviewSegment, topTeeth]);
   const effectiveOrientationSide = brushingPhase === "countdown"
     ? countdownPreviewTarget?.side || activeSide
     : activeSide;
@@ -986,31 +1011,6 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
     : transitionFromJaw && transitionToJaw && transitionFromJaw !== transitionToJaw
       ? `${t(`brushing.jaw.${transitionFromJaw}`)} -> ${t(`brushing.jaw.${transitionToJaw}`)}`
       : null;
-  const countdownPreviewSegment = brushingPhase === "countdown" && sessionStartSegmentKey
-    ? segments.find((segment) => segment.key === sessionStartSegmentKey) || null
-    : null;
-  const countdownPreviewLabel = countdownPreviewSegment ? getSegmentLabel(t, countdownPreviewSegment.label) : null;
-  const countdownPreviewTarget = useMemo(() => {
-    if (!countdownPreviewSegment) {
-      return null;
-    }
-
-    const parsed = parseSegmentKey(countdownPreviewSegment.key);
-    if (!parsed) {
-      return null;
-    }
-
-    const jawToothCount = parsed.jaw === "top" ? topTeeth : bottomTeeth;
-    const split = Math.ceil(jawToothCount / 2);
-    const startMapIndex = parsed.side === "left" ? 0 : Math.max(0, jawToothCount - 1);
-
-    return {
-      ...parsed,
-      jawToothCount,
-      split,
-      startMapIndex
-    };
-  }, [bottomTeeth, countdownPreviewSegment, topTeeth]);
   const countdownStartPoint = useMemo(() => {
     if (!countdownPreviewTarget) {
       return null;
