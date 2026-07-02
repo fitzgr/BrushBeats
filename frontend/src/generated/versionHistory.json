@@ -1,5 +1,18 @@
 [
   {
+    "id": "commit-992540e494f521ce81d4f9c1e96a04fbe88def8b",
+    "kind": "commit",
+    "source": "git-history",
+    "sha": "992540e494f521ce81d4f9c1e96a04fbe88def8b",
+    "shortSha": "992540e",
+    "timestamp": "2026-07-02T15:59:57-04:00",
+    "date": "2026-07-02",
+    "author": "Grant Fitz",
+    "subject": "Use cheek/tongue side wording for countdown start labels",
+    "body": "",
+    "tags": []
+  },
+  {
     "id": "commit-37ef8b2724eed7289b2cd02b3abeda12a8e3474d",
     "kind": "commit",
     "source": "git-history",
@@ -2583,19 +2596,6 @@
     "date": "2026-04-16",
     "author": "Grant Fitz",
     "subject": "Add Phase 3 progress dashboard tracking",
-    "body": "",
-    "tags": []
-  },
-  {
-    "id": "commit-2b1e2fee9efbca51e9353bc694fe8440c69591b4",
-    "kind": "commit",
-    "source": "git-history",
-    "sha": "2b1e2fee9efbca51e9353bc694fe8440c69591b4",
-    "shortSha": "2b1e2fe",
-    "timestamp": "2026-04-16T12:47:08-04:00",
-    "date": "2026-04-16",
-    "author": "Grant Fitz",
-    "subject": "Start Phase 3 household overview slice",
     "body": "",
     "tags": []
   }

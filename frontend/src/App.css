@@ -5269,14 +5269,19 @@ select {
 }
 
 .countdown-start-label {
-  font-size: 8.2px;
+  font-size: 12.8px;
   font-weight: 900;
   fill: #eaf5ff;
   paint-order: stroke fill;
   stroke: rgba(8, 33, 63, 0.72);
-  stroke-width: 1.1px;
+  stroke-width: 1.35px;
   letter-spacing: 0.03em;
   text-transform: uppercase;
+}
+
+.countdown-start-label-sub {
+  font-size: 9.2px;
+  opacity: 0.95;
 }
 
 @media (min-width: 760px) {
@@ -5295,8 +5300,12 @@ select {
   }
 
   .countdown-start-label {
-    font-size: 9.1px;
-    stroke-width: 1.25px;
+    font-size: 13.8px;
+    stroke-width: 1.45px;
+  }
+
+  .countdown-start-label-sub {
+    font-size: 10px;
   }
 
   .tooth-svg .tooth-face.countdown-preview-surface {

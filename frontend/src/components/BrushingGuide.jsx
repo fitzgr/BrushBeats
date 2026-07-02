@@ -1009,18 +1009,19 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
       return null;
     }
 
-    const labelOffsetX = countdownPreviewTarget.side === "left" ? -30 : 30;
-    const labelOffsetY = countdownPreviewTarget.jaw === "top" ? -20 : 22;
+    const labelY = countdownPreviewTarget.jaw === "top"
+      ? mapCenter.y - 82
+      : mapCenter.y + 88;
 
     return {
       x: point.x,
       y: point.y,
-      labelX: point.x + labelOffsetX,
-      labelY: point.y + labelOffsetY,
+      labelX: mapCenter.x,
+      labelY,
       side: countdownPreviewTarget.side,
       jaw: countdownPreviewTarget.jaw
     };
-  }, [bottomPoints, countdownPreviewTarget, topPoints]);
+  }, [bottomPoints, countdownPreviewTarget, mapCenter.x, mapCenter.y, topPoints]);
   const countdownStartSurfaceLabel = useMemo(() => {
     if (!countdownPreviewTarget) {
       return t("brushing.guide.startOutsideTooth");
@@ -1030,6 +1031,15 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
       ? t("brushing.guide.startFrontTooth")
       : t("brushing.guide.startInsideTooth");
   }, [countdownPreviewTarget, t]);
+  const countdownStartSurfaceLabelLines = useMemo(() => {
+    const match = String(countdownStartSurfaceLabel || "").match(/^(.+?)\s*\((.+)\)$/);
+
+    if (!match) {
+      return [countdownStartSurfaceLabel];
+    }
+
+    return [match[1], `(${match[2]})`];
+  }, [countdownStartSurfaceLabel]);
   const fallbackTip = tips[tipIndex] || tips[0] || "";
   const centerTickerMessage = brushingPhase === "complete"
     ? completionMessage || t("brushing.guide.cleanShineLabel")
@@ -1336,7 +1346,16 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
                 textAnchor="middle"
                 className="countdown-start-label"
               >
-                {countdownStartSurfaceLabel}
+                {countdownStartSurfaceLabelLines.map((line, lineIndex) => (
+                  <tspan
+                    key={`countdown-start-label-line-${lineIndex}`}
+                    x={countdownStartPoint.labelX}
+                    dy={lineIndex === 0 ? "0" : "1.2em"}
+                    className={lineIndex > 0 ? "countdown-start-label-sub" : undefined}
+                  >
+                    {line}
+                  </tspan>
+                ))}
               </text>
             </g>
           )}
