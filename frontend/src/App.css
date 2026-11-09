@@ -474,7 +474,6 @@
 }
 
 .desktop-shell .workflow-tabs,
-.desktop-shell .care-routine-strip,
 .desktop-shell .language-simulator-card,
 .desktop-shell .error-banner,
 .desktop-shell .info-banner,
@@ -488,181 +487,6 @@
   max-width: 860px;
   margin-left: auto;
   margin-right: auto;
-}
-
-.care-routine-strip {
-  margin: 0 0 1rem;
-  padding: 0.9rem 1rem;
-  border-radius: 18px;
-  border: 1px solid var(--age-card-border);
-  background: var(--age-routine-gradient);
-}
-
-.care-routine-strip.compact {
-  padding: 0.7rem 0.8rem;
-}
-
-.care-routine-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 0.7rem;
-}
-
-.care-routine-strip.compact .care-routine-header {
-  margin-bottom: 0.45rem;
-}
-
-.care-routine-header strong {
-  color: #5f4724;
-}
-
-.care-routine-copy {
-  display: grid;
-  gap: 0.22rem;
-}
-
-.care-routine-copy p {
-  margin: 0;
-  max-width: 72ch;
-  font-size: 0.85rem;
-  line-height: 1.45;
-  color: #56666b;
-}
-
-.care-routine-toggle {
-  border: 1px solid rgba(16, 33, 37, 0.14);
-  background: rgba(255, 255, 255, 0.74);
-  color: #5b676a;
-  font: inherit;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  border-radius: 999px;
-  padding: 0.42rem 0.72rem;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.care-routine-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.7rem;
-}
-
-.care-routine-compact-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(240px, 0.95fr);
-  gap: 0.65rem;
-  align-items: stretch;
-}
-
-.care-routine-card {
-  display: grid;
-  gap: 0.35rem;
-  padding: 0.9rem 0.95rem;
-  border-radius: 14px;
-  border: 1px solid rgba(16, 33, 37, 0.1);
-  background: rgba(255, 255, 255, 0.72);
-}
-
-.care-routine-card strong {
-  font-size: 0.98rem;
-}
-
-.care-routine-card p {
-  margin: 0;
-  font-size: 0.82rem;
-  color: #526265;
-}
-
-.care-routine-card.coming-soon {
-  opacity: 0.5;
-  filter: grayscale(0.2);
-}
-
-.care-routine-card.active {
-  background: linear-gradient(145deg, rgba(255, 239, 220, 0.96), rgba(255, 249, 240, 0.98));
-  border-color: rgba(202, 95, 22, 0.24);
-}
-
-.care-routine-card.best-practice {
-  background: linear-gradient(145deg, rgba(220, 245, 238, 0.96), rgba(240, 252, 248, 0.98));
-  border-color: rgba(66, 184, 154, 0.3);
-}
-
-.care-routine-card.best-practice .care-routine-badge {
-  background: rgba(66, 184, 154, 0.15);
-  color: #1e7a5e;
-}
-
-.care-routine-expanded {
-  margin-top: 0.5rem;
-}
-
-.care-routine-mini-pill {
-  background: none;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.care-routine-mini-pill.active {
-  background: rgba(220, 245, 238, 0.9);
-  border-color: rgba(66, 184, 154, 0.4);
-  color: #1e7a5e;
-}
-
-.care-routine-card.compact-primary {
-  padding: 0.75rem 0.85rem;
-  align-content: center;
-}
-
-.care-routine-card.compact-primary p {
-  margin: 0;
-  font-size: 0.8rem;
-  line-height: 1.35;
-}
-
-.care-routine-badge {
-  display: inline-flex;
-  justify-self: start;
-  padding: 0.2rem 0.5rem;
-  border-radius: 999px;
-  background: rgba(16, 33, 37, 0.07);
-  color: #5b676a;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.care-routine-card.active .care-routine-badge {
-  background: rgba(202, 95, 22, 0.12);
-  color: #8a4716;
-}
-
-.care-routine-mini-list {
-  display: flex;
-  flex-wrap: wrap;
-  align-content: center;
-  gap: 0.5rem;
-  padding: 0.25rem 0;
-}
-
-.care-routine-mini-pill {
-  display: inline-flex;
-  align-items: center;
-  min-height: 38px;
-  padding: 0.45rem 0.7rem;
-  border-radius: 999px;
-  border: 1px solid rgba(16, 33, 37, 0.12);
-  background: rgba(255, 255, 255, 0.76);
-  color: #5b676a;
-  font-size: 0.8rem;
-  font-weight: 700;
-  line-height: 1.2;
 }
 
 .language-simulator-card {
@@ -1009,6 +833,10 @@
   background: linear-gradient(130deg, #f7dfc9, #ffd8b8);
   border-color: rgba(202, 95, 22, 0.45);
   color: #6f3206;
+}
+
+.tooth-svg.focus-tooth {
+  cursor: pointer;
 }
 
 .desktop-step-layout {
@@ -3016,6 +2844,11 @@
   order: 1;
 }
 
+/* Allow the tooth map to take nearly the full phone width without clipping. */
+.layout-grid.mobile-mode .player.compact-mobile-frame {
+  padding-inline: clamp(0.4rem, 2vw, 0.75rem);
+}
+
 .layout-grid.mobile-mode .brush-actions-card {
   grid-column: span 12;
   order: 2;
@@ -3141,6 +2974,10 @@
 }
 
 .guide-session-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.8rem;
   margin-bottom: 0.1rem;
 }
 
@@ -3187,98 +3024,6 @@
   font-size: 0.8rem;
   color: #56666a;
   font-weight: 600;
-}
-
-.water-flossing-card {
-  display: grid;
-  gap: 0.55rem;
-  margin: 0.35rem 0 0.95rem;
-  padding: 0.8rem 0.9rem;
-  border-radius: 14px;
-  border: 1px solid rgba(16, 33, 37, 0.14);
-  background: linear-gradient(145deg, rgba(230, 247, 246, 0.9), rgba(246, 252, 255, 0.95));
-}
-
-.water-flossing-card.compact {
-  margin-bottom: 0.75rem;
-}
-
-.water-flossing-settings-grid {
-  display: grid;
-  gap: 0.55rem;
-}
-
-.water-flossing-title {
-  color: #145166;
-  font-size: 0.95rem;
-}
-
-.water-flossing-meta,
-.water-flossing-status,
-.water-flossing-last,
-.water-flossing-note {
-  margin: 0;
-  font-size: 0.84rem;
-  color: #33555d;
-}
-
-.water-flossing-last {
-  font-weight: 700;
-}
-
-.water-flossing-duration {
-  margin: 0;
-}
-
-.water-flossing-duration select {
-  width: 100%;
-  border: 1px solid rgba(16, 33, 37, 0.16);
-  background: #fffdf8;
-  color: var(--ink);
-  font: inherit;
-  font-weight: 700;
-  border-radius: 10px;
-  padding: 0.56rem 0.7rem;
-}
-
-.water-flossing-duration input[type="range"] {
-  width: 100%;
-  margin: 0.18rem 0 0;
-  accent-color: #1d6f86;
-}
-
-.water-flossing-inline-action {
-  display: grid;
-  align-content: end;
-}
-
-.water-flossing-inline-action .action-btn {
-  min-height: 40px;
-}
-
-.water-flossing-balance-caption {
-  display: block;
-  margin-top: 0.1rem;
-  font-size: 0.75rem;
-  color: #4a656c;
-  font-weight: 600;
-}
-
-.water-flossing-controls {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.5rem;
-}
-
-.water-flossing-controls .action-btn {
-  min-height: 40px;
-  padding-inline: 0.55rem;
-}
-
-@media (min-width: 760px) {
-  .water-flossing-settings-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 .brush-hand-actions {
@@ -4197,16 +3942,11 @@ select {
 }
 
 .guide-map-shell {
+  width: 100%;
+  background: transparent;
   position: relative;
   overflow: hidden;
   border-radius: 24px;
-}
-
-.guide-map-age-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  border-radius: inherit;
 }
 
 .guide-age-overlay {
@@ -4224,6 +3964,178 @@ select {
   padding: 0;
   position: relative;
   z-index: 1;
+}
+
+.tooth-svg[role="button"] {
+  cursor: pointer;
+  outline: none;
+}
+
+.tooth-svg[role="button"]:focus-visible .tooth-outline {
+  stroke: #1492ff;
+  stroke-width: 2.4;
+  filter: drop-shadow(0 0 7px rgba(20, 146, 255, 0.7));
+}
+
+.brush-focus-editor-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(5, 22, 39, 0.62);
+  overflow: auto;
+}
+
+.brush-focus-editor {
+  width: min(100%, 350px);
+  padding: 1.05rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 18px;
+  background: linear-gradient(145deg, #fffdf8, #eef7fb);
+  box-shadow: 0 18px 42px rgba(4, 20, 35, 0.38);
+  color: #163142;
+}
+
+.brush-focus-editor-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.brush-focus-editor-eyebrow {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: #b65a1c;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.brush-focus-editor h3,
+.brush-focus-editor p {
+  margin: 0;
+}
+
+.brush-focus-editor h3 {
+  font-size: 1.1rem;
+}
+
+.brush-focus-editor p {
+  margin-top: 0.65rem;
+  color: #536873;
+  font-size: 0.86rem;
+}
+
+.brush-focus-context {
+  margin-top: 0.8rem;
+  padding: 0.55rem 0.65rem 0.35rem;
+  border: 1px solid rgba(22, 49, 66, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.brush-focus-context-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: #61737b;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.brush-focus-context-label strong {
+  color: #b65a1c;
+  font-size: 0.7rem;
+}
+
+.brush-focus-context svg {
+  display: block;
+  width: 100%;
+  height: 70px;
+  margin-top: 0.15rem;
+}
+
+.brush-focus-context-arch {
+  fill: none;
+  stroke: rgba(22, 49, 66, 0.2);
+  stroke-width: 1.5;
+}
+
+.brush-focus-context-tooth {
+  fill: #fffdf8;
+  stroke: #81949b;
+  stroke-width: 1.1;
+}
+
+.brush-focus-context-tooth.selected {
+  fill: #f4a261;
+  stroke: #b65a1c;
+  stroke-width: 1.5;
+}
+
+.brush-focus-context-marker {
+  fill: rgba(244, 162, 97, 0.18);
+  stroke: rgba(224, 123, 48, 0.62);
+  stroke-width: 1.4;
+}
+
+.brush-focus-editor-badge {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 0.3rem 0.5rem;
+  background: rgba(244, 162, 97, 0.2);
+  color: #8b4a13;
+  font-size: 0.68rem;
+  font-weight: 900;
+}
+
+.brush-focus-mode-options {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.85rem 0;
+}
+
+.brush-focus-mode-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border: 1px solid rgba(22, 49, 66, 0.16);
+  border-radius: 10px;
+  padding: 0.58rem 0.7rem;
+  background: rgba(255, 255, 255, 0.72);
+  color: #163142;
+  cursor: pointer;
+  text-align: left;
+}
+
+.brush-focus-mode-option span {
+  color: #61737b;
+  font-size: 0.75rem;
+}
+
+.brush-focus-mode-option.selected {
+  border-color: #e07b30;
+  background: rgba(244, 162, 97, 0.2);
+  box-shadow: 0 0 0 2px rgba(224, 123, 48, 0.14);
+}
+
+.brush-focus-editor-return {
+  width: 100%;
+  border: 0;
+  border-radius: 10px;
+  padding: 0.68rem 0.8rem;
+  background: #163142;
+  color: #fffdf8;
+  font-weight: 900;
+  cursor: pointer;
 }
 
 .map-hand-orientation-layer {
@@ -5276,8 +5188,27 @@ select {
   fill: #f5e6bd;
 }
 
+/* At the start of Extend, only the selected Extra Care surfaces return to a
+   gray unbrushed state; they light up again as the focused pass completes. */
+.tooth-svg.focus-tooth .tooth-face.extend-pending:not(.active-surface) {
+  fill: #aeb5bd;
+  opacity: 0.92;
+  filter: none;
+}
+
 .tooth-svg .tooth-face.clean {
-  fill: #fffdf8;
+  fill: #eafff7;
+  opacity: 1;
+  filter: drop-shadow(0 0 3px rgba(115, 214, 181, 0.28));
+}
+
+/* Completed Extra Care surfaces keep their orange focus identity, but brighten to show they were brushed. */
+.tooth-svg.focus-mode-front .front-face.clean,
+.tooth-svg.focus-mode-back .back-face.clean,
+.tooth-svg.focus-mode-both .tooth-face.clean {
+  fill: #fff8ed;
+  opacity: 0.9;
+  filter: brightness(1.12) drop-shadow(0 0 4px rgba(244, 162, 97, 0.42));
 }
 
 .tooth-celebration-ripple {
@@ -5369,6 +5300,124 @@ select {
 
 .tooth-svg .tooth-face.active-surface {
   fill: #2f80ff;
+}
+
+.tooth-svg .tooth-focus-overlay {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.tooth-svg.active-tooth .tooth-focus-overlay.active-focus-overlay {
+  opacity: 0.82;
+}
+
+.tooth-svg.focus-tooth .tooth-face:not(.active-surface):not(.clean) {
+  opacity: 0.42;
+}
+
+.tooth-svg.focus-tooth .tooth-face.active-surface {
+  opacity: 1;
+}
+
+.tooth-svg.focus-tooth .tooth-outline {
+  stroke: #c96f2a;
+  stroke-width: 1.45;
+}
+
+.mouth-map.hygienist-focus-mode .tooth-svg:not(.focus-tooth) .tooth-face:not(.clean) {
+  opacity: 0.3;
+  filter: saturate(0.72);
+}
+
+/* Brushed standard surfaces stay visibly clean even while Extra Care contrast mode is active. */
+.mouth-map.hygienist-focus-mode .tooth-svg:not(.focus-tooth) .tooth-face.clean {
+  fill: #dffcf1;
+  opacity: 1;
+  filter: saturate(1) drop-shadow(0 0 4px rgba(93, 201, 164, 0.42));
+}
+
+.mouth-map.hygienist-focus-mode .tooth-svg:not(.focus-tooth) .tooth-body-base,
+.mouth-map.hygienist-focus-mode .tooth-svg:not(.focus-tooth) .tooth-groove {
+  opacity: 0.56;
+}
+
+.mouth-map.hygienist-focus-mode .tooth-svg.focus-tooth .tooth-focus-overlay {
+  opacity: 0.86;
+  animation: focusToothGlow 1250ms ease-in-out infinite;
+}
+
+.mouth-map.hygienist-focus-mode .tooth-svg.focus-mode-front .tooth-focus-overlay-front,
+.mouth-map.hygienist-focus-mode .tooth-svg.focus-mode-back .tooth-focus-overlay-back {
+  opacity: 0.92;
+}
+
+.mouth-map.hygienist-focus-mode .tooth-svg.focus-mode-both .tooth-focus-overlay-both {
+  opacity: 0.9;
+}
+
+.mouth-map.hygienist-focus-mode .tooth-svg.active-tooth.focus-tooth .tooth-focus-overlay.active-focus-overlay {
+  opacity: 0.94;
+}
+
+.mouth-map.hygienist-focus-mode .tooth-svg.focus-tooth .tooth-outline {
+  stroke: #e07b30;
+  stroke-width: 1.9;
+  filter: drop-shadow(0 0 7px rgba(244, 162, 97, 0.66));
+}
+
+.hygienist-contrast-hint {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(244, 162, 97, 0.52);
+  background: rgba(16, 27, 48, 0.76);
+  color: #ffd3ab;
+  font-size: 0.71rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.hygienist-contrast-hint.hint-top {
+  top: 8px;
+}
+
+.hygienist-contrast-hint.hint-bottom {
+  bottom: 8px;
+}
+
+.hygienist-contrast-hint-mobile {
+  display: block;
+  margin: 0.35rem auto 0;
+  width: fit-content;
+  max-width: min(100%, 320px);
+  padding: 0.32rem 0.56rem;
+  border-radius: 999px;
+  border: 1px solid rgba(244, 162, 97, 0.52);
+  background: rgba(16, 27, 48, 0.76);
+  color: #ffd3ab;
+  font-size: 0.69rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+@keyframes focusToothGlow {
+  0% {
+    opacity: 0.8;
+  }
+
+  50% {
+    opacity: 0.94;
+  }
+
+  100% {
+    opacity: 0.8;
+  }
 }
 
 .tooth-svg .tooth-face.countdown-preview-surface {
@@ -5527,6 +5576,42 @@ select {
   stroke-width: 1.1px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+.extra-care-badge {
+  transform-origin: center;
+  animation: extraCarePulse 1200ms ease-in-out infinite;
+}
+
+.extra-care-badge rect {
+  fill: rgba(244, 162, 97, 0.92);
+  stroke: rgba(124, 66, 18, 0.38);
+  stroke-width: 1;
+}
+
+.extra-care-badge text {
+  fill: #ffffff;
+  font-size: 8.8px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+@keyframes extraCarePulse {
+  0% {
+    opacity: 0.82;
+    transform: scale(0.97);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+
+  100% {
+    opacity: 0.82;
+    transform: scale(0.97);
+  }
 }
 
 .map-electric-cue.pulse-once {
@@ -5691,7 +5776,9 @@ select {
   .tooth-svg.active-tooth .tooth-face.active-surface,
   .map-score-label.beat-pulse,
   .mouth-map.completion-flash .tooth-svg .tooth-face,
-  .tooth-celebration-ripple {
+  .tooth-celebration-ripple,
+  .extra-care-badge,
+  .mouth-map.hygienist-focus-mode .tooth-svg.focus-tooth .tooth-focus-overlay {
     animation: none;
   }
 
@@ -5836,32 +5923,6 @@ select {
 }
 
 @media (max-width: 520px) {
-  .care-routine-header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .care-routine-toggle {
-    align-self: flex-start;
-  }
-
-  .care-routine-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .care-routine-compact-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .care-routine-mini-list {
-    padding-top: 0;
-  }
-
-  .care-routine-mini-pill {
-    width: 100%;
-    justify-content: center;
-  }
-
   .language-simulator-control {
     max-width: none;
   }
@@ -6554,11 +6615,164 @@ select {
   }
 
   .mouth-map {
-    width: min(100%, 320px);
+    width: 100%;
+    max-width: 420px;
   }
 
   .last-song-banner {
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+
+/* Keep the pre-start brush control deliberately quiet and compact. */
+.map-center-ticker.bottom-slot.brush-control-instruction {
+  width: auto;
+  max-width: 82%;
+  padding: 0.16rem 0.34rem;
+  border: 0;
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.map-center-ticker.bottom-slot.brush-control-instruction strong {
+  font-size: 0.58rem;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+
+/* Optional alternating-hand coordination challenge beside the rotating-start control. */
+.mobile-rotate-start-row {
+  justify-content: space-between;
+  gap: 0.7rem;
+  align-items: center;
+}
+
+.brain-challenge-copy {
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.brain-challenge-info-link {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #1d5f88;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.brain-challenge-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(12, 31, 43, 0.48);
+}
+
+.brain-challenge-modal {
+  position: relative;
+  width: min(92vw, 430px);
+  border-radius: 18px;
+  padding: 1.15rem 1.2rem;
+  background: #fff;
+  box-shadow: 0 18px 50px rgba(12, 31, 43, 0.28);
+  color: #22373b;
+}
+
+.brain-challenge-modal h3 {
+  margin: 0 2rem 0.7rem 0;
+  font-size: 1.05rem;
+}
+
+.brain-challenge-modal p {
+  margin: 0.6rem 0 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.brain-challenge-close {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.7rem;
+  border: 0;
+  background: transparent;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+
+/* Three optional controls fit on one line when space allows and wrap on narrow phones. */
+.mobile-rotate-start-row {
+  flex-wrap: wrap;
+  row-gap: 0.35rem;
+}
+
+.mobile-rotate-start-row .guide-rotate-start-copy,
+.mobile-rotate-start-row .brain-challenge-copy,
+.mobile-rotate-start-row .brain-challenge-info-link {
+  white-space: nowrap;
+}
+
+.mobile-rotate-start-row .brain-challenge-copy {
+  flex-shrink: 0;
+}
+
+
+/* Alternate-hands start cue: visible only during the pre-brush countdown. */
+.countdown-hand-cue {
+  position: absolute;
+  z-index: 8;
+  top: 12px;
+  right: 12px;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.94);
+  border: 2px solid rgba(53, 122, 112, 0.38);
+  box-shadow: 0 4px 14px rgba(31, 70, 65, 0.16);
+  pointer-events: none;
+}
+.countdown-hand-cue.left .countdown-hand-icon {
+  transform: scaleX(-1);
+}
+.countdown-hand-icon {
+  font-size: 34px;
+  line-height: 1;
+}
+.countdown-hand-cue strong {
+  position: absolute;
+  right: 3px;
+  bottom: 1px;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  line-height: 1;
+  background: #fff;
+  border: 1px solid rgba(53, 122, 112, 0.35);
+}
+
+
+/* Keep hygienist Extra Care surfaces identifiable after they have been brushed. */
+.tooth-focus-complete-marker {
+  fill: none;
+  stroke: #F4A261;
+  stroke-width: 2.8;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
 }

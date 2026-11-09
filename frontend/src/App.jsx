@@ -4,7 +4,6 @@ import BPMCalculator from "./components/BPMCalculator";
 import SongList from "./components/SongList";
 import Player from "./components/Player";
 import BrushingGuide from "./components/BrushingGuide";
-import WaterFlossingGuide from "./components/WaterFlossingGuide";
 import AgeThemePanel from "./components/AgeThemePanel";
 import HouseholdSetupPanel from "./components/HouseholdSetupPanel";
 import HouseholdOverviewPanel from "./components/HouseholdOverviewPanel";
@@ -28,6 +27,8 @@ import { getUserScopedState, saveUserScopedDefaults, saveUserScopedFavoriteSongs
 import { getLanguageFallbackInfo, setPreferredSupportedLanguage } from "./i18n.ts";
 import { getGeoCountry, getSongs, getYoutubeVideo } from "./api/client";
 import { calculateBpm } from "./lib/bpm";
+import { buildBrushingSessionTimeline, buildSegments } from "./lib/brushingTimeline";
+import { buildFocusSurfaceModeMapFromSelector } from "./lib/focusModes";
 import { buildReinforcementPool, getAgeMessageGroupCount, pickReinforcementMessage } from "./lib/reinforcementMessages";
 import {
   analyticsEnabled,
@@ -56,6 +57,7 @@ import { buildAgeEstimateFromActualAge, buildAgeEstimateFromPhase, estimateAgeFr
 import { buildAgeUiProfile } from "./lib/ageUiProfile";
 import { useDeviceContext } from "./lib/deviceContext";
 import { getOverlayThemeOptions, OVERLAY_THEME_AUTO } from "./lib/overlayThemes";
+import { mergePreferenceDefaults } from "./lib/preferenceFreshness";
 import { buildUserMusicContext } from "./lib/userMusicContext";
 import "./App.css";
 
@@ -75,6 +77,44 @@ const ROTATING_START_SEGMENT_SEQUENCE = [
 ];
 const DEFAULT_AGE_SIMULATION = { active: false, mode: "exact", phase: "primary", value: 2, unit: "years" };
 const YOUTUBE_VIDEO_ID_REGEX = /^[a-zA-Z0-9_-]{11}$/;
+const HYGIENIST_FOCUS_MODES = ["none", "front", "back", "both"];
+
+function buildHygienistFocusModeMap(topTeeth, bottomTeeth, existingModes = {}) {
+  const nextModes = {};
+  const safeTop = Math.max(0, Math.floor(Number(topTeeth || 0)));
+  const safeBottom = Math.max(0, Math.floor(Number(bottomTeeth || 0)));
+
+  function getPersistedMode(jaw, index) {
+    const canonicalKey = `${jaw}-${index}`;
+    const legacyColonKey = `${jaw}:${index}`;
+    const mode = existingModes?.[canonicalKey] ?? existingModes?.[legacyColonKey];
+    return HYGIENIST_FOCUS_MODES.includes(mode) ? mode : "none";
+  }
+
+  for (let index = 0; index < safeTop; index += 1) {
+    nextModes[`top-${index}`] = getPersistedMode("top", index);
+  }
+
+  for (let index = 0; index < safeBottom; index += 1) {
+    nextModes[`bottom-${index}`] = getPersistedMode("bottom", index);
+  }
+
+  return nextModes;
+}
+
+function normalizeHygienistFocusModesForValues(rawModes, values) {
+  return buildHygienistFocusModeMap(values?.top, values?.bottom, rawModes || {});
+}
+
+function isBrushBeatsDevGithubPages() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  const host = String(window.location.host || "").toLowerCase();
+  const path = String(window.location.pathname || "");
+  return host === "fitzgr.github.io" && path.startsWith("/BrushBeats-dev");
+}
 
 function normalizeYoutubeVideoId(value) {
   const candidate = String(value || "").trim();
@@ -211,6 +251,7 @@ function buildHouseholdSetupDraft({ household, activeUser, onboardingDraft, user
 function buildCompletionCelebrationMessage(t, fallbackMessage, unlockedAchievements, dashboard) {
   const highlightedAchievement = Array.isArray(unlockedAchievements) && unlockedAchievements.length > 0
     ? [...unlockedAchievements]
+      .filter((achievement) => achievement.achievementType !== "routine-mix")
       .map((achievement) => getAchievementPresentation(achievement))
       .sort((left, right) => Number(right.pointsAwarded || 0) - Number(left.pointsAwarded || 0))[0]
     : null;
@@ -223,51 +264,13 @@ function buildCompletionCelebrationMessage(t, fallbackMessage, unlockedAchieveme
     });
   }
 
-  if (dashboard?.nextAchievement) {
-    if (dashboard.goals?.summary?.allComplete) {
-      return t("app.achievements.completionCelebration.goalsComplete", {
-        brushing: dashboard.goals.weeklyBrushing.target,
-        support: dashboard.goals.weeklySupport.target
-      });
-    }
-
-    if (dashboard.goals?.summary?.nextFocus) {
-      const focusKey = dashboard.goals.summary.nextFocus === "support" ? "weeklySupport" : "weeklyBrushing";
-      const focusGoal = dashboard.goals[focusKey];
-      return t(`app.achievements.completionCelebration.${focusKey}`, {
-        current: focusGoal.current,
-        target: focusGoal.target,
-        remaining: focusGoal.remaining
-      });
-    }
-
-    if (dashboard.caregiverNudges?.length > 0) {
-      const topNudge = dashboard.caregiverNudges[0];
-      if (topNudge.key === "stageTransition") {
-        return t("app.achievements.completionCelebration.stageTransition", {
-          previousStage: t(`age.stages.${topNudge.values.previousStage}.label`),
-          newStage: t(`age.stages.${topNudge.values.newStage}.label`)
-        });
-      }
-
-      if (topNudge.key === "nextAchievement") {
-        return t("app.achievements.completionCelebration.nextAchievement", {
-          badge: t(`app.achievements.types.${topNudge.values.achievementType}.title`),
-          remaining: topNudge.values.remaining,
-          target: topNudge.values.target
-        });
-      }
-
-      return t(`app.achievements.completionCelebration.${topNudge.key}`, topNudge.values);
-    }
-
+  if (dashboard?.nextAchievement && dashboard.nextAchievement.achievementType !== "routine-mix") {
     return t("app.achievements.completionCelebration.progress", {
       level: dashboard.progression.currentLevel,
       remainingPoints: dashboard.progression.pointsToNextLevel,
       badge: t(`app.achievements.types.${dashboard.nextAchievement.achievementType}.title`)
     });
   }
-
   return fallbackMessage;
 }
 
@@ -278,27 +281,22 @@ function daysAgoIso(daysAgo) {
 }
 
 function mergeStoredDefaults(userDefaults, legacyPreferences) {
-  if (!userDefaults && !legacyPreferences) {
+  const merged = mergePreferenceDefaults(userDefaults, legacyPreferences);
+  if (!merged) {
     return null;
   }
 
-  const merged = {
-    ...(legacyPreferences || {}),
-    ...(userDefaults || {})
+  // Preserve rotation settings from whichever snapshot is newest, without
+  // letting an older user defaults mirror hide newer hygienist selections.
+  return {
+    ...merged,
+    rotatingStartEnabled: Boolean(merged.rotatingStartEnabled),
+    rotatingStartIndex: clampValue(
+      Math.floor(Number(merged.rotatingStartIndex ?? 0) || 0),
+      0,
+      ROTATING_START_SEGMENT_SEQUENCE.length - 1
+    )
   };
-
-  merged.values = userDefaults?.values || legacyPreferences?.values || merged.values;
-  merged.filters = userDefaults?.filters || legacyPreferences?.filters || merged.filters;
-  merged.rotatingStartEnabled = Boolean(
-    userDefaults?.rotatingStartEnabled ?? legacyPreferences?.rotatingStartEnabled ?? false
-  );
-  merged.rotatingStartIndex = clampValue(
-    Math.floor(Number(userDefaults?.rotatingStartIndex ?? legacyPreferences?.rotatingStartIndex ?? 0) || 0),
-    0,
-    ROTATING_START_SEGMENT_SEQUENCE.length - 1
-  );
-
-  return merged;
 }
 
 function buildMockProgressDashboard(phase = "adult") {
@@ -510,11 +508,18 @@ function App() {
   const [brushingHand, setBrushingHand] = useState("right");
   const [brushType, setBrushType] = useState("manual");
   const [overlayThemeChoice, setOverlayThemeChoice] = useState(OVERLAY_THEME_AUTO);
-  const [expandedRoutineCard, setExpandedRoutineCard] = useState(null);
   const [brushDurationSeconds, setBrushDurationSeconds] = useState(DEFAULT_BRUSH_DURATION_SECONDS);
   const [rotatingStartEnabled, setRotatingStartEnabled] = useState(false);
+  const [extendEnabled, setExtendEnabled] = useState(true);
   const [rotatingStartIndex, setRotatingStartIndex] = useState(0);
   const [rotatingStartPersistStatus, setRotatingStartPersistStatus] = useState("idle");
+  const [brainChallengeEnabled, setBrainChallengeEnabled] = useState(false);
+  const [brainChallengeNextHand, setBrainChallengeNextHand] = useState("right");
+  const [brainChallengeInfoOpen, setBrainChallengeInfoOpen] = useState(false);
+  const [rotatingStartInfoOpen, setRotatingStartInfoOpen] = useState(false);
+  const [extendInfoOpen, setExtendInfoOpen] = useState(false);
+  const [sessionBrushingHand, setSessionBrushingHand] = useState(null);
+  const [hygienistFocusModes, setHygienistFocusModes] = useState(() => buildHygienistFocusModeMap(DEFAULT_VALUES.top, DEFAULT_VALUES.bottom));
   const [sessionStartSegmentKey, setSessionStartSegmentKey] = useState(null);
   const [brushControlCue, setBrushControlCue] = useState(null);
   const [queuedSongPreview, setQueuedSongPreview] = useState(null);
@@ -532,7 +537,7 @@ function App() {
   const [householdManagementNotice, setHouseholdManagementNotice] = useState("");
   const [progressDashboard, setProgressDashboard] = useState(null);
   const [recentUnlockedAchievements, setRecentUnlockedAchievements] = useState([]);
-  const [progressDashboardFilters, setProgressDashboardFilters] = useState({ timeRange: "30d", activityType: "all" });
+  const [progressDashboardFilters, setProgressDashboardFilters] = useState({ timeRange: "30d", activityType: "brushing" });
   const [persistedMigrationState, setPersistedMigrationState] = useState(null);
   const [householdOnboardingState, setHouseholdOnboardingState] = useState(null);
   const [householdOnboardingUiState, setHouseholdOnboardingUiState] = useState(null);
@@ -570,7 +575,6 @@ function App() {
   const playbackSecondsRef = useRef(0);
   const countdownDeadlineRef = useRef(null);
   const playOnCountdownEndRef = useRef(false);
-  const compactRoutineRef = useRef(storageBannerDismissed || storageConsent !== "unknown");
   const preferencesHydratedRef = useRef(false);
   const repeatSessionBootstrapRef = useRef(false);
   const restoredSessionRef = useRef(null);
@@ -584,6 +588,7 @@ function App() {
   const appliedSharedVideoRef = useRef("");
   const lastRotatingPersistedRef = useRef({ enabled: false, index: 0 });
   const analyticsAvailable = useMemo(() => analyticsEnabled(), []);
+  const enableHygienistFocusExperience = useMemo(() => isBrushBeatsDevGithubPages(), []);
   const device = useDeviceContext();
   const totalTeeth = values.top + values.bottom;
   const toothAgeEstimate = bpmData?.ageEstimate || estimateAgeFromTeethFull(totalTeeth);
@@ -622,6 +627,28 @@ function App() {
     [ageSimulation.active, effectiveAgeEstimate?.phase]
   );
   const selectedBrushBpm = Number(selectedSong?.bpm || bpmData?.searchBpm || 120);
+  const sessionTotalSeconds = useMemo(() => {
+    const baseSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
+    if (!extendEnabled || !enableHygienistFocusExperience) return baseSeconds;
+
+    const focusModes = buildFocusSurfaceModeMapFromSelector(hygienistFocusModes);
+    if (!focusModes.size) return baseSeconds;
+
+    const segments = buildSegments(values.top, values.bottom, sessionStartSegmentKey, {
+      brushingHand: sessionBrushingHand || brushingHand,
+      brushType
+    });
+    const timeline = buildBrushingSessionTimeline({
+      segments,
+      secondsPerTooth: Number(bpmData?.secondsPerTooth) || baseSeconds / Math.max(1, (values.top + values.bottom) * 2),
+      transitionBufferSeconds: Number(bpmData?.transitionBufferSeconds || 1),
+      baseDurationSeconds: baseSeconds,
+      beatsPerMinute: selectedBrushBpm,
+      focusModes,
+      extendEnabled: true
+    });
+    return Math.max(baseSeconds, timeline.at(-1)?.endsAt || baseSeconds);
+  }, [bpmData, brushDurationSeconds, brushType, brushingHand, enableHygienistFocusExperience, extendEnabled, hygienistFocusModes, selectedBrushBpm, sessionBrushingHand, sessionStartSegmentKey, values.bottom, values.top]);
   const supportedLanguageOptions = useMemo(
     () => [
       { value: "en", label: t("settings.supportedLanguage.options.english") },
@@ -637,9 +664,6 @@ function App() {
 
     return supportedLanguageOptions.find((option) => option.value !== "en")?.value || "es";
   }, [i18n.resolvedLanguage, supportedLanguageOptions]);
-  const isReturningVisitor = compactRoutineRef.current;
-  const [isRoutineExpanded, setIsRoutineExpanded] = useState(!isReturningVisitor);
-  const showCompactRoutine = isReturningVisitor && !isRoutineExpanded;
   const reinforcementPool = useMemo(
     () => buildReinforcementPool(effectiveAgeEstimate?.phase, totalTeeth, brushType),
     [effectiveAgeEstimate?.phase, brushType, totalTeeth]
@@ -670,9 +694,22 @@ function App() {
 
   const ageGroupCount = getAgeMessageGroupCount();
   const completionBannerMessage = useMemo(
-    () => buildCompletionCelebrationMessage(t, completionMessage || t("app.success", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) }), recentUnlockedAchievements, progressDashboard),
-    [bpmData?.totalBrushingSeconds, brushDurationSeconds, completionMessage, progressDashboard, recentUnlockedAchievements, t]
+    () => buildCompletionCelebrationMessage(t, completionMessage || t("app.success", { duration: formatTime(Math.ceil(sessionTotalSeconds)) }), recentUnlockedAchievements, progressDashboard),
+    [completionMessage, progressDashboard, recentUnlockedAchievements, sessionTotalSeconds, t]
   );
+
+  useEffect(() => {
+    setHygienistFocusModes((currentModes) => buildHygienistFocusModeMap(values.top, values.bottom, currentModes));
+  }, [values.bottom, values.top]);
+
+  // Remove persisted preferences for the discontinued water-floss coaching feature.
+  useEffect(() => {
+    try {
+      window.localStorage.removeItem("brushBeats.waterFlossing.settings.v1");
+    } catch {
+      // Storage restrictions must not interfere with brushing.
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -803,12 +840,6 @@ function App() {
     playbackSecondsRef.current = playbackSeconds;
   }, [playbackSeconds]);
 
-  useEffect(() => {
-    if (isReturningVisitor && workflowStep === "brush") {
-      setIsRoutineExpanded(false);
-    }
-  }, [isReturningVisitor, workflowStep]);
-
   function applySavedSession(session) {
     if (!session) {
       return;
@@ -821,6 +852,7 @@ function App() {
     const nextFilters = session.filters && Number.isFinite(Number(session.filters.tolerance))
       ? session.filters
       : createInitialSongPreferences(nextValues.top + nextValues.bottom);
+    const nextFocusModes = normalizeHygienistFocusModesForValues(session.hygienistFocusModes, nextValues);
 
     setValues(nextValues);
     setSongFilters(nextFilters);
@@ -832,9 +864,45 @@ function App() {
     const nextRotatingStartIndex = clampValue(Math.floor(Number(session.rotatingStartIndex) || 0), 0, ROTATING_START_SEGMENT_SEQUENCE.length - 1);
     setRotatingStartEnabled(nextRotatingStartEnabled);
     setRotatingStartIndex(nextRotatingStartIndex);
+    // Earlier releases saved Extend as false before the default was introduced.
+    // Migrate those profiles once; preserve explicit off choices thereafter.
+    setExtendEnabled(session.extendPreferenceVersion === 2 ? Boolean(session.extendEnabled) : true);
+    setBrainChallengeEnabled(Boolean(session.brainChallengeEnabled));
+    setBrainChallengeNextHand(session.brainChallengeNextHand === "left" ? "left" : "right");
+    setSessionBrushingHand(null);
     lastRotatingPersistedRef.current = { enabled: nextRotatingStartEnabled, index: nextRotatingStartIndex };
     setOverlayThemeChoice(session.overlayTheme || OVERLAY_THEME_AUTO);
     setBrushDurationSeconds(session.brushDurationSeconds || DEFAULT_BRUSH_DURATION_SECONDS);
+    setHygienistFocusModes(nextFocusModes);
+  }
+
+  function handleHygienistFocusModesChange(nextModes) {
+    const normalizedModes = normalizeHygienistFocusModesForValues(nextModes, values);
+    setHygienistFocusModes(normalizedModes);
+
+    // Persist during the user interaction, not just in a later React effect.
+    // A quick page refresh must not lose freshly selected extra-care teeth.
+    if (storageConsent === "granted") {
+      saveStoredPreferences({
+        ...(loadStoredPreferences() || {}),
+        values,
+        filters: songFilters,
+        keyword,
+        brushingHand,
+        brushType,
+        rotatingStartEnabled,
+        rotatingStartIndex,
+        extendEnabled,
+        extendPreferenceVersion: 2,
+        brainChallengeEnabled,
+        brainChallengeNextHand,
+        overlayTheme: overlayThemeChoice,
+        hygienistFocusModes: normalizedModes,
+        brushDurationSeconds,
+        userId: activeHouseholdUser?.userId || null,
+        savedAt: Date.now()
+      });
+    }
   }
 
   function handleRotatingStartEnabledChange(nextEnabled) {
@@ -1179,8 +1247,14 @@ function App() {
       brushType,
       rotatingStartEnabled,
       rotatingStartIndex,
+      extendEnabled,
+      extendPreferenceVersion: 2,
+      brainChallengeEnabled,
+      brainChallengeNextHand,
       overlayTheme: overlayThemeChoice,
+      hygienistFocusModes,
       brushDurationSeconds,
+      userId: activeHouseholdUser?.userId || null,
       savedAt: Date.now()
     });
 
@@ -1192,7 +1266,7 @@ function App() {
         setRotatingStartPersistStatus("error");
       }
     }
-  }, [brushDurationSeconds, brushingHand, brushType, keyword, overlayThemeChoice, rotatingStartEnabled, rotatingStartIndex, songFilters, storageConsent, values]);
+  }, [brainChallengeEnabled, brainChallengeNextHand, brushDurationSeconds, extendEnabled, brushingHand, brushType, hygienistFocusModes, keyword, overlayThemeChoice, rotatingStartEnabled, rotatingStartIndex, songFilters, storageConsent, values]);
 
   useEffect(() => {
     if (storageConsent !== "granted" || !dbStatus.ready || !activeHouseholdUser?.userId || !preferencesHydratedRef.current) {
@@ -1207,11 +1281,16 @@ function App() {
       brushType,
       rotatingStartEnabled,
       rotatingStartIndex,
+      extendEnabled,
+      extendPreferenceVersion: 2,
+      brainChallengeEnabled,
+      brainChallengeNextHand,
       overlayTheme: overlayThemeChoice,
+      hygienistFocusModes,
       brushDurationSeconds,
       savedAt: Date.now()
     });
-  }, [activeHouseholdUser?.userId, brushDurationSeconds, brushingHand, brushType, dbStatus.ready, keyword, overlayThemeChoice, rotatingStartEnabled, rotatingStartIndex, songFilters, storageConsent, values]);
+  }, [activeHouseholdUser?.userId, brainChallengeEnabled, brainChallengeNextHand, brushDurationSeconds, extendEnabled, brushingHand, brushType, dbStatus.ready, hygienistFocusModes, keyword, overlayThemeChoice, rotatingStartEnabled, rotatingStartIndex, songFilters, storageConsent, values]);
 
   useEffect(() => {
     if (storageConsent !== "granted" || !dbStatus.ready || !activeHouseholdUser?.userId || !preferencesHydratedRef.current) {
@@ -1235,7 +1314,9 @@ function App() {
     }
 
     repeatSessionBootstrapRef.current = true;
-    applySavedSession(lastSession);
+    // Preferences are already hydrated (from defaults, or the last session
+    // when no defaults exist). Resuming music must not replace fresh overlays
+    // with stale tooth modes from a previously saved brushing session.
     setWorkflowStep("brush");
     setAutoRestoredBrushView(true);
     setSelectedSong(lastSession.song);
@@ -1270,7 +1351,7 @@ function App() {
         startedAt: sessionStartedAtRef.current || new Date(Date.now() - Math.round(brushingMusicElapsedSeconds * 1000)).toISOString(),
         completedAt: new Date().toISOString(),
         durationSeconds: Math.max(0, Math.round(brushingMusicElapsedSeconds)),
-        targetDurationSeconds: Number(bpmData?.totalBrushingSeconds || brushDurationSeconds),
+        targetDurationSeconds: Math.ceil(sessionTotalSeconds),
         songTitle: selectedSong?.title || null,
         artistName: selectedSong?.artist || null,
         bpmUsed: Number(selectedSong?.bpm || bpmData?.searchBpm || 0),
@@ -1298,7 +1379,7 @@ function App() {
     })().catch((sessionError) => {
       setError(sessionError?.message || t("app.householdSetup.saveFailed"));
     });
-  }, [activeHouseholdUser?.userId, bpmData?.searchBpm, bpmData?.totalBrushingSeconds, brushDurationSeconds, brushType, brushingMusicElapsedSeconds, brushingPhase, dbStatus.ready, householdProfile?.goalSettings, householdProfile?.householdId, householdProfile?.rewardSettings, progressDashboardFilters, selectedSong?.artist, selectedSong?.bpm, selectedSong?.title, storageConsent, t, toothAgeEstimate?.phase, values.bottom, values.top]);
+  }, [activeHouseholdUser?.userId, bpmData?.searchBpm, bpmData?.totalBrushingSeconds, brushDurationSeconds, brushType, brushingMusicElapsedSeconds, brushingPhase, sessionTotalSeconds, dbStatus.ready, householdProfile?.goalSettings, householdProfile?.householdId, householdProfile?.rewardSettings, progressDashboardFilters, selectedSong?.artist, selectedSong?.bpm, selectedSong?.title, storageConsent, t, toothAgeEstimate?.phase, values.bottom, values.top]);
 
   async function handleAllowStorage() {
     const nextStatus = setStorageConsent(true);
@@ -1474,6 +1555,7 @@ function App() {
             brushType,
             rotatingStartEnabled,
             rotatingStartIndex,
+            hygienistFocusModes,
             brushDurationSeconds
           },
           migrationState: persistedMigrationState
@@ -1609,7 +1691,7 @@ function App() {
         loadHouseholdOverview(householdProfile.householdId),
         management.household.activeUserId
           ? getUserScopedState(management.household.activeUserId, {
-              defaults: { values, filters: songFilters, keyword, brushingHand, brushType, rotatingStartEnabled, rotatingStartIndex, overlayTheme: overlayThemeChoice, brushDurationSeconds },
+              defaults: { values, filters: songFilters, keyword, brushingHand, brushType, rotatingStartEnabled, rotatingStartIndex, overlayTheme: overlayThemeChoice, hygienistFocusModes, brushDurationSeconds },
               lastSession,
               favoriteSongs
             })
@@ -1671,7 +1753,7 @@ function App() {
         loadHouseholdOverview(householdProfile.householdId),
         management?.household?.activeUserId
           ? getUserScopedState(management.household.activeUserId, {
-              defaults: { values, filters: songFilters, keyword, brushingHand, brushType, rotatingStartEnabled, rotatingStartIndex, overlayTheme: overlayThemeChoice, brushDurationSeconds },
+              defaults: { values, filters: songFilters, keyword, brushingHand, brushType, rotatingStartEnabled, rotatingStartIndex, overlayTheme: overlayThemeChoice, hygienistFocusModes, brushDurationSeconds },
               lastSession,
               favoriteSongs
             })
@@ -1702,57 +1784,6 @@ function App() {
     }
   }
 
-  async function handleLogRoutineActivity(sessionType) {
-    if (!storageConsent || storageConsent !== "granted" || !dbStatus.ready || !activeHouseholdUser?.userId || !householdProfile?.householdId) {
-      return;
-    }
-
-    const durationByType = {
-      flossing: 90,
-      "water-picking": 60
-    };
-
-    try {
-      const now = new Date().toISOString();
-      const durationSeconds = durationByType[sessionType] || 60;
-      const createdSession = await createBrushingSession({
-        userId: activeHouseholdUser.userId,
-        householdId: householdProfile.householdId,
-        sessionType,
-        startedAt: now,
-        completedAt: now,
-        durationSeconds,
-        targetDurationSeconds: durationSeconds,
-        topTeethCount: Number(values.top || 0),
-        bottomTeethCount: Number(values.bottom || 0),
-        totalTeethCount: Number(values.top || 0) + Number(values.bottom || 0),
-        performanceRating: "complete",
-        completed: true,
-        source: "phase3-quick-log"
-      });
-      const unlockedAchievements = await awardAchievementsForUser(activeHouseholdUser.userId, householdProfile.householdId, {
-        relatedSessionId: createdSession.sessionId,
-        sourceEventType: sessionType,
-        sourceEventId: createdSession.sessionId,
-        sourceEventAt: createdSession.completedAt,
-        sourceContext: {
-          sessionType,
-          brushType,
-          toothStage: toothAgeEstimate?.phase || "unknown"
-        }
-      });
-      if (unlockedAchievements.length > 0) {
-        setRecentUnlockedAchievements(unlockedAchievements);
-      }
-      setProgressDashboard(await loadUserProgressDashboard(activeHouseholdUser.userId, progressDashboardFilters, householdProfile?.rewardSettings, householdProfile?.goalSettings));
-      setPersistedStateRevision((current) => current + 1);
-      trackEvent("phase3_activity_logged", { session_type: sessionType });
-      setError("");
-    } catch (activityError) {
-      setError(activityError?.message || t("app.householdSetup.saveFailed"));
-    }
-  }
-
   async function handleSwitchHouseholdUser(userId) {
     if (!dbStatus.ready || !householdProfile?.householdId || !userId || userId === activeHouseholdUser?.userId) {
       return;
@@ -1770,6 +1801,7 @@ function App() {
             brushType,
             rotatingStartEnabled,
             rotatingStartIndex,
+            hygienistFocusModes,
             brushDurationSeconds
           },
           lastSession,
@@ -1863,7 +1895,7 @@ function App() {
   }
 
   function beginBrushingCountdown() {
-    const totalSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
+    const totalSeconds = sessionTotalSeconds;
     const startDelayMs = START_DELAY_SECONDS * 1000;
     countdownDeadlineRef.current = Date.now() + startDelayMs;
     setCountdownRemainingMs(startDelayMs);
@@ -1995,7 +2027,7 @@ function App() {
       return;
     }
 
-    const nextSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
+    const nextSeconds = Math.ceil(sessionTotalSeconds);
     setTimer((prev) => {
       if (prev.remaining === nextSeconds && prev.running === false) {
         return prev;
@@ -2003,7 +2035,7 @@ function App() {
 
       return { running: false, remaining: nextSeconds };
     });
-  }, [bpmData?.totalBrushingSeconds, brushDurationSeconds, brushingPhase, timer.running]);
+  }, [brushingPhase, sessionTotalSeconds, timer.running]);
 
   useEffect(() => {
     if (brushingPhase !== "countdown") {
@@ -2011,7 +2043,7 @@ function App() {
     }
 
     if (countdownRemainingMs <= 0) {
-      const totalSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
+      const totalSeconds = sessionTotalSeconds;
       countdownDeadlineRef.current = null;
       setCountdownRemainingMs(0);
       setTimer({ running: true, remaining: totalSeconds });
@@ -2028,7 +2060,7 @@ function App() {
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [bpmData?.totalBrushingSeconds, brushDurationSeconds, brushingPhase, countdownRemainingMs]);
+  }, [brushingPhase, countdownRemainingMs, sessionTotalSeconds]);
 
   useEffect(() => {
     if (!bpmData?.searchBpm || (workflowStep !== "music" && brushingPhase !== "running")) {
@@ -2191,11 +2223,12 @@ function App() {
       return;
     }
 
-    const totalSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
-    const remaining = Math.max(0, totalSeconds - Math.floor(brushingMusicElapsedSeconds));
+    const totalSeconds = sessionTotalSeconds;
+    const completed = brushingMusicElapsedSeconds >= totalSeconds - 0.000001;
+    const remaining = completed ? 0 : Math.max(1, Math.ceil(totalSeconds - brushingMusicElapsedSeconds));
 
     setTimer((prev) => {
-      const nextRunning = remaining > 0;
+      const nextRunning = !completed;
       if (prev.remaining === remaining && prev.running === nextRunning) {
         return prev;
       }
@@ -2207,7 +2240,7 @@ function App() {
       trackEvent("brushing_completed");
       setBrushingPhase("complete");
     }
-  }, [timer.running, brushingPhase, brushingMusicElapsedSeconds, bpmData?.totalBrushingSeconds, brushDurationSeconds]);
+  }, [timer.running, brushingPhase, brushingMusicElapsedSeconds, sessionTotalSeconds]);
 
   function issuePlayerCommand(type) {
     setPlayerCommand((previous) => ({ type, nonce: previous.nonce + 1 }));
@@ -2416,7 +2449,7 @@ function App() {
       return;
     }
 
-    const totalSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
+    const totalSeconds = sessionTotalSeconds;
     const shouldResume = Boolean(options.resumeFromPause);
     const shouldRestartVideo = Boolean(options.restartVideo);
 
@@ -2431,6 +2464,13 @@ function App() {
       }
     } else {
       prepareNextSessionStartSegment();
+      if (brainChallengeEnabled) {
+        const challengeHand = brainChallengeNextHand === "left" ? "left" : "right";
+        setSessionBrushingHand(challengeHand);
+        setBrainChallengeNextHand(challengeHand === "right" ? "left" : "right");
+      } else {
+        setSessionBrushingHand(null);
+      }
       setBrushingMusicElapsedSeconds(0);
       setPlaybackSeconds(shouldRestartVideo ? 0 : playbackSeconds);
       lastPlaybackTickRef.current = shouldRestartVideo ? 0 : playbackSeconds;
@@ -2486,6 +2526,11 @@ function App() {
         brushType,
         rotatingStartEnabled,
         rotatingStartIndex,
+        extendEnabled,
+        extendPreferenceVersion: 2,
+        brainChallengeEnabled,
+        brainChallengeNextHand,
+        hygienistFocusModes,
         brushDurationSeconds,
         savedAt: Date.now()
       };
@@ -2498,7 +2543,12 @@ function App() {
         brushType,
         rotatingStartEnabled,
         rotatingStartIndex,
+        extendEnabled,
+        extendPreferenceVersion: 2,
+        brainChallengeEnabled,
+        brainChallengeNextHand,
         overlayTheme: overlayThemeChoice,
+        hygienistFocusModes,
         brushDurationSeconds,
         savedAt: sessionToSave.savedAt
       });
@@ -2506,7 +2556,7 @@ function App() {
       setLastSession(sessionToSave);
     }
 
-    trackEvent("brushing_started", { song_title: selectedSong?.title, song_artist: selectedSong?.artist, duration_seconds: totalSeconds });
+    trackEvent("brushing_started", { song_title: selectedSong?.title, song_artist: selectedSong?.artist, duration_seconds: Math.ceil(totalSeconds), extend_enabled: extendEnabled });
     setError("");
   }
 
@@ -2526,7 +2576,7 @@ function App() {
   }
 
   function restartBrushing() {
-    const totalSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
+    const totalSeconds = sessionTotalSeconds;
     const remainingSongSeconds = songDurationSeconds > 0 ? Math.max(0, songDurationSeconds - playbackSeconds) : null;
     const needsSongRestart = typeof remainingSongSeconds === "number" && remainingSongSeconds < totalSeconds + START_DELAY_SECONDS;
     const confirmMessage = needsSongRestart
@@ -2570,7 +2620,7 @@ function App() {
     }
 
     if (brushingPhase === "complete") {
-      const totalSeconds = Number(bpmData?.totalBrushingSeconds || brushDurationSeconds);
+      const totalSeconds = sessionTotalSeconds;
       issuePlayerCommand("reset");
       setPlaybackSeconds(0);
       lastPlaybackTickRef.current = 0;
@@ -2651,7 +2701,7 @@ function App() {
       ? t("brushing.pause")
       : brushingPhase === "complete"
         ? t("common.buttons.stopMusic")
-        : t("brushing.start", { duration: formatTime(Number(bpmData?.totalBrushingSeconds || brushDurationSeconds)) });
+        : t("brushing.start", { duration: formatTime(Math.ceil(sessionTotalSeconds)) });
 
   const showTopConsentNotices = workflowStep === "teeth";
   const showAnalyticsConsentBanner = analyticsAvailable && analyticsConsent === "unknown";
@@ -2806,81 +2856,6 @@ function App() {
           </button>
       </nav>
 
-      <section className={`care-routine-strip ${ageUiProfile.themeClassName}${showCompactRoutine ? " compact" : ""}`} aria-label={t("app.routine.ariaLabel")}>
-        <div className="care-routine-header">
-          <div className="care-routine-copy">
-            <strong>{t("app.routine.title")}</strong>
-            <p>{t("app.routine.intro")}</p>
-          </div>
-          {isReturningVisitor && (
-            <button
-              type="button"
-              className="care-routine-toggle"
-              onClick={() => setIsRoutineExpanded((current) => !current)}
-            >
-              {isRoutineExpanded ? t("app.routine.collapse") : t("app.routine.expand")}
-            </button>
-          )}
-        </div>
-        {showCompactRoutine ? (
-          <div className="care-routine-compact-layout">
-            <article className="care-routine-card active compact-primary">
-              <span className="care-routine-badge">{t("app.routine.available")}</span>
-              <strong>{t("app.routine.brushing.title")}</strong>
-              <p>{t("app.routine.brushing.description")}</p>
-            </article>
-            <div className="care-routine-mini-list" aria-label={t("app.routine.ariaLabel")}>
-              <button
-                type="button"
-                className={`care-routine-mini-pill${expandedRoutineCard === "flossing" ? " active" : ""}`}
-                onClick={() => setExpandedRoutineCard((c) => (c === "flossing" ? null : "flossing"))}
-              >
-                {t("app.routine.flossing.title")}
-              </button>
-              <button
-                type="button"
-                className={`care-routine-mini-pill${expandedRoutineCard === "waterPicking" ? " active" : ""}`}
-                onClick={() => setExpandedRoutineCard((c) => (c === "waterPicking" ? null : "waterPicking"))}
-              >
-                {t("app.routine.waterPicking.title")}
-              </button>
-            </div>
-            {expandedRoutineCard === "flossing" && (
-              <article className="care-routine-card best-practice care-routine-expanded">
-                <span className="care-routine-badge">{t("app.routine.bestPractice")}</span>
-                <strong>{t("app.routine.flossing.title")}</strong>
-                <p>{t("app.routine.flossing.description")}</p>
-              </article>
-            )}
-            {expandedRoutineCard === "waterPicking" && (
-              <article className="care-routine-card best-practice care-routine-expanded">
-                <span className="care-routine-badge">{t("app.routine.bestPractice")}</span>
-                <strong>{t("app.routine.waterPicking.title")}</strong>
-                <p>{t("app.routine.waterPicking.description")}</p>
-              </article>
-            )}
-          </div>
-        ) : (
-          <div className="care-routine-grid">
-            <article className="care-routine-card active">
-              <span className="care-routine-badge">{t("app.routine.available")}</span>
-              <strong>{t("app.routine.brushing.title")}</strong>
-              <p>{t("app.routine.brushing.description")}</p>
-            </article>
-            <article className="care-routine-card best-practice">
-              <span className="care-routine-badge">{t("app.routine.bestPractice")}</span>
-              <strong>{t("app.routine.flossing.title")}</strong>
-              <p>{t("app.routine.flossing.description")}</p>
-            </article>
-            <article className="care-routine-card best-practice">
-              <span className="care-routine-badge">{t("app.routine.bestPractice")}</span>
-              <strong>{t("app.routine.waterPicking.title")}</strong>
-              <p>{t("app.routine.waterPicking.description")}</p>
-            </article>
-          </div>
-        )}
-      </section>
-
       {languageFallbackState.needsSupportedLanguageChoice && (
         <section className="language-simulator-card" aria-label={t("settings.supportedLanguage.ariaLabel")}>
           <div className="language-simulator-copy">
@@ -2962,7 +2937,6 @@ function App() {
           activeUserName={activeHouseholdUser?.name}
           filters={progressDashboardFilters}
           onFilterChange={handleProgressDashboardFilterChange}
-          onLogActivity={handleLogRoutineActivity}
         />
       )}
 
@@ -2981,6 +2955,40 @@ function App() {
           onRemoveMember={handleDeleteHouseholdMember}
           onActivateMember={handleSwitchHouseholdUser}
         />
+      )}
+
+      {rotatingStartInfoOpen && (
+        <div className="brain-challenge-backdrop" role="presentation" onClick={() => setRotatingStartInfoOpen(false)}>
+          <section className="brain-challenge-modal" role="dialog" aria-modal="true" aria-labelledby="rotating-start-title" onClick={(event) => event.stopPropagation()}>
+            <button type="button" className="brain-challenge-close" aria-label="Close" onClick={() => setRotatingStartInfoOpen(false)}>×</button>
+            <h3 id="rotating-start-title">Rotate starting tooth</h3>
+            <p>Balanced brushing means not always beginning in the same place. Starting in one familiar spot every time can make that area consistently first while other areas are always reached later.</p>
+            <p>When enabled, Brush Beats rotates through eight starting positions: top or bottom, left or right, and outside or inside. Across sessions, every part of the mouth gets a turn as the starting area.</p>
+          </section>
+        </div>
+      )}
+
+      {extendInfoOpen && (
+        <div className="brain-challenge-backdrop" role="presentation" onClick={() => setExtendInfoOpen(false)}>
+          <section className="brain-challenge-modal" role="dialog" aria-modal="true" aria-labelledby="extend-info-title" onClick={(event) => event.stopPropagation()}>
+            <button type="button" className="brain-challenge-close" aria-label="Close" onClick={() => setExtendInfoOpen(false)}>×</button>
+            <h3 id="extend-info-title">Extend: how brushing time changes</h3>
+            <p><strong>Standard (Extend off):</strong> Your entire brushing session fits the time you selected. Hygienist-highlighted surfaces get about 1.5× the attention, so other surfaces receive a little less time.</p>
+            <p><strong>Extend on:</strong> First, every tooth surface gets an equal share of your selected brushing time. After the full-mouth pass, Brush Beats returns only to the highlighted surfaces and gives each the same brushing time again.</p>
+            <p>Extend adds that focused second pass <strong>after</strong> your selected time. A two- or three-second starting cue shows the nearest highlighted tooth on the finishing jaw first, when available; short brush-move pauses are added when highlighted surfaces are apart, with more time for top-to-bottom moves. Rotate starting tooth also changes the starting order of this pass.</p>
+          </section>
+        </div>
+      )}
+
+      {brainChallengeInfoOpen && (
+        <div className="brain-challenge-backdrop" role="presentation" onClick={() => setBrainChallengeInfoOpen(false)}>
+          <section className="brain-challenge-modal" role="dialog" aria-modal="true" aria-labelledby="brain-challenge-title" onClick={(event) => event.stopPropagation()}>
+            <button type="button" className="brain-challenge-close" aria-label="Close" onClick={() => setBrainChallengeInfoOpen(false)}>×</button>
+            <h3 id="brain-challenge-title">Alternate: starting hand</h3>
+            <p>Break up your usual brushing pattern by alternating which hand you start with each session. Using your non-dominant hand can make a familiar task feel novel and challenge coordination and attention.</p>
+            <p>When enabled, Brush Beats switches your starting hand between left and right each new session and shows the starting hand before brushing begins. When disabled, your regular saved hand is used.</p>
+          </section>
+        </div>
       )}
 
       {workflowStep === "teeth" && (
@@ -3023,7 +3031,6 @@ function App() {
                 activeUserName={t("settings.experienceSimulator.previewUser", { label: detectedBrusherProfile.label })}
                 filters={progressDashboardFilters}
                 onFilterChange={handleProgressDashboardFilterChange}
-                onLogActivity={() => {}}
                 readOnly
                 previewLabel={t("settings.experienceSimulator.previewBadge")}
               />
@@ -3123,10 +3130,6 @@ function App() {
                 )}
               </>
             )}
-            <WaterFlossingGuide
-              toothCount={Number(values.top || 0) + Number(values.bottom || 0)}
-              isMobile={device.isMobile}
-            />
             {!device.isMobile && (
               <>
                 {brushingPhase === "complete" && (
@@ -3170,7 +3173,26 @@ function App() {
                       checked={Boolean(rotatingStartEnabled)}
                       onChange={(event) => handleRotatingStartEnabledChange(event.target.checked)}
                     />
-                    <span>rotate starting tooth</span>
+                    <button type="button" className="brain-challenge-info-link" onClick={(event) => { event.preventDefault(); setRotatingStartInfoOpen(true); }}>Rotate</button>
+                  </label>
+                  <label className="brush-start-rotation-toggle-row extend-mode-copy">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(extendEnabled)}
+                      disabled={["running", "paused", "countdown", "awaitingPlayback"].includes(brushingPhase)}
+                      onChange={(event) => setExtendEnabled(event.target.checked)}
+                    />
+                    <button type="button" className="brain-challenge-info-link" onClick={(event) => { event.preventDefault(); setExtendInfoOpen(true); }}>Extend</button>
+                  </label>
+                  <label className="brush-start-rotation-toggle-row brain-challenge-copy">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(brainChallengeEnabled)}
+                      onChange={(event) => setBrainChallengeEnabled(event.target.checked)}
+                    />
+                    <button type="button" className="brain-challenge-info-link" onClick={(event) => { event.preventDefault(); setBrainChallengeInfoOpen(true); }}>
+                      Alternate
+                    </button>
                   </label>
                 </div>
               )}
@@ -3184,10 +3206,15 @@ function App() {
                 isMobile={device.isMobile}
                 playbackSeconds={playbackSeconds}
                 brushingMusicElapsedSeconds={brushingMusicElapsedSeconds}
+                sessionTotalSeconds={sessionTotalSeconds}
+                extendEnabled={extendEnabled}
+                onExtendEnabledChange={setExtendEnabled}
+                onExtendInfoClick={() => setExtendInfoOpen(true)}
                 startCountdownTotalMs={START_DELAY_SECONDS * 1000}
                 startCountdownRemainingMs={countdownRemainingMs}
                 sessionStartSegmentKey={sessionStartSegmentKey}
-                brushingHand={brushingHand}
+                brushingHand={sessionBrushingHand || brushingHand}
+                showStartingHandCue={brainChallengeEnabled}
                 brushType={brushType}
                 hideIntro
                 onCueChange={setBrushControlCue}
@@ -3198,9 +3225,16 @@ function App() {
                 onRestartBrushing={restartBrushing}
                 rotatingStartEnabled={rotatingStartEnabled}
                 onRotatingStartEnabledChange={handleRotatingStartEnabledChange}
+                onRotatingStartInfoClick={() => setRotatingStartInfoOpen(true)}
+                brainChallengeEnabled={brainChallengeEnabled}
+                onBrainChallengeEnabledChange={setBrainChallengeEnabled}
+                onBrainChallengeInfoClick={() => setBrainChallengeInfoOpen(true)}
                 ageUiProfile={ageUiProfile}
                 embedded
                 showThemePanel={false}
+                enableHygienistFocus={enableHygienistFocusExperience}
+                hygienistFocusModes={hygienistFocusModes}
+                onHygienistFocusModesChange={handleHygienistFocusModesChange}
               />
               {device.isMobile && brushingPhase === "complete" && (
                 <section className="success-banner brush-success-banner" aria-live="polite">
@@ -3219,6 +3253,7 @@ function App() {
           </Player>
         </section>
       )}
+
         </>
       )}
 

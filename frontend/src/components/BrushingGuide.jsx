@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import AgeThemePanel from "./AgeThemePanel";
-import AgeOverlay from "./AgeOverlay";
 import { getBrushTechniqueTips } from "../lib/reinforcementMessages";
-import { buildSegments, buildTimeline, getActiveTimelineEntry } from "../lib/brushingTimeline";
+import { buildSegments, buildBrushingSessionTimeline, getActiveTimelineEntry } from "../lib/brushingTimeline";
+import { getActiveToothPulseMs } from "../lib/brushingPulse";
+import { buildFocusSurfaceModeMapFromSelector } from "../lib/focusModes";
+import { getToothSurfaceVisualState } from "../lib/brushingSurfaceState";
 
 function toRadians(degrees) {
   return (degrees * Math.PI) / 180;
@@ -360,17 +362,40 @@ function formatTenths(seconds) {
   return Math.max(0, seconds).toFixed(1);
 }
 
-function getActiveToothPulseMs(bpm) {
-  const safeBpm = Number(bpm);
-  if (!Number.isFinite(safeBpm) || safeBpm <= 0) {
-    return 760;
-  }
-
-  return clampNumber(Math.round((60 / safeBpm) * 1000), 375, 1200);
-}
-
 const ROW_CELEBRATION_DURATION_MS = 3800;
 const TOTAL_BRUSH_ROWS = 4;
+const HYGIENIST_FOCUS_WEIGHT = 1.5;
+const HYGIENIST_FOCUS_COLOR = "#F4A261";
+const HYGIENIST_SURFACE_MODES = ["none", "front", "back", "both"];
+function buildFocusToothKey(jaw, mapIndex) {
+  return `${jaw}:${mapIndex}`;
+}
+
+function normalizeHygienistSurfaceMode(mode) {
+  return HYGIENIST_SURFACE_MODES.includes(mode) ? mode : "none";
+}
+
+function doesModeCoverSurface(mode, surface) {
+  const normalizedMode = normalizeHygienistSurfaceMode(mode);
+  return normalizedMode === "both" || normalizedMode === surface;
+}
+
+function getHygienistModeLabel(mode) {
+  const normalizedMode = normalizeHygienistSurfaceMode(mode);
+  if (normalizedMode === "front") {
+    return "Outside";
+  }
+
+  if (normalizedMode === "back") {
+    return "Inside";
+  }
+
+  if (normalizedMode === "both") {
+    return "Both";
+  }
+
+  return "";
+}
 
 function getRowNumberFromLabel(label) {
   if (!label) {
@@ -562,12 +587,13 @@ function RowCelebrationCascade({ celebration, reducedMotion, lowPerformanceMode 
   return <canvas className={`row-celebration-cascade${celebration ? " active" : ""}`} ref={canvasRef} aria-hidden="true" />;
 }
 
-function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushingMusicElapsedSeconds, startCountdownTotalMs = 5000, startCountdownRemainingMs = 0, sessionStartSegmentKey = null, brushingHand, brushType = "manual", hideIntro = false, onCueChange, completionMessage = "", brushControlCue, primaryBrushActionLabel, onPrimaryBrushAction, onRestartBrushing, rotatingStartEnabled = false, onRotatingStartEnabledChange, ageUiProfile, embedded = false, showThemePanel = true }) {
+function BrushingGuide({ timer, brushingPhase, values, bpmData, selectedBpm, isMobile, brushingMusicElapsedSeconds, startCountdownTotalMs = 5000, startCountdownRemainingMs = 0, sessionStartSegmentKey = null, brushingHand, showStartingHandCue = false, brushType = "manual", hideIntro = false, onCueChange, completionMessage = "", brushControlCue, primaryBrushActionLabel, onPrimaryBrushAction, onRestartBrushing, rotatingStartEnabled = false, onRotatingStartEnabledChange, onRotatingStartInfoClick, extendEnabled = false, onExtendEnabledChange, onExtendInfoClick, brainChallengeEnabled = false, onBrainChallengeEnabledChange, onBrainChallengeInfoClick, sessionTotalSeconds, ageUiProfile, embedded = false, showThemePanel = true, enableHygienistFocus = false, hygienistFocusModes = null, onHygienistFocusModesChange = null }) {
   const resetHoldTimerRef = useRef(null);
   const resetHoldTriggeredRef = useRef(false);
   const RESET_HOLD_MS = 700;
   const { t } = useTranslation();
-  const totalSeconds = Number(bpmData?.totalBrushingSeconds || 120);
+  const baseSeconds = Number(bpmData?.totalBrushingSeconds || 120);
+  const totalSeconds = Number(sessionTotalSeconds || baseSeconds);
   const topTeeth = Number(values?.top || 16);
   const bottomTeeth = Number(values?.bottom || 16);
   const mapCenter = { x: 180, y: 214 };
@@ -580,20 +606,43 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
   const fallbackSecondsPerTooth = totalSeconds / Math.max(1, expectedToothActions);
   const toothDurationSeconds = hasAlignedBpmSnapshot ? Number(bpmData.secondsPerTooth) : fallbackSecondsPerTooth;
   const timingSourceLabel = hasAlignedBpmSnapshot ? "snapshot" : "live-fallback";
+  const fallbackBpm = bpmData?.searchBpm || bpmData?.musicBpm || bpmData?.baseBpm || bpmData?.rawBpm;
+  const guideBpm = Number(selectedBpm) > 0 ? Number(selectedBpm) : Number(fallbackBpm);
   const showTimingDebug = import.meta.env.DEV;
   const [showCompletionFlash, setShowCompletionFlash] = useState(false);
   const [rowCelebration, setRowCelebration] = useState(null);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [focusEditorTooth, setFocusEditorTooth] = useState(null);
+  const [pendingFocusMode, setPendingFocusMode] = useState("none");
   const completionTonePlayedRef = useRef(false);
   const audioContextRef = useRef(null);
   const celebrationTimerRef = useRef(0);
   const lastCelebratedTransitionRef = useRef("");
   const transitionBufferSeconds = Number(bpmData?.transitionBufferSeconds || 1);
   const segments = useMemo(
-    () => buildSegments(topTeeth, bottomTeeth, sessionStartSegmentKey),
-    [bottomTeeth, sessionStartSegmentKey, topTeeth]
+    () => buildSegments(topTeeth, bottomTeeth, sessionStartSegmentKey, { brushingHand, brushType }),
+    [bottomTeeth, brushType, brushingHand, sessionStartSegmentKey, topTeeth]
   );
-  const timeline = buildTimeline(segments, toothDurationSeconds, transitionBufferSeconds);
+  // A tooth receives extra care only when it was explicitly selected.
+  // Do not recreate an individual's former hygienist recommendations.
+  const focusSurfaceModes = useMemo(
+    () => enableHygienistFocus ? buildFocusSurfaceModeMapFromSelector(hygienistFocusModes) : new Map(),
+    [enableHygienistFocus, hygienistFocusModes]
+  );
+  const focusToothSet = useMemo(() => new Set(focusSurfaceModes.keys()), [focusSurfaceModes]);
+  const timeline = useMemo(
+    () => buildBrushingSessionTimeline({
+      segments,
+      secondsPerTooth: toothDurationSeconds,
+      transitionBufferSeconds,
+      baseDurationSeconds: baseSeconds,
+      beatsPerMinute: guideBpm,
+      focusModes: focusSurfaceModes,
+      extendEnabled: extendEnabled && enableHygienistFocus,
+      focusWeight: HYGIENIST_FOCUS_WEIGHT
+    }),
+    [baseSeconds, enableHygienistFocus, extendEnabled, focusSurfaceModes, guideBpm, segments, toothDurationSeconds, transitionBufferSeconds]
+  );
   const toothEntries = timeline.filter((entry) => entry.type === "tooth");
   const isPaused = brushingPhase === "paused";
   const hasActiveBrushTimeline = brushingPhase === "running" || isPaused || timer.running;
@@ -603,8 +652,19 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
       ? Math.min(totalSeconds, Math.max(0, Number(brushingMusicElapsedSeconds) || 0))
       : 0;
   const completedToothEntries = toothEntries.filter((entry) => entry.endsAt <= elapsedSeconds).length;
+  // Begin the second visual brushing pass with its three-second starting cue.
+  const extendPassStart = timeline.find((entry) => entry.pass === "extend")?.startsAt;
+  const extendPassStarted = hasActiveBrushTimeline && extendPassStart !== undefined && elapsedSeconds >= extendPassStart;
   const activeEntry = hasActiveBrushTimeline ? getActiveTimelineEntry(timeline, elapsedSeconds) : null;
   const activeToothEntry = activeEntry?.type === "tooth" ? activeEntry : null;
+  const isExtendPass = activeToothEntry?.pass === "extend";
+  const isExtendMove = activeEntry?.type === "transition" && activeEntry.pass === "extend";
+  const focusStartCue = isExtendMove && activeEntry.transitionCue === "extendStart";
+  const focusJawCue = isExtendMove && activeEntry.transitionCue === "extendJaw";
+  const showExtendPositionCue = focusStartCue || focusJawCue;
+  // Show seconds only for the initial Extra Care positioning, never for later brush moves.
+  const focusCueSeconds = focusStartCue ? Math.max(1, Math.ceil(activeEntry.endsAt - elapsedSeconds)) : 0;
+  const activeToothPulseMs = getActiveToothPulseMs(guideBpm) * (activeToothEntry?.weight || 1);
   const activeToothProgress = activeToothEntry
     ? clampNumber((elapsedSeconds - activeToothEntry.startsAt) / Math.max(0.001, activeToothEntry.endsAt - activeToothEntry.startsAt), 0, 1)
     : 0;
@@ -628,7 +688,6 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
   const tips = useMemo(() => getBrushTechniqueTips(brushType, ageUiProfile?.phase || agePhase), [agePhase, ageUiProfile?.phase, brushType]);
   const tipIndex = Math.floor(Math.max(0, elapsedSeconds) / 18) % Math.max(1, tips.length);
   const activeTip = brushingPhase === "running" ? (tips[tipIndex] || "") : "";
-  const activeToothPulseMs = getActiveToothPulseMs(bpmData?.searchBpm || bpmData?.musicBpm || bpmData?.baseBpm || bpmData?.rawBpm);
   const lowPerformanceCelebrationMode = useMemo(() => detectLowPerformanceCelebrationMode(), []);
   const celebrationSurfaceTarget = useMemo(() => getRowSurfaceTarget(rowCelebration?.rowNumber), [rowCelebration?.rowNumber]);
 
@@ -698,7 +757,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
   }, [brushingPhase]);
 
   useEffect(() => {
-    if (reducedMotion || activeEntry?.type !== "transition") {
+    if (reducedMotion || activeEntry?.type !== "transition" || activeEntry.pass === "extend") {
       return;
     }
 
@@ -835,6 +894,17 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
     }
 
     if (activeEntry?.type === "transition") {
+      if (activeEntry.pass === "extend") {
+        const jawName = activeEntry.toJaw === "top" ? "Top" : "Bottom";
+        const surfaceName = activeEntry.toSurface === "front" ? "Outside" : "Inside";
+        const toothNumber = activeEntry.toMapIndex + 1;
+        onCueChange({
+          kind: "transition",
+          title: focusStartCue ? "Extend · Find your starting tooth" : focusJawCue ? "Extend · Switch jaws" : activeEntry.transitionCue === "extendSurface" ? "Extend · Flip brush" : "Extend · Move your brush",
+          detail: `${jawName} · ${surfaceName} · tooth ${toothNumber}${focusStartCue ? ` — ${nextMoveSeconds}s to start` : ""}`
+        });
+        return;
+      }
       if (activeEntry.transitionCue === "switchHand") {
         onCueChange({
           kind: "side-switch",
@@ -901,7 +971,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
     if (activeToothEntry) {
       onCueChange({
         kind: "brushing",
-        title: t("brushing.cue.activeTitle", { label: getSegmentLabel(t, activeToothEntry.label) }),
+        title: `${isExtendPass ? "Extend · " : ""}${t("brushing.cue.activeTitle", { label: getSegmentLabel(t, activeToothEntry.label) })}`,
         detail: t("brushing.cue.activeDetail", {
           position: activeToothEntry.segmentPosition,
           size: activeToothEntry.segmentSize,
@@ -913,10 +983,52 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
     }
 
     onCueChange(null);
-  }, [activeEntry, activeToothEntry, brushingHand, brushingPhase, nextMoveSeconds, onCueChange, startCountdownRemainingMs, t, timer.running]);
+  }, [activeEntry, activeToothEntry, brushingHand, brushingPhase, focusJawCue, focusStartCue, isExtendPass, nextMoveSeconds, onCueChange, startCountdownRemainingMs, t, timer.running]);
 
   const topPoints = createJawToothLayout({ chart: topToothChart, jaw: "top", child: useChildToothChart, mapCenter });
   const bottomPoints = createJawToothLayout({ chart: bottomToothChart, jaw: "bottom", child: useChildToothChart, mapCenter });
+  const activeFocusMode = useMemo(() => {
+    if (!enableHygienistFocus || !activeToothEntry) {
+      return null;
+    }
+
+    const surfaceMode = normalizeHygienistSurfaceMode(
+      focusSurfaceModes.get(buildFocusToothKey(activeToothEntry.jaw, activeToothEntry.mapIndex))
+    );
+    if (!doesModeCoverSurface(surfaceMode, activeToothEntry.surface)) {
+      return null;
+    }
+
+    return surfaceMode;
+  }, [activeToothEntry, enableHygienistFocus, focusSurfaceModes]);
+
+  const activeFocusBadgePoint = useMemo(() => {
+    if (!activeFocusMode || !activeToothEntry) {
+      return null;
+    }
+
+    const pointSet = activeToothEntry.jaw === "top" ? topPoints : bottomPoints;
+    return pointSet[activeToothEntry.mapIndex] || null;
+  }, [activeFocusMode, activeToothEntry, topPoints, bottomPoints]);
+
+  function renderExtraCareBadge(point, mode) {
+    if (!point) {
+      return null;
+    }
+
+    const modeLabel = getHygienistModeLabel(mode);
+    const badgeText = modeLabel ? `Extra Care: ${modeLabel}` : "Extra Care";
+    const badgeWidth = Math.max(68, Math.min(122, Math.round(badgeText.length * 4.8 + 20)));
+    const badgeHalfWidth = badgeWidth / 2;
+    const badgeY = point.y + (point.y < mapCenter.y ? -24 : 24);
+
+    return (
+      <g className="extra-care-badge" transform={`translate(${point.x} ${badgeY})`}>
+        <rect x={-badgeHalfWidth} y="-10" width={badgeWidth} height="20" rx="10" />
+        <text x="0" y="4" textAnchor="middle">{badgeText}</text>
+      </g>
+    );
+  }
 
   function getToothState(jaw, mapIndex) {
     if (brushingPhase === "complete") {
@@ -926,6 +1038,8 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
     const state = {
       frontDone: false,
       backDone: false,
+      frontExtendPending: false,
+      backExtendPending: false,
       activeSurface: null
     };
 
@@ -933,22 +1047,12 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
       return state;
     }
 
-    state.frontDone = timeline.some(
-      (entry) =>
-        entry.type === "tooth" &&
-        entry.jaw === jaw &&
-        entry.surface === "front" &&
-        entry.mapIndex === mapIndex &&
-        entry.endsAt <= elapsedSeconds
-    );
-    state.backDone = timeline.some(
-      (entry) =>
-        entry.type === "tooth" &&
-        entry.jaw === jaw &&
-        entry.surface === "back" &&
-        entry.mapIndex === mapIndex &&
-        entry.endsAt <= elapsedSeconds
-    );
+    const front = getToothSurfaceVisualState({ timeline, elapsedSeconds, jaw, mapIndex, surface: "front", focusSurfaceModes, extendPassStarted });
+    const back = getToothSurfaceVisualState({ timeline, elapsedSeconds, jaw, mapIndex, surface: "back", focusSurfaceModes, extendPassStarted });
+    state.frontDone = front.brushed;
+    state.backDone = back.brushed;
+    state.frontExtendPending = front.extendPending;
+    state.backExtendPending = back.extendPending;
 
     if (activeToothEntry?.jaw === jaw && activeToothEntry.mapIndex === mapIndex) {
       state.activeSurface = activeToothEntry.surface;
@@ -1044,6 +1148,23 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
       ? t("brushing.guide.startFrontTooth")
       : t("brushing.guide.startInsideTooth");
   }, [countdownPreviewTarget, t]);
+  // Reuse the dotted starting-tooth indicator at the Extra Care start and
+  // when switching jaws; ordinary tooth and face moves do not need it.
+  const extendCuePoint = useMemo(() => {
+    if (!showExtendPositionCue) return null;
+    const points = activeEntry.toJaw === "top" ? topPoints : bottomPoints;
+    const point = points[activeEntry.toMapIndex];
+    if (!point) return null;
+    return {
+      x: point.x,
+      y: point.y,
+      labelY: activeEntry.toJaw === "top" ? mapCenter.y + 88 : mapCenter.y - 82,
+      labelX: mapCenter.x
+    };
+  }, [activeEntry, bottomPoints, showExtendPositionCue, mapCenter.x, mapCenter.y, topPoints]);
+  const extendCueLabel = isExtendMove
+    ? `${activeEntry.toJaw === "top" ? "Top" : "Bottom"} · ${activeEntry.toSurface === "front" ? "Outside" : "Inside"} · Tooth ${activeEntry.toMapIndex + 1}`
+    : "";
   const countdownStartSurfaceLabelLines = useMemo(() => {
     const match = String(countdownStartSurfaceLabel || "").match(/^(.+?)\s*\((.+)\)$/);
 
@@ -1054,14 +1175,13 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
     return [match[1], `(${match[2]})`];
   }, [countdownStartSurfaceLabel]);
   const fallbackTip = tips[tipIndex] || tips[0] || "";
+  const isPreStartBrushPhase = brushingPhase === "idle" || brushingPhase === "awaitingPlayback";
   const centerTickerMessage = brushingPhase === "complete"
     ? completionMessage || t("brushing.guide.cleanShineLabel")
-    : activeTip || fallbackTip || primaryBrushActionLabel;
-  const centerTickerDetail = brushingPhase === "complete"
-    ? ""
-    : brushingPhase === "idle" || brushingPhase === "awaitingPlayback"
-      ? "Tap brush to start/pause. Hold to reset."
-      : "";
+    : isPreStartBrushPhase
+      ? "Tap brush to start/stop. Hold to reset."
+      : isExtendMove ? (focusStartCue ? `Extend start · ${focusCueSeconds}s` : focusJawCue ? "Switch jaws · Move brush" : activeEntry.transitionCue === "extendSurface" ? "Flip brush · Inside / outside" : "Move brush") : isExtendPass ? "Extend · Extra Care" : activeTip || fallbackTip || primaryBrushActionLabel;
+  const centerTickerDetail = isExtendMove ? extendCueLabel : "";
   const showCenterTicker = brushingPhase === "running" || brushingPhase === "paused";
   const showBottomTicker = brushingPhase === "idle" || brushingPhase === "awaitingPlayback" || brushingPhase === "complete";
   const mapBrushDirectionClass = brushFacingDirection
@@ -1081,6 +1201,23 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
     : effectiveOrientationJaw
       ? `jaw-${effectiveOrientationJaw}`
       : "";
+  const focusHintPositionClass = useMemo(() => {
+    if (!enableHygienistFocus) {
+      return "hint-top";
+    }
+
+    const activeJawForHint = activeToothEntry?.jaw || effectiveOrientationJaw || activeJaw;
+    if (activeJawForHint === "top") {
+      return "hint-bottom";
+    }
+
+    if (activeJawForHint === "bottom") {
+      return "hint-top";
+    }
+
+    return "hint-top";
+  }, [activeJaw, activeToothEntry?.jaw, effectiveOrientationJaw, enableHygienistFocus]);
+  const showHygienistFocusHint = enableHygienistFocus && brushingPhase !== "complete";
 
   function clearResetHoldTimer() {
     if (resetHoldTimerRef.current) {
@@ -1121,49 +1258,94 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
   const coachingSet = AGE_HYGIENE_COACHING[coachingMode][activeAgePhase] || AGE_HYGIENE_COACHING[coachingMode].adult;
   const coachingIndex = Math.floor(Math.max(0, elapsedSeconds) / 14) % coachingSet.length;
   const activeCoaching = coachingSet[coachingIndex] || coachingSet[0];
-  const showElectricLiftCue = brushType === "electric" && activeEntry?.type === "transition";
-  const overlayPhase = brushingPhase === "complete"
-    ? "complete"
-    : brushingPhase === "running" || brushingPhase === "paused"
-      ? progress >= 82
-        ? "nearComplete"
-        : progress >= 18
-          ? "mid"
-          : "start"
-      : brushingPhase === "countdown"
-        ? "start"
-        : "idle";
+  const showElectricLiftCue = brushType === "electric" && activeEntry?.type === "transition" && !isExtendMove;
+  function renderFocusEditorContext() {
+      const jaw = focusEditorTooth?.jaw === "bottom" ? "bottom" : "top";
+      const chart = jaw === "top" ? topToothChart : bottomToothChart;
+      const selectedIndex = Number(focusEditorTooth?.mapIndex);
+      const width = 300;
+      const centerX = width / 2;
+      const spacing = chart.length > 1 ? 238 / (chart.length - 1) : 0;
 
-  function renderTooth(point, jaw, meta, mapIndex) {
-    const state = getToothState(jaw, mapIndex);
-    const activeSurface = state.activeSurface;
-    const toothId = `${jaw}-${mapIndex + 1}`;
-    const toothShape = TOOTH_SHAPES[meta?.type || "molar"];
-    const toothLabel = getToothLabel(t, meta);
-    const isActiveTooth = activeToothEntry?.jaw === jaw && activeToothEntry.mapIndex === mapIndex;
-    const rippleDelayMs = rowCelebration ? getRowRippleDelayMs(point.x, rowCelebration.direction) : 0;
-    const celebrateFrontSurface = Boolean(rowCelebration && celebrationSurfaceTarget?.jaw === jaw && celebrationSurfaceTarget?.surface === "front");
-    const celebrateBackSurface = Boolean(rowCelebration && celebrationSurfaceTarget?.jaw === jaw && celebrationSurfaceTarget?.surface === "back");
-    const countdownSurface = countdownPreviewSegment?.jaw === jaw && countdownPreviewSegment.mapIndices.includes(mapIndex)
-      ? countdownPreviewSegment.surface
-      : null;
-    const isCountdownPreviewTooth = Boolean(countdownSurface);
-    const countdownStep = countdownPreviewTarget?.jaw === jaw
-      ? countdownPreviewTarget.side === "left"
-        ? countdownPreviewTarget.split - 1 - mapIndex
-        : mapIndex - countdownPreviewTarget.split
-      : -1;
-    const isCountdownPathTooth = isCountdownPreviewTooth && Number.isFinite(countdownStep) && countdownStep >= 0;
-    const isCountdownStartTooth = Boolean(isCountdownPreviewTooth && countdownPreviewTarget?.jaw === jaw && mapIndex === countdownPreviewTarget.startMapIndex);
-    const countdownSurfaceStyle = isCountdownPathTooth
-      ? { "--countdown-path-delay": `${Math.round(countdownStep * 85)}ms` }
-      : undefined;
+      return (
+        <div className="brush-focus-context" aria-label={`${jaw === "top" ? "Top" : "Bottom"} jaw context, tooth ${selectedIndex + 1} selected`}>
+          <div className="brush-focus-context-label">
+            <span>{jaw === "top" ? "Top jaw" : "Bottom jaw"}</span>
+            <strong>Tooth {selectedIndex + 1} of {chart.length}</strong>
+          </div>
+          <svg viewBox="0 0 300 76" role="img" aria-hidden="true">
+            <path
+              className="brush-focus-context-arch"
+              d={jaw === "top" ? "M31 48 Q150 2 269 48" : "M31 28 Q150 74 269 28"}
+            />
+            {chart.map((_, index) => {
+              const x = 31 + index * spacing;
+              const y = jaw === "top" ? 42 - Math.sin((index / Math.max(1, chart.length - 1)) * Math.PI) * 16 : 34 + Math.sin((index / Math.max(1, chart.length - 1)) * Math.PI) * 16;
+              const selected = index === selectedIndex;
+
+              return (
+                <g key={`${jaw}-context-${index}`} transform={`translate(${x} ${y})`}>
+                  {selected && <circle className="brush-focus-context-marker" r="10" />}
+                  <rect className={`brush-focus-context-tooth${selected ? " selected" : ""}`} x="-5" y="-7" width="10" height="14" rx="4" />
+                </g>
+              );
+            })}
+          </svg>
+        </div>
+      );
+    }
+
+    function renderTooth(point, jaw, meta, mapIndex) {
+      const state = getToothState(jaw, mapIndex);
+      const activeSurface = state.activeSurface;
+      const toothId = `${jaw}-${mapIndex + 1}`;
+      const toothShape = TOOTH_SHAPES[meta?.type || "molar"];
+      const toothLabel = getToothLabel(t, meta);
+      const isActiveTooth = activeToothEntry?.jaw === jaw && activeToothEntry.mapIndex === mapIndex;
+      const focusSurfaceMode = normalizeHygienistSurfaceMode(focusSurfaceModes.get(buildFocusToothKey(jaw, mapIndex)));
+      const isFocusTooth = enableHygienistFocus && focusSurfaceMode !== "none";
+      const rippleDelayMs = rowCelebration ? getRowRippleDelayMs(point.x, rowCelebration.direction) : 0;
+      const celebrateFrontSurface = Boolean(rowCelebration && celebrationSurfaceTarget?.jaw === jaw && celebrationSurfaceTarget?.surface === "front");
+      const celebrateBackSurface = Boolean(rowCelebration && celebrationSurfaceTarget?.jaw === jaw && celebrationSurfaceTarget?.surface === "back");
+      const countdownSurface = countdownPreviewSegment?.jaw === jaw && countdownPreviewSegment.mapIndices.includes(mapIndex)
+        ? countdownPreviewSegment.surface
+        : null;
+      const isCountdownPreviewTooth = Boolean(countdownSurface);
+      const countdownStep = countdownPreviewTarget?.jaw === jaw
+        ? countdownPreviewTarget.side === "left"
+          ? countdownPreviewTarget.split - 1 - mapIndex
+          : mapIndex - countdownPreviewTarget.split
+        : -1;
+      const isCountdownPathTooth = isCountdownPreviewTooth && Number.isFinite(countdownStep) && countdownStep >= 0;
+      const isCountdownStartTooth = Boolean(isCountdownPreviewTooth && countdownPreviewTarget?.jaw === jaw && mapIndex === countdownPreviewTarget.startMapIndex);
+      const canEditFocus = enableHygienistFocus && Boolean(onHygienistFocusModesChange);
+      const countdownSurfaceStyle = isCountdownPathTooth
+        ? { "--countdown-path-delay": `${Math.round(countdownStep * 85)}ms` }
+        : undefined;
+
+      function handleToothKeyDown(event) {
+        if (event.key !== "Enter" && event.key !== " ") {
+          return;
+        }
+
+        event.preventDefault();
+        setFocusEditorTooth({ jaw, mapIndex, label: toothLabel });
+        setPendingFocusMode(focusSurfaceMode);
+      }
 
     return (
       <g
         key={toothId}
         transform={`translate(${point.x} ${point.y}) rotate(${point.rotationDeg ?? point.angleDeg - 90}) scale(${toothShape.scale * (point.layoutScale || 1)})`}
-        className={`tooth-svg ${meta?.type || "molar"}${isActiveTooth ? " active-tooth" : ""}${isCountdownPreviewTooth ? " countdown-preview-tooth" : ""}${isCountdownStartTooth ? " countdown-start-tooth" : ""}`}
+        className={`tooth-svg ${meta?.type || "molar"}${isActiveTooth ? " active-tooth" : ""}${isFocusTooth ? " focus-tooth focus-mode-" + focusSurfaceMode : ""}${isCountdownPreviewTooth ? " countdown-preview-tooth" : ""}${isCountdownStartTooth ? " countdown-start-tooth" : ""}`}
+        role={canEditFocus ? "button" : undefined}
+        tabIndex={canEditFocus ? 0 : undefined}
+        aria-label={canEditFocus ? `${toothLabel}, focus ${getHygienistModeLabel(focusSurfaceMode) || "none"}` : undefined}
+        onClick={canEditFocus ? () => {
+          setFocusEditorTooth({ jaw, mapIndex, label: toothLabel });
+          setPendingFocusMode(focusSurfaceMode);
+        } : undefined}
+        onKeyDown={canEditFocus ? handleToothKeyDown : undefined}
       >
         <title>{toothLabel}</title>
         <defs>
@@ -1175,18 +1357,55 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
           </clipPath>
         </defs>
         <path className="tooth-body-base" d={toothShape.path} fill="url(#toothFill)" filter="url(#softShadow)" />
+        {isFocusTooth && focusSurfaceMode === "both" && (
+          <path
+            className={`tooth-focus-overlay tooth-focus-overlay-both${isActiveTooth ? " active-focus-overlay" : ""}`}
+            d={toothShape.path}
+            fill={HYGIENIST_FOCUS_COLOR}
+          />
+        )}
+        {isFocusTooth && focusSurfaceMode === "front" && (
+          <path
+            className={`tooth-focus-overlay tooth-focus-overlay-front${isActiveTooth ? " active-focus-overlay" : ""}`}
+            d={toothShape.path}
+            clipPath={`url(#${toothId}-front-surface)`}
+            fill={HYGIENIST_FOCUS_COLOR}
+          />
+        )}
+        {isFocusTooth && focusSurfaceMode === "back" && (
+          <path
+            className={`tooth-focus-overlay tooth-focus-overlay-back${isActiveTooth ? " active-focus-overlay" : ""}`}
+            d={toothShape.path}
+            clipPath={`url(#${toothId}-back-surface)`}
+            fill={HYGIENIST_FOCUS_COLOR}
+          />
+        )}
         <path
-          className={`tooth-face back-face${state.backDone ? " clean" : ""}${activeSurface === "back" ? " active-surface" : ""}${countdownSurface === "back" ? " countdown-preview-surface" : ""}`}
+          className={`tooth-face back-face${state.backDone ? " clean" : ""}${state.backExtendPending ? " extend-pending" : ""}${activeSurface === "back" ? " active-surface" : ""}${countdownSurface === "back" ? " countdown-preview-surface" : ""}`}
           d={toothShape.path}
           clipPath={`url(#${toothId}-back-surface)`}
           style={countdownSurface === "back" ? countdownSurfaceStyle : undefined}
         />
         <path
-          className={`tooth-face front-face${state.frontDone ? " clean" : ""}${activeSurface === "front" ? " active-surface" : ""}${countdownSurface === "front" ? " countdown-preview-surface" : ""}`}
+          className={`tooth-face front-face${state.frontDone ? " clean" : ""}${state.frontExtendPending ? " extend-pending" : ""}${activeSurface === "front" ? " active-surface" : ""}${countdownSurface === "front" ? " countdown-preview-surface" : ""}`}
           d={toothShape.path}
           clipPath={`url(#${toothId}-front-surface)`}
           style={countdownSurface === "front" ? countdownSurfaceStyle : undefined}
         />
+        {isFocusTooth && state.backDone && doesModeCoverSurface(focusSurfaceMode, "back") && (
+          <path
+            className="tooth-focus-complete-marker back-focus-marker"
+            d={toothShape.path}
+            clipPath={`url(#${toothId}-back-surface)`}
+          />
+        )}
+        {isFocusTooth && state.frontDone && doesModeCoverSurface(focusSurfaceMode, "front") && (
+          <path
+            className="tooth-focus-complete-marker front-focus-marker"
+            d={toothShape.path}
+            clipPath={`url(#${toothId}-front-surface)`}
+          />
+        )}
         {celebrateBackSurface && (
           <path
             className="tooth-celebration-ripple back-ripple"
@@ -1255,23 +1474,29 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
                   checked={Boolean(rotatingStartEnabled)}
                   onChange={(event) => onRotatingStartEnabledChange?.(event.target.checked)}
                 />
-                <span>rotate starting tooth</span>
+                <button type="button" className="brain-challenge-info-link" onClick={(event) => { event.preventDefault(); onRotatingStartInfoClick?.(); }}>Rotate</button>
               </label>
+              <label className="brush-start-rotation-toggle-row extend-mode-copy">
+                <input type="checkbox" checked={Boolean(extendEnabled)} disabled={["running", "paused", "countdown", "awaitingPlayback"].includes(brushingPhase)} onChange={(event) => onExtendEnabledChange?.(event.target.checked)} />
+                <button type="button" className="brain-challenge-info-link" onClick={(event) => { event.preventDefault(); onExtendInfoClick?.(); }}>Extend</button>
+              </label>
+               <label className="brush-start-rotation-toggle-row brain-challenge-copy">
+                 <input
+                   type="checkbox"
+                   checked={Boolean(brainChallengeEnabled)}
+                   onChange={(event) => onBrainChallengeEnabledChange?.(event.target.checked)}
+                 />
+                 <button type="button" className="brain-challenge-info-link" onClick={(event) => { event.preventDefault(); onBrainChallengeInfoClick?.(); }}>Alternate</button>
+               </label>
             </div>
           </div>
         )}
 
 
       <div className="guide-map-shell">
-        <AgeOverlay
-          ageGroup={ageUiProfile?.phase || "adult"}
-          themeId={ageUiProfile?.overlayThemeId}
-          phase={overlayPhase}
-          className="guide-map-age-overlay"
-        />
         {showThemePanel && <AgeThemePanel profile={ageUiProfile} variant="guide" className="guide-age-overlay" chipLimit={2} />}
         <div
-          className={`mouth-map${brushingPhase === "complete" ? " completion-finished" : ""}${showCompletionFlash ? " completion-flash" : ""}`}
+          className={`mouth-map${enableHygienistFocus && focusToothSet.size > 0 ? " hygienist-focus-mode" : ""}${brushingPhase === "complete" ? " completion-finished" : ""}${showCompletionFlash ? " completion-flash" : ""}`}
           role="img"
           aria-label={t("brushing.guide.mouthMapAria")}
           style={{ "--active-tooth-pulse-duration": `${activeToothPulseMs}ms` }}
@@ -1305,6 +1530,15 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
               </span>
             </div>
         </div>
+        {brushingPhase === "countdown" && showStartingHandCue && (
+          <div
+            className={`countdown-hand-cue ${brushingHand === "left" ? "left" : "right"}`}
+            aria-label={`Start with ${brushingHand === "left" ? "left" : "right"} hand`}
+          >
+            <span className="countdown-hand-icon" aria-hidden="true">✋</span>
+            <strong aria-hidden="true">{brushingHand === "left" ? "L" : "R"}</strong>
+          </div>
+        )}
         {showCenterTicker && (centerTickerMessage || centerTickerDetail) && (
           <div className="map-center-ticker" aria-live="polite">
             <strong>{centerTickerMessage}</strong>
@@ -1312,9 +1546,14 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
           </div>
         )}
         {showBottomTicker && (centerTickerMessage || centerTickerDetail) && (
-          <div className="map-center-ticker bottom-slot" aria-live="polite">
+          <div className={`map-center-ticker bottom-slot${isPreStartBrushPhase ? " brush-control-instruction" : ""}`} aria-live="polite">
             <strong>{centerTickerMessage}</strong>
             {centerTickerDetail ? <span>{centerTickerDetail}</span> : null}
+          </div>
+        )}
+        {showHygienistFocusHint && !isMobile && (
+          <div className={`hygienist-contrast-hint ${focusHintPositionClass}`} aria-live="polite">
+            {extendEnabled ? "Orange teeth = Extend focus surfaces" : "Orange teeth = extra care timing (1.5x)"}
           </div>
         )}
         <svg viewBox="0 0 360 420" preserveAspectRatio="xMidYMid meet">
@@ -1330,6 +1569,7 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
           {topPoints.map((point, index) => renderTooth(point, "top", topToothChart[index], index))}
 
           {bottomPoints.map((point, index) => renderTooth(point, "bottom", bottomToothChart[index], index))}
+          {activeFocusBadgePoint && renderExtraCareBadge(activeFocusBadgePoint, activeFocusMode)}
           {brushingPhase === "countdown" && countdownStartPoint && (
             <g className="countdown-start-indicator" aria-hidden="true">
               <line
@@ -1370,6 +1610,19 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
               </text>
             </g>
           )}
+          {showExtendPositionCue && extendCuePoint && (
+            <g className="countdown-start-indicator" aria-label={extendCueLabel}>
+              <line x1={mapCenter.x} y1={mapCenter.y} x2={extendCuePoint.x} y2={extendCuePoint.y} className="countdown-start-guide" />
+              <circle cx={extendCuePoint.x} cy={extendCuePoint.y} r="8" className="countdown-start-core" />
+              <circle cx={extendCuePoint.x} cy={extendCuePoint.y} r="14" className="countdown-start-ring" />
+              <text x={extendCuePoint.labelX} y={extendCuePoint.labelY} textAnchor="middle" className="countdown-start-label">
+                {focusStartCue ? "Extend: start here" : "Extend: switch here"}
+                <tspan x={extendCuePoint.labelX} dy="1.2em" className="countdown-start-label-sub">
+                  {extendCueLabel}
+                </tspan>
+              </text>
+            </g>
+          )}
           {showElectricLiftCue && (
             <text
               key={`electric-cue-${activeEntry?.key || "idle"}`}
@@ -1389,11 +1642,58 @@ function BrushingGuide({ timer, brushingPhase, values, bpmData, isMobile, brushi
             </text>
           )}
         </svg>
+        {focusEditorTooth && (
+          <div className="brush-focus-editor-backdrop" role="presentation">
+            <section className="brush-focus-editor" role="dialog" aria-modal="true" aria-labelledby="brush-focus-editor-title">
+              <div className="brush-focus-editor-heading">
+                <div>
+                  <span className="brush-focus-editor-eyebrow">Adjust brushing time</span>
+                  <h3 id="brush-focus-editor-title">{focusEditorTooth.label}</h3>
+                </div>
+                <span className="brush-focus-editor-badge">{extendEnabled ? "Extend focus" : "1.5x focus"}</span>
+              </div>
+              <p>{extendEnabled ? "Choose surfaces to revisit after the full-mouth pass." : "Choose which surfaces should receive extra brushing time."}</p>
+              {renderFocusEditorContext()}
+              <div className="brush-focus-mode-options" role="radiogroup" aria-label="Brushing focus surface">
+                {HYGIENIST_SURFACE_MODES.map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    className={`brush-focus-mode-option${pendingFocusMode === mode ? " selected" : ""}`}
+                    aria-pressed={pendingFocusMode === mode}
+                    onClick={() => setPendingFocusMode(mode)}
+                  >
+                    <strong>{getHygienistModeLabel(mode) || "None"}</strong>
+                    <span>{mode === "none" ? "Use standard time" : extendEnabled ? "Repeat this surface in Extend" : "Add extra time"}</span>
+                  </button>
+                ))}
+              </div>
+              <button
+                type="button"
+                className="brush-focus-editor-return"
+                onClick={() => {
+                  onHygienistFocusModesChange({
+                    ...(hygienistFocusModes || {}),
+                    [`${focusEditorTooth.jaw}-${focusEditorTooth.mapIndex}`]: pendingFocusMode
+                  });
+                  setFocusEditorTooth(null);
+                }}
+              >
+                Return to brushing
+              </button>
+            </section>
+          </div>
+        )}
         </div>
+        {showHygienistFocusHint && isMobile && (
+          <div className="hygienist-contrast-hint-mobile" aria-live="polite">
+            {extendEnabled ? "Orange teeth = Extend focus surfaces" : "Orange teeth = extra care timing (1.5x)"}
+          </div>
+        )}
       </div>
       {showTimingDebug && (
         <p className="guide-debug-timing" aria-live="off">
-          Debug: {totalTeeth} teeth | {toothDurationSeconds.toFixed(2)}s/tooth | source: {timingSourceLabel}
+          Debug: {totalTeeth} teeth | {toothDurationSeconds.toFixed(2)}s/tooth | session: {totalSeconds.toFixed(2)}s | Extend: {extendEnabled ? "on" : "off"} | source: {timingSourceLabel}
         </p>
       )}
 
