@@ -308,6 +308,7 @@ function App() {
   const [isSongPoolExhausted, setIsSongPoolExhausted] = useState(false);
   const [loading, setLoading] = useState({ bpm: false, songs: false, player: false });
   const [backendStatus, setBackendStatus] = useState("");
+  const [dbRetrying, setDbRetrying] = useState(false);
   const [error, setError] = useState("");
   const [analyticsConsent, setAnalyticsConsentState] = useState(() => getAnalyticsConsentStatus());
   const [storageConsent, setStorageConsentState] = useState(() => getStorageConsentStatus());
@@ -1127,12 +1128,16 @@ function App() {
 
   async function handleAllowStorage() {
     const nextStatus = setStorageConsent(true);
+    if (nextStatus !== "granted" || getStorageConsentStatus() !== "granted") {
+      throw new Error("This browser is blocking local storage. Check site storage permissions and try again.");
+    }
+
     setStorageConsentState(nextStatus);
     setStorageBannerDismissed(false);
     setStorageBannerDismissedState(false);
 
     if (!dbStatus.ready) {
-      return;
+      return "fallback";
     }
 
     try {
@@ -1141,10 +1146,16 @@ function App() {
         window.__brushbeatsMigrationStatus = migrationStatus;
         window.dispatchEvent(new CustomEvent("brushbeats:migration-status", { detail: migrationStatus }));
       }
+      if (migrationStatus?.kind === "migration-failed") {
+        setError(migrationStatus.error || t("app.migration.failedLegacyStorage"));
+        return "fallback";
+      }
       setPersistedStateRevision((current) => current + 1);
       setError("");
+      return "database";
     } catch (setupError) {
       setError(setupError?.message || t("app.migration.failedLegacyStorage"));
+      return "fallback";
     }
   }
 
@@ -1181,15 +1192,39 @@ function App() {
   }
 
   async function handleConfirmStorageToggle() {
-    if (storageToggleRequest === "enable") {
-      await handleAllowStorage();
-      setStorageToggleNotice("Session storage enabled: BrushBeats will remember your preferences, last session, and favorites on this device.");
-    } else if (storageToggleRequest === "disable") {
-      await handleDeclineStorage();
-      setStorageToggleNotice("Session storage disabled: saved preferences, last session, and favorites were cleared on this device.");
+    try {
+      if (storageToggleRequest === "enable") {
+        const storageMode = await handleAllowStorage();
+        setStorageToggleNotice(storageMode === "database"
+          ? "Device storage enabled. Your preferences and brushing sessions can now be saved locally."
+          : "Storage permission enabled, but the household database is unavailable. Brushing history may not be saved.");
+      } else if (storageToggleRequest === "disable") {
+        await handleDeclineStorage();
+        setStorageToggleNotice("Session storage disabled: saved preferences, last session, and favorites were cleared on this device.");
+      }
+    } catch (toggleError) {
+      setStorageToggleNotice(toggleError?.message || "Device storage could not be enabled.");
+      setError(toggleError?.message || "Device storage could not be enabled.");
+    } finally {
+      setStorageToggleRequest(null);
+    }
+  }
+
+  async function handleRetryLocalDatabase() {
+    const retry = typeof window !== "undefined" ? window.__brushbeatsRetryLocalDatabase : null;
+    if (typeof retry !== "function") {
+      setError("The database retry is unavailable in this version. Reload Brush Beats.");
+      return;
     }
 
-    setStorageToggleRequest(null);
+    setDbRetrying(true);
+    try {
+      await retry();
+    } catch (retryError) {
+      setError(retryError?.message || "The household database could not be reopened.");
+    } finally {
+      setDbRetrying(false);
+    }
   }
 
   function handleCancelStorageToggle() {
@@ -2546,7 +2581,29 @@ function App() {
         </section>
       )}
 
-      {showTopConsentNotices && !storageBannerDismissed && (
+      {showTopConsentNotices && storageConsent === "granted" && (
+        <p className="info-banner storage-enabled-summary" role="status">
+          <strong>Device storage: On.</strong>{" "}
+          {dbStatus.ready
+            ? "The local household database is available on this device."
+            : "Only browser fallback storage is available; brushing history might not be saved."}
+        </p>
+      )}
+
+      {showTopConsentNotices && storageConsent === "granted" && !dbStatus.ready && (
+        <section className="info-banner storage-diagnostic" role="alert">
+          <strong>Household database unavailable.</strong>{" "}
+          {dbStatus.errorMessage
+            ? `Browser error: ${dbStatus.errorName || "StorageError"} — ${dbStatus.errorMessage}`
+            : "The database has not finished opening or is blocked by the browser."}
+          <p>Family sign-in and brushing history require this local database. Retrying does not delete saved preferences.</p>
+          <button className="action-btn secondary" type="button" disabled={dbRetrying} onClick={handleRetryLocalDatabase}>
+            {dbRetrying ? "Retrying database…" : "Retry household database"}
+          </button>
+        </section>
+      )}
+
+      {showTopConsentNotices && storageConsent !== "granted" && !storageBannerDismissed && (
         <section className="storage-banner" role="region" aria-label="Storage consent controls">
           <p>
             {t("privacy.storageMessage")}
