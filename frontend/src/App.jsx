@@ -667,6 +667,12 @@ function App() {
     }
   }, [analyticsConsent]);
 
+  useEffect(() => {
+    if (analyticsConsent === "granted") {
+      trackEvent("workflow_step_view", { step: workflowStep });
+    }
+  }, [workflowStep, analyticsConsent]);
+
   function handleAcceptAnalytics() {
     const nextStatus = setAnalyticsConsent(true);
     setAnalyticsConsentState(nextStatus);
